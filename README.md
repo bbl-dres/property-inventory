@@ -1,6 +1,6 @@
 # Property Inventory / Liegenschaft Inventar GIS
 
-A single-page web application for visualizing and managing the Swiss Federal Office of Buildings and Logistics (BBL) real estate portfolio. This proof-of-concept demonstrates GIS capabilities for federal property management with an interactive map-based interface, plus complementary table and gallery views.
+Interactive GIS web application mockup for visualizing and managing a real estate portfolio. Features map, list, and gallery views with Mapbox GL JS.
 
 **Live Demo:** https://bbl-dres.github.io/property-inventory/
 
@@ -120,4 +120,6 @@ Licensed under [MIT](https://opensource.org/licenses/MIT)
 
 ---
 
-*Unofficial mockup for demonstration purposes.*
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
