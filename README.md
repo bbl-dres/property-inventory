@@ -4,6 +4,10 @@ A single-page web application for visualizing and managing the Swiss Federal Off
 
 **Live Demo:** [davras5.github.io/gis-immo](https://davras5.github.io/gis-immo/)
 
+> [!CAUTION]
+> **This is an unofficial mockup for demonstration purposes only.**
+> All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
+
 <p align="center">
   <img src="assets/images/preview1.jpg" width="90%"/>
 </p>
