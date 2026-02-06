@@ -1,4 +1,4 @@
-# BBL Immobilienportfolio - GIS POC
+# Property Inventory / Liegenschaft Inventar GIS
 
 A single-page web application for visualizing and managing the Swiss Federal Office of Buildings and Logistics (BBL) real estate portfolio. This proof-of-concept demonstrates GIS capabilities for federal property management with an interactive map-based interface, plus complementary table and gallery views.
 
