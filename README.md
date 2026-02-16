@@ -1,4 +1,4 @@
-# Property Inventory / Liegenschaft Inventar GIS
+# Property Inventory / Liegenschaften Inventar
 
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
