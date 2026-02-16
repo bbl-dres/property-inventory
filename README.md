@@ -1,5 +1,7 @@
 # Property Inventory / Liegenschaften Inventar
 
+![Social Media Preview](assets/images/preview4.jpg)
+
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
 > All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
