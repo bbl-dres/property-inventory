@@ -1,6 +1,6 @@
 # Property Inventory / Liegenschaften Inventar
 
-![Social Media Preview](assets/images/Preview4.jpg)
+![Social Media Preview](assets/images/preview4.jpg)
 
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
