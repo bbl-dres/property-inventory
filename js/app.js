@@ -3119,10 +3119,10 @@
                 '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.buildingId + '</span></div>' +
                 '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.name + '</span></div>' +
                 '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + props.city + ', ' + props.country + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Adresse</span><span class="info-value">' + props.streetName + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
-                '<div class="info-row"><span class="info-label">Baujahr</span><span class="info-value">' + baujahr + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Verantwortlich</span><span class="info-value">' + (ext.responsiblePerson || '—') + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Adresse</span><span class="info-value">' + props.streetName + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Baujahr</span><span class="info-value">' + baujahr + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Verantwortlich</span><span class="info-value">' + (ext.responsiblePerson || '—') + '</span></div>' +
                 '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="status-badge ' + statusClass + '">' + props.status + '</span></span></div>' +
                 '<div class="info-footer">' +
                     '<button class="info-detail-link" onclick="showDetailView(\'' + props.buildingId + '\')">' +
@@ -3246,10 +3246,10 @@
                 '<div class="info-row"><span class="info-label">Parzellen-ID</span><span class="info-value">' + escapeHtml(props.parcelId || '—') + '</span></div>' +
                 '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + escapeHtml(props.name || '—') + '</span></div>' +
                 '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + escapeHtml(props.municipality || '—') + ', ' + escapeHtml(props.canton || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Parzellen-Nr.</span><span class="info-value">' + escapeHtml(props.plotNumber || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Fläche</span><span class="info-value">' + formattedArea + ' m²</span></div>' +
-                '<div class="info-row"><span class="info-label">Nutzungszone</span><span class="info-value">' + escapeHtml(props.landUseZone || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Eigentum</span><span class="info-value">' + escapeHtml(props.ownershipType || '—') + '</span></div>';
+                '<div class="info-row info-row-secondary"><span class="info-label">Parzellen-Nr.</span><span class="info-value">' + escapeHtml(props.plotNumber || '—') + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Fläche</span><span class="info-value">' + formattedArea + ' m²</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Nutzungszone</span><span class="info-value">' + escapeHtml(props.landUseZone || '—') + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Eigentum</span><span class="info-value">' + escapeHtml(props.ownershipType || '—') + '</span></div>';
 
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
