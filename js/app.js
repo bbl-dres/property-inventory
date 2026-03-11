@@ -35,7 +35,14 @@
         var allCosts = [];
         var currentCarouselIndex = 0;
         var miniMap = null;
-        var previousView = 'gallery';
+        var tableOpen = true;
+        var currentView = 'map';
+        var previousView = 'map';
+        var galleryViewDirty = false;
+        var activeTableTab = 'buildings';
+        var parcelCurrentPage = 1;
+        var parcelRowsPerPage = 50;
+        var parcelSearchTerm = '';
         var selectedBuildingId = null;
         var selectedParcelId = null;
         var searchMarker = null;
@@ -45,9 +52,6 @@
         // Track pending layer fetch requests for cancellation
         var pendingLayerFetches = {};
 
-        // View dirty flags - track if view needs re-render after filter change
-        var listViewDirty = false;
-        var galleryViewDirty = false;
 
         // List View Pagination State
         var listCurrentPage = 1;
@@ -58,9 +62,7 @@
 
         function escapeHtml(text) {
             if (text == null) return '';
-            var div = document.createElement('div');
-            div.textContent = text;
-            return div.innerHTML;
+            return String(text).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
         }
 
         // Escape for use in JS strings within HTML attributes (e.g., onclick handlers)
@@ -350,9 +352,6 @@
             // Update URL
             setFiltersInURL(activeFilters);
 
-            // Update object count
-            updateObjectCount();
-
             // Update export count
             updateExportCount();
 
@@ -362,8 +361,8 @@
             // Re-render current view
             renderCurrentView();
 
-            // Update map layer filter if on map view
-            if (currentView === 'map' && window.map && map.getLayer('portfolio-points')) {
+            // Update map layer filter
+            if (window.map && map.getLayer('portfolio-points')) {
                 updateMapFilter();
             }
         }
@@ -483,14 +482,6 @@
             switchView(previousView || 'gallery');
         }
 
-        function updateObjectCount() {
-            var count = filteredData ? filteredData.features.length : (portfolioData ? portfolioData.features.length : 0);
-            var countEl = document.getElementById('object-count');
-            if (countEl) {
-                countEl.textContent = count + ' Objekte';
-            }
-        }
-
         function updateFilterButtonState() {
             var drawerBtn = document.getElementById('smart-drawer-btn');
             if (!drawerBtn) return;
@@ -519,30 +510,26 @@
             }
         }
 
+        var listViewDirty = false;
+
         function renderCurrentView() {
-            // Mark non-current views as dirty (they'll re-render when switched to)
-            if (currentView !== 'list') {
+            // Only render list/parcels if table panel is visible and we're in map view
+            if (currentView === 'map' && tableOpen) {
+                renderListView();
+                renderParcelsView();
+            } else {
                 listViewDirty = true;
             }
-            if (currentView !== 'gallery') {
-                galleryViewDirty = true;
-            }
-
-            // Render current view and clear its dirty flag
-            if (currentView === 'list') {
-                renderListView();
-                listViewDirty = false;
-            } else if (currentView === 'gallery') {
+            if (currentView === 'gallery') {
                 renderGalleryView();
-                galleryViewDirty = false;
+            } else {
+                galleryViewDirty = true;
             }
             // Map view updates via updateMapFilter()
         }
 
         // ===== SMART DRAWER =====
-        var smartDrawerActiveTab = 'filter';
-
-        function toggleSmartDrawer(open, tab) {
+        function toggleSmartDrawer(open) {
             var drawer = document.getElementById('smart-drawer');
             var drawerBtn = document.getElementById('smart-drawer-btn');
 
@@ -554,13 +541,12 @@
                 drawer.classList.add('open');
                 drawerBtn.classList.add('panel-open');
                 drawerBtn.setAttribute('aria-expanded', 'true');
-                if (tab) {
-                    switchDrawerTab(tab);
-                }
+                document.body.classList.add('drawer-open');
             } else {
                 drawer.classList.remove('open');
                 drawerBtn.classList.remove('panel-open');
                 drawerBtn.setAttribute('aria-expanded', 'false');
+                document.body.classList.remove('drawer-open');
             }
 
             // Resize map after transition completes
@@ -569,26 +555,6 @@
                     map.resize();
                 }, 350);
             }
-        }
-
-        function switchDrawerTab(tab) {
-            smartDrawerActiveTab = tab;
-            var drawer = document.getElementById('smart-drawer');
-
-            // Update tab buttons
-            document.querySelectorAll('.smart-drawer-tab').forEach(function(tabBtn) {
-                var isActive = tabBtn.dataset.drawerTab === tab;
-                tabBtn.classList.toggle('active', isActive);
-                tabBtn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            });
-
-            // Update content visibility
-            document.querySelectorAll('.smart-drawer-content').forEach(function(content) {
-                content.style.display = content.dataset.drawerContent === tab ? '' : 'none';
-            });
-
-            // Update data attribute for CSS
-            drawer.setAttribute('data-active-tab', tab);
         }
 
         // ===== DRAWER RESIZE =====
@@ -734,13 +700,6 @@
                 resetFilters();
             });
 
-            // Smart drawer tab switching
-            document.querySelectorAll('.smart-drawer-tab').forEach(function(tab) {
-                tab.addEventListener('click', function() {
-                    switchDrawerTab(this.dataset.drawerTab);
-                });
-            });
-
             // Filter section accordion toggle
             document.querySelectorAll('.filter-section-header').forEach(function(header) {
                 header.addEventListener('click', function() {
@@ -788,6 +747,39 @@
                 });
             }
         });
+
+        // ===== LANGUAGE SELECTOR =====
+        (function() {
+            var langBtn = document.getElementById('lang-btn');
+            var langDropdown = document.getElementById('lang-dropdown');
+            var langCurrent = document.getElementById('lang-current');
+            if (!langBtn || !langDropdown) return;
+
+            langBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                var isOpen = langDropdown.classList.contains('open');
+                langDropdown.classList.toggle('open', !isOpen);
+                langBtn.setAttribute('aria-expanded', !isOpen);
+            });
+
+            langDropdown.addEventListener('click', function(e) {
+                var option = e.target.closest('.lang-option');
+                if (!option) return;
+                langDropdown.querySelectorAll('.lang-option').forEach(function(o) { o.classList.remove('active'); });
+                option.classList.add('active');
+                langCurrent.textContent = option.textContent;
+                langDropdown.classList.remove('open');
+                langBtn.setAttribute('aria-expanded', 'false');
+                // TODO: implement actual language switching
+            });
+
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('#lang-selector')) {
+                    langDropdown.classList.remove('open');
+                    langBtn.setAttribute('aria-expanded', 'false');
+                }
+            });
+        })();
 
         // ===== EXPORT PANEL FUNCTIONS =====
         var selectedExportFormat = 'geojson';
@@ -1253,10 +1245,10 @@
                 legend.style.cssText = 'margin-top: 5mm; padding: 3mm; border: 1px solid #ccc; font-size: 9pt;';
                 legend.innerHTML = '<div style="font-weight: bold; margin-bottom: 2mm;">Legende</div>' +
                     '<div style="display: flex; gap: 10mm; flex-wrap: wrap;">' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: #4CAF50; border-radius: 50%; margin-right: 2mm;"></span>In Betrieb</span>' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: #FF9800; border-radius: 50%; margin-right: 2mm;"></span>In Renovation</span>' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: #2196F3; border-radius: 50%; margin-right: 2mm;"></span>In Planung</span>' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: #9E9E9E; border-radius: 50%; margin-right: 2mm;"></span>Ausser Betrieb</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Betrieb'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Betrieb</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Renovation'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Renovation</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Planung'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Planung</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Ausser Betrieb'] + '; border-radius: 50%; margin-right: 2mm;"></span>Ausser Betrieb</span>' +
                     '</div>';
                 printContainer.appendChild(legend);
             }
@@ -1431,12 +1423,81 @@
 
         // List Search Handler
         function handleListSearch(query) {
-            listSearchTerm = query.toLowerCase().trim();
-            listCurrentPage = 1; // Reset to first page when searching
-            renderListView();
+            var term = query.toLowerCase().trim();
+            if (activeTableTab === 'parcels') {
+                parcelSearchTerm = term;
+                parcelCurrentPage = 1;
+                renderParcelsView();
+            } else {
+                listSearchTerm = term;
+                listCurrentPage = 1;
+                renderListView();
+            }
         }
 
         // Initialize List View Toolbar Event Listeners
+        // Delegated event listeners — attached once, handle all current & future rows/cards
+        function initDelegatedListeners() {
+            var listBody = document.getElementById('list-body');
+            var galleryGrid = document.getElementById('gallery-grid');
+            var parcelsBody = document.getElementById('parcels-body');
+
+            // Buildings table: click to select & zoom
+            if (listBody) {
+                listBody.addEventListener('click', function(e) {
+                    var row = e.target.closest('tr[data-id]');
+                    if (!row) return;
+                    listBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+                    row.classList.add('row-active');
+                    selectBuilding(row.dataset.id, true);
+                });
+                listBody.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        var row = e.target.closest('tr[data-id]');
+                        if (!row) return;
+                        e.preventDefault();
+                        row.click();
+                    }
+                });
+            }
+
+            // Gallery: click to show detail
+            if (galleryGrid) {
+                galleryGrid.addEventListener('click', function(e) {
+                    var card = e.target.closest('.gallery-card[data-id]');
+                    if (!card) return;
+                    showDetailView(card.dataset.id);
+                });
+                galleryGrid.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        var card = e.target.closest('.gallery-card[data-id]');
+                        if (!card) return;
+                        e.preventDefault();
+                        showDetailView(card.dataset.id);
+                    }
+                });
+            }
+
+            // Parcels table: click to select & zoom
+            if (parcelsBody) {
+                parcelsBody.addEventListener('click', function(e) {
+                    var row = e.target.closest('tr[data-parcel-id]');
+                    if (!row) return;
+                    parcelsBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+                    row.classList.add('row-active');
+                    selectParcel(row.dataset.parcelId, true);
+                });
+                parcelsBody.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        var row = e.target.closest('tr[data-parcel-id]');
+                        if (!row) return;
+                        e.preventDefault();
+                        row.click();
+                    }
+                });
+            }
+        }
+
         function initListToolbar() {
             // Dropdown buttons
             var exportBtn = document.getElementById('export-dropdown-btn');
@@ -1463,11 +1524,16 @@
                 });
             });
 
-            // Search input
+            // Search input (debounced)
             var searchInput = document.getElementById('list-search-input');
+            var searchDebounceTimer = null;
             if (searchInput) {
                 searchInput.addEventListener('input', function() {
-                    handleListSearch(this.value);
+                    var value = this.value;
+                    clearTimeout(searchDebounceTimer);
+                    searchDebounceTimer = setTimeout(function() {
+                        handleListSearch(value);
+                    }, 200);
                 });
             }
         }
@@ -1517,9 +1583,14 @@
                     applyFilters();
 
                     renderListView();
-                    renderGalleryView();
+                    renderParcelsView();
+                    initDelegatedListeners();
                     initListToolbar();
                     initListPagination();
+                    initParcelsTable();
+                    initTableTabs();
+                    initInternalLayerToggles();
+                    initTablePanel();
 
                     // Always use the load event to avoid race conditions
                     // If already loaded, the callback fires immediately
@@ -1529,14 +1600,15 @@
                         map.once('load', addMapLayers);
                     }
 
-                    // Check if URL has detail view
-                    var initialView = getViewFromURL();
+                    // Restore view from URL
                     var buildingId = getBuildingIdFromURL();
                     var initialTab = getTabFromURL();
-                    if (initialView === 'detail' && buildingId) {
+                    var initialView = getViewFromURL();
+                    if (buildingId) {
                         showDetailView(buildingId, initialTab);
-                    } else if (initialView !== 'map') {
-                        switchView(initialView);
+                    } else if (initialView === 'gallery') {
+                        switchView('gallery');
+                        renderGalleryView();
                     } else {
                         // Map view is default - show style switcher
                         var styleSwitcher = document.getElementById('style-switcher');
@@ -1567,13 +1639,12 @@
         loadAllData();
         
         // ===== VIEW MANAGEMENT =====
-        var currentView = 'map';
-        
+
         function getViewFromURL() {
             var params = new URLSearchParams(window.location.search);
             return params.get('view') || 'map';
         }
-        
+
         function getBuildingIdFromURL() {
             var params = new URLSearchParams(window.location.search);
             return params.get('id');
@@ -1609,14 +1680,14 @@
             }
             window.history.replaceState({}, '', url);
         }
-        
+
         function switchView(view) {
             if (view !== 'detail') {
                 previousView = currentView !== 'detail' ? currentView : previousView;
             }
             currentView = view;
             setViewInURL(view);
-            
+
             // Update toggle buttons and ARIA attributes
             document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
                 btn.classList.remove('active');
@@ -1626,10 +1697,9 @@
                     btn.setAttribute('aria-selected', 'true');
                 }
             });
-            
+
             // Show/hide views
             document.getElementById('map-view').classList.remove('active');
-            document.getElementById('list-view').classList.remove('active');
             document.getElementById('gallery-view').classList.remove('active');
             document.getElementById('detail-view').classList.remove('active');
 
@@ -1651,23 +1721,23 @@
             if (view === 'map' && window.map) {
                 setTimeout(function() {
                     map.resize();
-                    // Apply filters to map when switching to map view
                     if (map.getLayer('portfolio-points')) {
                         updateMapFilter();
                     }
                 }, 100);
             }
 
-            // Re-render list view if dirty (filters changed while on another view)
-            if (view === 'list' && listViewDirty) {
-                renderListView();
-                listViewDirty = false;
-            }
-
-            // Re-render gallery view if dirty (filters changed while on another view)
+            // Re-render gallery view if dirty
             if (view === 'gallery' && galleryViewDirty) {
                 renderGalleryView();
                 galleryViewDirty = false;
+            }
+
+            // Re-render list/parcels views if dirty when switching to map
+            if (view === 'map' && listViewDirty && tableOpen) {
+                renderListView();
+                renderParcelsView();
+                listViewDirty = false;
             }
         }
 
@@ -1688,19 +1758,19 @@
             }
 
             currentDetailBuilding = building;
-
-            // Store previous view if not already in detail
-            if (currentView !== 'detail') {
-                previousView = currentView;
-            }
-
-            // Update URL with view, building ID, and tab
-            setViewInURL('detail', buildingId, tab);
+            previousView = currentView !== 'detail' ? currentView : previousView;
             currentView = 'detail';
 
-            // Hide all views, show detail
+            // Update URL with building ID and tab
+            setViewInURL('detail', buildingId, tab);
+
+            // Deactivate toggle buttons
+            document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
+                btn.classList.remove('active');
+            });
+
+            // Hide map and gallery, show detail
             document.getElementById('map-view').classList.remove('active');
-            document.getElementById('list-view').classList.remove('active');
             document.getElementById('gallery-view').classList.remove('active');
             document.getElementById('detail-view').classList.add('active');
 
@@ -1713,11 +1783,6 @@
             if (styleSwitcher) {
                 styleSwitcher.classList.remove('visible');
             }
-
-            // Clear active state from view toggle buttons
-            document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
-                btn.classList.remove('active');
-            });
 
             // Populate detail view
             populateDetailView(building);
@@ -2002,27 +2067,26 @@
             miniMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
         }
         
+        // Back button handler
+        document.getElementById('btn-back').addEventListener('click', function() {
+            switchView(previousView || 'map');
+        });
+
         // View toggle click handlers
         document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
                 switchView(this.dataset.view);
             });
         });
-        
-        // Back button handler
-        document.getElementById('btn-back').addEventListener('click', function() {
-            switchView(previousView || 'gallery');
-        });
-        
+
         // Handle browser back/forward
         window.addEventListener('popstate', function() {
-            var view = getViewFromURL();
             var buildingId = getBuildingIdFromURL();
             var tab = getTabFromURL();
-            if (view === 'detail' && buildingId) {
+            if (buildingId) {
                 showDetailView(buildingId, tab);
-            } else {
-                switchView(view);
+            } else if (currentView === 'detail') {
+                switchView(previousView || 'map');
             }
         });
         
@@ -2032,7 +2096,7 @@
 
             var dataToRender = filteredData || portfolioData;
             var listBody = document.getElementById('list-body');
-            var tableWrapper = document.querySelector('#list-view .list-table-wrapper');
+            var tableWrapper = document.querySelector('#table-panel .list-table-wrapper');
             var html = '';
 
             // Apply list search filter if active
@@ -2060,7 +2124,7 @@
             if (dataToRender.features.length === 0) {
                 listBody.innerHTML = '';
                 // Check if empty state already exists
-                var existingEmpty = document.querySelector('#list-view .empty-state');
+                var existingEmpty = document.querySelector('#table-panel .empty-state');
                 if (!existingEmpty) {
                     var emptyHtml = '<div class="empty-state">' +
                         '<span class="material-symbols-outlined">search_off</span>' +
@@ -2074,7 +2138,7 @@
                 return;
             } else {
                 // Remove empty state if it exists
-                var existingEmpty = document.querySelector('#list-view .empty-state');
+                var existingEmpty = document.querySelector('#table-panel .empty-state');
                 if (existingEmpty) existingEmpty.remove();
             }
 
@@ -2120,34 +2184,30 @@
 
             // Update pagination info
             updateListPaginationInfo(listCurrentPage, totalPages, totalItems);
-
-            // Add click and keyboard handlers
-            document.querySelectorAll('#list-body tr').forEach(function(row) {
-                row.addEventListener('click', function() {
-                    var buildingId = this.dataset.id;
-                    showDetailView(buildingId);
-                });
-                row.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        var buildingId = this.dataset.id;
-                        showDetailView(buildingId);
-                    }
-                });
-            });
         }
 
         // Update list pagination UI
         function updateListPaginationInfo(currentPage, totalPages, totalItems) {
             var infoEl = document.getElementById('list-pagination-info');
+            var pageInfoEl = document.getElementById('list-page-info');
             var prevBtn = document.getElementById('list-prev-btn');
             var nextBtn = document.getElementById('list-next-btn');
 
             if (infoEl) {
                 if (totalItems === 0) {
-                    infoEl.textContent = 'Keine Einträge';
+                    infoEl.textContent = 'Keine Objekte';
                 } else {
-                    infoEl.textContent = 'Seite ' + currentPage + ' von ' + totalPages;
+                    var startIndex = (currentPage - 1) * listRowsPerPage + 1;
+                    var endIndex = Math.min(currentPage * listRowsPerPage, totalItems);
+                    infoEl.textContent = startIndex + '–' + endIndex + ' von ' + totalItems + ' Objekte';
+                }
+            }
+
+            if (pageInfoEl) {
+                if (totalItems === 0) {
+                    pageInfoEl.textContent = '';
+                } else {
+                    pageInfoEl.textContent = 'Seite ' + currentPage + ' von ' + totalPages;
                 }
             }
 
@@ -2194,8 +2254,8 @@
                 });
             }
         }
-        
-        // ===== RENDER GALLERY VIEW =====
+
+        // ===== GALLERY VIEW =====
         function renderGalleryView() {
             if (!portfolioData) return;
 
@@ -2221,7 +2281,6 @@
                 var statusClass = props.status === 'In Betrieb' ? 'status-active' :
                                   props.status === 'In Renovation' ? 'status-renovation' :
                                   props.status === 'In Planung' ? 'status-planning' : 'status-inactive';
-                // Use placeholder images
                 var imageUrl = placeholderImages[index % placeholderImages.length];
 
                 html += '<div class="gallery-card" data-id="' + props.buildingId + '" tabindex="0" role="article" aria-label="' + props.name + '">' +
@@ -2241,23 +2300,254 @@
             });
 
             galleryGrid.innerHTML = html;
+        }
 
-            // Add click and keyboard handlers
-            document.querySelectorAll('.gallery-card').forEach(function(card) {
-                card.addEventListener('click', function() {
-                    var buildingId = this.dataset.id;
-                    showDetailView(buildingId);
+        // ===== PARCELS TABLE =====
+        function renderParcelsView() {
+            if (!parcelData) return;
+
+            var dataToRender = parcelData;
+
+            // Apply search filter
+            if (parcelSearchTerm) {
+                dataToRender = {
+                    type: dataToRender.type,
+                    features: dataToRender.features.filter(function(feature) {
+                        var props = feature.properties;
+                        var searchableText = [
+                            props.parcelId,
+                            props.plotNumber,
+                            props.name,
+                            props.municipality,
+                            props.canton,
+                            props.landUseZone,
+                            props.ownershipType
+                        ].join(' ').toLowerCase();
+                        return searchableText.includes(parcelSearchTerm);
+                    })
+                };
+            }
+
+            var parcelsBody = document.getElementById('parcels-body');
+
+            // Handle empty state
+            if (dataToRender.features.length === 0) {
+                parcelsBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--grey-500);">Keine Grundstücke gefunden</td></tr>';
+                updateParcelsPaginationInfo(1, 1, 0);
+                return;
+            }
+
+            // Pagination
+            var totalItems = dataToRender.features.length;
+            var totalPages = Math.ceil(totalItems / parcelRowsPerPage);
+            if (parcelCurrentPage > totalPages) parcelCurrentPage = totalPages;
+            if (parcelCurrentPage < 1) parcelCurrentPage = 1;
+
+            var startIndex = (parcelCurrentPage - 1) * parcelRowsPerPage;
+            var endIndex = Math.min(startIndex + parcelRowsPerPage, totalItems);
+            var paginatedFeatures = dataToRender.features.slice(startIndex, endIndex);
+
+            var html = '';
+            paginatedFeatures.forEach(function(feature) {
+                var props = feature.properties;
+                var area = Number(props.area || 0).toLocaleString('de-CH');
+
+                html += '<tr data-parcel-id="' + props.parcelId + '" tabindex="0" role="row">' +
+                    '<td class="col-parcel-id">' + props.parcelId + '</td>' +
+                    '<td class="col-parcel-plot">' + props.plotNumber + '</td>' +
+                    '<td class="col-parcel-name">' + props.name + '</td>' +
+                    '<td class="col-parcel-municipality">' + props.municipality + '</td>' +
+                    '<td class="col-parcel-canton">' + props.canton + '</td>' +
+                    '<td class="col-parcel-area">' + area + ' m²</td>' +
+                    '<td class="col-parcel-zone">' + props.landUseZone + '</td>' +
+                    '<td class="col-parcel-ownership">' + props.ownershipType + '</td>' +
+                '</tr>';
+            });
+
+            parcelsBody.innerHTML = html;
+            updateParcelsPaginationInfo(parcelCurrentPage, totalPages, totalItems);
+        }
+
+        function updateParcelsPaginationInfo(currentPage, totalPages, totalItems) {
+            var infoEl = document.getElementById('parcels-pagination-info');
+            var pageInfoEl = document.getElementById('parcels-page-info');
+            var prevBtn = document.getElementById('parcels-prev-btn');
+            var nextBtn = document.getElementById('parcels-next-btn');
+
+            if (infoEl) {
+                if (totalItems === 0) {
+                    infoEl.textContent = 'Keine Grundstücke';
+                } else {
+                    var startIndex = (currentPage - 1) * parcelRowsPerPage + 1;
+                    var endIndex = Math.min(currentPage * parcelRowsPerPage, totalItems);
+                    infoEl.textContent = startIndex + '–' + endIndex + ' von ' + totalItems + ' Grundstücke';
+                }
+            }
+
+            if (pageInfoEl) {
+                pageInfoEl.textContent = totalItems === 0 ? '' : 'Seite ' + currentPage + ' von ' + totalPages;
+            }
+
+            if (prevBtn) prevBtn.disabled = currentPage <= 1;
+            if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+        }
+
+        function initParcelsTable() {
+            var rowsSelect = document.getElementById('parcels-rows-per-page');
+            var prevBtn = document.getElementById('parcels-prev-btn');
+            var nextBtn = document.getElementById('parcels-next-btn');
+
+            if (rowsSelect) {
+                rowsSelect.addEventListener('change', function() {
+                    parcelRowsPerPage = parseInt(this.value, 10);
+                    parcelCurrentPage = 1;
+                    renderParcelsView();
                 });
-                card.addEventListener('keydown', function(e) {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        var buildingId = this.dataset.id;
-                        showDetailView(buildingId);
+            }
+
+            if (prevBtn) {
+                prevBtn.addEventListener('click', function() {
+                    if (parcelCurrentPage > 1) {
+                        parcelCurrentPage--;
+                        renderParcelsView();
                     }
+                });
+            }
+
+            if (nextBtn) {
+                nextBtn.addEventListener('click', function() {
+                    if (!parcelData) return;
+                    var totalPages = Math.ceil(parcelData.features.length / parcelRowsPerPage);
+                    if (parcelCurrentPage < totalPages) {
+                        parcelCurrentPage++;
+                        renderParcelsView();
+                    }
+                });
+            }
+        }
+
+        // ===== TABLE TAB SWITCHING =====
+        function switchTableTab(tabName) {
+            activeTableTab = tabName;
+
+            // Update tab buttons
+            document.querySelectorAll('.table-tab').forEach(function(tab) {
+                tab.classList.toggle('active', tab.dataset.tableTab === tabName);
+                tab.setAttribute('aria-selected', tab.dataset.tableTab === tabName ? 'true' : 'false');
+            });
+
+            // Show/hide tab content
+            document.getElementById('buildings-table-content').classList.toggle('active', tabName === 'buildings');
+            document.getElementById('parcels-table-content').classList.toggle('active', tabName === 'parcels');
+
+            // Update search placeholder
+            var searchInput = document.getElementById('list-search-input');
+            if (searchInput) {
+                searchInput.placeholder = tabName === 'buildings' ? 'Gebäude durchsuchen...' : 'Grundstücke durchsuchen...';
+                searchInput.value = '';
+            }
+
+            // Clear search terms
+            listSearchTerm = '';
+            parcelSearchTerm = '';
+
+            // Render the active table
+            if (tabName === 'parcels') {
+                renderParcelsView();
+            } else {
+                renderListView();
+            }
+        }
+
+        function initTableTabs() {
+            document.querySelectorAll('.table-tab').forEach(function(tab) {
+                tab.addEventListener('click', function() {
+                    switchTableTab(this.dataset.tableTab);
                 });
             });
         }
-        
+
+        // ===== INTERNAL LAYER TOGGLES =====
+        function initInternalLayerToggles() {
+            var buildingsToggle = document.getElementById('layer-toggle-buildings');
+            var parcelsToggle = document.getElementById('layer-toggle-parcels');
+
+            if (buildingsToggle) {
+                buildingsToggle.addEventListener('change', function() {
+                    var vis = this.checked ? 'visible' : 'none';
+                    ['portfolio-points', 'portfolio-selected', 'portfolio-selected-pulse'].forEach(function(id) {
+                        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
+                    });
+                });
+            }
+
+            if (parcelsToggle) {
+                parcelsToggle.addEventListener('change', function() {
+                    var vis = this.checked ? 'visible' : 'none';
+                    ['parcels-fill', 'parcels-outline', 'parcels-highlight'].forEach(function(id) {
+                        if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
+                    });
+                });
+            }
+        }
+
+        // ===== TABLE PANEL TOGGLE & RESIZE =====
+        function initTablePanel() {
+            var toggleBtn = document.getElementById('tbl-toggle');
+            var panel = document.getElementById('table-panel');
+            var handle = document.getElementById('tbl-resize-handle');
+
+            // Toggle table panel
+            toggleBtn.addEventListener('click', function() {
+                tableOpen = !tableOpen;
+                panel.classList.toggle('collapsed', !tableOpen);
+                toggleBtn.classList.toggle('collapsed', !tableOpen);
+                handle.style.display = tableOpen ? '' : 'none';
+                // Re-render tables if they were deferred while panel was closed
+                if (tableOpen && listViewDirty) {
+                    renderListView();
+                    renderParcelsView();
+                    listViewDirty = false;
+                }
+                setTimeout(function() {
+                    if (window.map) map.resize();
+                }, 280);
+            });
+
+            // Resize handle drag
+            if (!handle) return;
+            var MIN_H = 120;
+            var MAX_FRAC = 0.75;
+            var startY, startH;
+
+            handle.addEventListener('pointerdown', function(e) {
+                e.preventDefault();
+                handle.setPointerCapture(e.pointerId);
+                handle.classList.add('dragging');
+                panel.style.transition = 'none';
+                startY = e.clientY;
+                startH = panel.getBoundingClientRect().height;
+
+                function onMove(ev) {
+                    var delta = startY - ev.clientY;
+                    var maxH = window.innerHeight * MAX_FRAC;
+                    panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + delta)) + 'px';
+                    if (window.map) map.resize();
+                }
+
+                function onUp() {
+                    handle.classList.remove('dragging');
+                    panel.style.transition = '';
+                    handle.removeEventListener('pointermove', onMove);
+                    handle.removeEventListener('pointerup', onUp);
+                    if (window.map) map.resize();
+                }
+
+                handle.addEventListener('pointermove', onMove);
+                handle.addEventListener('pointerup', onUp);
+            });
+        }
+
         // ===== INITIALIZE MAP =====
 
         // Map style definitions (defined early for use in map initialization)
@@ -2333,7 +2623,7 @@
 
         // 2. Update URL on map move/zoom
         map.on('moveend', function() {
-            if (currentView !== 'map') return; // Don't update if not in map view
+            if (currentView === 'detail') return; // Don't update if in detail view
             
             var center = map.getCenter();
             var zoom = map.getZoom();
@@ -2347,10 +2637,17 @@
             window.history.replaceState({}, '', url);
         });
 
+        var pendingCoordUpdate = null;
+        var coordsEl = document.getElementById('coordinates');
         map.on('mousemove', function(e) {
-            var lng = e.lngLat.lng.toFixed(5);
-            var lat = e.lngLat.lat.toFixed(5);
-            document.getElementById('coordinates').textContent = 'WGS 84 | Koordinaten: ' + lng + ', ' + lat;
+            if (!pendingCoordUpdate) {
+                var lng = e.lngLat.lng;
+                var lat = e.lngLat.lat;
+                pendingCoordUpdate = requestAnimationFrame(function() {
+                    coordsEl.textContent = 'WGS 84 | Koordinaten: ' + lng.toFixed(5) + ', ' + lat.toFixed(5);
+                    pendingCoordUpdate = null;
+                });
+            }
         });
         
         // ===== SWISSTOPO LAYER MANAGEMENT =====
@@ -2548,11 +2845,11 @@
         };
 
         function renderActiveLayersList() {
-            var container = document.getElementById('active-layers-list');
+            var container = document.getElementById('external-layers-list');
             if (!container) return;
 
             if (activeSwisstopoLayers.length === 0) {
-                container.innerHTML = '<div class="active-layers-empty">Keine Hintergrundkarten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>';
+                container.innerHTML = '<div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>';
                 return;
             }
 
@@ -2929,11 +3226,12 @@
                 }
             });
 
-            // Animate the pulse layer
+            // Animate the pulse layer (throttled to every 3rd frame for performance)
             var pulseRadius = 24;
             var pulseOpacity = 0.4;
             var pulseDirection = 1;
             var pulseAnimationId = null;
+            var pulseFrameCount = 0;
 
             function animatePulse() {
                 // Only animate if a building is selected
@@ -2942,18 +3240,21 @@
                     return;
                 }
 
-                pulseRadius += 0.3 * pulseDirection;
-                pulseOpacity -= 0.01 * pulseDirection;
+                pulseFrameCount++;
+                if (pulseFrameCount % 3 === 0) {
+                    pulseRadius += 0.9 * pulseDirection;
+                    pulseOpacity -= 0.03 * pulseDirection;
 
-                if (pulseRadius >= 32) {
-                    pulseDirection = -1;
-                } else if (pulseRadius <= 24) {
-                    pulseDirection = 1;
-                }
+                    if (pulseRadius >= 32) {
+                        pulseDirection = -1;
+                    } else if (pulseRadius <= 24) {
+                        pulseDirection = 1;
+                    }
 
-                if (map.getLayer('portfolio-selected-pulse')) {
-                    map.setPaintProperty('portfolio-selected-pulse', 'circle-radius', pulseRadius);
-                    map.setPaintProperty('portfolio-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+                    if (map.getLayer('portfolio-selected-pulse')) {
+                        map.setPaintProperty('portfolio-selected-pulse', 'circle-radius', pulseRadius);
+                        map.setPaintProperty('portfolio-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+                    }
                 }
 
                 pulseAnimationId = requestAnimationFrame(animatePulse);
@@ -3438,7 +3739,8 @@
         window.handleSearchClick = function(type, id, lat, lon, zoom, title) {
             searchResults.classList.remove('active');
             
-            if (currentView !== 'map') {
+            // Close detail view if open
+            if (currentView === 'detail') {
                 switchView('map');
             }
             
@@ -3605,6 +3907,89 @@
 
         // Make showLayerInfo globally accessible for onclick handlers
         window.showLayerInfo = showLayerInfo;
+
+        // Internal layer metadata
+        var internalLayerMeta = {
+            buildings: {
+                title: 'Gebäude (Bundesamt für Bauten und Logistik BBL)',
+                description: 'Interner Datensatz des BBL-Immobilienportfolios. Enthält sämtliche Gebäude mit Standort, Nutzungstyp, Eigentumsverhältnissen, Baujahr und weiteren Attributen.',
+                source: 'BBL Immobilienportfolio',
+                geometryType: 'Point',
+                format: 'GeoJSON',
+                dataKey: 'portfolioData'
+            },
+            parcels: {
+                title: 'Grundstücke (Bundesamt für Bauten und Logistik BBL)',
+                description: 'Interner Datensatz der BBL-Parzellen. Enthält Grundstücksinformationen mit Flächenangaben, Nutzungszonen und Eigentumsverhältnissen.',
+                source: 'BBL Parzellen',
+                geometryType: 'Polygon',
+                format: 'GeoJSON',
+                dataKey: 'parcelData'
+            }
+        };
+
+        function buildLegendHTML(layerKey) {
+            if (layerKey === 'buildings') {
+                return '<div class="legend-footer"><span>Legende</span></div>' +
+                    '<div class="internal-legend">' +
+                    '<div class="internal-legend-item">' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['In Betrieb'] + ';"></span>' +
+                        '<span>In Betrieb</span>' +
+                    '</div>' +
+                    '<div class="internal-legend-item">' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['In Renovation'] + ';"></span>' +
+                        '<span>In Renovation</span>' +
+                    '</div>' +
+                    '<div class="internal-legend-item">' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['In Planung'] + ';"></span>' +
+                        '<span>In Planung</span>' +
+                    '</div>' +
+                    '<div class="internal-legend-item">' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['Ausser Betrieb'] + ';"></span>' +
+                        '<span>Ausser Betrieb</span>' +
+                    '</div>' +
+                    '</div>';
+            }
+            // Parcels: single color
+            return '<div class="legend-footer"><span>Legende</span></div>' +
+                '<div class="internal-legend">' +
+                '<div class="internal-legend-item">' +
+                    '<span class="internal-legend-rect" style="background: rgba(25, 118, 210, 0.15); border: 2px solid #1976d2;"></span>' +
+                    '<span>Parzelle</span>' +
+                '</div>' +
+                '</div>';
+        }
+
+        function showInternalLayerInfo(layerKey) {
+            if (!layerInfoModal || !layerInfoContent) return;
+
+            var meta = internalLayerMeta[layerKey];
+            if (!meta) return;
+
+            var today = new Date();
+            var datenstand = today.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            var html = '<div class="legend-container">' +
+                '<div class="bod-title">' + escapeHtml(meta.title) + '</div>' +
+                '<div class="legend-abstract">' + escapeHtml(meta.description) + '</div>' +
+                buildLegendHTML(layerKey) +
+                '<div class="legend-footer"><span>Informationen</span></div>' +
+                '<table>' +
+                '<tr><td>Quelle</td><td>' + escapeHtml(meta.source) + '</td></tr>' +
+                '<tr><td>Format</td><td>' + escapeHtml(meta.format) + ' (' + escapeHtml(meta.geometryType) + ')</td></tr>' +
+                '<tr><td>Metadaten</td><td><a href="#">Link zu Metadaten</a></td></tr>' +
+                '<tr><td>Detailbeschreibung</td><td><a href="#">Link zur Detailbeschreibung</a></td></tr>' +
+                '<tr><td>Datenbezug</td><td><a href="#">Link für Datenbezug</a></td></tr>' +
+                '<tr><td>Thematisches Geoportal</td><td><a href="#">Link zum Fachportal</a></td></tr>' +
+                '<tr><td>Datenstand</td><td>' + datenstand + '</td></tr>' +
+                '</table>' +
+                '</div>';
+
+            layerInfoContent.innerHTML = html;
+            layerInfoModal.classList.add('show');
+        }
+
+        window.showInternalLayerInfo = showInternalLayerInfo;
 
         // ===== GEOKATALOG =====
         var geokatalogLoaded = false;
@@ -4954,38 +5339,43 @@
                 coordinates.push(coordinates[0]);
             }
 
-            // Remove existing layers
-            if (map.getLayer(measureState.lineLayerId)) {
-                map.removeLayer(measureState.lineLayerId);
-            }
-            if (map.getSource(measureState.lineSourceId)) {
-                map.removeSource(measureState.lineSourceId);
-            }
+            var geojsonData = {
+                type: 'Feature',
+                geometry: {
+                    type: 'LineString',
+                    coordinates: coordinates.length >= 2 ? coordinates : [[0, 0], [0, 0]]
+                }
+            };
 
-            if (coordinates.length < 2) return;
+            var source = map.getSource(measureState.lineSourceId);
+            if (source) {
+                // Update data in-place — much cheaper than remove/add
+                if (coordinates.length < 2) {
+                    // Hide by setting empty geometry
+                    map.setLayoutProperty(measureState.lineLayerId, 'visibility', 'none');
+                } else {
+                    map.setLayoutProperty(measureState.lineLayerId, 'visibility', 'visible');
+                    source.setData(geojsonData);
+                }
+            } else {
+                // First time: create source + layer
+                if (coordinates.length < 2) return;
 
-            // Add source
-            map.addSource(measureState.lineSourceId, {
-                type: 'geojson',
-                data: {
-                    type: 'Feature',
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: coordinates
+                map.addSource(measureState.lineSourceId, {
+                    type: 'geojson',
+                    data: geojsonData
+                });
+
+                map.addLayer({
+                    id: measureState.lineLayerId,
+                    type: 'line',
+                    source: measureState.lineSourceId,
+                    paint: {
+                        'line-color': '#000000',
+                        'line-width': 2
                     }
-                }
-            });
-
-            // Add line layer
-            map.addLayer({
-                id: measureState.lineLayerId,
-                type: 'line',
-                source: measureState.lineSourceId,
-                paint: {
-                    'line-color': '#000000',
-                    'line-width': 2
-                }
-            });
+                });
+            }
         }
 
         // Update distance labels on segments

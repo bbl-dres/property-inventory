@@ -4,13 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBL Immobilienportfolio - GIS POC</title>
-    
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+
+    <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.swisstopo.admin.ch">
+    <link rel="preconnect" href="https://prod-swisstopoch-hcms-sdweb.imgix.net" crossorigin>
+
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
-    
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
-    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
     <link rel="stylesheet" href="css/main.css">
+
+    <script defer src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
 </head>
 <body>
     <!-- Loading overlay (shown during initial data fetch) -->
@@ -18,9 +23,6 @@
         <div class="loading-spinner"></div>
         <div class="loading-text">Daten werden geladen...</div>
     </div>
-
-    <!-- Toast notification container -->
-    <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
 
     <!-- Layer info modal -->
     <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
@@ -40,8 +42,13 @@
     <header id="header" role="banner">
         <div class="header-main">
             <div id="logo-area">
-                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge">
-                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft">
+                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge" width="30" height="30">
+                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft" width="300" height="18">
+                <div class="logo-divider"></div>
+                <div id="logo-title">
+                    <strong>Bundesamt für Bauten und Logistik BBL</strong>
+                    <span class="logo-subtitle"><br>Liegenschaften Inventar</span>
+                </div>
             </div>
 
             <div id="search-area" role="search">
@@ -64,10 +71,6 @@
                         <span class="material-symbols-outlined" aria-hidden="true">map</span>
                         <span class="view-label">Karte</span>
                     </button>
-                    <button class="view-toggle-btn" data-view="list" title="Tabelle" aria-label="Tabellenansicht" role="tab" aria-selected="false">
-                        <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
-                        <span class="view-label">Tabelle</span>
-                    </button>
                     <button class="view-toggle-btn" data-view="gallery" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
                         <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
                         <span class="view-label">Galerie</span>
@@ -76,11 +79,21 @@
             </div>
 
             <div id="header-right">
-                <span id="object-count" aria-live="polite">10 Objekte</span>
-                <button class="header-btn" id="smart-drawer-btn" title="Filter & KI Assistent" aria-label="Filter und KI Assistent öffnen" aria-expanded="false" aria-controls="smart-drawer">
+                <button class="header-btn" id="smart-drawer-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="smart-drawer">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-                    Filter & KI Assistent
+                    Filter
                 </button>
+                <div id="lang-selector">
+                    <button id="lang-btn" class="lang-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                        <span id="lang-current">DE</span>
+                    </button>
+                    <div id="lang-dropdown" class="lang-dropdown" role="menu">
+                        <button class="lang-option active" data-lang="de" role="menuitem">DE</button>
+                        <button class="lang-option" data-lang="fr" role="menuitem">FR</button>
+                        <button class="lang-option" data-lang="it" role="menuitem">IT</button>
+                        <button class="lang-option" data-lang="en" role="menuitem">EN</button>
+                    </div>
+                </div>
                 <div id="login-area">
                     <button id="login-btn" title="Anmelden" aria-label="Anmelden">
                         <span class="material-symbols-outlined" aria-hidden="true">person</span>
@@ -116,14 +129,14 @@
             </div>
 
             <div class="detail-tabs">
-                <div class="detail-tabs-inner">
-                    <div class="detail-tab active" data-tab="overview">Übersicht</div>
-                    <div class="detail-tab" data-tab="measurements">Bemessungen</div>
-                    <div class="detail-tab" data-tab="costs">Kosten</div>
-                    <div class="detail-tab" data-tab="contracts">Verträge</div>
-                    <div class="detail-tab" data-tab="assets">Ausstattung</div>
-                    <div class="detail-tab" data-tab="documents">Dokumente</div>
-                    <div class="detail-tab" data-tab="contacts">Kontakte</div>
+                <div class="detail-tabs-inner" role="tablist" aria-label="Detailansicht Tabs">
+                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0">Übersicht</button>
+                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1">Bemessungen</button>
+                    <button class="detail-tab" data-tab="costs" role="tab" aria-selected="false" tabindex="-1">Kosten</button>
+                    <button class="detail-tab" data-tab="contracts" role="tab" aria-selected="false" tabindex="-1">Verträge</button>
+                    <button class="detail-tab" data-tab="assets" role="tab" aria-selected="false" tabindex="-1">Ausstattung</button>
+                    <button class="detail-tab" data-tab="documents" role="tab" aria-selected="false" tabindex="-1">Dokumente</button>
+                    <button class="detail-tab" data-tab="contacts" role="tab" aria-selected="false" tabindex="-1">Kontakte</button>
                 </div>
             </div>
         </div>
@@ -132,14 +145,73 @@
     <main id="main">
         <div class="main-content">
             <div id="map-view" class="active">
-            <div id="map"></div>
-            
-            <nav id="accordion-panel">
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span>Teilen</span>
+            <div id="map">
+            <!-- Style Switcher (inside map for correct positioning) -->
+            <div class="style-switcher" id="style-switcher">
+                <div class="style-switcher-panel" id="style-panel">
+                    <button class="style-option active" data-style="light-v11" title="Light">
+                        <img id="thumb-light-v11" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Light">
+                        <span>Light</span>
+                    </button>
+                    <button class="style-option" data-style="streets-v12" title="Standard">
+                        <img id="thumb-streets-v12" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Standard">
+                        <span>Standard</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
+                        <img id="thumb-satellite-v9" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Luftbild">
+                        <span>Luftbild</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
+                        <img id="thumb-satellite-streets-v12" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Luftbild + Strassen">
+                        <span>Hybrid</span>
+                    </button>
+                </div>
+                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
+                    <img id="current-style-thumb" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Aktueller Stil">
+                    <span>Hintergrund</span>
+                </button>
+            </div>
+
+            <!-- Toast notification container (inside #map so it doesn't overlap table) -->
+            <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+            <!-- Measure Distance Display (inside #map for correct positioning) -->
+            <div id="measure-distance-display" class="measure-distance-display">
+                <div class="measure-distance-header">
+                    <span class="material-symbols-outlined">straighten</span>
+                    <span>Distanz messen</span>
+                    <button id="measure-distance-close" class="measure-distance-close" title="Schliessen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="measure-distance-info">
+                    Klicken Sie auf die Karte, um einen Pfad zu zeichnen.
+                </div>
+                <div class="measure-distance-result" id="measure-distance-result">
+                    <div class="measure-result-row">
+                        <span class="measure-result-label">Gesamtdistanz:</span>
+                        <span class="measure-result-value" id="measure-total-distance">0 m</span>
                     </div>
+                    <div class="measure-result-row" id="measure-area-row" style="display: none;">
+                        <span class="measure-result-label">Fläche:</span>
+                        <span class="measure-result-value" id="measure-total-area">0 m²</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table toggle button (inside #map for correct positioning) -->
+            <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden">
+                <span class="material-symbols-outlined">expand_more</span>
+                <span class="tbl-toggle-label">Tabelle</span>
+            </button>
+            </div>
+            
+            <aside id="accordion-panel" aria-label="Werkzeuge">
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span>Teilen</span>
+                    </button>
                     <div class="accordion-content">
                         <div class="share-panel">
                             <div class="share-icons" role="group" aria-label="Teilen über soziale Medien">
@@ -180,10 +252,10 @@
                 </div>
 
                 <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
                         <span>Drucken</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
                         <div class="print-panel">
                             <div class="print-form-row">
@@ -231,94 +303,12 @@
                 </div>
 
                 <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
                         <span>Zeichnen & Messen auf der Karte</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
                         Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
-                    </div>
-                </div>
-
-                <div class="accordion-item">
-                    <div class="accordion-header">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span>Export</span>
-                    </div>
-                    <div class="accordion-content">
-                        <div class="export-panel">
-                            <div class="export-section">
-                                <label class="export-section-label">Datenauswahl</label>
-                                <select id="export-data-selection" class="export-select">
-                                    <option value="filtered">Aktuelle Ansicht</option>
-                                    <option value="all">Alle Objekte</option>
-                                    <option value="selected">Nur ausgewähltes Objekt</option>
-                                </select>
-                                <span class="export-count" id="export-count"></span>
-                            </div>
-
-                            <div class="export-section">
-                                <label class="export-section-label">Format wählen</label>
-                                <div class="export-format-grid">
-                                    <button class="export-format-card active" data-format="geojson">
-                                        <span class="export-format-icon">{ }</span>
-                                        <span class="export-format-name">GeoJSON</span>
-                                        <span class="export-format-desc">Web-Anwendungen</span>
-                                    </button>
-                                    <button class="export-format-card" data-format="csv">
-                                        <span class="export-format-icon"><span class="material-symbols-outlined">table_view</span></span>
-                                        <span class="export-format-name">CSV</span>
-                                        <span class="export-format-desc">Excel / Tabellen</span>
-                                    </button>
-                                    <button class="export-format-card" data-format="kml">
-                                        <span class="export-format-icon"><span class="material-symbols-outlined">location_on</span></span>
-                                        <span class="export-format-name">KML</span>
-                                        <span class="export-format-desc">Google Earth</span>
-                                    </button>
-                                    <button class="export-format-card" data-format="shapefile">
-                                        <span class="export-format-icon"><span class="material-symbols-outlined">hexagon</span></span>
-                                        <span class="export-format-name">Shapefile</span>
-                                        <span class="export-format-desc">GIS-Software</span>
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="export-section">
-                                <label class="export-section-label">Optionen</label>
-                                <div class="export-options">
-                                    <label class="export-checkbox-label">
-                                        <input type="checkbox" id="export-coords" checked>
-                                        <span>Koordinaten einschliessen</span>
-                                    </label>
-                                    <label class="export-checkbox-label">
-                                        <input type="checkbox" id="export-all-fields" checked>
-                                        <span>Alle Attribute exportieren</span>
-                                    </label>
-                                    <label class="export-checkbox-label">
-                                        <input type="checkbox" id="export-visible-only">
-                                        <span>Nur sichtbare Spalten</span>
-                                    </label>
-                                    <label class="export-checkbox-label">
-                                        <input type="checkbox" id="export-parcels">
-                                        <span>Parzellen einschliessen</span>
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div class="export-section">
-                                <label class="export-section-label">Koordinatensystem</label>
-                                <select id="export-crs" class="export-select">
-                                    <option value="EPSG:4326">WGS 84 (EPSG:4326)</option>
-                                    <option value="EPSG:2056">CH1903+ / LV95 (EPSG:2056)</option>
-                                    <option value="EPSG:21781">CH1903 / LV03 (EPSG:21781)</option>
-                                </select>
-                            </div>
-
-                            <button id="export-btn" class="export-btn">
-                                <span class="material-symbols-outlined">download</span>
-                                <span>Exportieren</span>
-                            </button>
-                        </div>
                     </div>
                 </div>
 
@@ -336,17 +326,39 @@
                 </div>
 
                 <div class="accordion-item" id="active-layers-accordion">
-                    <div class="accordion-header active">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                    <button class="accordion-header active" aria-expanded="true">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
                         <span>Dargestellte Karten</span>
-                    </div>
+                    </button>
                     <div class="accordion-content show">
-                        <div id="active-layers-list" class="active-layers-list">
-                            <div class="active-layers-empty">Keine Hintergrundkarten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                        <div class="active-layers-list">
+                            <div class="layer-group">
+                                <div class="layer-group-label">Interne Daten</div>
+                                <div class="active-layer-item" data-internal-layer="buildings">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" title="Gebäude ein-/ausblenden">
+                                    <span class="active-layer-title">Gebäude</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('buildings')" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                                <div class="active-layer-item" data-internal-layer="parcels">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden">
+                                    <span class="active-layer-title">Grundstücke</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('parcels')" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="layer-group">
+                                <div class="layer-group-label">Externe Karten</div>
+                                <div id="external-layers-list">
+                                    <div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </nav>
+            </aside>
             
             <div id="menu-toggle">
                 <span class="material-symbols-outlined">expand_less</span>
@@ -365,32 +377,6 @@
                 <div id="info-preview-image" role="img" aria-label="Vorschaubild des Objekts"></div>
                 <div id="info-body"></div>
             </aside>
-
-            <!-- Style Switcher (visible only in map view) -->
-            <div class="style-switcher" id="style-switcher">
-                <div class="style-switcher-panel" id="style-panel">
-                    <button class="style-option active" data-style="light-v11" title="Light">
-                        <img id="thumb-light-v11" src="" alt="Light">
-                        <span>Light</span>
-                    </button>
-                    <button class="style-option" data-style="streets-v12" title="Standard">
-                        <img id="thumb-streets-v12" src="" alt="Standard">
-                        <span>Standard</span>
-                    </button>
-                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
-                        <img id="thumb-satellite-v9" src="" alt="Luftbild">
-                        <span>Luftbild</span>
-                    </button>
-                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
-                        <img id="thumb-satellite-streets-v12" src="" alt="Luftbild + Strassen">
-                        <span>Hybrid</span>
-                    </button>
-                </div>
-                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
-                    <img id="current-style-thumb" src="" alt="Aktueller Stil">
-                    <span>Hintergrund</span>
-                </button>
-            </div>
 
             <!-- Map Context Menu (Right-Click) -->
             <div id="map-context-menu" class="map-context-menu">
@@ -411,142 +397,173 @@
                 </div>
             </div>
 
-            <!-- Measure Distance Display -->
-            <div id="measure-distance-display" class="measure-distance-display">
-                <div class="measure-distance-header">
-                    <span class="material-symbols-outlined">straighten</span>
-                    <span>Distanz messen</span>
-                    <button id="measure-distance-close" class="measure-distance-close" title="Schliessen">
-                        <span class="material-symbols-outlined">close</span>
-                    </button>
-                </div>
-                <div class="measure-distance-info">
-                    Klicken Sie auf die Karte, um einen Pfad zu zeichnen.
-                </div>
-                <div class="measure-distance-result" id="measure-distance-result">
-                    <div class="measure-result-row">
-                        <span class="measure-result-label">Gesamtdistanz:</span>
-                        <span class="measure-result-value" id="measure-total-distance">0 m</span>
-                    </div>
-                    <div class="measure-result-row" id="measure-area-row" style="display: none;">
-                        <span class="measure-result-label">Fläche:</span>
-                        <span class="measure-result-value" id="measure-total-area">0 m²</span>
-                    </div>
-                </div>
-            </div>
-        </div>
+            <!-- Resize handle between map and table -->
+            <div id="tbl-resize-handle" class="tbl-resize-handle" title="Grösse ändern"></div>
 
-        <div id="list-view">
-            <!-- Table Container -->
-            <div class="list-table-container">
-                <!-- Toolbar -->
-                <div class="toolbar">
-                    <div class="toolbar-search list-toolbar-search">
-                        <span class="material-symbols-outlined">search</span>
-                        <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen...">
-                    </div>
-                    <div class="toolbar-actions">
-                        <!-- Export Dropdown -->
-                        <div class="dropdown-container">
-                            <button class="dropdown-btn" id="export-dropdown-btn">
-                                <span class="material-symbols-outlined">download</span>
-                                Export
-                                <span class="material-symbols-outlined">expand_more</span>
-                            </button>
-                            <div class="dropdown-menu" id="export-dropdown-menu">
-                                <div class="dropdown-menu-header">Exportieren als</div>
-                                <div class="dropdown-menu-item" onclick="handleExport('csv')">
-                                    <span class="material-symbols-outlined">table_view</span>
-                                    CSV (.csv)
+            <!-- Table panel (below map) -->
+            <div id="table-panel" class="table-panel">
+                <div class="list-table-container">
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="table-tabs" role="tablist">
+                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true">Gebäude</button>
+                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false">Grundstücke</button>
+                        </div>
+                        <div class="toolbar-search list-toolbar-search">
+                            <span class="material-symbols-outlined">search</span>
+                            <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
+                        </div>
+                        <div class="toolbar-actions">
+                            <!-- Export Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="export-dropdown-btn">
+                                    <span class="material-symbols-outlined">download</span>
+                                    Export
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu" id="export-dropdown-menu">
+                                    <div class="dropdown-menu-header">Exportieren als</div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('csv')">
+                                        <span class="material-symbols-outlined">table_view</span>
+                                        CSV (.csv)
+                                    </div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('excel')">
+                                        <span class="material-symbols-outlined">grid_on</span>
+                                        Excel (.xlsx)
+                                    </div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('geojson')">
+                                        <span class="material-symbols-outlined">map</span>
+                                        GeoJSON (.geojson)
+                                    </div>
                                 </div>
-                                <div class="dropdown-menu-item" onclick="handleExport('excel')">
-                                    <span class="material-symbols-outlined">grid_on</span>
-                                    Excel (.xlsx)
-                                </div>
-                                <div class="dropdown-menu-item" onclick="handleExport('geojson')">
-                                    <span class="material-symbols-outlined">map</span>
-                                    GeoJSON (.geojson)
+                            </div>
+                            <!-- Columns Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="columns-dropdown-btn">
+                                    <span class="material-symbols-outlined">view_column</span>
+                                    Spalten
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu" id="columns-dropdown-menu">
+                                    <div class="dropdown-menu-header">Spalten anzeigen</div>
+                                    <div class="dropdown-menu-toggle-row">
+                                        <button class="dropdown-toggle-btn" onclick="toggleAllColumns(true)">Alle</button>
+                                        <button class="dropdown-toggle-btn" onclick="toggleAllColumns(false)">Keine</button>
+                                    </div>
+                                    <div class="dropdown-menu-divider"></div>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-id"> ID
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-name"> Bezeichnung
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-land"> Land
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-ort"> Ort
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-adresse"> Adresse
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-portfolio"> Teilportfolio
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-flaeche"> Fläche NGF
+                                    </label>
+                                    <label class="dropdown-menu-item">
+                                        <input type="checkbox" checked data-column="col-status"> Status
+                                    </label>
                                 </div>
                             </div>
                         </div>
-                        <!-- Columns Dropdown -->
-                        <div class="dropdown-container">
-                            <button class="dropdown-btn" id="columns-dropdown-btn">
-                                <span class="material-symbols-outlined">view_column</span>
-                                Spalten
-                                <span class="material-symbols-outlined">expand_more</span>
-                            </button>
-                            <div class="dropdown-menu" id="columns-dropdown-menu">
-                                <div class="dropdown-menu-header">Spalten anzeigen</div>
-                                <div class="dropdown-menu-toggle-row">
-                                    <button class="dropdown-toggle-btn" onclick="toggleAllColumns(true)">Alle</button>
-                                    <button class="dropdown-toggle-btn" onclick="toggleAllColumns(false)">Keine</button>
-                                </div>
-                                <div class="dropdown-menu-divider"></div>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-id"> ID
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-name"> Bezeichnung
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-land"> Land
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-ort"> Ort
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-adresse"> Adresse
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-portfolio"> Teilportfolio
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-flaeche"> Fläche NGF
-                                </label>
-                                <label class="dropdown-menu-item">
-                                    <input type="checkbox" checked data-column="col-status"> Status
-                                </label>
+                    </div>
+
+                    <!-- Buildings table -->
+                    <div class="table-tab-content active" id="buildings-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="list-table" id="list-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="list-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="list-pagination">
+                            <div class="pagination-info" id="list-pagination-info" aria-live="polite">
+                                0 von 0 Objekte
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="list-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="list-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span>Zeilen pro Seite:</span>
+                                <select id="list-rows-per-page">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="list-table-wrapper">
-                    <table class="list-table" id="list-table">
-                        <thead>
-                            <tr>
-                                <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
-                            </tr>
-                        </thead>
-                        <tbody id="list-body"></tbody>
-                    </table>
-                </div>
-                <div class="pagination-footer" id="list-pagination">
-                    <div class="pagination-rows">
-                        <span>Zeilen pro Seite:</span>
-                        <select id="list-rows-per-page">
-                            <option value="25">25</option>
-                            <option value="50" selected>50</option>
-                            <option value="100">100</option>
-                        </select>
-                    </div>
-                    <div class="pagination-info" id="list-pagination-info">
-                        Seite 1 von 1
-                    </div>
-                    <div class="pagination-nav">
-                        <button class="pagination-btn" id="list-prev-btn" disabled>
-                            <span class="material-symbols-outlined">chevron_left</span>
-                        </button>
-                        <button class="pagination-btn" id="list-next-btn" disabled>
-                            <span class="material-symbols-outlined">chevron_right</span>
-                        </button>
+
+                    <!-- Parcels table -->
+                    <div class="table-tab-content" id="parcels-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="list-table" id="parcels-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-parcel-id">Parzellen-ID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-plot">Grundstück-Nr. <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-municipality">Gemeinde <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-canton">Kanton <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-area">Fläche <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-zone">Nutzungszone <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-ownership">Eigentum <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="parcels-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="parcels-pagination">
+                            <div class="pagination-info" id="parcels-pagination-info" aria-live="polite">
+                                0 von 0 Grundstücke
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="parcels-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="parcels-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="parcels-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span>Zeilen pro Seite:</span>
+                                <select id="parcels-rows-per-page">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -555,7 +572,7 @@
         <div id="gallery-view">
             <div class="gallery-grid" id="gallery-grid"></div>
         </div>
-        
+
         <div id="detail-view">
             <div class="detail-content">
                 <!-- Tab Content: Übersicht -->
@@ -747,7 +764,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern" aria-label="Bemessungen filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action measurements-action" disabled>
@@ -841,7 +858,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="costs-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="costs-filter" placeholder="Alle Spalten filtern" aria-label="Kosten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action costs-action" disabled>
@@ -933,7 +950,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern" aria-label="Verträge filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action contracts-action" disabled>
@@ -1029,7 +1046,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="assets-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="assets-filter" placeholder="Alle Spalten filtern" aria-label="Ausstattung filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action assets-action" disabled>
@@ -1121,7 +1138,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="documents-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="documents-filter" placeholder="Alle Spalten filtern" aria-label="Dokumente filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action documents-action" disabled>
@@ -1207,7 +1224,7 @@
                             <div class="toolbar">
                                 <div class="toolbar-search">
                                     <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern">
+                                    <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern" aria-label="Kontakte filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
                                     <button class="btn-action contacts-action" disabled>
@@ -1288,20 +1305,14 @@
 
         </div><!-- /.main-content -->
 
-        <!-- Smart Drawer (merged Filter + AI Assistant) -->
-        <aside id="smart-drawer" role="complementary" aria-label="Smart Drawer">
+        <!-- Filter Drawer -->
+        <aside id="smart-drawer" role="complementary" aria-label="Filter">
             <div class="smart-drawer-resize-handle" title="Grösse ändern"></div>
             <div class="smart-drawer-header">
-                <div class="smart-drawer-tabs" role="tablist">
-                    <button class="smart-drawer-tab active" data-drawer-tab="filter" role="tab" aria-selected="true" aria-controls="drawer-filter-content">
-                        <span class="material-symbols-outlined">filter_list</span>
-                        Filter
-                    </button>
-                    <button class="smart-drawer-tab" data-drawer-tab="assistant" role="tab" aria-selected="false" aria-controls="drawer-assistant-content">
-                        <span class="material-symbols-outlined">smart_toy</span>
-                        KI Assistent
-                    </button>
-                </div>
+                <span class="smart-drawer-title">
+                    <span class="material-symbols-outlined">filter_list</span>
+                    Filter
+                </span>
                 <div class="smart-drawer-actions">
                     <button class="smart-drawer-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
                         <span class="material-symbols-outlined">replay</span>
@@ -1313,7 +1324,7 @@
             </div>
 
             <!-- Filter Content -->
-            <div class="smart-drawer-content" id="drawer-filter-content" data-drawer-content="filter" role="tabpanel">
+            <div class="smart-drawer-content" id="drawer-filter-content">
                 <div class="filter-section open" data-filter="status">
                     <div class="filter-section-header">
                         <span class="filter-section-title">Status</span>
@@ -1375,29 +1386,20 @@
                 </div>
             </div>
 
-            <!-- AI Assistant Content -->
-            <div class="smart-drawer-content" id="drawer-assistant-content" data-drawer-content="assistant" role="tabpanel" style="display: none;">
-                <iframe
-                    src="https://www.stack-ai.com/chat/694734d49f9811840eaae560-471rLuzJCA1Nm02SXb2Bq5"
-                    class="ai-assistant-iframe"
-                    title="KI Assistent"
-                    frameborder="0"
-                    allow="clipboard-write"
-                ></iframe>
-            </div>
         </aside>
     </main>
 
     <footer id="footer">
         <div id="coordinates">WGS 84 | Koordinaten: --</div>
         <div id="footer-links">
-            <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Quellcode</a>
-            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank">Rechtliches</a>
-            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank">Hilfe</a>
-            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank">Kontakt</a>
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener">Quellencode</a>
+            <a href="#" id="footer-api-link">API</a>
+            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
+            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener">Hilfe</a>
+            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Kontakt</a>
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
+    <script defer src="js/app.js"></script>
 </body>
 </html>

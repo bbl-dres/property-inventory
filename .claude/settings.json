@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/DavidRasner/Documents/GitHub/green-inventory/**)",
+      "Bash(grep -n \"view-toggle\\\\|gallery\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-simple/css/*.css)"
+    ]
+  }
+}
