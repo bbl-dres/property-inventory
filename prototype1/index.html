@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BBL Immobilienportfolio - GIS POC</title>
+    
+    <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
+    <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+    <!-- Loading overlay (shown during initial data fetch) -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Daten werden geladen...</div>
+    </div>
+
+    <!-- Toast notification container -->
+    <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+    <!-- Layer info modal -->
+    <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
+        <div class="layer-info-modal-content">
+            <button class="layer-info-modal-close" aria-label="Schliessen">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div id="layer-info-content" class="layer-info-body">
+                <div class="layer-info-loading">Lade Informationen...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main" class="skip-link">Zum Hauptinhalt springen</a>
+
+    <header id="header" role="banner">
+        <div class="header-main">
+            <div id="logo-area">
+                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge">
+                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft">
+            </div>
+
+            <div id="search-area" role="search">
+                <div id="search-wrapper">
+                    <div id="search-container">
+                        <button id="search-icon-btn" aria-label="Suche starten" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                        </button>
+                        <input type="search" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten" aria-label="Suchbegriff eingeben" autocomplete="off">
+                        <button id="search-clear-btn" title="Suche löschen" aria-label="Suche löschen" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                        </button>
+                        <div id="search-spinner" class="spinner" role="status" aria-label="Suche läuft"></div>
+                    </div>
+                    <div id="search-results" role="listbox" aria-label="Suchergebnisse"></div>
+                </div>
+
+                <div class="view-toggle" role="tablist" aria-label="Ansicht wählen">
+                    <button class="view-toggle-btn active" data-view="map" title="Karte" aria-label="Kartenansicht" role="tab" aria-selected="true">
+                        <span class="material-symbols-outlined" aria-hidden="true">map</span>
+                        <span class="view-label">Karte</span>
+                    </button>
+                    <button class="view-toggle-btn" data-view="list" title="Tabelle" aria-label="Tabellenansicht" role="tab" aria-selected="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
+                        <span class="view-label">Tabelle</span>
+                    </button>
+                    <button class="view-toggle-btn" data-view="gallery" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+                        <span class="view-label">Galerie</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="header-right">
+                <span id="object-count" aria-live="polite">10 Objekte</span>
+                <button class="header-btn" id="smart-drawer-btn" title="Filter & KI Assistent" aria-label="Filter und KI Assistent öffnen" aria-expanded="false" aria-controls="smart-drawer">
+                    <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+                    Filter & KI Assistent
+                </button>
+                <div id="login-area">
+                    <button id="login-btn" title="Anmelden" aria-label="Anmelden">
+                        <span class="material-symbols-outlined" aria-hidden="true">person</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-detail">
+            <div class="detail-header">
+                <div class="detail-header-inner">
+                    <div class="breadcrumb" id="detail-breadcrumb">
+                        <span class="material-symbols-outlined">public</span>
+                        <a href="#" onclick="navigateToAllObjects(); return false;">Alle Objekte</a>
+                        <span>></span>
+                        <a href="#" id="breadcrumb-country-link" onclick="navigateWithLandFilter(); return false;"><span id="breadcrumb-country">Land</span></a>
+                        <span>></span>
+                        <a href="#" id="breadcrumb-region-link" onclick="navigateWithRegionFilter(); return false;"><span id="breadcrumb-region">Region</span></a>
+                        <span>></span>
+                        <span class="current" id="breadcrumb-name">Objekt</span>
+                    </div>
+                    <div class="detail-header-actions">
+                        <button class="btn-edit">
+                            <span class="material-symbols-outlined">edit</span>
+                            Bearbeiten
+                        </button>
+                        <button class="btn-back" id="btn-back">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            Zurück
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="detail-tabs">
+                <div class="detail-tabs-inner">
+                    <div class="detail-tab active" data-tab="overview">Übersicht</div>
+                    <div class="detail-tab" data-tab="measurements">Bemessungen</div>
+                    <div class="detail-tab" data-tab="costs">Kosten</div>
+                    <div class="detail-tab" data-tab="contracts">Verträge</div>
+                    <div class="detail-tab" data-tab="assets">Ausstattung</div>
+                    <div class="detail-tab" data-tab="documents">Dokumente</div>
+                    <div class="detail-tab" data-tab="contacts">Kontakte</div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main id="main">
+        <div class="main-content">
+            <div id="map-view" class="active">
+            <div id="map"></div>
+            
+            <nav id="accordion-panel">
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Teilen</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="share-panel">
+                            <div class="share-icons" role="group" aria-label="Teilen über soziale Medien">
+                                <!-- Email -->
+                                <button class="share-icon-btn" onclick="shareViaEmail()" title="Per E-Mail teilen" aria-label="Per E-Mail teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/>
+                                    </svg>
+                                </button>
+                                <!-- Facebook -->
+                                <button class="share-icon-btn" onclick="shareViaFacebook()" title="Auf Facebook teilen" aria-label="Auf Facebook teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H8v-3h2V9.5C10 7.57 11.57 6 13.5 6H16v3h-2c-.55 0-1 .45-1 1v2h3v3h-3v6.95c5.05-.5 9-4.76 9-9.95z"/>
+                                    </svg>
+                                </button>
+                                <!-- LinkedIn -->
+                                <button class="share-icon-btn" onclick="shareViaLinkedIn()" title="Auf LinkedIn teilen" aria-label="Auf LinkedIn teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
+                                    </svg>
+                                </button>
+                                <!-- X (Twitter) -->
+                                <button class="share-icon-btn" onclick="shareViaX()" title="Auf X teilen" aria-label="Auf X teilen">
+                                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+                                    </svg>
+                                </button>
+                            </div>
+                            <div class="share-link-section">
+                                <span class="share-link-label">Link zum Teilen:</span>
+                                <div class="share-link-row">
+                                    <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
+                                    <button class="share-copy-btn" onclick="copyShareLink()" aria-label="Link in die Zwischenablage kopieren">Link kopieren</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Drucken</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="print-panel">
+                            <div class="print-form-row">
+                                <label for="print-orientation" class="print-label">Orientierung</label>
+                                <select id="print-orientation" class="print-select">
+                                    <option value="landscape-a4">A4 landscape</option>
+                                    <option value="portrait-a4">A4 portrait</option>
+                                    <option value="landscape-a3">A3 landscape</option>
+                                    <option value="portrait-a3">A3 portrait</option>
+                                </select>
+                            </div>
+                            <div class="print-form-row">
+                                <label for="print-scale" class="print-label">Massstab</label>
+                                <select id="print-scale" class="print-select">
+                                    <option value="auto">Automatisch</option>
+                                    <option value="500">1:500</option>
+                                    <option value="1000">1:1'000</option>
+                                    <option value="2500">1:2'500</option>
+                                    <option value="5000">1:5'000</option>
+                                    <option value="10000">1:10'000</option>
+                                    <option value="25000">1:25'000</option>
+                                    <option value="50000">1:50'000</option>
+                                    <option value="100000">1:100'000</option>
+                                    <option value="200000">1:200'000</option>
+                                    <option value="500000">1:500'000</option>
+                                    <option value="1000000">1:1'000'000</option>
+                                    <option value="2500000">1:2'500'000</option>
+                                </select>
+                            </div>
+                            <div class="print-checkboxes">
+                                <label class="print-checkbox-label">
+                                    <input type="checkbox" id="print-legend" checked>
+                                    <span>Legende</span>
+                                </label>
+                                <label class="print-checkbox-label">
+                                    <input type="checkbox" id="print-grid">
+                                    <span>Koordinatennetz</span>
+                                </label>
+                            </div>
+                            <button id="print-pdf-btn" class="print-btn" onclick="generatePrintPDF()">
+                                Erstelle PDF für Druck
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Zeichnen & Messen auf der Karte</span>
+                    </div>
+                    <div class="accordion-content">
+                        Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
+                    </div>
+                </div>
+
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Export</span>
+                    </div>
+                    <div class="accordion-content">
+                        <div class="export-panel">
+                            <div class="export-section">
+                                <label class="export-section-label">Datenauswahl</label>
+                                <select id="export-data-selection" class="export-select">
+                                    <option value="filtered">Aktuelle Ansicht</option>
+                                    <option value="all">Alle Objekte</option>
+                                    <option value="selected">Nur ausgewähltes Objekt</option>
+                                </select>
+                                <span class="export-count" id="export-count"></span>
+                            </div>
+
+                            <div class="export-section">
+                                <label class="export-section-label">Format wählen</label>
+                                <div class="export-format-grid">
+                                    <button class="export-format-card active" data-format="geojson">
+                                        <span class="export-format-icon">{ }</span>
+                                        <span class="export-format-name">GeoJSON</span>
+                                        <span class="export-format-desc">Web-Anwendungen</span>
+                                    </button>
+                                    <button class="export-format-card" data-format="csv">
+                                        <span class="export-format-icon"><span class="material-symbols-outlined">table_view</span></span>
+                                        <span class="export-format-name">CSV</span>
+                                        <span class="export-format-desc">Excel / Tabellen</span>
+                                    </button>
+                                    <button class="export-format-card" data-format="kml">
+                                        <span class="export-format-icon"><span class="material-symbols-outlined">location_on</span></span>
+                                        <span class="export-format-name">KML</span>
+                                        <span class="export-format-desc">Google Earth</span>
+                                    </button>
+                                    <button class="export-format-card" data-format="shapefile">
+                                        <span class="export-format-icon"><span class="material-symbols-outlined">hexagon</span></span>
+                                        <span class="export-format-name">Shapefile</span>
+                                        <span class="export-format-desc">GIS-Software</span>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="export-section">
+                                <label class="export-section-label">Optionen</label>
+                                <div class="export-options">
+                                    <label class="export-checkbox-label">
+                                        <input type="checkbox" id="export-coords" checked>
+                                        <span>Koordinaten einschliessen</span>
+                                    </label>
+                                    <label class="export-checkbox-label">
+                                        <input type="checkbox" id="export-all-fields" checked>
+                                        <span>Alle Attribute exportieren</span>
+                                    </label>
+                                    <label class="export-checkbox-label">
+                                        <input type="checkbox" id="export-visible-only">
+                                        <span>Nur sichtbare Spalten</span>
+                                    </label>
+                                    <label class="export-checkbox-label">
+                                        <input type="checkbox" id="export-parcels">
+                                        <span>Parzellen einschliessen</span>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="export-section">
+                                <label class="export-section-label">Koordinatensystem</label>
+                                <select id="export-crs" class="export-select">
+                                    <option value="EPSG:4326">WGS 84 (EPSG:4326)</option>
+                                    <option value="EPSG:2056">CH1903+ / LV95 (EPSG:2056)</option>
+                                    <option value="EPSG:21781">CH1903 / LV03 (EPSG:21781)</option>
+                                </select>
+                            </div>
+
+                            <button id="export-btn" class="export-btn">
+                                <span class="material-symbols-outlined">download</span>
+                                <span>Exportieren</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="geokatalog-accordion">
+                    <div class="accordion-header geokatalog-header">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Geokatalog</span>
+                        <span class="geokatalog-theme-switch">Thema wechseln</span>
+                    </div>
+                    <div class="accordion-content geokatalog-content">
+                        <div id="geokatalog-tree" class="geokatalog-tree">
+                            <div class="geokatalog-loading">Lade Katalog...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="active-layers-accordion">
+                    <div class="accordion-header active">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span>Dargestellte Karten</span>
+                    </div>
+                    <div class="accordion-content show">
+                        <div id="active-layers-list" class="active-layers-list">
+                            <div class="active-layers-empty">Keine Hintergrundkarten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            
+            <div id="menu-toggle">
+                <span class="material-symbols-outlined">expand_less</span>
+                <span id="menu-toggle-text">Menü schliessen</span>
+            </div>
+            
+            <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                <div id="info-header">
+                    <span id="info-header-title">Objekt-Information</span>
+                    <div id="info-header-actions">
+                        <button id="info-zoom-to" title="Hinzoomen" aria-label="Zum Objekt zoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                        <button id="info-share" title="Teilen" aria-label="Objekt teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                        <button id="info-close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                    </div>
+                </div>
+                <div id="info-preview-image" role="img" aria-label="Vorschaubild des Objekts"></div>
+                <div id="info-body"></div>
+            </aside>
+
+            <!-- Style Switcher (visible only in map view) -->
+            <div class="style-switcher" id="style-switcher">
+                <div class="style-switcher-panel" id="style-panel">
+                    <button class="style-option active" data-style="light-v11" title="Light">
+                        <img id="thumb-light-v11" src="" alt="Light">
+                        <span>Light</span>
+                    </button>
+                    <button class="style-option" data-style="streets-v12" title="Standard">
+                        <img id="thumb-streets-v12" src="" alt="Standard">
+                        <span>Standard</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
+                        <img id="thumb-satellite-v9" src="" alt="Luftbild">
+                        <span>Luftbild</span>
+                    </button>
+                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
+                        <img id="thumb-satellite-streets-v12" src="" alt="Luftbild + Strassen">
+                        <span>Hybrid</span>
+                    </button>
+                </div>
+                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
+                    <img id="current-style-thumb" src="" alt="Aktueller Stil">
+                    <span>Hintergrund</span>
+                </button>
+            </div>
+
+            <!-- Map Context Menu (Right-Click) -->
+            <div id="map-context-menu" class="map-context-menu">
+                <div class="context-menu-item context-menu-coords" id="context-menu-coords" title="Klicken zum Kopieren">
+                    <span id="context-menu-coords-text">47.37623, 8.53048</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-share">
+                    <span>Teilen</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-measure">
+                    <span id="context-menu-measure-text">Distanz messen</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-print">
+                    <span>Drucken</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-report">
+                    <span>Problem melden</span>
+                </div>
+            </div>
+
+            <!-- Measure Distance Display -->
+            <div id="measure-distance-display" class="measure-distance-display">
+                <div class="measure-distance-header">
+                    <span class="material-symbols-outlined">straighten</span>
+                    <span>Distanz messen</span>
+                    <button id="measure-distance-close" class="measure-distance-close" title="Schliessen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="measure-distance-info">
+                    Klicken Sie auf die Karte, um einen Pfad zu zeichnen.
+                </div>
+                <div class="measure-distance-result" id="measure-distance-result">
+                    <div class="measure-result-row">
+                        <span class="measure-result-label">Gesamtdistanz:</span>
+                        <span class="measure-result-value" id="measure-total-distance">0 m</span>
+                    </div>
+                    <div class="measure-result-row" id="measure-area-row" style="display: none;">
+                        <span class="measure-result-label">Fläche:</span>
+                        <span class="measure-result-value" id="measure-total-area">0 m²</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="list-view">
+            <!-- Table Container -->
+            <div class="list-table-container">
+                <!-- Toolbar -->
+                <div class="toolbar">
+                    <div class="toolbar-search list-toolbar-search">
+                        <span class="material-symbols-outlined">search</span>
+                        <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen...">
+                    </div>
+                    <div class="toolbar-actions">
+                        <!-- Export Dropdown -->
+                        <div class="dropdown-container">
+                            <button class="dropdown-btn" id="export-dropdown-btn">
+                                <span class="material-symbols-outlined">download</span>
+                                Export
+                                <span class="material-symbols-outlined">expand_more</span>
+                            </button>
+                            <div class="dropdown-menu" id="export-dropdown-menu">
+                                <div class="dropdown-menu-header">Exportieren als</div>
+                                <div class="dropdown-menu-item" onclick="handleExport('csv')">
+                                    <span class="material-symbols-outlined">table_view</span>
+                                    CSV (.csv)
+                                </div>
+                                <div class="dropdown-menu-item" onclick="handleExport('excel')">
+                                    <span class="material-symbols-outlined">grid_on</span>
+                                    Excel (.xlsx)
+                                </div>
+                                <div class="dropdown-menu-item" onclick="handleExport('geojson')">
+                                    <span class="material-symbols-outlined">map</span>
+                                    GeoJSON (.geojson)
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Columns Dropdown -->
+                        <div class="dropdown-container">
+                            <button class="dropdown-btn" id="columns-dropdown-btn">
+                                <span class="material-symbols-outlined">view_column</span>
+                                Spalten
+                                <span class="material-symbols-outlined">expand_more</span>
+                            </button>
+                            <div class="dropdown-menu" id="columns-dropdown-menu">
+                                <div class="dropdown-menu-header">Spalten anzeigen</div>
+                                <div class="dropdown-menu-toggle-row">
+                                    <button class="dropdown-toggle-btn" onclick="toggleAllColumns(true)">Alle</button>
+                                    <button class="dropdown-toggle-btn" onclick="toggleAllColumns(false)">Keine</button>
+                                </div>
+                                <div class="dropdown-menu-divider"></div>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-id"> ID
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-name"> Bezeichnung
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-land"> Land
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-ort"> Ort
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-adresse"> Adresse
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-portfolio"> Teilportfolio
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-flaeche"> Fläche NGF
+                                </label>
+                                <label class="dropdown-menu-item">
+                                    <input type="checkbox" checked data-column="col-status"> Status
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-table-wrapper">
+                    <table class="list-table" id="list-table">
+                        <thead>
+                            <tr>
+                                <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
+                                <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
+                            </tr>
+                        </thead>
+                        <tbody id="list-body"></tbody>
+                    </table>
+                </div>
+                <div class="pagination-footer" id="list-pagination">
+                    <div class="pagination-rows">
+                        <span>Zeilen pro Seite:</span>
+                        <select id="list-rows-per-page">
+                            <option value="25">25</option>
+                            <option value="50" selected>50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
+                    <div class="pagination-info" id="list-pagination-info">
+                        Seite 1 von 1
+                    </div>
+                    <div class="pagination-nav">
+                        <button class="pagination-btn" id="list-prev-btn" disabled>
+                            <span class="material-symbols-outlined">chevron_left</span>
+                        </button>
+                        <button class="pagination-btn" id="list-next-btn" disabled>
+                            <span class="material-symbols-outlined">chevron_right</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery-view">
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+        
+        <div id="detail-view">
+            <div class="detail-content">
+                <!-- Tab Content: Übersicht -->
+                <div class="tab-content active" data-content="overview">
+                <div class="detail-grid">
+                    <div class="detail-left">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Bilder</div>
+                            <div class="carousel" id="detail-carousel">
+                                <div class="carousel-image" id="carousel-image"></div>
+                                <button class="carousel-btn prev" onclick="carouselPrev()">
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <button class="carousel-btn next" onclick="carouselNext()">
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                                <div class="carousel-dots" id="carousel-dots"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <div class="detail-section-title">Zusätzliche Informationen</div>
+                            <div class="detail-section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="data-label">Baujahr</span>
+                                        <span class="data-value" id="detail-baujahr">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Sanierung</span>
+                                        <span class="data-value" id="detail-sanierung">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Ladestationen für Elektrofahrzeuge</span>
+                                        <span class="data-value" id="detail-ladestationen">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Denkmalschutz</span>
+                                        <span class="data-value" id="detail-denkmalschutz">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Parkplätze</span>
+                                        <span class="data-value" id="detail-parkplaetze">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Anzahl Geschosse</span>
+                                        <span class="data-value" id="detail-geschosse">—</span>
+                                    </div>
+                                    <div class="data-item full-width">
+                                        <span class="data-label">Baubewilligung</span>
+                                        <span class="data-value" id="detail-baubewilligung">—</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <div class="detail-section-title">Energiestatistik</div>
+                            <div class="detail-section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="data-label">Energieklasse</span>
+                                        <span class="data-value" id="detail-energieklasse">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Wärmeerzeuger Heizung</span>
+                                        <span class="data-value" id="detail-waermeerzeuger">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Energie-/Wärmequelle Heizung</span>
+                                        <span class="data-value" id="detail-waermequelle">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Wärmeerzeuger Warmwasser</span>
+                                        <span class="data-value" id="detail-warmwasser">—</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="detail-right">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Objekt Stammdaten</div>
+                            <div class="detail-section-content">
+                                <div class="data-grid">
+                                    <div class="data-item">
+                                        <span class="data-label">Bezeichnung Objekt</span>
+                                        <span class="data-value" id="detail-name">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Bezeichnung Grundstück</span>
+                                        <span class="data-value" id="detail-grundstueck-name">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">ID Objekt</span>
+                                        <span class="data-value" id="detail-id">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">ID Grundstück</span>
+                                        <span class="data-value" id="detail-grundstueck-id">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">EGID Objekt (nur Schweiz)</span>
+                                        <span class="data-value" id="detail-egid">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">EGRID Grundstück (nur Schweiz)</span>
+                                        <span class="data-value" id="detail-egrid">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Gültig von</span>
+                                        <span class="data-value" id="detail-gueltig-von">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Gültig bis</span>
+                                        <span class="data-value" id="detail-gueltig-bis">Keine Angabe</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Teilportfolio</span>
+                                        <span class="data-value" id="detail-teilportfolio">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Objektart Bund 1</span>
+                                        <span class="data-value" id="detail-objektart1">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Teilportfolio Gruppe</span>
+                                        <span class="data-value" id="detail-teilportfolio-gruppe">—</span>
+                                    </div>
+                                    <div class="data-item">
+                                        <span class="data-label">Objektart Bund 2</span>
+                                        <span class="data-value" id="detail-objektart2">—</span>
+                                    </div>
+                                    <div class="data-item full-width">
+                                        <span class="data-label">Art Eigentum</span>
+                                        <span class="data-value" id="detail-eigentum">—</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="detail-section">
+                            <div class="detail-section-title">Adresse</div>
+                            <div class="detail-section-content">
+                                <div class="mini-map-container">
+                                    <div id="mini-map" class="mini-map"></div>
+                                </div>
+                                <table class="address-table">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Land</th>
+                                            <th>Region</th>
+                                            <th>Stadt</th>
+                                            <th>Postleitzahl</th>
+                                            <th>Strasse</th>
+                                            <th>Hausnummer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <span class="address-marker">
+                                                    <span class="material-symbols-outlined">location_on</span>
+                                                </span>
+                                            </td>
+                                            <td id="detail-country">—</td>
+                                            <td id="detail-region">—</td>
+                                            <td id="detail-city">—</td>
+                                            <td id="detail-plz">—</td>
+                                            <td id="detail-street">—</td>
+                                            <td id="detail-housenumber">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+
+                <!-- Tab Content: Bemessungen -->
+                <div class="tab-content" data-content="measurements">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Bemessungen</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action measurements-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action measurements-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action measurements-action" disabled>
+                                        <span class="material-symbols-outlined">open_in_new</span>
+                                        Anzeigen
+                                    </button>
+                                    <button class="btn-back" id="btn-add-measurement">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="measurements-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-measurements">
+                                            </th>
+                                            <th class="col-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-type sortable" data-sort="areaType">
+                                                Bemessungsart
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-area sortable" data-sort="value">
+                                                Wert
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-source">Herkunft</th>
+                                            <th class="col-accuracy sortable" data-sort="accuracy">
+                                                Genauigkeit
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-standard sortable" data-sort="standard">
+                                                Standard
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-from sortable" data-sort="validFrom">
+                                                Gültig von
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-until">Gültig bis</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="measurements-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="measurements-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="measurements">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="measurements" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="measurements" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Kosten -->
+                <div class="tab-content" data-content="costs">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Kosten</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="costs-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action costs-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action costs-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action costs-action" disabled>
+                                        <span class="material-symbols-outlined">description</span>
+                                        Details
+                                    </button>
+                                    <button class="btn-back" id="btn-add-cost">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="costs-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-costs">
+                                            </th>
+                                            <th class="col-cost-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-cost-group sortable" data-sort="kostengruppe">
+                                                Kostengruppe
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-cost-type sortable" data-sort="kostenart">
+                                                Kostenart
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-cost-amount sortable" data-sort="betrag">
+                                                Betrag
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-cost-unit sortable" data-sort="einheit">
+                                                Einheit
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-cost-date sortable" data-sort="stichtag">
+                                                Stichtag
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="costs-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="costs-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="costs">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="costs" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="costs" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Verträge -->
+                <div class="tab-content" data-content="contracts">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Verträge</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action contracts-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action contracts-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action contracts-action" disabled>
+                                        <span class="material-symbols-outlined">description</span>
+                                        Details
+                                    </button>
+                                    <button class="btn-back" id="btn-add-contract">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="contracts-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-contracts">
+                                            </th>
+                                            <th class="col-contract-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-type sortable" data-sort="vertragsart">
+                                                Vertragsart
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-partner sortable" data-sort="vertragspartner">
+                                                Vertragspartner
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-start sortable" data-sort="vertragsbeginn">
+                                                Beginn
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-end sortable" data-sort="vertragsende">
+                                                Ende
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-amount sortable" data-sort="betrag">
+                                                Betrag/Jahr
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contract-status sortable" data-sort="status">
+                                                Status
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contracts-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="contracts-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="contracts">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="contracts" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="contracts" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Ausstattung -->
+                <div class="tab-content" data-content="assets">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Ausstattung</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="assets-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action assets-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action assets-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action assets-action" disabled>
+                                        <span class="material-symbols-outlined">info</span>
+                                        Details
+                                    </button>
+                                    <button class="btn-back" id="btn-add-asset">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="assets-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-assets">
+                                            </th>
+                                            <th class="col-asset-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-asset-name sortable" data-sort="bezeichnung">
+                                                Bezeichnung
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-asset-category sortable" data-sort="kategorie">
+                                                Kategorie
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-asset-manufacturer sortable" data-sort="hersteller">
+                                                Hersteller
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-asset-year sortable" data-sort="baujahr">
+                                                Baujahr
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-asset-location sortable" data-sort="standort">
+                                                Standort
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="assets-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="assets-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="assets">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="assets" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="assets" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Dokumente -->
+                <div class="tab-content" data-content="documents">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Dokumente</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="documents-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action documents-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action documents-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action documents-action" disabled>
+                                        <span class="material-symbols-outlined">download</span>
+                                        Herunterladen
+                                    </button>
+                                    <button class="btn-back" id="btn-add-document">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="documents-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-documents">
+                                            </th>
+                                            <th class="col-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-title sortable" data-sort="titel">
+                                                Titel
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-type sortable" data-sort="dokumentTyp">
+                                                Typ
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-format">Format</th>
+                                            <th class="col-date sortable" data-sort="datum">
+                                                Datum
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-size">Grösse</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="documents-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="documents-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="documents">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="documents" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="documents" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tab Content: Kontakte -->
+                <div class="tab-content" data-content="contacts">
+                    <div class="detail-table-container">
+                        <div class="detail-section">
+                            <div class="detail-section-title">Kontakte</div>
+
+                            <div class="toolbar">
+                                <div class="toolbar-search">
+                                    <span class="material-symbols-outlined">search</span>
+                                    <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern">
+                                </div>
+                                <div class="toolbar-actions detail-table-actions">
+                                    <button class="btn-action contacts-action" disabled>
+                                        <span class="material-symbols-outlined">edit</span>
+                                        Bearbeiten
+                                    </button>
+                                    <button class="btn-action contacts-action" disabled>
+                                        <span class="material-symbols-outlined">delete</span>
+                                        Löschen
+                                    </button>
+                                    <button class="btn-action contacts-action" disabled>
+                                        <span class="material-symbols-outlined">mail</span>
+                                        Kontaktieren
+                                    </button>
+                                    <button class="btn-back" id="btn-add-contact">
+                                        <span class="material-symbols-outlined">add</span>
+                                        Hinzufügen
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="detail-table-wrapper">
+                                <table class="detail-table" id="contacts-table">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-checkbox">
+                                                <input type="checkbox" id="select-all-contacts">
+                                            </th>
+                                            <th class="col-contact-id sortable" data-sort="id">
+                                                ID
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contact-name sortable" data-sort="name">
+                                                Name
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contact-role sortable" data-sort="rolle">
+                                                Rolle
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contact-org sortable" data-sort="organisation">
+                                                Organisation
+                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
+                                            </th>
+                                            <th class="col-contact-phone">Telefon</th>
+                                            <th class="col-contact-email">E-Mail</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="contacts-tbody">
+                                        <!-- Populated by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="pagination-footer" id="contacts-pagination">
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="contacts">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
+                                </div>
+                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-nav">
+                                    <button class="pagination-btn pagination-prev" data-table="contacts" disabled>
+                                        <span class="material-symbols-outlined">chevron_left</span>
+                                    </button>
+                                    <button class="pagination-btn pagination-next" data-table="contacts" disabled>
+                                        <span class="material-symbols-outlined">chevron_right</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div><!-- /.main-content -->
+
+        <!-- Smart Drawer (merged Filter + AI Assistant) -->
+        <aside id="smart-drawer" role="complementary" aria-label="Smart Drawer">
+            <div class="smart-drawer-resize-handle" title="Grösse ändern"></div>
+            <div class="smart-drawer-header">
+                <div class="smart-drawer-tabs" role="tablist">
+                    <button class="smart-drawer-tab active" data-drawer-tab="filter" role="tab" aria-selected="true" aria-controls="drawer-filter-content">
+                        <span class="material-symbols-outlined">filter_list</span>
+                        Filter
+                    </button>
+                    <button class="smart-drawer-tab" data-drawer-tab="assistant" role="tab" aria-selected="false" aria-controls="drawer-assistant-content">
+                        <span class="material-symbols-outlined">smart_toy</span>
+                        KI Assistent
+                    </button>
+                </div>
+                <div class="smart-drawer-actions">
+                    <button class="smart-drawer-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
+                        <span class="material-symbols-outlined">replay</span>
+                    </button>
+                    <button class="smart-drawer-btn" id="drawer-close-btn" title="Schliessen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Content -->
+            <div class="smart-drawer-content" id="drawer-filter-content" data-drawer-content="filter" role="tabpanel">
+                <div class="filter-section open" data-filter="status">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Status</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-status-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-section open" data-filter="eigentum">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Art Eigentum</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-eigentum-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-section open" data-filter="teilportfolio">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Teilportfolio</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-teilportfolio-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-section open" data-filter="gebaeudeart">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Gebäudeart</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-gebaeudeart-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-section open" data-filter="land">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Land</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-land-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+
+                <div class="filter-section open" data-filter="region">
+                    <div class="filter-section-header">
+                        <span class="filter-section-title">Region</span>
+                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
+                    </div>
+                    <div class="filter-section-content" id="filter-region-options">
+                        <!-- Options populated dynamically -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- AI Assistant Content -->
+            <div class="smart-drawer-content" id="drawer-assistant-content" data-drawer-content="assistant" role="tabpanel" style="display: none;">
+                <iframe
+                    src="https://www.stack-ai.com/chat/694734d49f9811840eaae560-471rLuzJCA1Nm02SXb2Bq5"
+                    class="ai-assistant-iframe"
+                    title="KI Assistent"
+                    frameborder="0"
+                    allow="clipboard-write"
+                ></iframe>
+            </div>
+        </aside>
+    </main>
+
+    <footer id="footer">
+        <div id="coordinates">WGS 84 | Koordinaten: --</div>
+        <div id="footer-links">
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Quellcode</a>
+            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank">Rechtliches</a>
+            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank">Hilfe</a>
+            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank">Kontakt</a>
+        </div>
+    </footer>
+
+    <script src="js/app.js"></script>
+</body>
+</html>

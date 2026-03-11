@@ -1,0 +1,388 @@
+{
+  "contacts": [
+    {
+      "contactId": "78d4ef76-b4fa-4629-a843-ce40fbec9bc9",
+      "name": "Anna Müller",
+      "role": "Objektverantwortliche",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "organisation": "BBL Immobilienmanagement",
+      "phone": "+41 58 462 12 34",
+      "email": "anna.mueller@bbl.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-001-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "d0165fef-964b-4944-a455-a9e3482b6a13",
+      "name": "Peter Gerber",
+      "role": "Hauswart",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 12 50",
+      "email": "peter.gerber@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-001-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "479e83c5-6f2b-4a57-8a54-923ee24cc30b",
+      "name": "Sandra Keller",
+      "role": "Portfolioverantwortliche",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "organisation": "BBL Portfoliomanagement",
+      "phone": "+41 58 462 10 01",
+      "email": "sandra.keller@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-001-K3",
+      "extensionData": {}
+    },
+    {
+      "contactId": "b3bca808-87db-463c-90b3-fb92e4c79218",
+      "name": "Peter Schmidt",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-002"
+      ],
+      "organisation": "EDA Auslandsvertretungen",
+      "phone": "+49 30 390 4000",
+      "email": "peter.schmidt@eda.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-002-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "4f7d7dd4-b508-4344-9203-74b2db2a5314",
+      "name": "Klaus Weber",
+      "role": "Facility Manager",
+      "buildingIds": [
+        "BBL-002"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+49 30 390 4010",
+      "email": "klaus.weber@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-002-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "6f01d424-ef11-435c-a969-df75517127e0",
+      "name": "Marco Bernasconi",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "organisation": "BBL Logistik",
+      "phone": "+41 58 462 45 00",
+      "email": "marco.bernasconi@bbl.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-003-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "4a915168-20d4-4b1a-b040-87c7d8e20b33",
+      "name": "Thomas Huber",
+      "role": "Technischer Dienst",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 45 20",
+      "email": "thomas.huber@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-003-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "109debeb-02d2-49b5-b116-5258b5414926",
+      "name": "Sandra Keller",
+      "role": "Portfolioverantwortliche",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "organisation": "BBL Portfoliomanagement",
+      "phone": "+41 58 462 10 01",
+      "email": "sandra.keller@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-003-K3",
+      "extensionData": {}
+    },
+    {
+      "contactId": "1aa9c772-d1b1-458b-9164-183a8659ae51",
+      "name": "Sarah Johnson",
+      "role": "Objektverantwortliche",
+      "buildingIds": [
+        "BBL-004"
+      ],
+      "organisation": "EDA Auslandsvertretungen",
+      "phone": "+1 212 599 5700",
+      "email": "sarah.johnson@eda.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-004-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "f10d52a9-45a0-4a0a-855e-58582b10b0d5",
+      "name": "Michael Brown",
+      "role": "Sicherheitsbeauftragter",
+      "buildingIds": [
+        "BBL-004"
+      ],
+      "organisation": "EDA Sicherheit",
+      "phone": "+1 212 599 5710",
+      "email": "michael.brown@eda.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-004-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "f57958aa-1518-4819-ad6d-065a540531ce",
+      "name": "Claire Dubois",
+      "role": "Objektverantwortliche",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "organisation": "BBL Immobilienmanagement",
+      "phone": "+41 58 462 80 00",
+      "email": "claire.dubois@bbl.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-005-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "2f8779b0-326e-4e5e-9793-c40bf33a23ca",
+      "name": "François Martin",
+      "role": "Facility Manager",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 80 15",
+      "email": "francois.martin@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-005-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "10d1a4ab-7d78-495d-8b83-fb6ff8dca6f7",
+      "name": "René Favre",
+      "role": "Hauswart",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 80 20",
+      "email": "rene.favre@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-005-K3",
+      "extensionData": {}
+    },
+    {
+      "contactId": "72193b97-1883-4d56-9e3a-829b1eb626e2",
+      "name": "Kenji Yamamoto",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-006"
+      ],
+      "organisation": "EDA Auslandsvertretungen",
+      "phone": "+81 3 5449 8400",
+      "email": "kenji.yamamoto@eda.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-006-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "19015087-575c-45cc-be54-4e6e7a27d802",
+      "name": "Yuki Tanaka",
+      "role": "Facility Manager",
+      "buildingIds": [
+        "BBL-006"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+81 3 5449 8410",
+      "email": "yuki.tanaka@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-006-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "63192cd7-b711-4414-b596-859aee1d97e6",
+      "name": "Thomas Weber",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-007"
+      ],
+      "organisation": "BBL Immobilienmanagement",
+      "phone": "+41 58 462 55 00",
+      "email": "thomas.weber@bbl.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-007-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "4dff26dd-68d5-43cc-9ee6-77051699b4fb",
+      "name": "Barbara Steiner",
+      "role": "Hauswart",
+      "buildingIds": [
+        "BBL-007"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 55 10",
+      "email": "barbara.steiner@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-007-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "f42f1d39-0e93-49a2-90fe-0718cd234668",
+      "name": "Carlos Silva",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-008"
+      ],
+      "organisation": "EDA Auslandsvertretungen",
+      "phone": "+55 61 3443 5500",
+      "email": "carlos.silva@eda.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-008-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "1cea0bb1-379b-4aa0-80af-2983448bf9a9",
+      "name": "Maria Santos",
+      "role": "Facility Manager",
+      "buildingIds": [
+        "BBL-008"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+55 61 3443 5510",
+      "email": "maria.santos@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-008-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "2f09d074-a810-4471-8aca-0aa6f4d83acc",
+      "name": "Elena Bentivoglio",
+      "role": "Objektverantwortliche",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "organisation": "BBL IT Infrastruktur",
+      "phone": "+41 58 462 90 00",
+      "email": "elena.bentivoglio@bbl.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-009-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "33fca67e-7c69-4697-805c-8c5717f8b3b8",
+      "name": "Luca Ferretti",
+      "role": "Technischer Dienst",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+41 58 462 90 20",
+      "email": "luca.ferretti@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-009-K2",
+      "extensionData": {}
+    },
+    {
+      "contactId": "a3c09f01-579f-47b1-aae1-12ab241fe127",
+      "name": "Marco Rossi",
+      "role": "Sicherheitsbeauftragter",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "organisation": "BBL IT Sicherheit",
+      "phone": "+41 58 462 90 30",
+      "email": "marco.rossi@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-009-K3",
+      "extensionData": {}
+    },
+    {
+      "contactId": "889f361b-654b-4f34-9f14-654faa87a88e",
+      "name": "Michael Thompson",
+      "role": "Objektverantwortlicher",
+      "buildingIds": [
+        "BBL-010"
+      ],
+      "organisation": "EDA Auslandsvertretungen",
+      "phone": "+61 2 6162 8400",
+      "email": "michael.thompson@eda.admin.ch",
+      "isPrimary": true,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-010-K1",
+      "extensionData": {}
+    },
+    {
+      "contactId": "7a058981-1d02-4285-a2a7-a5d6b0a68dd2",
+      "name": "Emily Wilson",
+      "role": "Facility Manager",
+      "buildingIds": [
+        "BBL-010"
+      ],
+      "organisation": "BBL Objektmanagement",
+      "phone": "+61 2 6162 8410",
+      "email": "emily.wilson@bbl.admin.ch",
+      "isPrimary": false,
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "legacyId": "BBL-010-K2",
+      "extensionData": {}
+    }
+  ]
+}

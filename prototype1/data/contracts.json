@@ -1,0 +1,544 @@
+{
+  "contracts": [
+    {
+      "contractId": "a577c15f-a616-41b1-bb66-85f2bbf5ca29",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Siemens Building Technologies AG",
+      "amount": 85000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-001-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "0118b3bf-b58d-44a3-b150-82bcaf42a480",
+      "type": "Reinigungsvertrag",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "validFrom": "2021-04-01T00:00:00Z",
+      "validUntil": "2026-03-31T00:00:00Z",
+      "contractPartner": "ISS Facility Services AG",
+      "amount": 120000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-001-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "1830a432-da31-4283-8578-3ac557596f14",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-001"
+      ],
+      "validFrom": "2019-01-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Securitas AG",
+      "amount": 95000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-001-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "55576a74-59f8-4837-bf1c-8e60c5b6de39",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-002"
+      ],
+      "validFrom": "2021-01-01T00:00:00Z",
+      "validUntil": "2026-12-31T00:00:00Z",
+      "contractPartner": "Bosch Building Technologies GmbH",
+      "amount": 42000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-002-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "c5aebc6a-13b8-4f7f-999a-2e1aedf148ff",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-002"
+      ],
+      "validFrom": "2020-07-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Kötter Security GmbH",
+      "amount": 78000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-002-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "8e854c5b-c5dc-4a52-a67a-a493a236c1a2",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "validFrom": "2018-01-01T00:00:00Z",
+      "validUntil": "2024-12-31T00:00:00Z",
+      "contractPartner": "Johnson Controls AG",
+      "amount": 65000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-003-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "2c4ef3a9-5140-4087-ac27-e0da3cb76790",
+      "type": "Reinigungsvertrag",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Vebego AG",
+      "amount": 48000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-003-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "389860aa-9907-4f90-8094-a022b7e9d8c0",
+      "type": "Logistikdienstleistung",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "validFrom": "2019-06-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Planzer Transport AG",
+      "amount": 180000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-003-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "40b4bd32-81a2-46f2-ba01-e0df9f38baf8",
+      "type": "Heizungswartung",
+      "buildingIds": [
+        "BBL-003"
+      ],
+      "validFrom": "2017-01-01T00:00:00Z",
+      "validUntil": "2022-12-31T00:00:00Z",
+      "contractPartner": "Meier Tobler AG",
+      "amount": 12000,
+      "currency": "CHF",
+      "status": "Ausgelaufen",
+      "legacyId": "BBL-003-V4",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "36755f2b-3220-4587-bb91-5fc7ed80e159",
+      "type": "Mietvertrag",
+      "buildingIds": [
+        "BBL-004"
+      ],
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": "2030-12-31T00:00:00Z",
+      "contractPartner": "Third Avenue Tower LLC",
+      "amount": 450000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-004-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "27f65319-18d6-4bc0-bc64-e552d74fe506",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-004"
+      ],
+      "validFrom": "2021-01-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Allied Universal Security",
+      "amount": 125000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-004-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "ae85fdbe-eaf8-4e14-82b6-99f9a6f9c90d",
+      "type": "Sanierungsvertrag",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "validFrom": "2024-01-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Implenia Schweiz AG",
+      "amount": 2500000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-005-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "89eb0e80-7a1e-43f6-b3b0-73bf14385ddd",
+      "type": "Architekturleistung",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "validFrom": "2023-06-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Herzog & de Meuron",
+      "amount": 350000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-005-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "8247e3f0-0570-40d3-b359-faa6d14b33ad",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-005"
+      ],
+      "validFrom": "2018-01-01T00:00:00Z",
+      "validUntil": "2023-12-31T00:00:00Z",
+      "contractPartner": "Honeywell Schweiz AG",
+      "amount": 35000,
+      "currency": "CHF",
+      "status": "Ausgelaufen",
+      "legacyId": "BBL-005-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "27b650cf-300d-4c1c-b2f6-9dc2cf3434f2",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-006"
+      ],
+      "validFrom": "2019-04-01T00:00:00Z",
+      "validUntil": "2025-03-31T00:00:00Z",
+      "contractPartner": "Daikin Industries Ltd",
+      "amount": 55000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-006-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "cb65ae93-ae44-4627-b16f-3e0d4ce19057",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-006"
+      ],
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "ALSOK Co., Ltd.",
+      "amount": 92000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-006-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "b5748b11-0c63-4305-9c94-a24432ad9e0f",
+      "type": "Gartenpflege",
+      "buildingIds": [
+        "BBL-006"
+      ],
+      "validFrom": "2018-04-01T00:00:00Z",
+      "validUntil": "2024-03-31T00:00:00Z",
+      "contractPartner": "Tokyo Green Service Co.",
+      "amount": 18000,
+      "currency": "CHF",
+      "status": "Gekündigt",
+      "legacyId": "BBL-006-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "57885867-3bc9-475c-8ac3-469e7f259951",
+      "type": "Heizungswartung",
+      "buildingIds": [
+        "BBL-007"
+      ],
+      "validFrom": "2016-01-01T00:00:00Z",
+      "validUntil": "2026-12-31T00:00:00Z",
+      "contractPartner": "IWB Industrielle Werke Basel",
+      "amount": 8500,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-007-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "cbe3b0b8-e0b3-47ce-b4b6-e3e225f19c94",
+      "type": "Hauswartung",
+      "buildingIds": [
+        "BBL-007"
+      ],
+      "validFrom": "2020-07-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Livit AG",
+      "amount": 42000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-007-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "283532cd-850f-4924-9ca2-dd50d6fbbf14",
+      "type": "Reinigungsvertrag",
+      "buildingIds": [
+        "BBL-007"
+      ],
+      "validFrom": "2021-01-01T00:00:00Z",
+      "validUntil": "2024-12-31T00:00:00Z",
+      "contractPartner": "Clean Expert GmbH",
+      "amount": 28000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-007-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "f99b9640-f398-47bc-8db5-70dca411a093",
+      "type": "Klimaanlagenwartung",
+      "buildingIds": [
+        "BBL-008"
+      ],
+      "validFrom": "2022-01-01T00:00:00Z",
+      "validUntil": "2027-12-31T00:00:00Z",
+      "contractPartner": "Carrier do Brasil",
+      "amount": 38000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-008-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "65544b87-9be1-4411-acba-300ae0a227bf",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-008"
+      ],
+      "validFrom": "2020-06-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Prosegur Brasil",
+      "amount": 65000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-008-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "91f339c6-6f47-458d-a061-29a44cf37529",
+      "type": "Gartenpflege",
+      "buildingIds": [
+        "BBL-008"
+      ],
+      "validFrom": "2022-01-01T00:00:00Z",
+      "validUntil": "2024-12-31T00:00:00Z",
+      "contractPartner": "Verde Vida Ltda",
+      "amount": 12000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-008-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "f32c2cf9-453b-4f1c-9faf-3c07df4c9f0a",
+      "type": "Bauvertrag",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "validFrom": "2023-07-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Marti AG Bauunternehmung",
+      "amount": 45000000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-009-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "bb7563e3-29e5-488c-b180-b4c92e8d2fb2",
+      "type": "IT-Infrastruktur",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "validFrom": "2024-01-01T00:00:00Z",
+      "validUntil": "2034-12-31T00:00:00Z",
+      "contractPartner": "Swisscom (Schweiz) AG",
+      "amount": 2500000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-009-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "08d7aebe-f014-4b0d-b114-0ee7aa7118f3",
+      "type": "Kühlanlagenwartung",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "validFrom": "2025-01-01T00:00:00Z",
+      "validUntil": "2030-12-31T00:00:00Z",
+      "contractPartner": "Schneider Electric Schweiz AG",
+      "amount": 180000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-009-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "27788036-7f4a-4210-8d7e-e97c1a9ac280",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-009"
+      ],
+      "validFrom": "2025-01-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Protectas SA",
+      "amount": 320000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-009-V4",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "b530445b-80f6-4e4d-95e6-c05aee495b0a",
+      "type": "Wartungsvertrag",
+      "buildingIds": [
+        "BBL-010"
+      ],
+      "validFrom": "2017-01-01T00:00:00Z",
+      "validUntil": "2025-12-31T00:00:00Z",
+      "contractPartner": "Daikin Australia Pty Ltd",
+      "amount": 22000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-010-V1",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    },
+    {
+      "contractId": "4d3dc347-5d26-4159-8d1e-a0e9a111ae13",
+      "type": "Sicherheitsdienst",
+      "buildingIds": [
+        "BBL-010"
+      ],
+      "validFrom": "2018-07-01T00:00:00Z",
+      "validUntil": null,
+      "contractPartner": "Wilson Security",
+      "amount": 48000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-010-V2",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": true
+      }
+    },
+    {
+      "contractId": "ba592b80-b923-481f-b27e-7661a8cb6166",
+      "type": "Gartenpflege",
+      "buildingIds": [
+        "BBL-010"
+      ],
+      "validFrom": "2020-01-01T00:00:00Z",
+      "validUntil": "2024-12-31T00:00:00Z",
+      "contractPartner": "Canberra Landscaping Services",
+      "amount": 15000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "BBL-010-V3",
+      "extensionData": {
+        "paymentTerms": "Jährlich im Voraus",
+        "autoRenewal": false
+      }
+    }
+  ]
+}
