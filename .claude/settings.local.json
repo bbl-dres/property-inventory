@@ -6,7 +6,8 @@
       "WebFetch(domain:wmts.geo.admin.ch)",
       "Bash(curl:*)",
       "Bash(python:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(xargs ls -la)"
     ]
   }
 }
