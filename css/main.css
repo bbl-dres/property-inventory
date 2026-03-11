@@ -2263,9 +2263,7 @@
         }
 
         .layer-group + .layer-group {
-            border-top: 1px solid var(--grey-300);
             margin-top: var(--space-2);
-            padding-top: var(--space-2);
         }
 
         .layer-group-label {
@@ -4297,7 +4295,6 @@
             padding: var(--space-3);
             background: var(--grey-50);
             border-radius: var(--radius-md);
-            border-left: 3px solid var(--primary-red);
         }
 
         .layer-info-body .legend-footer {

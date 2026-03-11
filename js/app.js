@@ -2457,6 +2457,11 @@
             } else {
                 renderListView();
             }
+
+            // Persist table tab in URL
+            var url = new URL(window.location);
+            url.searchParams.set('tableTab', tabName);
+            window.history.replaceState({}, '', url);
         }
 
         function initTableTabs() {
@@ -2465,6 +2470,87 @@
                     switchTableTab(this.dataset.tableTab);
                 });
             });
+
+            // Restore table tab from URL
+            var urlParams = new URLSearchParams(window.location.search);
+            var savedTab = urlParams.get('tableTab');
+            if (savedTab === 'parcels' || savedTab === 'buildings') {
+                switchTableTab(savedTab);
+            }
+        }
+
+        // Sync table row highlight and scroll when a feature is selected on the map
+        function syncTableToBuilding(buildingId) {
+            if (!portfolioData) return;
+
+            // Switch to buildings tab
+            if (activeTableTab !== 'buildings') {
+                switchTableTab('buildings');
+            }
+
+            // Find the index of this building in the (filtered) data
+            var dataToSearch = filteredData || portfolioData;
+            var index = -1;
+            for (var i = 0; i < dataToSearch.features.length; i++) {
+                if (dataToSearch.features[i].properties.buildingId === buildingId) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index === -1) return;
+
+            // Jump to the correct page
+            var targetPage = Math.floor(index / listRowsPerPage) + 1;
+            if (listCurrentPage !== targetPage) {
+                listCurrentPage = targetPage;
+                renderListView();
+            }
+
+            // Highlight and scroll to the row
+            var listBody = document.getElementById('list-body');
+            if (!listBody) return;
+            listBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+            var row = listBody.querySelector('tr[data-id="' + buildingId + '"]');
+            if (row) {
+                row.classList.add('row-active');
+                row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
+        }
+
+        function syncTableToParcel(parcelId) {
+            if (!parcelData) return;
+
+            // Switch to parcels tab
+            if (activeTableTab !== 'parcels') {
+                switchTableTab('parcels');
+            }
+
+            // Find the index of this parcel
+            var index = -1;
+            for (var i = 0; i < parcelData.features.length; i++) {
+                if (parcelData.features[i].properties.parcelId === parcelId) {
+                    index = i;
+                    break;
+                }
+            }
+            if (index === -1) return;
+
+            // Jump to the correct page
+            var targetPage = Math.floor(index / parcelRowsPerPage) + 1;
+            if (parcelCurrentPage !== targetPage) {
+                parcelCurrentPage = targetPage;
+                renderParcelsView();
+            }
+
+            // Highlight and scroll to the row
+            var parcelsBody = document.getElementById('parcels-body');
+            if (!parcelsBody) return;
+            parcelsBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+            var row = parcelsBody.querySelector('tr[data-parcel-id="' + parcelId + '"]');
+            if (row) {
+                row.classList.add('row-active');
+                row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+            }
         }
 
         // ===== INTERNAL LAYER TOGGLES =====
@@ -2484,7 +2570,7 @@
             if (parcelsToggle) {
                 parcelsToggle.addEventListener('change', function() {
                     var vis = this.checked ? 'visible' : 'none';
-                    ['parcels-fill', 'parcels-outline', 'parcels-highlight'].forEach(function(id) {
+                    ['parcels-fill', 'parcels-outline', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline'].forEach(function(id) {
                         if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
                     });
                 });
@@ -3173,6 +3259,31 @@
                         'fill-opacity': 0.35
                     }
                 });
+
+                // Parcel selected fill layer (persistent selection)
+                map.addLayer({
+                    id: 'parcels-selected',
+                    type: 'fill',
+                    source: 'parcels',
+                    filter: ['==', ['get', 'parcelId'], ''],
+                    paint: {
+                        'fill-color': '#1976d2',
+                        'fill-opacity': 0.45
+                    }
+                });
+
+                // Parcel selected outline layer (persistent selection)
+                map.addLayer({
+                    id: 'parcels-selected-outline',
+                    type: 'line',
+                    source: 'parcels',
+                    filter: ['==', ['get', 'parcelId'], ''],
+                    paint: {
+                        'line-color': '#1976d2',
+                        'line-width': 3,
+                        'line-opacity': 1
+                    }
+                });
             }
 
             // Main points layer
@@ -3434,7 +3545,10 @@
 
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
-            
+
+            // Sync table: switch tab, highlight row, scroll into view
+            syncTableToBuilding(buildingId);
+
             // UPDATED: Only fly to building if explicitly requested (e.g. from Search)
             if (map && flyToBuilding) {
                 map.flyTo({
@@ -3555,6 +3669,9 @@
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
 
+            // Sync table: switch tab, highlight row, scroll into view
+            syncTableToParcel(parcelId);
+
             // Fly to parcel if requested
             if (map && flyToParcel && parcel.geometry && parcel.geometry.coordinates) {
                 var center = getPolygonCentroid(parcel.geometry.coordinates);
@@ -3566,8 +3683,11 @@
         }
 
         function updateSelectedParcel() {
-            if (map && map.getLayer('parcels-highlight')) {
-                map.setFilter('parcels-highlight', ['==', ['get', 'parcelId'], selectedParcelId || '']);
+            if (map && map.getLayer('parcels-selected')) {
+                map.setFilter('parcels-selected', ['==', ['get', 'parcelId'], selectedParcelId || '']);
+            }
+            if (map && map.getLayer('parcels-selected-outline')) {
+                map.setFilter('parcels-selected-outline', ['==', ['get', 'parcelId'], selectedParcelId || '']);
             }
         }
 
