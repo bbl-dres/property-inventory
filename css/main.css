@@ -1380,7 +1380,9 @@
             font-size: var(--text-sm);
             color: var(--grey-600);
             cursor: pointer;
+            border: none;
             border-bottom: 3px solid transparent;
+            background: none;
             transition: color var(--transition-normal), border-color var(--transition-normal), background var(--transition-normal);
         }
 

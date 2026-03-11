@@ -2561,7 +2561,7 @@
             if (buildingsToggle) {
                 buildingsToggle.addEventListener('change', function() {
                     var vis = this.checked ? 'visible' : 'none';
-                    ['portfolio-points', 'portfolio-selected', 'portfolio-selected-pulse'].forEach(function(id) {
+                    ['portfolio-points', 'portfolio-selected', 'portfolio-selected-pulse', 'portfolio-labels'].forEach(function(id) {
                         if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
                     });
                 });
@@ -3334,6 +3334,27 @@
                     'circle-stroke-width': 2,
                     'circle-stroke-color': '#c00',
                     'circle-stroke-opacity': 0.4
+                }
+            });
+
+            // Building ID labels (visible at zoom >= 16)
+            map.addLayer({
+                id: 'portfolio-labels',
+                type: 'symbol',
+                source: 'portfolio',
+                minzoom: 16,
+                layout: {
+                    'text-field': ['get', 'buildingId'],
+                    'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+                    'text-size': 13,
+                    'text-anchor': 'bottom',
+                    'text-offset': [0, -1.5],
+                    'text-allow-overlap': false
+                },
+                paint: {
+                    'text-color': '#1a1a1a',
+                    'text-halo-color': '#ffffff',
+                    'text-halo-width': 2
                 }
             });
 
