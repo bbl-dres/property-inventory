@@ -3120,6 +3120,81 @@ body.detail-active #detail-view {
   padding: 0;
 }
 
+/* Filter sections (accordion inside drawer) */
+.filter-section {
+  border-bottom: 1px solid var(--grey-200);
+}
+
+.filter-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  cursor: pointer;
+  background: var(--white);
+  transition: background var(--transition-normal);
+}
+
+.filter-section-header:hover {
+  background: var(--grey-50);
+}
+
+.filter-section-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  color: var(--grey-900);
+}
+
+.filter-section-arrow {
+  display: flex;
+  align-items: center;
+  transition: transform var(--transition-normal);
+}
+
+.filter-section-arrow .material-symbols-outlined {
+  font-size: var(--icon-lg);
+  color: var(--grey-600);
+}
+
+.filter-section.open .filter-section-arrow {
+  transform: rotate(180deg);
+}
+
+.filter-section-content {
+  display: none;
+  padding: 0 var(--space-5) var(--space-4) var(--space-5);
+}
+
+.filter-section.open .filter-section-content {
+  display: block;
+}
+
+.filter-option {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) 0;
+}
+
+.filter-option input[type="checkbox"] {
+  margin-right: var(--space-3);
+}
+
+.filter-option label {
+  font-size: var(--text-sm);
+  color: var(--grey-900);
+  cursor: pointer;
+  flex: 1;
+}
+
+/* Filter button - active filters state */
+#filter-panel-btn.has-active-filters {
+  background: rgba(204, 0, 0, 0.1);
+}
+
+#filter-panel-btn.has-active-filters.panel-open {
+  background: var(--accent-panel);
+}
+
 /* Filter count badge */
 .filter-count {
   display: inline-flex;

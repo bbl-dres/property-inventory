@@ -6,6 +6,12 @@ import { selectBuilding } from './map.js';
 import { addSwisstopoLayer } from './swisstopo.js';
 import { switchView } from './views.js';
 
+// Strip HTML tags from API results (e.g., Swisstopo returns <b>, <i> markup)
+function stripHtml(str) {
+  if (!str) return '';
+  return str.replace(/<[^>]*>/g, '');
+}
+
 export function initSearch() {
   var searchInput = document.getElementById('search-input');
   var searchResults = document.getElementById('search-results');
@@ -149,7 +155,7 @@ export function initSearch() {
         var lon = r.attrs.lon;
         var zoom = r.attrs.zoomlevel || 14;
         html += '<div class="search-item" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
-                '<div class="search-item-title">' + escapeHtml(r.attrs.label) + '</div>' +
+                '<div class="search-item-title">' + escapeHtml(stripHtml(r.attrs.label)) + '</div>' +
                 '</div>';
       });
     }
@@ -157,12 +163,12 @@ export function initSearch() {
     // Section: Karten (API)
     // BUG FIX #2 (XSS): escape layer labels and use escapeForJs in onclick
     if (layerResults.length > 0) {
-      html += '<div class="search-section-header">Karten hinzufügen...</div>';
+      html += '<div class="search-section-header">Karten hinzuf\u00FCgen...</div>';
       layerResults.forEach(function(r) {
         var layerId = r.attrs.layer || '';
-        var layerTitle = r.attrs.title || r.attrs.label || layerId;
+        var layerTitle = stripHtml(r.attrs.title || r.attrs.label || layerId);
         html += '<div class="search-item" onclick="handleSearchClick(\'layer\', \'' + escapeForJs(layerId) + '\', null, null, null, \'' + escapeForJs(layerTitle) + '\')">' +
-                '<div class="search-item-title">' + escapeHtml(r.attrs.label) + '</div>' +
+                '<div class="search-item-title">' + escapeHtml(stripHtml(r.attrs.label)) + '</div>' +
                 '</div>';
       });
     }
