@@ -1,0 +1,129 @@
+// Parcels table: rendering, pagination, initialization
+
+import { state } from './state.js';
+
+// ===== RENDER PARCELS VIEW =====
+export function renderParcelsView() {
+  if (!state.parcelData) return;
+
+  var dataToRender = state.parcelData;
+
+  // Apply search filter
+  if (state.parcelSearchTerm) {
+    dataToRender = {
+      type: dataToRender.type,
+      features: dataToRender.features.filter(function(feature) {
+        var props = feature.properties;
+        var searchableText = [
+          props.bbl_id,
+          props.av_nr,
+          props.bbl_bez,
+          props.bfs_gem,
+          props.adr_reg,
+          props.av_zbez,
+          props.bbl_eigen
+        ].join(' ').toLowerCase();
+        return searchableText.includes(state.parcelSearchTerm);
+      })
+    };
+  }
+
+  var parcelsBody = document.getElementById('parcels-body');
+
+  // Handle empty state
+  if (dataToRender.features.length === 0) {
+    parcelsBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--grey-500);">Keine Grundst\u00FCcke gefunden</td></tr>';
+    updateParcelsPaginationInfo(1, 1, 0);
+    return;
+  }
+
+  // Pagination
+  var totalItems = dataToRender.features.length;
+  var totalPages = Math.ceil(totalItems / state.parcelRowsPerPage);
+  if (state.parcelCurrentPage > totalPages) state.parcelCurrentPage = totalPages;
+  if (state.parcelCurrentPage < 1) state.parcelCurrentPage = 1;
+
+  var startIndex = (state.parcelCurrentPage - 1) * state.parcelRowsPerPage;
+  var endIndex = Math.min(startIndex + state.parcelRowsPerPage, totalItems);
+  var paginatedFeatures = dataToRender.features.slice(startIndex, endIndex);
+
+  var html = '';
+  paginatedFeatures.forEach(function(feature) {
+    var props = feature.properties;
+    var area = Number(props.larea_gsf || 0).toLocaleString('de-CH');
+
+    html += '<tr data-parcel-id="' + props.bbl_id + '" tabindex="0" role="row">' +
+      '<td class="col-parcel-id">' + props.bbl_id + '</td>' +
+      '<td class="col-parcel-plot">' + (props.av_nr || '\u2013') + '</td>' +
+      '<td class="col-parcel-name">' + props.bbl_bez + '</td>' +
+      '<td class="col-parcel-municipality">' + (props.bfs_gem || '\u2013') + '</td>' +
+      '<td class="col-parcel-canton">' + (props.adr_reg || '\u2013') + '</td>' +
+      '<td class="col-parcel-area">' + area + ' m\u00B2</td>' +
+      '<td class="col-parcel-zone">' + (props.av_zbez || '\u2013') + '</td>' +
+      '<td class="col-parcel-ownership">' + (props.bbl_eigen || '\u2013') + '</td>' +
+    '</tr>';
+  });
+
+  parcelsBody.innerHTML = html;
+  updateParcelsPaginationInfo(state.parcelCurrentPage, totalPages, totalItems);
+}
+
+// ===== PAGINATION INFO =====
+export function updateParcelsPaginationInfo(currentPage, totalPages, totalItems) {
+  var infoEl = document.getElementById('parcels-pagination-info');
+  var pageInfoEl = document.getElementById('parcels-page-info');
+  var prevBtn = document.getElementById('parcels-prev-btn');
+  var nextBtn = document.getElementById('parcels-next-btn');
+
+  if (infoEl) {
+    if (totalItems === 0) {
+      infoEl.textContent = 'Keine Grundst\u00FCcke';
+    } else {
+      var startIndex = (currentPage - 1) * state.parcelRowsPerPage + 1;
+      var endIndex = Math.min(currentPage * state.parcelRowsPerPage, totalItems);
+      infoEl.textContent = startIndex + '\u2013' + endIndex + ' von ' + totalItems + ' Grundst\u00FCcke';
+    }
+  }
+
+  if (pageInfoEl) {
+    pageInfoEl.textContent = totalItems === 0 ? '' : 'Seite ' + currentPage + ' von ' + totalPages;
+  }
+
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+}
+
+// ===== INIT PARCELS TABLE =====
+export function initParcelsTable() {
+  var rowsSelect = document.getElementById('parcels-rows-per-page');
+  var prevBtn = document.getElementById('parcels-prev-btn');
+  var nextBtn = document.getElementById('parcels-next-btn');
+
+  if (rowsSelect) {
+    rowsSelect.addEventListener('change', function() {
+      state.parcelRowsPerPage = parseInt(this.value, 10);
+      state.parcelCurrentPage = 1;
+      renderParcelsView();
+    });
+  }
+
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      if (state.parcelCurrentPage > 1) {
+        state.parcelCurrentPage--;
+        renderParcelsView();
+      }
+    });
+  }
+
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      if (!state.parcelData) return;
+      var totalPages = Math.ceil(state.parcelData.features.length / state.parcelRowsPerPage);
+      if (state.parcelCurrentPage < totalPages) {
+        state.parcelCurrentPage++;
+        renderParcelsView();
+      }
+    });
+  }
+}

@@ -3,7 +3,14 @@
     "allow": [
       "Read(//c/Users/DavidRasner/Documents/GitHub/green-inventory/**)",
       "Bash(grep -n \"view-toggle\\\\|gallery\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-simple/css/*.css)",
-      "Read(//c/Users/DavidRasner/.claude/projects/c--Users-DavidRasner-Documents-GitHub-property-inventory/4e7e7b34-1946-4c6b-b807-5ecfa0668e5a/tool-results/**)"
+      "Read(//c/Users/DavidRasner/.claude/projects/c--Users-DavidRasner-Documents-GitHub-property-inventory/4e7e7b34-1946-4c6b-b807-5ecfa0668e5a/tool-results/**)",
+      "Bash(for file:*)",
+      "Bash(do echo:*)",
+      "Bash(node --check \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/$file\")",
+      "Bash(echo \"SYNTAX ERROR IN $file\")",
+      "Bash(done)",
+      "Bash(ls -lh \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/\"*.js)",
+      "Read(//c/Users/DavidRasner/Documents/GitHub/property-inventory/**)"
     ]
   }
 }

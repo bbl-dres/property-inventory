@@ -709,11 +709,11 @@ Content-Type: application/geo+json
                 </div>
 
                 <!-- Foto Gallery (always visible, above tabs) -->
-                <div class="carousel" id="detail-carousel">
+                <div class="carousel" id="detail-carousel" role="region" aria-roledescription="Bildkarussell" aria-label="Gebäudebilder">
                     <div class="carousel-image" id="carousel-image"></div>
-                    <button class="carousel-btn prev" onclick="carouselPrev()"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <button class="carousel-btn next" onclick="carouselNext()"><span class="material-symbols-outlined">chevron_right</span></button>
-                    <div class="carousel-dots" id="carousel-dots"></div>
+                    <button class="carousel-btn prev" onclick="carouselPrev()" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
+                    <button class="carousel-btn next" onclick="carouselNext()" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
+                    <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Bild auswählen"></div>
                 </div>
 
                 <!-- Tabs (inside content, scrollable) -->
@@ -956,6 +956,6 @@ Content-Type: application/geo+json
     </footer>
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
-    <script defer src="js/app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 </html>
