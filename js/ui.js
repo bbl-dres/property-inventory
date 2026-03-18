@@ -53,6 +53,35 @@ function initUI() {
   initDetailTabs();
   initViewToggle();
   initPopstate();
+  initBackButton();
+  initFooterApiLink();
+}
+
+// ===== BACK BUTTON =====
+function initBackButton() {
+  var btn = document.getElementById('btn-back');
+  if (btn) {
+    btn.addEventListener('click', function() {
+      switchView(state.previousView || 'map');
+    });
+  }
+}
+
+// ===== FOOTER API LINK =====
+function initFooterApiLink() {
+  var apiLink = document.getElementById('footer-api-link');
+  if (apiLink) {
+    apiLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      document.getElementById('map-view').classList.remove('active');
+      document.getElementById('gallery-view').classList.remove('active');
+      document.getElementById('detail-view').classList.remove('active');
+      document.getElementById('api-docs-view').classList.add('active');
+      document.body.classList.remove('detail-active');
+      document.querySelectorAll('.view-toggle-btn').forEach(function(btn) { btn.classList.remove('active'); });
+      window.scrollTo(0, 0);
+    });
+  }
 }
 
 // ===== LANGUAGE SELECTOR =====

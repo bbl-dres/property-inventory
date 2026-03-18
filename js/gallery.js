@@ -54,7 +54,7 @@ export function renderGalleryView() {
         '<div class="gallery-meta">' +
           '<span class="gallery-tag">' + escapeHtml(props.bbl_port || '\u2014') + '</span>' +
           '<span class="gallery-tag">' + flaeche + ' m\u00B2</span>' +
-          '<span class="status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span>' +
+          '<span class="badge status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';

@@ -13,7 +13,8 @@
 
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/styles.css">
 
     <script defer src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
 </head>
@@ -203,7 +204,7 @@
                         <div class="print-form">
                             <div class="print-form-row">
                                 <label for="print-orientation">Format</label>
-                                <select id="print-orientation" class="print-select">
+                                <select id="print-orientation" class="custom-select print-select">
                                     <option value="landscape-a4" selected>A4 Querformat</option>
                                     <option value="portrait-a4">A4 Hochformat</option>
                                     <option value="landscape-a3">A3 Querformat</option>
@@ -218,7 +219,7 @@
                             </div>
                             <div class="print-form-row">
                                 <label for="print-scale">Massstab</label>
-                                <select id="print-scale" class="print-select">
+                                <select id="print-scale" class="custom-select print-select">
                                     <option value="auto" selected>Automatisch</option>
                                     <option value="500">1:500</option>
                                     <option value="1000">1:1'000</option>
@@ -470,7 +471,7 @@
                     <!-- Buildings table -->
                     <div class="table-tab-content active" id="buildings-table-content">
                         <div class="list-table-wrapper">
-                            <table class="list-table" id="list-table">
+                            <table class="base-table list-table" id="list-table">
                                 <thead>
                                     <tr id="list-table-header-row"></tr>
                                 </thead>
@@ -492,7 +493,7 @@
                             </div>
                             <div class="pagination-rows">
                                 <span>Zeilen pro Seite:</span>
-                                <select id="list-rows-per-page">
+                                <select id="list-rows-per-page" class="custom-select">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
                                     <option value="100">100</option>
@@ -504,7 +505,7 @@
                     <!-- Parcels table -->
                     <div class="table-tab-content" id="parcels-table-content">
                         <div class="list-table-wrapper">
-                            <table class="list-table" id="parcels-table">
+                            <table class="base-table list-table" id="parcels-table">
                                 <thead>
                                     <tr>
                                         <th class="col-parcel-id">Parzellen-ID <span class="material-symbols-outlined">unfold_more</span></th>
@@ -535,7 +536,7 @@
                             </div>
                             <div class="pagination-rows">
                                 <span>Zeilen pro Seite:</span>
-                                <select id="parcels-rows-per-page">
+                                <select id="parcels-rows-per-page" class="custom-select">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
                                     <option value="100">100</option>
@@ -868,7 +869,7 @@ Content-Type: application/geo+json
         <!-- Filter Drawer -->
         <aside id="filter-panel" role="complementary" aria-label="Filter">
             <div class="filter-panel-resize-handle" title="Grösse ändern"></div>
-            <div class="filter-panel-header">
+            <div class="panel-header filter-panel-header">
                 <span class="filter-panel-title">
                     <span class="material-symbols-outlined">filter_list</span>
                     Filter

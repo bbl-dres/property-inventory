@@ -242,7 +242,7 @@ export function resetFilters() {
 
 export function navigateToAllObjects() {
   resetFilters();
-  switchView(state.previousView || 'gallery');
+  switchView('map');
 }
 
 export function navigateWithLandFilter() {
@@ -255,11 +255,11 @@ export function navigateWithLandFilter() {
   state.activeFilters.land = [land];
 
   // Update checkbox state
-  var checkbox = document.querySelector('#filter-pane input[data-filter="land"][data-value="' + land + '"]');
+  var checkbox = document.querySelector('#filter-panel input[data-filter="land"][data-value="' + land + '"]');
   if (checkbox) checkbox.checked = true;
 
   applyFilters();
-  switchView(state.previousView || 'gallery');
+  switchView('map');
 }
 
 export function navigateWithRegionFilter() {
@@ -272,11 +272,11 @@ export function navigateWithRegionFilter() {
   state.activeFilters.region = [region];
 
   // Update checkbox state
-  var checkbox = document.querySelector('#filter-pane input[data-filter="region"][data-value="' + region + '"]');
+  var checkbox = document.querySelector('#filter-panel input[data-filter="region"][data-value="' + region + '"]');
   if (checkbox) checkbox.checked = true;
 
   applyFilters();
-  switchView(state.previousView || 'gallery');
+  switchView('map');
 }
 
 export function updateFilterButtonState() {
@@ -545,3 +545,6 @@ export function initFilterPane() {
 
 // Global alias for empty state buttons
 window.resetAllFilters = resetFilters;
+window.navigateToAllObjects = navigateToAllObjects;
+window.navigateWithLandFilter = navigateWithLandFilter;
+window.navigateWithRegionFilter = navigateWithRegionFilter;

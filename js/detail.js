@@ -881,7 +881,7 @@ var contractsTable = createEntityTable({
       return formatCurrency(contract.betrag);
     }},
     { key: 'status', className: 'col-contract-status', render: function(contract) {
-      return '<span class="status-badge ' + getContractStatusClassName(contract.status) + '">' + contract.status + '</span>';
+      return '<span class="badge status-badge ' + getContractStatusClassName(contract.status) + '">' + contract.status + '</span>';
     }}
   ],
   searchFields: ['id', 'vertragsart', 'vertragspartner', 'vertragsbeginn', 'vertragsende', 'betrag', 'status']
@@ -912,7 +912,7 @@ var assetsTable = createEntityTable({
     { key: 'id', className: 'col-asset-id' },
     { key: 'bezeichnung', className: 'col-asset-name' },
     { key: 'kategorie', className: 'col-asset-category', render: function(asset) {
-      return '<span class="kategorie-badge">' + asset.kategorie + '</span>';
+      return '<span class="badge kategorie-badge">' + asset.kategorie + '</span>';
     }},
     { key: 'hersteller', className: 'col-asset-manufacturer' },
     { key: 'baujahr', className: 'col-asset-year' },

@@ -16,7 +16,7 @@ var buildingColumns = [
   { field: 'bbl_stat', label: 'Status', format: function(v) {
     if (!v) return '\u2013';
     var cls = v === 'Aktiv' ? 'status-active' : v === 'In Renovation' ? 'status-renovation' : v === 'In Planung' ? 'status-planning' : 'status-inactive';
-    return '<span class="status-badge ' + cls + '">' + v + '</span>';
+    return '<span class="badge status-badge ' + cls + '">' + v + '</span>';
   }},
   { field: 'bbl_buch', label: 'Buchungskreis' },
   { field: 'bbl_we', label: 'WE' },

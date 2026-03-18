@@ -498,7 +498,7 @@ function selectBuilding(buildingId, flyToBuilding) {
     '<div class="info-row info-row-secondary"><span class="info-label">Fl\u00e4che NGF</span><span class="info-value">' + flaeche + ' m\u00b2</span></div>' +
     '<div class="info-row info-row-secondary"><span class="info-label">Baujahr</span><span class="info-value">' + escapeHtml(baujahr) + '</span></div>' +
     '<div class="info-row info-row-secondary"><span class="info-label">Verantwortlich</span><span class="info-value">' + escapeHtml(props.bbl_ovtw || '\u2014') + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span></span></div>' +
+    '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span></span></div>' +
     '<div class="info-footer">' +
       '<button class="info-detail-link" onclick="showDetailView(\'' + escapeForJs(props.bbl_id) + '\')">' +
         '<span class="material-symbols-outlined">open_in_new</span>' +
