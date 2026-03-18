@@ -934,7 +934,6 @@
 
         .list-table tbody tr.row-active td {
             background: rgba(204, 0, 0, 0.06);
-            box-shadow: inset 3px 0 0 var(--primary-red);
         }
 
         .list-table tbody tr.row-active:hover td {

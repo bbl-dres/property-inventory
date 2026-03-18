@@ -40,6 +40,7 @@
         var previousView = 'map';
         var galleryViewDirty = false;
         var activeTableTab = 'buildings';
+        var skipFilterZoom = false;
         var parcelCurrentPage = 1;
         var parcelRowsPerPage = 50;
         var parcelSearchTerm = '';
@@ -391,8 +392,10 @@
                 map.setFilter('portfolio-labels', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
             }
 
-            // Zoom to fit filtered points
-            zoomToFilteredPoints();
+            // Zoom to fit filtered points (skip during style change restore)
+            if (!skipFilterZoom) {
+                zoomToFilteredPoints();
+            }
         }
 
         function zoomToFilteredPoints() {
@@ -3528,7 +3531,7 @@
                     'circle-radius': 10,
                     'circle-color': [
                         'match',
-                        ['get', 'status'],
+                        ['get', 'bbl_stat'],
                         'Aktiv', statusColors['Aktiv'],
                         'In Renovation', statusColors['In Renovation'],
                         'In Planung', statusColors['In Planung'],
@@ -4767,11 +4770,28 @@
             });
         });
 
-        // Re-add layers after style change
+        // Re-add layers after style change — preserve filters and selection
         map.on('style.load', function() {
-            // Only re-add if portfolio data is loaded and source doesn't exist
             if (portfolioData && !map.getSource('portfolio')) {
                 addMapLayers();
+
+                // Restore active filters without triggering zoom
+                skipFilterZoom = true;
+                applyFilters();
+                skipFilterZoom = false;
+
+                // Restore selected building highlight
+                if (selectedBuildingId && map.getLayer('portfolio-selected')) {
+                    map.setFilter('portfolio-selected', ['==', ['get', 'bbl_id'], selectedBuildingId]);
+                    map.setFilter('portfolio-selected-pulse', ['==', ['get', 'bbl_id'], selectedBuildingId]);
+                    if (window.startPulseAnimation) window.startPulseAnimation();
+                }
+
+                // Restore selected parcel highlight
+                if (selectedParcelId && map.getLayer('parcels-selected')) {
+                    map.setFilter('parcels-selected', ['==', ['get', 'bbl_id'], selectedParcelId]);
+                    map.setFilter('parcels-selected-outline', ['==', ['get', 'bbl_id'], selectedParcelId]);
+                }
             }
 
             // Re-add Swisstopo layers that were active before style change
