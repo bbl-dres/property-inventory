@@ -233,37 +233,34 @@
         }
 
         // ===== FILTER STATE =====
-        var activeFilters = {
-            status: [],
-            eigentum: [],
-            teilportfolio: [],
-            gebaeudeart: [],
-            land: [],
-            region: []
-        };
-
         // Filter configuration - maps filter keys to data properties
         var filterConfig = {
             status: { property: 'bbl_stat', label: 'Status' },
             eigentum: { property: 'bbl_eigen', label: 'Art Eigentum' },
+            strategie: { property: 'bbl_ostr', label: 'Objektstrategie' },
+            mietmodell: { property: 'bbl_mietm', label: 'Mietmodell' },
             teilportfolio: { property: 'bbl_port', label: 'Teilportfolio' },
+            portfoliogruppe: { property: 'bbl_port2', label: 'Portfoliogruppe' },
             gebaeudeart: { property: 'bbl_gbda1', label: 'Gebäudeart' },
             land: { property: 'adr_land', label: 'Land' },
-            region: { property: 'adr_reg', label: 'Region' }
+            region: { property: 'adr_reg', label: 'Region' },
+            ort: { property: 'adr_ort', label: 'Ort' },
+            gemeinde: { property: 'bfs_gem', label: 'Gemeinde' },
+            kgskat: { property: 'kgs_kat', label: 'KGS Kategorie' }
         };
+
+        // Active filters — derived from filterConfig keys (single source of truth)
+        var activeFilters = {};
+        Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
         // ===== FILTER FUNCTIONS =====
 
         function getFiltersFromURL() {
             var params = new URLSearchParams(window.location.search);
-            var filters = {
-                status: [],
-                eigentum: [],
-                teilportfolio: [],
-                gebaeudeart: [],
-                land: [],
-                region: []
-            };
+            var filters = {};
+            Object.keys(filterConfig).forEach(function(key) {
+                filters[key] = [];
+            });
 
             Object.keys(filters).forEach(function(key) {
                 var value = params.get('filter_' + key);
@@ -489,14 +486,8 @@
         }
 
         function resetFilters() {
-            activeFilters = {
-                status: [],
-                eigentum: [],
-                teilportfolio: [],
-                gebaeudeart: [],
-                land: [],
-                region: []
-            };
+            activeFilters = {};
+            Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
             // Uncheck all checkboxes
             document.querySelectorAll('#filter-pane input[type="checkbox"]').forEach(function(cb) {
@@ -549,7 +540,7 @@
         }
 
         function updateFilterButtonState() {
-            var drawerBtn = document.getElementById('smart-drawer-btn');
+            var drawerBtn = document.getElementById('filter-panel-btn');
             if (!drawerBtn) return;
 
             var count = getActiveFilterCount();
@@ -596,8 +587,8 @@
 
         // ===== SMART DRAWER =====
         function toggleSmartDrawer(open) {
-            var drawer = document.getElementById('smart-drawer');
-            var drawerBtn = document.getElementById('smart-drawer-btn');
+            var drawer = document.getElementById('filter-panel');
+            var drawerBtn = document.getElementById('filter-panel-btn');
 
             if (open === undefined) {
                 open = !drawer.classList.contains('open');
@@ -625,8 +616,8 @@
 
         // ===== DRAWER RESIZE =====
         function initDrawerResize() {
-            var drawer = document.getElementById('smart-drawer');
-            var handle = drawer.querySelector('.smart-drawer-resize-handle');
+            var drawer = document.getElementById('filter-panel');
+            var handle = drawer.querySelector('.filter-panel-resize-handle');
             if (!handle) return;
 
             var isResizing = false;
@@ -691,21 +682,32 @@
             var uniqueValues = {
                 status: new Set(),
                 eigentum: new Set(),
+                strategie: new Set(),
+                mietmodell: new Set(),
                 teilportfolio: new Set(),
+                portfoliogruppe: new Set(),
                 gebaeudeart: new Set(),
                 land: new Set(),
-                region: new Set()
+                region: new Set(),
+                ort: new Set(),
+                gemeinde: new Set(),
+                kgskat: new Set()
             };
 
             portfolioData.features.forEach(function(feature) {
                 var props = feature.properties;
-                // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
                 if (props.bbl_stat) uniqueValues.status.add(props.bbl_stat);
                 if (props.bbl_eigen) uniqueValues.eigentum.add(props.bbl_eigen);
+                if (props.bbl_ostr) uniqueValues.strategie.add(props.bbl_ostr);
+                if (props.bbl_mietm) uniqueValues.mietmodell.add(props.bbl_mietm);
                 if (props.bbl_port) uniqueValues.teilportfolio.add(props.bbl_port);
+                if (props.bbl_port2) uniqueValues.portfoliogruppe.add(props.bbl_port2);
                 if (props.bbl_gbda1) uniqueValues.gebaeudeart.add(props.bbl_gbda1);
                 if (props.adr_land) uniqueValues.land.add(props.adr_land);
                 if (props.adr_reg) uniqueValues.region.add(props.adr_reg);
+                if (props.adr_ort) uniqueValues.ort.add(props.adr_ort);
+                if (props.bfs_gem) uniqueValues.gemeinde.add(props.bfs_gem);
+                if (props.kgs_kat) uniqueValues.kgskat.add(props.kgs_kat);
             });
 
             // Render options for each filter
@@ -752,7 +754,7 @@
 
         function initFilterPane() {
             // Toggle smart drawer via header button
-            document.getElementById('smart-drawer-btn').addEventListener('click', function() {
+            document.getElementById('filter-panel-btn').addEventListener('click', function() {
                 toggleSmartDrawer();
             });
 
@@ -785,6 +787,19 @@
             document.getElementById('logo-area').addEventListener('click', function() {
                 navigateToAllObjects();
             });
+
+            // Filter search input
+            var filterSearchInput = document.getElementById('filter-search-input');
+            if (filterSearchInput) {
+                filterSearchInput.addEventListener('input', function() {
+                    var term = this.value.toLowerCase().trim();
+                    document.querySelectorAll('.filter-section').forEach(function(section) {
+                        var title = section.querySelector('.filter-section-title');
+                        var text = title ? title.textContent.toLowerCase() : '';
+                        section.style.display = (!term || text.includes(term)) ? '' : 'none';
+                    });
+                });
+            }
         }
 
         // ===== LIST VIEW TOOLBAR FUNCTIONS =====
@@ -1660,6 +1675,7 @@
                     // Apply initial filters (this sets filteredData and updates count)
                     applyFilters();
 
+                    initBuildingTableHeaders();
                     renderListView();
                     renderParcelsView();
                     initDelegatedListeners();
@@ -2407,6 +2423,126 @@
             }
         });
         
+        // ===== BUILDING TABLE COLUMN DEFINITIONS =====
+        var buildingColumns = [
+            // Stammdaten
+            { field: 'bbl_id', label: 'ID' },
+            { field: 'bbl_bez', label: 'Bezeichnung' },
+            { field: 'bbl_stat', label: 'Status', format: function(v) {
+                if (!v) return '–';
+                var cls = v === 'Aktiv' ? 'status-active' : v === 'In Renovation' ? 'status-renovation' : v === 'In Planung' ? 'status-planning' : 'status-inactive';
+                return '<span class="status-badge ' + cls + '">' + v + '</span>';
+            }},
+            { field: 'bbl_buch', label: 'Buchungskreis' },
+            { field: 'bbl_we', label: 'WE' },
+            { field: 'bbl_tobj', label: 'Teilobjekt' },
+            { field: 'bbl_gbda1', label: 'Objektart 1' },
+            { field: 'bbl_gbda2', label: 'Objektart 2' },
+            { field: 'bbl_eigen', label: 'Eigentum' },
+            { field: 'bbl_ostr', label: 'Strategie' },
+            { field: 'bbl_mietm', label: 'Mietmodell' },
+            { field: 'bbl_port', label: 'Teilportfolio' },
+            { field: 'bbl_port2', label: 'Portfoliogruppe' },
+            { field: 'bbl_bjahr', label: 'Baujahr' },
+            { field: 'bbl_vjahr', label: 'Verkaufsjahr' },
+            { field: 'bbl_awrt', label: 'Anschaffungswert', format: function(v) { return v != null ? formatCHF(v) : '–'; } },
+            { field: 'bbl_bwrt', label: 'Buchwert', format: function(v) { return v != null ? formatCHF(v) : '–'; } },
+            { field: 'bbl_ovtw', label: 'Verantwortlich' },
+            { field: 'bbl_pvtw', label: 'Portfoliomanager' },
+            // Adresse
+            { field: 'adr_land', label: 'Land' },
+            { field: 'adr_reg', label: 'Region' },
+            { field: 'adr_ort', label: 'Ort' },
+            { field: 'adr_plz', label: 'PLZ' },
+            { field: 'adr_str', label: 'Strasse' },
+            { field: 'adr_hsnr', label: 'Hausnr.' },
+            { field: 'adr_conct', label: 'Adresse' },
+            // Koordinaten
+            { field: 'wgs84_lat', label: 'Lat' },
+            { field: 'wgs84_lon', label: 'Lon' },
+            { field: 'lv95_e', label: 'LV95 E', format: function(v) { return v != null ? formatNum(v, 0) : '–'; } },
+            { field: 'lv95_n', label: 'LV95 N', format: function(v) { return v != null ? formatNum(v, 0) : '–'; } },
+            // Amtliche Vermessung
+            { field: 'av_egid', label: 'EGID' },
+            { field: 'av_egrid', label: 'EGRID' },
+            { field: 'bfs_gem', label: 'Gemeinde' },
+            { field: 'bfs_gemnr', label: 'Gemeinde Nr.' },
+            // Bauzone
+            { field: 'av_zbez', label: 'Bauzone' },
+            { field: 'av_znut', label: 'Nutzung' },
+            // Denkmalschutz
+            { field: 'bbl_hist', label: 'Hist. Ausstattung' },
+            { field: 'bbl_arch', label: 'Archivwürdigkeit' },
+            { field: 'kgs_kat', label: 'KGS Kat.' },
+            { field: 'kgs_nr', label: 'KGS Nr.' },
+            // Flächen
+            { field: 'garea_gf', label: 'GF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_gfo', label: 'GF oberird.', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_gfu', label: 'GF unterird.', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_ngf', label: 'NGF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_nf', label: 'NF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_hnf', label: 'HNF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_nnf', label: 'NNF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_ff', label: 'FF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_vf', label: 'VF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_vmf', label: 'VMF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'garea_ebf', label: 'EBF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            // Volumen / Geschosse
+            { field: 'gvol_gv', label: 'GV', format: function(v) { return v != null ? formatVolume(v) : '–'; } },
+            { field: 'gvol_gvo', label: 'GV oberird.', format: function(v) { return v != null ? formatVolume(v) : '–'; } },
+            { field: 'gvol_gvu', label: 'GV unterird.', format: function(v) { return v != null ? formatVolume(v) : '–'; } },
+            { field: 'gastw', label: 'Geschosse' },
+            { field: 'gastw_og', label: 'Gesch. oberird.' },
+            { field: 'gastw_ug', label: 'Gesch. unterird.' },
+            // Grundstück
+            { field: 'larea_ggf', label: 'GGF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'larea_gsf', label: 'GSF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            { field: 'larea_uf', label: 'UF', format: function(v) { return v != null ? formatArea(v) : '–'; } },
+            // Sonstiges
+            { field: 'objectid', label: 'OBJECTID' },
+            { field: 'etl_ts', label: 'ETL' },
+        ];
+
+        // Generate table headers from column definitions
+        function initBuildingTableHeaders() {
+            var headerRow = document.getElementById('list-table-header-row');
+            if (!headerRow) return;
+            var html = '';
+            buildingColumns.forEach(function(col) {
+                html += '<th class="col-' + col.field + '">' + col.label + ' <span class="material-symbols-outlined">unfold_more</span></th>';
+            });
+            headerRow.innerHTML = html;
+
+            // Apply initial visibility from checkboxes
+            document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"][data-column]').forEach(function(cb) {
+                handleColumnToggle(cb);
+            });
+        }
+
+        // Column search filter
+        var colSearchInput = document.getElementById('columns-search-input');
+        if (colSearchInput) {
+            colSearchInput.addEventListener('input', function() {
+                var term = this.value.toLowerCase().trim();
+                var list = document.getElementById('columns-list');
+                if (!list) return;
+                list.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
+                    var text = item.textContent.toLowerCase();
+                    item.style.display = text.includes(term) ? '' : 'none';
+                });
+                // Hide group labels that have no visible items after them
+                list.querySelectorAll('.columns-group-label').forEach(function(label) {
+                    var next = label.nextElementSibling;
+                    var hasVisible = false;
+                    while (next && !next.classList.contains('columns-group-label')) {
+                        if (next.style.display !== 'none') hasVisible = true;
+                        next = next.nextElementSibling;
+                    }
+                    label.style.display = hasVisible ? '' : 'none';
+                });
+            });
+        }
+
         // ===== RENDER LIST VIEW =====
         function renderListView() {
             if (!portfolioData) return;
@@ -2479,25 +2615,22 @@
 
             paginatedFeatures.forEach(function(feature) {
                 var props = feature.properties;
-                // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
-                var statusClass = props.bbl_stat === 'Aktiv' ? 'status-active' :
-                                  props.bbl_stat === 'In Renovation' ? 'status-renovation' :
-                                  props.bbl_stat === 'In Planung' ? 'status-planning' : 'status-inactive';
-                var flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
-
-                html += '<tr data-id="' + props.bbl_id + '" tabindex="0" role="row">' +
-                    '<td class="col-id">' + props.bbl_id + '</td>' +
-                    '<td class="col-name">' + props.bbl_bez + '</td>' +
-                    '<td class="col-land">' + props.adr_land + '</td>' +
-                    '<td class="col-ort">' + props.adr_ort + '</td>' +
-                    '<td class="col-adresse">' + props.adr_conct + '</td>' +
-                    '<td class="col-portfolio">' + (props.bbl_port || '—') + '</td>' +
-                    '<td class="col-flaeche">' + flaeche + ' m²</td>' +
-                    '<td class="col-status"><span class="status-badge ' + statusClass + '">' + props.bbl_stat + '</span></td>' +
-                '</tr>';
+                html += '<tr data-id="' + props.bbl_id + '" tabindex="0" role="row">';
+                buildingColumns.forEach(function(col) {
+                    var val = props[col.field];
+                    var display = (val !== null && val !== undefined && val !== '') ? String(val) : '–';
+                    if (col.format) display = col.format(val, props);
+                    html += '<td class="col-' + col.field + '">' + display + '</td>';
+                });
+                html += '</tr>';
             });
 
             listBody.innerHTML = html;
+
+            // Re-apply column visibility to new rows
+            document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"][data-column]').forEach(function(cb) {
+                if (!cb.checked) handleColumnToggle(cb);
+            });
 
             // Update pagination info
             updateListPaginationInfo(listCurrentPage, totalPages, totalItems);
@@ -3024,6 +3157,42 @@
         };
 
         map.addControl(new HomeControl(), 'top-right');
+
+        // 2D/3D toggle control
+        var is3D = false;
+        var Toggle3DControl = function() {};
+        Toggle3DControl.prototype.onAdd = function(map) {
+            this._map = map;
+            this._container = document.createElement('div');
+            this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+
+            var button = document.createElement('button');
+            button.className = 'map-3d-btn';
+            button.type = 'button';
+            button.title = '2D / 3D Ansicht wechseln';
+            button.textContent = '3D';
+            button.onclick = function() {
+                is3D = !is3D;
+                if (is3D) {
+                    map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+                    button.textContent = '2D';
+                    button.classList.add('active');
+                } else {
+                    map.easeTo({ pitch: 0, bearing: 0, duration: 800 });
+                    button.textContent = '3D';
+                    button.classList.remove('active');
+                }
+            };
+
+            this._container.appendChild(button);
+            return this._container;
+        };
+        Toggle3DControl.prototype.onRemove = function() {
+            this._container.parentNode.removeChild(this._container);
+            this._map = undefined;
+        };
+
+        map.addControl(new Toggle3DControl(), 'top-right');
 
         // 2. Update URL on map move/zoom
         map.on('moveend', function() {
@@ -4932,7 +5101,7 @@
             map.on('zoomend', updatePrintPreview);
         }
 
-        // Generate print — opens a new window with the map crop
+        // Generate PDF and download directly using jsPDF
         var printGenerateBtn = document.getElementById('print-generate-btn');
         if (printGenerateBtn) {
             printGenerateBtn.addEventListener('click', function() {
@@ -4947,15 +5116,16 @@
                 var includeTitle = document.getElementById('print-title').checked;
                 var dims = getPrintDimensions(orientation);
                 var printScale = scaleOption === 'auto' ? getMapScale() : parseInt(scaleOption);
+                var isLandscape = orientation.startsWith('landscape');
+                var sizeLabel = orientation.split('-')[1].toUpperCase(); // A4, A3, etc.
 
                 setTimeout(function() {
                     try {
-                        // Capture the map canvas
+                        // Capture map canvas crop
                         var mapCanvas = map.getCanvas();
                         var srcW = mapCanvas.width;
                         var srcH = mapCanvas.height;
 
-                        // Calculate crop area (same logic as preview)
                         var center = map.getCenter();
                         var metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, map.getZoom());
                         var groundW = (dims.width / 1000) * printScale;
@@ -4963,155 +5133,129 @@
                         var cropPxW = groundW / metersPerPixel;
                         var cropPxH = groundH / metersPerPixel;
 
-                        // Device pixel ratio for hi-res capture
                         var dpr = window.devicePixelRatio || 1;
                         var cropSrcW = Math.min(cropPxW * dpr, srcW);
                         var cropSrcH = Math.min(cropPxH * dpr, srcH);
                         var cropSrcX = (srcW - cropSrcW) / 2;
                         var cropSrcY = (srcH - cropSrcH) / 2;
 
-                        // Create output canvas at print resolution (150 DPI)
-                        var printDPI = 150;
-                        var outW = Math.round(dims.width / 25.4 * printDPI);
-                        var outH = Math.round(dims.height / 25.4 * printDPI);
-                        var outCanvas = document.createElement('canvas');
-                        outCanvas.width = outW;
-                        outCanvas.height = outH;
-                        var ctx = outCanvas.getContext('2d');
+                        // Create hi-res canvas for the map image
+                        var mapImgCanvas = document.createElement('canvas');
+                        mapImgCanvas.width = Math.round(cropSrcW);
+                        mapImgCanvas.height = Math.round(cropSrcH);
+                        var mctx = mapImgCanvas.getContext('2d');
+                        mctx.drawImage(mapCanvas, cropSrcX, cropSrcY, cropSrcW, cropSrcH, 0, 0, mapImgCanvas.width, mapImgCanvas.height);
+                        var mapDataUrl = mapImgCanvas.toDataURL('image/jpeg', 0.92);
 
-                        // White background
-                        ctx.fillStyle = '#ffffff';
-                        ctx.fillRect(0, 0, outW, outH);
+                        // Create PDF with jsPDF
+                        var jsPDF = window.jspdf.jsPDF;
+                        var pdf = new jsPDF({
+                            orientation: isLandscape ? 'landscape' : 'portrait',
+                            unit: 'mm',
+                            format: [dims.width, dims.height]
+                        });
 
-                        // Layout constants (in output pixels)
-                        var margin = Math.round(10 / 25.4 * printDPI);  // 10mm margin
-                        var headerH = includeTitle ? Math.round(12 / 25.4 * printDPI) : 0;
-                        var legendH = includeLegend ? Math.round(10 / 25.4 * printDPI) : 0;
-                        var footerH = Math.round(6 / 25.4 * printDPI);
-                        var mapX = margin;
-                        var mapY = margin + headerH;
-                        var mapW = outW - margin * 2;
-                        var mapH = outH - margin * 2 - headerH - legendH - footerH;
+                        var pw = dims.width;   // page width mm
+                        var ph = dims.height;  // page height mm
+                        var m = 10;            // margin mm
 
-                        // Draw map crop
-                        ctx.drawImage(mapCanvas, cropSrcX, cropSrcY, cropSrcW, cropSrcH, mapX, mapY, mapW, mapH);
-
-                        // Map border
-                        ctx.strokeStyle = '#cccccc';
-                        ctx.lineWidth = 1;
-                        ctx.strokeRect(mapX, mapY, mapW, mapH);
+                        var y = m; // current y position
 
                         // Header
                         if (includeTitle) {
-                            ctx.fillStyle = '#1a1a1a';
-                            ctx.font = 'bold ' + Math.round(14 / 25.4 * printDPI) + 'px Arial';
-                            ctx.fillText('BBL Immobilienportfolio', margin, margin + headerH * 0.6);
-                            ctx.fillStyle = '#666666';
-                            ctx.font = Math.round(8 / 25.4 * printDPI) + 'px Arial';
+                            pdf.setFontSize(14);
+                            pdf.setFont('helvetica', 'bold');
+                            pdf.text('BBL Immobilienportfolio', m, y + 5);
+                            pdf.setFontSize(8);
+                            pdf.setFont('helvetica', 'normal');
+                            pdf.setTextColor(100);
                             var dateStr = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                            var dateW = ctx.measureText(dateStr).width;
-                            ctx.fillText(dateStr, outW - margin - dateW, margin + headerH * 0.6);
-                            // Header line
-                            ctx.strokeStyle = '#333333';
-                            ctx.lineWidth = 2;
-                            ctx.beginPath();
-                            ctx.moveTo(margin, margin + headerH - 2);
-                            ctx.lineTo(outW - margin, margin + headerH - 2);
-                            ctx.stroke();
+                            pdf.text(dateStr, pw - m, y + 5, { align: 'right' });
+                            y += 8;
+                            pdf.setDrawColor(50);
+                            pdf.setLineWidth(0.5);
+                            pdf.line(m, y, pw - m, y);
+                            y += 3;
+                            pdf.setTextColor(0);
                         }
 
-                        // Scale bar on map
-                        var scaleBarY = mapY + mapH - Math.round(5 / 25.4 * printDPI);
-                        var scaleBarX = mapX + Math.round(5 / 25.4 * printDPI);
-                        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                        var scaleText = 'Massstab 1:' + formatNum(printScale, 0);
-                        ctx.font = Math.round(7 / 25.4 * printDPI) + 'px Arial';
-                        var stw = ctx.measureText(scaleText).width;
-                        ctx.fillRect(scaleBarX - 4, scaleBarY - Math.round(4 / 25.4 * printDPI), stw + 8, Math.round(6 / 25.4 * printDPI));
-                        ctx.fillStyle = '#333333';
-                        ctx.fillText(scaleText, scaleBarX, scaleBarY);
+                        // Map image
+                        var mapAreaW = pw - m * 2;
+                        var legendSpace = includeLegend ? 8 : 0;
+                        var footerSpace = 8;
+                        var mapAreaH = ph - y - m - legendSpace - footerSpace;
+                        pdf.addImage(mapDataUrl, 'JPEG', m, y, mapAreaW, mapAreaH);
 
-                        // North arrow on map
-                        var naX = mapX + mapW - Math.round(8 / 25.4 * printDPI);
-                        var naY = mapY + Math.round(8 / 25.4 * printDPI);
-                        var naR = Math.round(4 / 25.4 * printDPI);
-                        ctx.fillStyle = 'rgba(255,255,255,0.85)';
-                        ctx.beginPath();
-                        ctx.arc(naX, naY, naR, 0, Math.PI * 2);
-                        ctx.fill();
-                        ctx.strokeStyle = '#cccccc';
-                        ctx.lineWidth = 1;
-                        ctx.stroke();
-                        ctx.fillStyle = '#333333';
-                        ctx.font = 'bold ' + Math.round(naR * 1.2) + 'px Arial';
-                        ctx.textAlign = 'center';
-                        ctx.textBaseline = 'middle';
-                        ctx.fillText('N', naX, naY);
-                        ctx.textAlign = 'start';
-                        ctx.textBaseline = 'alphabetic';
+                        // Map border
+                        pdf.setDrawColor(180);
+                        pdf.setLineWidth(0.3);
+                        pdf.rect(m, y, mapAreaW, mapAreaH);
+
+                        // Scale bar (bottom-left inside map)
+                        var scaleText = 'Massstab 1:' + formatNum(printScale, 0);
+                        pdf.setFillColor(255, 255, 255);
+                        pdf.setFontSize(7);
+                        var stw = pdf.getTextWidth(scaleText);
+                        pdf.rect(m + 3, y + mapAreaH - 7, stw + 4, 5, 'F');
+                        pdf.setTextColor(50);
+                        pdf.text(scaleText, m + 5, y + mapAreaH - 3.5);
+
+                        // North arrow (top-right inside map)
+                        var naX = m + mapAreaW - 6;
+                        var naY = y + 6;
+                        pdf.setFillColor(255, 255, 255);
+                        pdf.circle(naX, naY, 4, 'F');
+                        pdf.setDrawColor(180);
+                        pdf.circle(naX, naY, 4, 'S');
+                        pdf.setFontSize(9);
+                        pdf.setFont('helvetica', 'bold');
+                        pdf.setTextColor(50);
+                        pdf.text('N', naX, naY + 1, { align: 'center' });
+
+                        y += mapAreaH + 3;
 
                         // Legend
                         if (includeLegend) {
-                            var legY = mapY + mapH + Math.round(5 / 25.4 * printDPI);
-                            var legFont = Math.round(7 / 25.4 * printDPI);
-                            ctx.font = legFont + 'px Arial';
+                            pdf.setFontSize(7);
+                            pdf.setFont('helvetica', 'normal');
                             var legItems = [
-                                { color: '#2e7d32', label: 'Aktiv' },
-                                { color: '#0098ff', label: 'In Renovation' },
-                                { color: '#f39621', label: 'In Planung' },
-                                { color: '#9e9e9e', label: 'Verkauft' }
+                                { r: 46, g: 125, b: 50, label: 'Aktiv' },
+                                { r: 0, g: 152, b: 255, label: 'In Renovation' },
+                                { r: 243, g: 150, b: 33, label: 'In Planung' },
+                                { r: 158, g: 158, b: 158, label: 'Verkauft' }
                             ];
-                            var legX = margin;
-                            var dotR = Math.round(2.5 / 25.4 * printDPI);
+                            var lx = m;
                             legItems.forEach(function(item) {
-                                ctx.fillStyle = item.color;
-                                ctx.beginPath();
-                                ctx.arc(legX + dotR, legY + dotR, dotR, 0, Math.PI * 2);
-                                ctx.fill();
-                                ctx.fillStyle = '#333333';
-                                ctx.fillText(item.label, legX + dotR * 2 + 6, legY + dotR + legFont * 0.35);
-                                legX += ctx.measureText(item.label).width + dotR * 2 + 24;
+                                pdf.setFillColor(item.r, item.g, item.b);
+                                pdf.circle(lx + 2, y + 1.5, 1.8, 'F');
+                                pdf.setTextColor(50);
+                                pdf.text(item.label, lx + 5, y + 2.5);
+                                lx += pdf.getTextWidth(item.label) + 12;
                             });
+                            y += 5;
                         }
 
                         // Footer
-                        var footY = outH - margin;
-                        ctx.strokeStyle = '#cccccc';
-                        ctx.lineWidth = 1;
-                        ctx.beginPath();
-                        ctx.moveTo(margin, footY - footerH + 4);
-                        ctx.lineTo(outW - margin, footY - footerH + 4);
-                        ctx.stroke();
-                        ctx.fillStyle = '#999999';
-                        ctx.font = Math.round(5.5 / 25.4 * printDPI) + 'px Arial';
-                        ctx.fillText('Quelle: BBL Immobilienportfolio — Bundesamt für Bauten und Logistik', margin, footY);
-                        var copyr = '© ' + new Date().getFullYear() + ' Schweizerische Eidgenossenschaft';
-                        var cw = ctx.measureText(copyr).width;
-                        ctx.fillText(copyr, outW - margin - cw, footY);
+                        pdf.setDrawColor(200);
+                        pdf.setLineWidth(0.2);
+                        pdf.line(m, ph - m - 4, pw - m, ph - m - 4);
+                        pdf.setFontSize(6);
+                        pdf.setFont('helvetica', 'normal');
+                        pdf.setTextColor(150);
+                        pdf.text('Quelle: BBL Immobilienportfolio — Bundesamt für Bauten und Logistik', m, ph - m);
+                        pdf.text('\u00A9 ' + new Date().getFullYear() + ' Schweizerische Eidgenossenschaft', pw - m, ph - m, { align: 'right' });
 
-                        // Open in new window for printing
-                        var dataUrl = outCanvas.toDataURL('image/png');
-                        var printWin = window.open('', '_blank');
-                        if (printWin) {
-                            printWin.document.write(
-                                '<!DOCTYPE html><html><head><title>BBL Immobilienportfolio — Druck</title>' +
-                                '<style>@page{size:' + dims.width + 'mm ' + dims.height + 'mm;margin:0;}' +
-                                'body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;}' +
-                                'img{max-width:100%;max-height:100vh;box-shadow:0 2px 20px rgba(0,0,0,0.15);}' +
-                                '@media print{body{background:none;height:auto;}img{max-width:100%;max-height:none;box-shadow:none;}}</style></head>' +
-                                '<body><img src="' + dataUrl + '" onload="setTimeout(function(){window.print();},300);"></body></html>'
-                            );
-                            printWin.document.close();
-                        }
+                        // Download
+                        var filename = 'BBL-Karte-' + sizeLabel + '-' + new Date().toISOString().slice(0, 10) + '.pdf';
+                        pdf.save(filename);
 
                     } catch (e) {
-                        console.error('Print error:', e);
-                        alert('Fehler beim Erstellen der Druckansicht: ' + e.message);
+                        console.error('PDF error:', e);
+                        alert('Fehler beim Erstellen der PDF: ' + e.message);
                     }
 
                     btn.innerHTML = originalHTML;
                     btn.disabled = false;
-                    showPrintPreview();
                 }, 200);
             });
         }

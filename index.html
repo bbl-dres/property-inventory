@@ -79,7 +79,7 @@
             </div>
 
             <div id="header-right">
-                <button class="header-btn" id="smart-drawer-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="smart-drawer">
+                <button class="header-btn" id="filter-panel-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
                     Filter
                 </button>
@@ -356,18 +356,9 @@
                                 </button>
                                 <div class="dropdown-menu" id="export-dropdown-menu">
                                     <div class="dropdown-menu-header">Exportieren als</div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('csv')">
-                                        <span class="material-symbols-outlined">table_view</span>
-                                        CSV (.csv)
-                                    </div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('excel')">
-                                        <span class="material-symbols-outlined">grid_on</span>
-                                        Excel (.xlsx)
-                                    </div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('geojson')">
-                                        <span class="material-symbols-outlined">map</span>
-                                        GeoJSON (.geojson)
-                                    </div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('csv')">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('excel')">Excel (.xlsx)</div>
+                                    <div class="dropdown-menu-item" onclick="handleExport('geojson')">GeoJSON (.geojson)</div>
                                 </div>
                             </div>
                             <!-- Columns Dropdown -->
@@ -377,37 +368,100 @@
                                     Spalten
                                     <span class="material-symbols-outlined">expand_more</span>
                                 </button>
-                                <div class="dropdown-menu" id="columns-dropdown-menu">
+                                <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
                                     <div class="dropdown-menu-header">Spalten anzeigen</div>
                                     <div class="dropdown-menu-toggle-row">
                                         <button class="dropdown-toggle-btn" onclick="toggleAllColumns(true)">Alle</button>
                                         <button class="dropdown-toggle-btn" onclick="toggleAllColumns(false)">Keine</button>
                                     </div>
-                                    <div class="dropdown-menu-divider"></div>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-id"> ID
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-name"> Bezeichnung
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-land"> Land
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-ort"> Ort
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-adresse"> Adresse
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-portfolio"> Teilportfolio
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-flaeche"> Fläche NGF
-                                    </label>
-                                    <label class="dropdown-menu-item">
-                                        <input type="checkbox" checked data-column="col-status"> Status
-                                    </label>
+                                    <div class="columns-search">
+                                        <span class="material-symbols-outlined">search</span>
+                                        <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen">
+                                    </div>
+                                    <div class="columns-list" id="columns-list">
+                                        <!-- Stammdaten -->
+                                        <div class="columns-group-label">Stammdaten</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_buch"> Buchungskreis (bbl_buch)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_we"> Wirtschaftseinheit (bbl_we)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_tobj"> Teilobjekt (bbl_tobj)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda1"> Objektart 1 (bbl_gbda1)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda2"> Objektart 2 (bbl_gbda2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_eigen"> Art Eigentum (bbl_eigen)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ostr"> Objektstrategie (bbl_ostr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_mietm"> Mietmodell (bbl_mietm)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port"> Teilportfolio (bbl_port)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port2"> Portfoliogruppe (bbl_port2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bjahr"> Baujahr (bbl_bjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_vjahr"> Verkaufsjahr (bbl_vjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_awrt"> Anschaffungswert (bbl_awrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bwrt"> Buchwert (bbl_bwrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ovtw"> Verantwortlich (bbl_ovtw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
+                                        <!-- Adresse -->
+                                        <div class="columns-group-label">Adresse</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_land"> Land (adr_land)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_reg"> Region (adr_reg)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_ort"> Ort (adr_ort)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_plz"> PLZ (adr_plz)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_str"> Strasse (adr_str)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_hsnr"> Hausnummer (adr_hsnr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_conct"> Adresse (adr_conct)</label>
+                                        <!-- Koordinaten -->
+                                        <div class="columns-group-label">Koordinaten</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lat"> WGS84 Lat (wgs84_lat)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lon"> WGS84 Lon (wgs84_lon)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_e"> LV95 E (lv95_e)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_n"> LV95 N (lv95_n)</label>
+                                        <!-- Amtliche Vermessung -->
+                                        <div class="columns-group-label">Amtliche Vermessung</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egid"> EGID (av_egid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egrid"> EGRID (av_egrid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gem"> Gemeindename (bfs_gem)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gemnr"> Gemeindenr. (bfs_gemnr)</label>
+                                        <!-- Bauzone -->
+                                        <div class="columns-group-label">Bauzone</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_zbez"> Bauzone (av_zbez)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_znut"> Nutzung (av_znut)</label>
+                                        <!-- Denkmalschutz -->
+                                        <div class="columns-group-label">Denkmalschutz</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_hist"> Hist. Ausstattung (bbl_hist)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_arch"> Archivwürdigkeit (bbl_arch)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_kat"> KGS Kategorie (kgs_kat)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_nr"> KGS Nummer (kgs_nr)</label>
+                                        <!-- Flächen -->
+                                        <div class="columns-group-label">Flächen (SIA 416/380)</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gf"> GF (garea_gf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfo"> GF oberird. (garea_gfo)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfu"> GF unterird. (garea_gfu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ngf"> NGF (garea_ngf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nf"> NF (garea_nf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_hnf"> HNF (garea_hnf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nnf"> NNF (garea_nnf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ff"> FF (garea_ff)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vf"> VF (garea_vf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vmf"> VMF (garea_vmf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ebf"> EBF (garea_ebf)</label>
+                                        <!-- Volumen -->
+                                        <div class="columns-group-label">Volumen / Geschosse</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gv"> GV (gvol_gv)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvo"> GV oberird. (gvol_gvo)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvu"> GV unterird. (gvol_gvu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw"> Geschosse (gastw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_og"> Gesch. oberird. (gastw_og)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_ug"> Gesch. unterird. (gastw_ug)</label>
+                                        <!-- Grundstück -->
+                                        <div class="columns-group-label">Grundstück</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_ggf"> GGF (larea_ggf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_gsf"> GSF (larea_gsf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_uf"> UF (larea_uf)</label>
+                                        <!-- Sonstiges -->
+                                        <div class="columns-group-label">Sonstiges</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-etl_ts"> ETL Zeitstempel (etl_ts)</label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -418,16 +472,7 @@
                         <div class="list-table-wrapper">
                             <table class="list-table" id="list-table">
                                 <thead>
-                                    <tr>
-                                        <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
-                                    </tr>
+                                    <tr id="list-table-header-row"></tr>
                                 </thead>
                                 <tbody id="list-body"></tbody>
                             </table>
@@ -821,83 +866,78 @@ Content-Type: application/geo+json
         </div><!-- /.main-content -->
 
         <!-- Filter Drawer -->
-        <aside id="smart-drawer" role="complementary" aria-label="Filter">
-            <div class="smart-drawer-resize-handle" title="Grösse ändern"></div>
-            <div class="smart-drawer-header">
-                <span class="smart-drawer-title">
+        <aside id="filter-panel" role="complementary" aria-label="Filter">
+            <div class="filter-panel-resize-handle" title="Grösse ändern"></div>
+            <div class="filter-panel-header">
+                <span class="filter-panel-title">
                     <span class="material-symbols-outlined">filter_list</span>
                     Filter
                 </span>
-                <div class="smart-drawer-actions">
-                    <button class="smart-drawer-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
+                <div class="filter-panel-actions">
+                    <button class="filter-panel-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
                         <span class="material-symbols-outlined">replay</span>
                     </button>
-                    <button class="smart-drawer-btn" id="drawer-close-btn" title="Schliessen">
+                    <button class="filter-panel-btn" id="drawer-close-btn" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
             </div>
 
+            <!-- Filter Search -->
+            <div class="filter-search">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="filter-search-input" placeholder="Filter suchen..." aria-label="Filter suchen">
+            </div>
+
             <!-- Filter Content -->
-            <div class="smart-drawer-content" id="drawer-filter-content">
+            <div class="filter-panel-content" id="drawer-filter-content">
                 <div class="filter-section open" data-filter="status">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Status</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-status-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                    <div class="filter-section-header"><span class="filter-section-title">Status (bbl_stat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-status-options"></div>
                 </div>
-
                 <div class="filter-section open" data-filter="eigentum">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Art Eigentum</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-eigentum-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                    <div class="filter-section-header"><span class="filter-section-title">Art Eigentum (bbl_eigen)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-eigentum-options"></div>
                 </div>
-
+                <div class="filter-section open" data-filter="strategie">
+                    <div class="filter-section-header"><span class="filter-section-title">Objektstrategie (bbl_ostr)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-strategie-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="mietmodell">
+                    <div class="filter-section-header"><span class="filter-section-title">Mietmodell (bbl_mietm)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-mietmodell-options"></div>
+                </div>
                 <div class="filter-section open" data-filter="teilportfolio">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Teilportfolio</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-teilportfolio-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                    <div class="filter-section-header"><span class="filter-section-title">Teilportfolio (bbl_port)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-teilportfolio-options"></div>
                 </div>
-
+                <div class="filter-section open" data-filter="portfoliogruppe">
+                    <div class="filter-section-header"><span class="filter-section-title">Portfoliogruppe (bbl_port2)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-portfoliogruppe-options"></div>
+                </div>
                 <div class="filter-section open" data-filter="gebaeudeart">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Gebäudeart</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-gebaeudeart-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                    <div class="filter-section-header"><span class="filter-section-title">Gebäudeart (bbl_gbda1)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-gebaeudeart-options"></div>
                 </div>
-
-                <div class="filter-section open" data-filter="land">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Land</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-land-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                <div class="filter-section" data-filter="land">
+                    <div class="filter-section-header"><span class="filter-section-title">Land (adr_land)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-land-options"></div>
                 </div>
-
-                <div class="filter-section open" data-filter="region">
-                    <div class="filter-section-header">
-                        <span class="filter-section-title">Region</span>
-                        <span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span>
-                    </div>
-                    <div class="filter-section-content" id="filter-region-options">
-                        <!-- Options populated dynamically -->
-                    </div>
+                <div class="filter-section" data-filter="region">
+                    <div class="filter-section-header"><span class="filter-section-title">Region (adr_reg)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-region-options"></div>
+                </div>
+                <div class="filter-section" data-filter="ort">
+                    <div class="filter-section-header"><span class="filter-section-title">Ort (adr_ort)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-ort-options"></div>
+                </div>
+                <div class="filter-section" data-filter="gemeinde">
+                    <div class="filter-section-header"><span class="filter-section-title">Gemeinde (bfs_gem)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-gemeinde-options"></div>
+                </div>
+                <div class="filter-section" data-filter="kgskat">
+                    <div class="filter-section-header"><span class="filter-section-title">KGS Kategorie (kgs_kat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-kgskat-options"></div>
                 </div>
             </div>
 
@@ -915,6 +955,7 @@ Content-Type: application/geo+json
         </div>
     </footer>
 
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
     <script defer src="js/app.js"></script>
 </body>
 </html>
