@@ -2276,6 +2276,10 @@
             
             // Add navigation controls
             miniMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+
+            // Force resize after container settles its width
+            miniMap.on('load', function() { miniMap.resize(); });
+            setTimeout(function() { if (miniMap) miniMap.resize(); }, 300);
         }
         
         // Back button handler
