@@ -84,7 +84,8 @@
                     Filter
                 </button>
                 <div id="lang-selector">
-                    <button id="lang-btn" class="lang-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                    <button id="lang-btn" class="header-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
                         <span id="lang-current">DE</span>
                     </button>
                     <div id="lang-dropdown" class="lang-dropdown" role="menu">
@@ -94,52 +95,9 @@
                         <button class="lang-option" data-lang="en" role="menuitem">EN</button>
                     </div>
                 </div>
-                <div id="login-area">
-                    <button id="login-btn" title="Anmelden" aria-label="Anmelden">
-                        <span class="material-symbols-outlined" aria-hidden="true">person</span>
-                    </button>
-                </div>
             </div>
         </div>
 
-        <div class="header-detail">
-            <div class="detail-header">
-                <div class="detail-header-inner">
-                    <div class="breadcrumb" id="detail-breadcrumb">
-                        <span class="material-symbols-outlined">public</span>
-                        <a href="#" onclick="navigateToAllObjects(); return false;">Alle Objekte</a>
-                        <span>></span>
-                        <a href="#" id="breadcrumb-country-link" onclick="navigateWithLandFilter(); return false;"><span id="breadcrumb-country">Land</span></a>
-                        <span>></span>
-                        <a href="#" id="breadcrumb-region-link" onclick="navigateWithRegionFilter(); return false;"><span id="breadcrumb-region">Region</span></a>
-                        <span>></span>
-                        <span class="current" id="breadcrumb-name">Objekt</span>
-                    </div>
-                    <div class="detail-header-actions">
-                        <button class="btn-edit">
-                            <span class="material-symbols-outlined">edit</span>
-                            Bearbeiten
-                        </button>
-                        <button class="btn-back" id="btn-back">
-                            <span class="material-symbols-outlined">arrow_back</span>
-                            Zurück
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="detail-tabs">
-                <div class="detail-tabs-inner" role="tablist" aria-label="Detailansicht Tabs">
-                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0">Übersicht</button>
-                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1">Bemessungen</button>
-                    <button class="detail-tab" data-tab="costs" role="tab" aria-selected="false" tabindex="-1">Kosten</button>
-                    <button class="detail-tab" data-tab="contracts" role="tab" aria-selected="false" tabindex="-1">Verträge</button>
-                    <button class="detail-tab" data-tab="assets" role="tab" aria-selected="false" tabindex="-1">Ausstattung</button>
-                    <button class="detail-tab" data-tab="documents" role="tab" aria-selected="false" tabindex="-1">Dokumente</button>
-                    <button class="detail-tab" data-tab="contacts" role="tab" aria-selected="false" tabindex="-1">Kontakte</button>
-                </div>
-            </div>
-        </div>
     </header>
 
     <main id="main">
@@ -573,733 +531,315 @@
             <div class="gallery-grid" id="gallery-grid"></div>
         </div>
 
+        <div id="api-docs-view">
+            <div class="api-docs-content">
+                <div class="api-docs-header">
+                    <h1>BBL GIS IMMO — API Dokumentation</h1>
+                    <p class="api-docs-subtitle">REST API für den programmatischen Zugriff auf das Immobilienportfolio des Bundes</p>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Übersicht</h2>
+                    <p>Die BBL GIS IMMO API bietet lesenden Zugriff auf die Gebäude- und Grundstücksdaten des Bundesimmobilienportfolios. Alle Endpunkte liefern GeoJSON-kompatible Antworten.</p>
+                    <div class="api-docs-card">
+                        <div class="api-docs-row"><span class="api-docs-label">Base URL :</span><code>https://api.bbl-immo.admin.ch/v1</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Format :</span><code>GeoJSON (application/geo+json)</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Authentifizierung :</span><code>API-Key via Header X-API-Key</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Rate Limit :</span><code>100 Anfragen / Minute</code></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Endpunkte</h2>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings</code></div>
+                        <p>Alle Gebäude als GeoJSON FeatureCollection. Unterstützt Filter via Query-Parameter.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Parameter</div>
+                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land (z.B. <code>CH</code>, <code>DE</code>)</span></div>
+                            <div class="api-docs-row"><code>adr_reg</code><span>Filterung nach Region/Kanton (z.B. <code>BE</code>)</span></div>
+                            <div class="api-docs-row"><code>bbl_stat</code><span>Filterung nach Status (z.B. <code>Aktiv</code>)</span></div>
+                            <div class="api-docs-row"><code>bbl_eigen</code><span>Filterung nach Eigentumsart</span></div>
+                            <div class="api-docs-row"><code>bbl_port</code><span>Filterung nach Teilportfolio</span></div>
+                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
+                            <div class="api-docs-row"><code>offset</code><span>Pagination Offset</span></div>
+                        </div>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Beispiel</div>
+                            <pre><code>GET /v1/buildings?adr_land=CH&amp;adr_reg=BE&amp;limit=10
+
+HTTP/1.1 200 OK
+Content-Type: application/geo+json
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4840/AF",
+        "bbl_bez": "Bundeshaus West",
+        "bbl_stat": "Aktiv",
+        "adr_land": "CH",
+        "adr_ort": "Bern",
+        ...
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [7.4441, 46.9465]
+      }
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings/{bbl_id}</code></div>
+                        <p>Einzelnes Gebäude nach BBL-ID. Gibt ein einzelnes GeoJSON Feature zurück.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Beispiel</div>
+                            <pre><code>GET /v1/buildings/1000%2F4840%2FAF</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels</code></div>
+                        <p>Alle Grundstücke als GeoJSON FeatureCollection mit Polygon-Geometrie.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Parameter</div>
+                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land</span></div>
+                            <div class="api-docs-row"><code>bfs_gemnr</code><span>Filterung nach BFS Gemeindenummer</span></div>
+                            <div class="api-docs-row"><code>bbl_we</code><span>Filterung nach Wirtschaftseinheit</span></div>
+                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels/{bbl_id}</code></div>
+                        <p>Einzelnes Grundstück nach BBL-ID.</p>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Datenmodell</h2>
+                    <p>Die API liefert Attribute gemäss dem BBL GIS IMMO Datenmodell. Alle Feldnamen sind Shapefile-kompatibel (max. 10 Zeichen).</p>
+                    <div class="api-docs-card">
+                        <div class="api-docs-overline">Building — 67 Attribute</div>
+                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID (Buchungskreis/WE/Teilobjekt)</span></div>
+                        <div class="api-docs-row"><code>bbl_bez</code><span>Objektbezeichnung</span></div>
+                        <div class="api-docs-row"><code>bbl_stat</code><span>Status (Aktiv, Verkauft, ...)</span></div>
+                        <div class="api-docs-row"><code>adr_conct</code><span>Verkettete Adresse</span></div>
+                        <div class="api-docs-row"><code>wgs84_lat</code><span>WGS84 Breitengrad</span></div>
+                        <div class="api-docs-row"><code>wgs84_lon</code><span>WGS84 Längengrad</span></div>
+                        <div class="api-docs-row"><code>av_egid</code><span>FK — Eidg. Gebäudeidentifikator (CH)</span></div>
+                        <div class="api-docs-row"><code>garea_gf</code><span>Geschossfläche GF in m² (SIA 416)</span></div>
+                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
+                    </div>
+                    <div class="api-docs-card">
+                        <div class="api-docs-overline">Parcel — 43 Attribute</div>
+                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID</span></div>
+                        <div class="api-docs-row"><code>av_egrid</code><span>FK — Eidg. Grundstücksidentifikator (CH)</span></div>
+                        <div class="api-docs-row"><code>larea_gsf</code><span>Grundstücksfläche GSF in m² (SIA 416)</span></div>
+                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Fehler</h2>
+                    <div class="api-docs-card">
+                        <div class="api-docs-row"><code>400</code><span>Ungültige Parameter</span></div>
+                        <div class="api-docs-row"><code>401</code><span>Fehlender oder ungültiger API-Key</span></div>
+                        <div class="api-docs-row"><code>404</code><span>Objekt nicht gefunden</span></div>
+                        <div class="api-docs-row"><code>429</code><span>Rate Limit überschritten</span></div>
+                        <div class="api-docs-row"><code>500</code><span>Interner Serverfehler</span></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <p class="api-docs-notice">Diese API ist ein Platzhalter für zukünftige Entwicklung. Kontakt: <a href="mailto:immobilien@bbl.admin.ch">immobilien@bbl.admin.ch</a></p>
+                </div>
+            </div>
+        </div>
+
         <div id="detail-view">
-            <div class="detail-content">
-                <!-- Tab Content: Übersicht -->
+            <div class="detail-content detail-single-col">
+
+                <!-- Breadcrumb + Back -->
+                <div class="detail-header">
+                    <div class="detail-header-inner">
+                        <div class="breadcrumb" id="detail-breadcrumb">
+                            <span class="material-symbols-outlined">public</span>
+                            <a href="#" onclick="navigateToAllObjects(); return false;">Alle Objekte</a>
+                            <span>></span>
+                            <a href="#" id="breadcrumb-country-link" onclick="navigateWithLandFilter(); return false;"><span id="breadcrumb-country">Land</span></a>
+                            <span>></span>
+                            <a href="#" id="breadcrumb-region-link" onclick="navigateWithRegionFilter(); return false;"><span id="breadcrumb-region">Region</span></a>
+                            <span>></span>
+                            <span class="current" id="breadcrumb-name">Objekt</span>
+                        </div>
+                        <div class="detail-header-actions">
+                            <button class="btn-back" id="btn-back">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                                Zurück
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto Gallery (always visible, above tabs) -->
+                <div class="carousel" id="detail-carousel">
+                    <div class="carousel-image" id="carousel-image"></div>
+                    <button class="carousel-btn prev" onclick="carouselPrev()"><span class="material-symbols-outlined">chevron_left</span></button>
+                    <button class="carousel-btn next" onclick="carouselNext()"><span class="material-symbols-outlined">chevron_right</span></button>
+                    <div class="carousel-dots" id="carousel-dots"></div>
+                </div>
+
+                <!-- Tabs (inside content, scrollable) -->
+                <div class="detail-tabs-inline" role="tablist" aria-label="Detailansicht Tabs">
+                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0">Übersicht</button>
+                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1">Bemessungen</button>
+                </div>
+
+                <!-- ===== Tab: Übersicht ===== -->
                 <div class="tab-content active" data-content="overview">
-                <div class="detail-grid">
-                    <div class="detail-left">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Bilder</div>
-                            <div class="carousel" id="detail-carousel">
-                                <div class="carousel-image" id="carousel-image"></div>
-                                <button class="carousel-btn prev" onclick="carouselPrev()">
-                                    <span class="material-symbols-outlined">chevron_left</span>
-                                </button>
-                                <button class="carousel-btn next" onclick="carouselNext()">
-                                    <span class="material-symbols-outlined">chevron_right</span>
-                                </button>
-                                <div class="carousel-dots" id="carousel-dots"></div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <div class="detail-section-title">Zusätzliche Informationen</div>
-                            <div class="detail-section-content">
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Baujahr</span>
-                                        <span class="data-value" id="detail-baujahr">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Sanierung</span>
-                                        <span class="data-value" id="detail-sanierung">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Ladestationen für Elektrofahrzeuge</span>
-                                        <span class="data-value" id="detail-ladestationen">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Denkmalschutz</span>
-                                        <span class="data-value" id="detail-denkmalschutz">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Parkplätze</span>
-                                        <span class="data-value" id="detail-parkplaetze">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Anzahl Geschosse</span>
-                                        <span class="data-value" id="detail-geschosse">—</span>
-                                    </div>
-                                    <div class="data-item full-width">
-                                        <span class="data-label">Baubewilligung</span>
-                                        <span class="data-value" id="detail-baubewilligung">—</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <div class="detail-section-title">Energiestatistik</div>
-                            <div class="detail-section-content">
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Energieklasse</span>
-                                        <span class="data-value" id="detail-energieklasse">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Wärmeerzeuger Heizung</span>
-                                        <span class="data-value" id="detail-waermeerzeuger">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Energie-/Wärmequelle Heizung</span>
-                                        <span class="data-value" id="detail-waermequelle">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Wärmeerzeuger Warmwasser</span>
-                                        <span class="data-value" id="detail-warmwasser">—</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    
-                    <div class="detail-right">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Objekt Stammdaten</div>
-                            <div class="detail-section-content">
-                                <div class="data-grid">
-                                    <div class="data-item">
-                                        <span class="data-label">Bezeichnung Objekt</span>
-                                        <span class="data-value" id="detail-name">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Bezeichnung Grundstück</span>
-                                        <span class="data-value" id="detail-grundstueck-name">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">ID Objekt</span>
-                                        <span class="data-value" id="detail-id">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">ID Grundstück</span>
-                                        <span class="data-value" id="detail-grundstueck-id">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">EGID Objekt (nur Schweiz)</span>
-                                        <span class="data-value" id="detail-egid">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">EGRID Grundstück (nur Schweiz)</span>
-                                        <span class="data-value" id="detail-egrid">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Gültig von</span>
-                                        <span class="data-value" id="detail-gueltig-von">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Gültig bis</span>
-                                        <span class="data-value" id="detail-gueltig-bis">Keine Angabe</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Teilportfolio</span>
-                                        <span class="data-value" id="detail-teilportfolio">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Objektart Bund 1</span>
-                                        <span class="data-value" id="detail-objektart1">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Teilportfolio Gruppe</span>
-                                        <span class="data-value" id="detail-teilportfolio-gruppe">—</span>
-                                    </div>
-                                    <div class="data-item">
-                                        <span class="data-label">Objektart Bund 2</span>
-                                        <span class="data-value" id="detail-objektart2">—</span>
-                                    </div>
-                                    <div class="data-item full-width">
-                                        <span class="data-label">Art Eigentum</span>
-                                        <span class="data-value" id="detail-eigentum">—</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        
-                        <div class="detail-section">
-                            <div class="detail-section-title">Adresse</div>
-                            <div class="detail-section-content">
-                                <div class="mini-map-container">
-                                    <div id="mini-map" class="mini-map"></div>
-                                </div>
-                                <table class="address-table">
-                                    <thead>
-                                        <tr>
-                                            <th></th>
-                                            <th>Land</th>
-                                            <th>Region</th>
-                                            <th>Stadt</th>
-                                            <th>Postleitzahl</th>
-                                            <th>Strasse</th>
-                                            <th>Hausnummer</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>
-                                                <span class="address-marker">
-                                                    <span class="material-symbols-outlined">location_on</span>
-                                                </span>
-                                            </td>
-                                            <td id="detail-country">—</td>
-                                            <td id="detail-region">—</td>
-                                            <td id="detail-city">—</td>
-                                            <td id="detail-plz">—</td>
-                                            <td id="detail-street">—</td>
-                                            <td id="detail-housenumber">—</td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                </div>
 
-                <!-- Tab Content: Bemessungen -->
+                    <div class="detail-overline">Stammdaten</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Status</span><span class="detail-value" id="detail-status">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Bezeichnung</span><span class="detail-value" id="detail-name">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">ID</span><span class="detail-value" id="detail-id">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Objektart 1</span><span class="detail-value" id="detail-objektart1">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Objektart 2</span><span class="detail-value" id="detail-objektart2">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Art Eigentum</span><span class="detail-value" id="detail-eigentum">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Objektstrategie</span><span class="detail-value" id="detail-ostr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Mietmodell</span><span class="detail-value" id="detail-mietmodell">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Teilportfolio</span><span class="detail-value" id="detail-teilportfolio">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Portfoliogruppe</span><span class="detail-value" id="detail-teilportfolio-gruppe">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Baujahr</span><span class="detail-value" id="detail-baujahr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Verkaufsjahr</span><span class="detail-value" id="detail-vjahr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Anschaffungswert</span><span class="detail-value" id="detail-awrt">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Buchwert</span><span class="detail-value" id="detail-bwrt">–</span></div>
+                    </div>
+
+                    <div class="detail-overline">Kontakte</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Verantwortlich</span><span class="detail-value" id="detail-ovtw">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Portfoliomanager</span><span class="detail-value" id="detail-pvtw">–</span></div>
+                    </div>
+
+                    <div class="detail-overline">Adresse</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Land</span><span class="detail-value" id="detail-country">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Region</span><span class="detail-value" id="detail-region">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Ort</span><span class="detail-value" id="detail-city">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">PLZ</span><span class="detail-value" id="detail-plz">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Strasse</span><span class="detail-value" id="detail-street">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Hausnummer</span><span class="detail-value" id="detail-housenumber">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Adresse</span><span class="detail-value" id="detail-address-concat">–</span></div>
+                    </div>
+
+                    <div class="detail-overline">Koordinaten</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">WGS84</span><span class="detail-value" id="detail-wgs84">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">LV95</span><span class="detail-value" id="detail-lv95">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">EGM Höhe</span><span class="detail-value" id="detail-elev">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Google Maps</span><span class="detail-value"><a id="detail-link-gmaps" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Google Street View</span><span class="detail-value"><a id="detail-link-streetview" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                    </div>
+
+                    <div class="detail-overline">Amtliche Vermessung</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">EGID</span><span class="detail-value" id="detail-egid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">EGRID</span><span class="detail-value" id="detail-egrid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Gemeindename</span><span class="detail-value" id="detail-bfs-gem">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Gemeindenummer</span><span class="detail-value" id="detail-bfs-gemnr">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">BFS Gebäude und Wohnregister GWR</span><span class="detail-value"><a id="detail-link-geoadmin-gwr" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Kataster der öffentlich-rechtlichen Eigentumsbeschränkungen ÖREB</span><span class="detail-value"><a id="detail-link-geoadmin-oereb" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline">Bauzone</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Bezeichnung</span><span class="detail-value" id="detail-zbez">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Nutzung</span><span class="detail-value" id="detail-znut">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Bauzonen Schweiz</span><span class="detail-value"><a id="detail-link-bauzonen" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline">Denkmalschutz</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Hist. Ausstattung</span><span class="detail-value" id="detail-hist">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Archivwürdigkeit</span><span class="detail-value" id="detail-arch">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">KGS Kategorie</span><span class="detail-value" id="detail-kgs-kat">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">KGS Nummer</span><span class="detail-value" id="detail-kgs-nr">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">KGS Inventar</span><span class="detail-value"><a id="detail-link-kgs" href="#" target="_blank" rel="noopener">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline">Sonstiges</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">OBJECTID</span><span class="detail-value" id="detail-objectid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">ETL Zeitstempel</span><span class="detail-value" id="detail-etl-ts">–</span></div>
+                    </div>
+
+                </div><!-- /tab overview -->
+
+                <!-- ===== Tab: Bemessungen ===== -->
                 <div class="tab-content" data-content="measurements">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Bemessungen</div>
 
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern" aria-label="Bemessungen filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">open_in_new</span>
-                                        Anzeigen
-                                    </button>
-                                    <button class="btn-back" id="btn-add-measurement">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="measurements-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-measurements">
-                                            </th>
-                                            <th class="col-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-type sortable" data-sort="areaType">
-                                                Bemessungsart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-area sortable" data-sort="value">
-                                                Wert
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-source">Herkunft</th>
-                                            <th class="col-accuracy sortable" data-sort="accuracy">
-                                                Genauigkeit
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-standard sortable" data-sort="standard">
-                                                Standard
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-from sortable" data-sort="validFrom">
-                                                Gültig von
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-until">Gültig bis</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="measurements-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="measurements-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="measurements">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="measurements" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="measurements" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-overline">Flächen (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Geschossfläche GF</span><span class="detail-value" id="detail-garea-gf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">GF Oberirdisch</span><span class="detail-value" id="detail-garea-gfo">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">GF Unterirdisch</span><span class="detail-value" id="detail-garea-gfu">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Genauigkeit</span><span class="detail-value" id="detail-garea-acu">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Netto-Geschossfl. NGF</span><span class="detail-value" id="detail-garea-ngf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Nutzfläche NF</span><span class="detail-value" id="detail-garea-nf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Hauptnutzfläche HNF</span><span class="detail-value" id="detail-garea-hnf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Nebennutzfläche NNF</span><span class="detail-value" id="detail-garea-nnf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Funktionsfläche FF</span><span class="detail-value" id="detail-garea-ff">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Verkehrsfläche VF</span><span class="detail-value" id="detail-garea-vf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Vermietbare Fl. VMF</span><span class="detail-value" id="detail-garea-vmf">–</span></div>
                     </div>
-                </div>
 
-                <!-- Tab Content: Kosten -->
-                <div class="tab-content" data-content="costs">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Kosten</div>
-
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="costs-filter" placeholder="Alle Spalten filtern" aria-label="Kosten filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">description</span>
-                                        Details
-                                    </button>
-                                    <button class="btn-back" id="btn-add-cost">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="costs-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-costs">
-                                            </th>
-                                            <th class="col-cost-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-group sortable" data-sort="kostengruppe">
-                                                Kostengruppe
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-type sortable" data-sort="kostenart">
-                                                Kostenart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-amount sortable" data-sort="betrag">
-                                                Betrag
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-unit sortable" data-sort="einheit">
-                                                Einheit
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-date sortable" data-sort="stichtag">
-                                                Stichtag
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="costs-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="costs-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="costs">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="costs" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="costs" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-overline">Energiebezugsfläche (SIA 380)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Energiebezugsfl. EBF</span><span class="detail-value" id="detail-garea-ebf">–</span></div>
                     </div>
-                </div>
 
-                <!-- Tab Content: Verträge -->
-                <div class="tab-content" data-content="contracts">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Verträge</div>
-
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern" aria-label="Verträge filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">description</span>
-                                        Details
-                                    </button>
-                                    <button class="btn-back" id="btn-add-contract">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="contracts-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-contracts">
-                                            </th>
-                                            <th class="col-contract-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-type sortable" data-sort="vertragsart">
-                                                Vertragsart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-partner sortable" data-sort="vertragspartner">
-                                                Vertragspartner
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-start sortable" data-sort="vertragsbeginn">
-                                                Beginn
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-end sortable" data-sort="vertragsende">
-                                                Ende
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-amount sortable" data-sort="betrag">
-                                                Betrag/Jahr
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-status sortable" data-sort="status">
-                                                Status
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="contracts-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="contracts-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contracts">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="contracts" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="contracts" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-overline">Volumen (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Gebäudevolumen GV</span><span class="detail-value" id="detail-gvol-gv">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">GV Oberirdisch</span><span class="detail-value" id="detail-gvol-gvo">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">GV Unterirdisch</span><span class="detail-value" id="detail-gvol-gvu">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Genauigkeit</span><span class="detail-value" id="detail-gvol-acu">–</span></div>
                     </div>
-                </div>
 
-                <!-- Tab Content: Ausstattung -->
-                <div class="tab-content" data-content="assets">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Ausstattung</div>
-
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="assets-filter" placeholder="Alle Spalten filtern" aria-label="Ausstattung filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">info</span>
-                                        Details
-                                    </button>
-                                    <button class="btn-back" id="btn-add-asset">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="assets-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-assets">
-                                            </th>
-                                            <th class="col-asset-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-name sortable" data-sort="bezeichnung">
-                                                Bezeichnung
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-category sortable" data-sort="kategorie">
-                                                Kategorie
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-manufacturer sortable" data-sort="hersteller">
-                                                Hersteller
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-year sortable" data-sort="baujahr">
-                                                Baujahr
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-location sortable" data-sort="standort">
-                                                Standort
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="assets-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="assets-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="assets">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="assets" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="assets" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-overline">Geschosse</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Anzahl Total</span><span class="detail-value" id="detail-geschosse">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Oberirdisch</span><span class="detail-value" id="detail-geschosse-og">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Unterirdisch</span><span class="detail-value" id="detail-geschosse-ug">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Genauigkeit</span><span class="detail-value" id="detail-geschosse-acu">–</span></div>
                     </div>
-                </div>
 
-                <!-- Tab Content: Dokumente -->
-                <div class="tab-content" data-content="documents">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Dokumente</div>
-
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="documents-filter" placeholder="Alle Spalten filtern" aria-label="Dokumente filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">download</span>
-                                        Herunterladen
-                                    </button>
-                                    <button class="btn-back" id="btn-add-document">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="documents-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-documents">
-                                            </th>
-                                            <th class="col-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-title sortable" data-sort="titel">
-                                                Titel
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-type sortable" data-sort="dokumentTyp">
-                                                Typ
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-format">Format</th>
-                                            <th class="col-date sortable" data-sort="datum">
-                                                Datum
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-size">Grösse</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="documents-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="documents-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="documents">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="documents" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="documents" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="detail-overline">Grundstück (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">Gebäudegrundfläche GGF</span><span class="detail-value" id="detail-larea-ggf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Grundstücksfläche GSF</span><span class="detail-value" id="detail-larea-gsf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Umgebungsfläche UF</span><span class="detail-value" id="detail-larea-uf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Genauigkeit</span><span class="detail-value" id="detail-larea-acu">–</span></div>
                     </div>
-                </div>
 
-                <!-- Tab Content: Kontakte -->
-                <div class="tab-content" data-content="contacts">
-                    <div class="detail-table-container">
-                        <div class="detail-section">
-                            <div class="detail-section-title">Kontakte</div>
+                </div><!-- /tab measurements -->
 
-                            <div class="toolbar">
-                                <div class="toolbar-search">
-                                    <span class="material-symbols-outlined">search</span>
-                                    <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern" aria-label="Kontakte filtern">
-                                </div>
-                                <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">mail</span>
-                                        Kontaktieren
-                                    </button>
-                                    <button class="btn-back" id="btn-add-contact">
-                                        <span class="material-symbols-outlined">add</span>
-                                        Hinzufügen
-                                    </button>
-                                </div>
-                            </div>
-
-                            <div class="detail-table-wrapper">
-                                <table class="detail-table" id="contacts-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-contacts">
-                                            </th>
-                                            <th class="col-contact-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-name sortable" data-sort="name">
-                                                Name
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-role sortable" data-sort="rolle">
-                                                Rolle
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-org sortable" data-sort="organisation">
-                                                Organisation
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-phone">Telefon</th>
-                                            <th class="col-contact-email">E-Mail</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody id="contacts-tbody">
-                                        <!-- Populated by JavaScript -->
-                                    </tbody>
-                                </table>
-                            </div>
-                            <div class="pagination-footer" id="contacts-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contacts">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
-                                <div class="pagination-info">Seite 1 von 1</div>
-                                <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="contacts" disabled>
-                                        <span class="material-symbols-outlined">chevron_left</span>
-                                    </button>
-                                    <button class="pagination-btn pagination-next" data-table="contacts" disabled>
-                                        <span class="material-symbols-outlined">chevron_right</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
             </div>
         </div>
 

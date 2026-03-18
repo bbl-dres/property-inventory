@@ -161,47 +161,21 @@
         }
 
         .header-main {
+            position: relative;
             display: flex;
+            justify-content: space-between;
             align-items: center;
             padding: 0 var(--space-5);
             height: var(--header-main-height);
             border-bottom: 1px solid var(--grey-300);
             box-shadow: var(--shadow-md);
-            position: relative;
             z-index: 1; /* Shadow appears above header-detail */
         }
 
-        .header-detail {
-            display: none;
-            flex-direction: column;
-            position: relative;
-            z-index: 0;
-        }
-
-        body.detail-active .header-detail {
-            display: flex;
-        }
-
-        /* Detail header and tabs now in header */
-        .header-detail .detail-header {
-            background: var(--white);
-            padding: var(--space-4) var(--space-5);
-            transition: padding-right var(--transition-slow);
-        }
-
-        .header-detail .detail-tabs {
-            background: var(--white);
-            transition: padding-right var(--transition-slow);
-        }
-
-        /* Align header elements with detail-content when drawer is open */
-        /* drawer width + var(--space-6) to match detail-content padding */
-        body.drawer-open .header-detail .detail-header,
-        body.drawer-open .header-detail .detail-tabs {
-            padding-right: calc(var(--drawer-width) + var(--space-6));
-        }
 
         #logo-area {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: flex-start;
             cursor: pointer;
@@ -238,14 +212,20 @@
         }
         
         #search-area {
-            flex: 1;
+            position: absolute;
+            left: 0;
+            right: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             gap: var(--space-4);
-            padding: 0 var(--space-10);
+            pointer-events: none;
         }
-        
+
+        #search-area > * {
+            pointer-events: auto;
+        }
+
         #search-wrapper {
             position: relative;
             width: 100%;
@@ -472,6 +452,8 @@
         }
 
         #header-right {
+            position: relative;
+            z-index: 1;
             display: flex;
             align-items: center;
             gap: var(--space-8);
@@ -511,46 +493,9 @@
             font-size: var(--icon-md);
         }
         
-        #login-btn {
-            background: var(--white);
-            border: 1px solid var(--grey-300);
-            width: 40px;
-            height: 40px;
-            border-radius: var(--radius-full);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        
-        #login-btn:hover {
-            background: var(--grey-100);
-        }
-        
-        #login-btn .material-symbols-outlined {
-            font-size: var(--icon-lg);
-            color: var(--grey-600);
-        }
-        
         /* ===== LANGUAGE SELECTOR ===== */
         #lang-selector {
             position: relative;
-        }
-
-        .lang-btn {
-            background: transparent;
-            border: none;
-            padding: var(--space-2) var(--space-3);
-            font-size: var(--text-sm);
-            font-weight: var(--font-normal);
-            color: var(--grey-700);
-            cursor: pointer;
-            border-radius: var(--radius-sm);
-        }
-
-        .lang-btn:hover {
-            background: var(--grey-100);
-            color: var(--grey-900);
         }
 
         .lang-dropdown {
@@ -1219,67 +1164,31 @@
         }
 
         /* ===== DETAIL VIEW PAGE SCROLL MODE ===== */
-        /* When detail view is active, enable page scrolling instead of internal scrollbar */
+        /* When detail view is active, unlock body scroll — no fixed elements */
         body.detail-active {
             height: auto;
             overflow: auto;
-            background: var(--grey-50); /* Grey background fills viewport */
+            background: var(--grey-50);
         }
 
         body.detail-active #main {
-            flex: none;
-            /* No min-height - body background fills viewport visually */
+            overflow: visible;
         }
 
         body.detail-active .main-content {
-            align-self: flex-start;
+            overflow: visible;
         }
 
         body.detail-active #detail-view {
             overflow: visible;
-            align-self: flex-start;
-            padding-bottom: 30px; /* Space for fixed footer */
-            /* No min-height - content determines height, grey background from body fills rest */
-        }
-
-        /* Sticky footer in detail view */
-        body.detail-active #footer {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            z-index: 50;
-        }
-
-        /* Fix smart-drawer height in detail view - fully collapse when closed */
-        body.detail-active #smart-drawer:not(.open) {
-            height: 0;
-            min-height: 0;
-            width: 0;
-            min-width: 0;
-            padding: 0;
-            border: none;
-            position: absolute; /* remove from flow when closed */
-        }
-
-        /* When open, use fixed positioning below full header */
-        body.detail-active #smart-drawer.open {
-            position: fixed;
-            top: var(--header-total-height);
-            right: 0;
-            height: calc(100vh - var(--header-total-height) - var(--footer-height));
-            z-index: 100;
+            padding-bottom: var(--space-8);
         }
 
         .detail-header {
-            background: var(--white);
-            border-bottom: 1px solid var(--grey-300);
-            padding: var(--space-4) var(--space-5); /* 16px 20px - matches panel headers */
+            padding: var(--space-3) 0;
         }
-        
+
         .detail-header-inner {
-            max-width: 1500px;
-            margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -1316,28 +1225,6 @@
         .detail-header-actions {
             display: flex;
             gap: var(--space-4);
-        }
-        
-        .btn-edit {
-            background: var(--grey-900);
-            color: var(--white);
-            border: none;
-            padding: var(--space-2) var(--space-4);
-            border-radius: var(--radius-sm);
-            cursor: pointer;
-            font-size: var(--text-sm);
-            line-height: 1;
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-        }
-        
-        .btn-edit:hover {
-            background: var(--grey-800);
-        }
-        
-        .btn-edit .material-symbols-outlined {
-            font-size: var(--icon-sm);
         }
         
         .btn-back {
@@ -1408,14 +1295,11 @@
         
         .detail-content {
             overflow: visible;
-            padding: var(--space-6);
+            padding: var(--space-5) 0;
             transition: padding-right var(--transition-slow);
         }
 
-        /* Add padding when drawer is open in detail view */
-        body.detail-active:has(#smart-drawer.open) .detail-content {
-            padding-right: calc(var(--drawer-width) + var(--space-6));
-        }
+        /* Detail view: drawer overlays content, no padding shift */
 
         .detail-grid {
             display: grid;
@@ -1430,6 +1314,127 @@
             display: flex;
             flex-direction: column;
             gap: var(--space-6);
+        }
+
+        /* Single-column detail layout — fixed width independent of tab content */
+        .detail-single-col {
+            width: 100%;
+            max-width: 720px;
+            margin: 0 auto;
+        }
+        .detail-single-col .tab-content {
+            display: none;
+            width: 100%;
+        }
+        .detail-single-col .tab-content.active {
+            display: block;
+        }
+
+        /* Carousel inside detail — match card radius */
+        .detail-single-col .carousel {
+            border-radius: var(--radius-sm);
+            overflow: hidden;
+            margin-bottom: var(--space-4);
+        }
+
+        /* Inline tabs (inside content, scrollable) */
+        .detail-tabs-inline {
+            display: flex;
+            gap: 0;
+            border-bottom: 1px solid var(--grey-300);
+            margin-bottom: var(--space-5);
+        }
+        .detail-tabs-inline .detail-tab {
+            padding: var(--space-3) var(--space-5);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--grey-500);
+            background: none;
+            border: none;
+            border-bottom: 2px solid transparent;
+            margin-bottom: -1px;
+            cursor: pointer;
+            transition: color var(--transition-normal), border-color var(--transition-normal);
+        }
+        .detail-tabs-inline .detail-tab:hover {
+            color: var(--grey-900);
+        }
+        .detail-tabs-inline .detail-tab.active {
+            color: var(--primary-red);
+            border-bottom-color: var(--primary-red);
+            font-weight: var(--font-semibold);
+        }
+
+        /* Section overline title (above card) */
+        .detail-overline {
+            font-size: 11px;
+            font-weight: var(--font-semibold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--grey-500);
+            margin-top: var(--space-6);
+            margin-bottom: var(--space-2);
+            padding-left: var(--space-1);
+        }
+        .tab-content .detail-overline:first-child {
+            margin-top: 0;
+        }
+
+        /* Detail card (white container) */
+        .detail-card {
+            background: var(--white);
+            border: 1px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            padding: var(--space-1) var(--space-4);
+        }
+
+        /* Grid row: label | value | info icon column */
+        .detail-grid-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 24px;
+            gap: var(--space-4) var(--space-3);
+            padding: 7px 4px;
+            border-bottom: 1px solid var(--grey-100);
+            align-items: baseline;
+            border-radius: 3px;
+            cursor: default;
+        }
+        .detail-grid-row[data-desc] {
+            cursor: pointer;
+        }
+        .detail-grid-row:hover {
+            background: var(--grey-50, #f9fafb);
+        }
+        .detail-grid-row:last-child,
+        .detail-grid-row:has(+ .detail-grid-spacer) {
+            border-bottom: none;
+        }
+        .detail-grid-spacer {
+            height: 6px;
+        }
+
+        .detail-label {
+            font-size: var(--text-sm);
+            color: var(--grey-500);
+            line-height: var(--leading-normal);
+        }
+        .detail-label::after {
+            content: ' :';
+        }
+        .detail-value {
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--grey-900);
+            line-height: var(--leading-normal);
+            word-break: break-word;
+        }
+        .detail-value a {
+            color: var(--primary-red);
+            text-decoration: none;
+            font-weight: var(--font-normal);
+        }
+        .detail-value a:hover {
+            text-decoration: underline;
         }
         
         .detail-section {
@@ -1453,6 +1458,164 @@
             padding: var(--space-5);
         }
         
+        /* Info icon — 3rd column in grid row */
+        .info-icon {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Material Symbols Outlined';
+            font-size: 16px;
+            font-weight: normal;
+            color: var(--grey-300);
+            transition: color var(--transition-fast);
+            -webkit-user-select: none;
+            user-select: none;
+        }
+        .detail-grid-row[data-desc]:hover .info-icon {
+            color: var(--grey-500);
+        }
+
+        /* Info popover — spans all 3 columns */
+        .info-popover {
+            grid-column: 1 / -1;
+            font-size: 12px;
+            line-height: 1.5;
+            color: var(--grey-500);
+            background: var(--grey-50, #f9fafb);
+            border-radius: 4px;
+            padding: 6px 10px;
+            margin-top: 2px;
+            margin-bottom: 4px;
+        }
+
+        /* ===== API DOCS VIEW ===== */
+        #api-docs-view {
+            display: none;
+        }
+        #api-docs-view.active {
+            display: block;
+        }
+        .api-docs-content {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: var(--space-6) var(--space-5);
+        }
+        .api-docs-header h1 {
+            font-size: var(--text-xl);
+            font-weight: var(--font-semibold);
+            color: var(--grey-900);
+            margin: 0 0 var(--space-2) 0;
+        }
+        .api-docs-subtitle {
+            font-size: var(--text-sm);
+            color: var(--grey-500);
+            margin: 0 0 var(--space-6) 0;
+        }
+        .api-docs-section {
+            margin-bottom: var(--space-8);
+        }
+        .api-docs-section h2 {
+            font-size: 11px;
+            font-weight: var(--font-semibold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--grey-500);
+            margin: 0 0 var(--space-3) var(--space-1);
+        }
+        .api-docs-section p {
+            font-size: var(--text-sm);
+            color: var(--grey-700);
+            line-height: 1.6;
+            margin: 0 0 var(--space-4) 0;
+        }
+        .api-docs-card {
+            background: var(--white);
+            border: 1px solid var(--grey-200);
+            border-radius: var(--radius-sm);
+            padding: var(--space-3) var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+        .api-docs-overline {
+            font-size: 10px;
+            font-weight: var(--font-semibold);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            color: var(--grey-400);
+            margin-bottom: var(--space-2);
+        }
+        .api-docs-row {
+            display: flex;
+            gap: var(--space-4);
+            padding: 4px 0;
+            border-bottom: 1px solid var(--grey-100);
+            font-size: var(--text-sm);
+            align-items: baseline;
+        }
+        .api-docs-row:last-child {
+            border-bottom: none;
+        }
+        .api-docs-row code {
+            font-family: 'SFMono-Regular', 'Consolas', 'Liberation Mono', monospace;
+            font-size: 12px;
+            color: var(--grey-900);
+            background: var(--grey-50, #f9fafb);
+            padding: 1px 5px;
+            border-radius: 3px;
+            white-space: nowrap;
+        }
+        .api-docs-row span {
+            color: var(--grey-600);
+        }
+        .api-docs-label {
+            min-width: 160px;
+            color: var(--grey-500);
+            flex-shrink: 0;
+        }
+        .api-docs-endpoint {
+            margin-bottom: var(--space-6);
+        }
+        .api-docs-method {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            margin-bottom: var(--space-2);
+        }
+        .method-badge {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 3px;
+            font-size: 11px;
+            font-weight: var(--font-semibold);
+            letter-spacing: 0.05em;
+        }
+        .method-badge.get {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .api-docs-card pre {
+            margin: 0;
+            overflow-x: auto;
+        }
+        .api-docs-card pre code {
+            display: block;
+            background: none;
+            padding: 0;
+            font-size: 12px;
+            line-height: 1.6;
+            color: var(--grey-800);
+            white-space: pre;
+        }
+        .api-docs-notice {
+            font-style: italic;
+            color: var(--grey-400);
+            text-align: center;
+            padding: var(--space-4) 0;
+            border-top: 1px solid var(--grey-200);
+        }
+        .api-docs-notice a {
+            color: var(--primary-red);
+        }
+
         /* Image Carousel */
         .carousel {
             position: relative;
@@ -3521,20 +3684,11 @@
                 gap: var(--space-4);
             }
 
-            .header-detail .detail-header {
-                padding: var(--space-3) var(--space-4);
-            }
-
             #smart-drawer.open {
                 width: 340px;
                 min-width: 340px;
             }
 
-            /* Match header elements padding to tablet drawer width */
-            body.drawer-open .header-detail .detail-header,
-            body.drawer-open .header-detail .detail-tabs {
-                padding-right: calc(340px + var(--space-6));
-            }
 
             #accordion-panel {
                 width: 320px;
@@ -3554,16 +3708,6 @@
             }
 
             /* Smart-drawer fixed positioning for tablet - uses overridden CSS variables */
-            body.detail-active #smart-drawer.open {
-                top: var(--header-total-height);
-                height: calc(100vh - var(--header-total-height) - var(--footer-height));
-            }
-
-            /* Detail content padding for tablet drawer width */
-            body.detail-active:has(#smart-drawer.open) .detail-content {
-                padding-right: calc(340px + var(--space-6));
-            }
-
             .gallery-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: var(--space-4);
@@ -3619,20 +3763,6 @@
             }
 
             /* Header detail on mobile */
-            .header-detail .detail-header {
-                padding: var(--space-3) var(--space-4);
-            }
-
-            .header-detail .detail-tabs {
-                overflow-x: auto;
-            }
-
-            /* No padding adjustment on mobile - drawer is fullscreen overlay */
-            body.drawer-open .header-detail .detail-header,
-            body.drawer-open .header-detail .detail-tabs {
-                padding-right: var(--space-4);
-            }
-
             /* Smart drawer - full screen on mobile */
             #smart-drawer {
                 position: fixed;

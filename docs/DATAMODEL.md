@@ -54,7 +54,7 @@ This data model is designed for compatibility with the BuildingMinds platform sc
 
 ## 2. Architecture Overview
 
-### 2.1 Entity Relationship Diagram
+### 2.1 Application Entity Relationship Diagram
 
 ```mermaid
 erDiagram
@@ -174,6 +174,60 @@ erDiagram
     }
 ```
 
+### 2.1.1 BBL GIS IMMO — Conceptual Entity Relationship Diagram
+
+The BBL GIS IMMO feature layers model the physical real estate portfolio as flat GIS-compatible entities. The SAP Economic Unit (`bbl_we`) is the commercial grouping key that links Building, Parcel, and Construction Project. Official survey identifiers (EGID, EGRID) provide the spatial linkage between entities.
+
+> **Source of truth:** `docs/BBL GIS IMMO 18-03-2026.xlsx`
+
+```mermaid
+erDiagram
+    SAP_ECONOMIC_UNIT ||--o{ BUILDING : "groups via bbl_we"
+    SAP_ECONOMIC_UNIT ||--o{ PARCEL : "groups via bbl_we"
+    SAP_ECONOMIC_UNIT ||--o{ CONSTRUCTION_PROJECT : "groups via bbl_we"
+    PARCEL ||--o{ BUILDING : "contains via av_egrid"
+    BUILDING ||--o{ BUILDING_ENVELOPE : "shell via bbl_id"
+    BUILDING ||--o{ LAND_COVER : "footprint via bbl_id"
+    PARCEL ||--o{ LAND_COVER : "covers via av_egrid"
+
+    BUILDING {
+        string bbl_id PK "Internal BBL ID"
+        string bbl_we FK "Economic Unit"
+        string av_egid FK "Federal Building ID"
+        string av_egrid FK "Federal Parcel ID"
+        string bfs_gemnr FK "BFS Municipality"
+        int objectid UK "ESRI ID"
+    }
+
+    PARCEL {
+        string bbl_id PK "Internal BBL ID"
+        string bbl_we FK "Economic Unit"
+        string av_egrid FK "Federal Parcel ID"
+        string bfs_gemnr FK "BFS Municipality"
+        string av_nr UK "AV Parcel Number"
+        int objectid UK "ESRI ID"
+    }
+
+    LAND_COVER {
+        int objectid PK "ESRI ID"
+        string bbl_id FK "BBL ID (multi-value)"
+        string av_egid FK "Federal Building ID"
+        string av_egrid FK "Federal Parcel ID"
+    }
+
+    BUILDING_ENVELOPE {
+        int objectid PK "ESRI ID"
+        string bbl_id FK "BBL ID (multi-value)"
+        string av_egid FK "Federal Building ID"
+        string av_egrid FK "Federal Parcel ID"
+    }
+
+    CONSTRUCTION_PROJECT {
+        string bbl_id PK "Internal BBL ID"
+        string bbl_we FK "Economic Unit"
+    }
+```
+
 ### 2.2 Entity Hierarchy
 
 Entities are organized into functional groups:
@@ -181,6 +235,7 @@ Entities are organized into functional groups:
 | Layer | Entities | Description |
 |-------|----------|-------------|
 | **Core** | Site, Building, Parcel, Address, Floor, Space | Primary real estate objects, their locations, and internal structures |
+| **GIS Feature Layers** | Building, Land Cover, Parcel, Building Envelope, Construction Project | Flat, Shapefile-compatible feature layers for the BBL GIS IMMO system (see [Section 2.4](#24-bbl-gis-immo-feature-layers)) |
 | **Measurement** | Area Measurement, Operational Measurement | Quantitative data (areas, volumes, consumption) |
 | **Supporting** | Document, Contact, Asset, Contract, Cost | Administrative and operational associations |
 | **Future** | Certificate, Valuation | Planned entities for certifications and appraisals |
@@ -205,6 +260,119 @@ In a production system, these would be separate entities with foreign key relati
 - Many-to-many relationships (e.g., one contact managing multiple buildings)
 - Efficient querying and filtering
 - Event sourcing for audit trails
+
+### 2.4 BBL GIS IMMO Feature Layers
+
+The BBL GIS IMMO system represents the federal real estate portfolio as flat GIS feature layers, optimized for Shapefile compatibility (field names ≤ 10 characters). Each feature layer is a denormalized view that bundles master data, address, coordinates, survey references, dimensions, and metadata per geometry.
+
+> **Source of truth:** [`docs/BBL GIS IMMO 18-03-2026.xlsx`](BBL%20GIS%20IMMO%2018-03-2026.xlsx) — Attribute sheet
+
+#### Column Schema (Excel)
+
+| Column | Description |
+|--------|-------------|
+| **Status** | `LIVE` = production, `DEV` = in development |
+| **System** | Source system (always `BBL GIS IMMO`) |
+| **Entity DE / EN** | Business object in German / English |
+| **Property Group EN** | Functional grouping of attributes |
+| **Property Alias DE / EN** | Human-readable field name in German / English |
+| **Property ID** | Shapefile-safe DB field name (≤ 10 chars) |
+| **Format** | Data type: `String`, `Integer`, `Double`, `Boolean`, `Date` |
+| **Key** | `PK` = primary key, `FK` = foreign key, `UK` = unique key |
+| **Value List** | Reference to value list (uses Property ID as key, e.g. `bbl_stat`) |
+| **Lineage** | Data source / origin system |
+| **Description DE / EN** | Field description in German / English |
+
+#### Business Objects
+
+| Entity EN | Entity DE | Geometry | Status | Attributes | Description |
+|-----------|-----------|----------|--------|------------|-------------|
+| **Building** | Gebäude | Point | LIVE | 74 (67 LIVE + 7 DEV) | Core building records with master data, address, coordinates, survey IDs, heritage, dimensions (SIA 416/380), and financial values |
+| **Land Cover** | Bodenabdeckung | Polygon | LIVE | 13 (all LIVE) | Building footprints and land cover polygons from the official Swiss survey |
+| **Parcel** | Grundstück | Polygon | LIVE | 44 (43 LIVE + 1 DEV) | Land parcels with master data, survey IDs, zoning, dimensions (SIA 416), sealed/green area |
+| **Building Envelope** | Gebäudehülle | Polygon | DEV | 33 (all DEV) | 3D building shell geometry with envelope-specific dimensions (eBKP-H roof/wall areas) |
+| **Construction Project** | Bauprojekt | Point | DEV | 30 (all DEV) | Active construction projects with project controlling dates, costs, and typology |
+
+#### Property Groups
+
+Each entity's attributes are organized into the following functional groups:
+
+| Property Group | Description | Applies To |
+|----------------|-------------|------------|
+| **Internal Master Data** | Core BBL/SAP fields: IDs, status, ownership, strategy, portfolio, financials | Building, Parcel, Building Envelope, Construction Project |
+| **Internal Master Data 2** | Extended master data: ownership type, rental model, building types, responsible persons | Building |
+| **Address** | Location fields: country, region, city, postal code, street, house number, concatenated address | All entities |
+| **Coordinates** | WGS84 lat/lon, LV95 E/N (derived), EGM elevation | All entities |
+| **Official Survey** | Swiss survey IDs: EGID, EGRID, BFS municipality, parcel number | Building, Land Cover, Parcel, Building Envelope |
+| **Zoning** | Construction zone designation and usage | Building, Parcel |
+| **Heritage Protection** | Historical collection, archival value, KGS cultural property protection | Building |
+| **Dimensions - SIA 416** | Floor areas (GF, NGF, NF, HNF, etc.), volumes (GV), floor counts, land areas (GGF, GSF, UF) | Building, Parcel, Building Envelope |
+| **Dimensions - SIA 380** | Energy reference area (EBF) | Building, Building Envelope |
+| **Dimensions - eBKP-H** | Roof area (DAF), exterior wall area (AWF) | Building Envelope |
+| **Other Dimensions** | Sealed area, green space | Parcel |
+| **Project Controlling** | Project typology, costs, milestone dates, free text | Construction Project |
+| **Cleaning** | Cleaning groups, window/glass areas | Building (DEV) |
+| **Workplaces** | Workplace counts (actual, reserve, target) | Building (DEV) |
+| **Other** | OBJECTID, FID, FID Source, ETL timestamp | All entities |
+
+#### Value Lists
+
+Value lists are referenced by their Property ID (the same field name they constrain). The following value lists are defined:
+
+| Value List Key | Used By | Description |
+|----------------|---------|-------------|
+| `bbl_stat` | Building, Parcel, Construction Project | Record status per SAP |
+| `bbl_eigen` | Building, Parcel | Ownership type |
+| `bbl_ostr` | Building | Object strategy |
+| `bbl_mietm` | Building, Parcel | Rental model |
+| `bbl_port` | Building, Parcel | Subportfolio assignment |
+| `bbl_port2` | Building | Subportfolio group |
+| `bbl_gbda1` | Building | Building type level 1 |
+| `bbl_gbda2` | Building | Building type level 2 |
+| `bbl_rgrp` | Building | Cleaning group |
+| `bbl_hist` | Building | Historical furnishing classification |
+| `bbl_arch` | Building | Archival value classification |
+| `kgs_kat` | Building | KGS cultural property protection category |
+| `av_stat` | Land Cover, Parcel, Building Envelope | Official survey status |
+| `av_type` | Land Cover | Land cover type |
+| `adr_land` | All entities | Country (ISO 3166) |
+| `adr_reg` | All entities | Region / Canton |
+| `garea_acu` | Building, Building Envelope | Floor area accuracy |
+| `gvol_acu` | Building, Building Envelope | Volume accuracy |
+| `gastw_acu` | Building, Building Envelope | Floor count accuracy |
+| `larea_acu` | Building, Parcel, Building Envelope | Land area accuracy |
+| `bbl_ptag` | Construction Project | Client type |
+| `bbl_partb` | Construction Project | Structure category |
+| `bbl_ptypb` | Construction Project | Structure type |
+| `bbl_part` | Construction Project | Project type |
+
+> **Note:** Value list codes are maintained in the **Werteliste** sheet of the source Excel.
+
+#### Foreign Key Targets
+
+| FK Field | Source Entity | Target / External System | Description |
+|----------|-------------|--------------------------|-------------|
+| `bbl_we` | Building, Parcel, Constr. Project | SAP RE-FX Economic Unit | Commercial grouping key |
+| `av_egid` | Building, Land Cover, Building Envelope | CH GWR (housing-stat.ch) | Federal building identifier |
+| `av_egrid` | Building, Land Cover, Parcel, Building Envelope | CH Cadastre (cadastre.ch) | Federal parcel identifier |
+| `bfs_gemnr` | Building, Parcel | BFS Municipality Directory | Municipality number |
+| `kgs_nr` | Building | CH KGS Inventory | Cultural property protection ID |
+| `fid` | Land Cover, Parcel, Building Envelope | External geometry databases | Architecture object ID |
+| `bbl_id` | Land Cover, Building Envelope | Building / Parcel `bbl_id` | Semicolon-delimited if polygon covers multiple objects |
+
+#### Mapping to Application Entities
+
+The GIS feature layers map to the application-level BuildingMinds entities as follows:
+
+| GIS Feature Layer | Application Entity | Mapping Notes |
+|--------------------|-------------------|---------------|
+| Building | Building (§3.3) | `bbl_id` → `buildingId`, `bbl_we` → `siteId`, `bbl_eigen` → `typeOfOwnership`, `bbl_bjahr` → `constructionYear` |
+| Parcel | Parcel (§3.2) | `bbl_id` → `parcelId`, `av_nr` → `plotNumber`, `larea_gsf` → `area`, `bbl_eigen` → `ownershipType` |
+| Building (address fields) | Address (§3.4) | `adr_land` → `country`, `adr_str` → `streetName`, `adr_hsnr` → `houseNumber`, `adr_plz` → `postalCode`, `adr_ort` → `city` |
+| Building (dimensions) | AreaMeasurement (§4.1) | `garea_gf` → GF, `garea_ngf` → NGF, `garea_ebf` → EBF, etc. |
+| Construction Project | *No direct mapping* | Future: map to project/investment entity |
+| Building Envelope | *No direct mapping* | Future: map to 3D building model entity |
+| Land Cover | *No direct mapping* | Geometry-only layer; linked via EGID/EGRID |
 
 ---
 
@@ -1692,6 +1860,7 @@ All dates must be converted to ISO 8601 format: `yyyy-mm-ddThh:mm:ssZ`
 | 0.6.0 | 2024-XX-XX | - | Added Parcel (Parzelle) entity with polygon geometry, linked to buildings |
 | 0.7.0 | 2024-XX-XX | - | Restructured document: grouped entities by function, consolidated enumerations to Appendix A, separated transformation rules to Appendix B |
 | 0.8.0 | 2024-XX-XX | - | Added Floor (Geschoss) and Space (Raum) entities with climate, ventilation, and occupancy fields |
+| 0.9.0 | 2026-03-18 | - | Added BBL GIS IMMO feature layer model (§2.1.1, §2.4) with conceptual ER, 5 business objects, property groups, value lists, FK targets, and mapping to application entities. Source: `BBL GIS IMMO 18-03-2026.xlsx` |
 
 ---
 

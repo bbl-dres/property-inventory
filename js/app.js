@@ -6,10 +6,10 @@
         
         // Status Farben (synchronized with CSS --status-* variables)
         var statusColors = {
-            'In Betrieb': '#2e7d32',      // --status-active
+            'Aktiv': '#2e7d32',      // --status-active
             'In Renovation': '#ef6c00',   // --status-renovation
             'In Planung': '#1976d2',      // --status-planning
-            'Ausser Betrieb': '#6C757D'   // --status-inactive
+            'Verkauft': '#6C757D'   // --status-inactive
         };
         
         // Placeholder images
@@ -243,12 +243,12 @@
 
         // Filter configuration - maps filter keys to data properties
         var filterConfig = {
-            status: { property: 'status', label: 'Status' },
-            eigentum: { property: 'typeOfOwnership', label: 'Art Eigentum' },
-            teilportfolio: { property: 'extensionData.portfolio', label: 'Teilportfolio' },
-            gebaeudeart: { property: 'primaryTypeOfBuilding', label: 'Gebäudeart' },
-            land: { property: 'country', label: 'Land' },
-            region: { property: 'stateProvincePrefecture', label: 'Region' }
+            status: { property: 'bbl_stat', label: 'Status' },
+            eigentum: { property: 'bbl_eigen', label: 'Art Eigentum' },
+            teilportfolio: { property: 'bbl_port', label: 'Teilportfolio' },
+            gebaeudeart: { property: 'bbl_gbda1', label: 'Gebäudeart' },
+            land: { property: 'adr_land', label: 'Land' },
+            region: { property: 'adr_reg', label: 'Region' }
         };
 
         // ===== FILTER FUNCTIONS =====
@@ -380,15 +380,15 @@
             }
 
             var filteredIds = filteredData.features.map(function(f) {
-                return f.properties.buildingId;
+                return f.properties.bbl_id;
             });
 
             // Apply filter to show only filtered buildings
-            map.setFilter('portfolio-points', ['in', ['get', 'buildingId'], ['literal', filteredIds]]);
+            map.setFilter('portfolio-points', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
 
             // Also filter labels layer if it exists
             if (map.getLayer('portfolio-labels')) {
-                map.setFilter('portfolio-labels', ['in', ['get', 'buildingId'], ['literal', filteredIds]]);
+                map.setFilter('portfolio-labels', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
             }
 
             // Zoom to fit filtered points
@@ -450,7 +450,7 @@
 
         function navigateWithLandFilter() {
             if (!currentDetailBuilding) return;
-            var land = currentDetailBuilding.properties.country;
+            var land = currentDetailBuilding.properties.adr_land;
             if (!land) return;
 
             // Reset all filters and set only land filter
@@ -467,7 +467,7 @@
 
         function navigateWithRegionFilter() {
             if (!currentDetailBuilding) return;
-            var region = currentDetailBuilding.properties.stateProvincePrefecture;
+            var region = currentDetailBuilding.properties.adr_reg;
             if (!region) return;
 
             // Reset all filters and set only region filter
@@ -633,13 +633,13 @@
 
             portfolioData.features.forEach(function(feature) {
                 var props = feature.properties;
-                var ext = props.extensionData || {};
-                if (props.status) uniqueValues.status.add(props.status);
-                if (props.typeOfOwnership) uniqueValues.eigentum.add(props.typeOfOwnership);
-                if (ext.portfolio) uniqueValues.teilportfolio.add(ext.portfolio);
-                if (props.primaryTypeOfBuilding) uniqueValues.gebaeudeart.add(props.primaryTypeOfBuilding);
-                if (props.country) uniqueValues.land.add(props.country);
-                if (props.stateProvincePrefecture) uniqueValues.region.add(props.stateProvincePrefecture);
+                // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
+                if (props.bbl_stat) uniqueValues.status.add(props.bbl_stat);
+                if (props.bbl_eigen) uniqueValues.eigentum.add(props.bbl_eigen);
+                if (props.bbl_port) uniqueValues.teilportfolio.add(props.bbl_port);
+                if (props.bbl_gbda1) uniqueValues.gebaeudeart.add(props.bbl_gbda1);
+                if (props.adr_land) uniqueValues.land.add(props.adr_land);
+                if (props.adr_reg) uniqueValues.region.add(props.adr_reg);
             });
 
             // Render options for each filter
@@ -841,7 +841,7 @@
                 return portfolioData || [];
             } else if (selection === 'selected' && selectedBuildingId) {
                 var building = portfolioData.find(function(b) {
-                    return b.properties.buildingId === selectedBuildingId;
+                    return b.properties.bbl_id === selectedBuildingId;
                 });
                 return building ? [building] : [];
             }
@@ -921,12 +921,14 @@
             var includeCoords = document.getElementById('export-coords').checked;
 
             // Define columns
-            var columns = ['buildingId', 'name', 'address', 'city', 'country', 'status', 'energyClass', 'flaeche'];
+            var columns = ['bbl_id', 'bbl_bez', 'adr_conct', 'adr_ort', 'adr_land', 'bbl_stat', 'garea_ngf'];
 
             if (allFields && !visibleOnly) {
-                columns = ['buildingId', 'name', 'address', 'postalCode', 'city', 'country', 'region',
-                          'status', 'ownershipType', 'portfolioGroup', 'buildingType', 'energyClass',
-                          'flaeche', 'constructedYear', 'refurbishmentYear', 'parkingSpaces', 'evChargingStations'];
+                columns = ['bbl_id', 'bbl_bez', 'bbl_stat', 'bbl_eigen', 'bbl_gbda1', 'bbl_gbda2',
+                          'bbl_ostr', 'bbl_port', 'bbl_port2', 'bbl_bjahr',
+                          'adr_land', 'adr_reg', 'adr_ort', 'adr_plz', 'adr_str', 'adr_hsnr',
+                          'av_egid', 'av_egrid', 'bfs_gem', 'bfs_gemnr',
+                          'bbl_awrt', 'bbl_bwrt', 'garea_gf', 'garea_ngf', 'garea_ebf'];
             }
 
             if (includeCoords) {
@@ -972,10 +974,10 @@
 
             // Define styles for different statuses
             var statusStyles = {
-                'In Betrieb': { color: 'ff50af4c', icon: 'grn-circle' },
+                'Aktiv': { color: 'ff50af4c', icon: 'grn-circle' },
                 'In Renovation': { color: 'ff0098ff', icon: 'orange-circle' },
                 'In Planung': { color: 'fff39621', icon: 'blu-circle' },
-                'Ausser Betrieb': { color: 'ff9e9e9e', icon: 'grey-circle' }
+                'Verkauft': { color: 'ff9e9e9e', icon: 'grey-circle' }
             };
 
             Object.keys(statusStyles).forEach(function(status) {
@@ -992,16 +994,15 @@
             data.forEach(function(feature) {
                 var props = feature.properties || {};
                 var coords = feature.geometry && feature.geometry.coordinates ? feature.geometry.coordinates : [0, 0];
-                var status = props.status || 'In Betrieb';
+                var status = props.bbl_stat || 'Aktiv';
 
                 kmlContent += '    <Placemark>\n';
-                kmlContent += '      <name>' + escapeXml(props.name || 'Unbekannt') + '</name>\n';
+                kmlContent += '      <name>' + escapeXml(props.bbl_bez || 'Unbekannt') + '</name>\n';
                 kmlContent += '      <description><![CDATA[\n';
-                kmlContent += '        <b>Adresse:</b> ' + escapeXml(props.address || '') + '<br>\n';
-                kmlContent += '        <b>Stadt:</b> ' + escapeXml(props.city || '') + '<br>\n';
+                kmlContent += '        <b>Adresse:</b> ' + escapeXml(props.adr_conct || '') + '<br>\n';
+                kmlContent += '        <b>Ort:</b> ' + escapeXml(props.adr_ort || '') + '<br>\n';
                 kmlContent += '        <b>Status:</b> ' + escapeXml(status) + '<br>\n';
-                kmlContent += '        <b>Energieklasse:</b> ' + escapeXml(props.energyClass || '-') + '<br>\n';
-                kmlContent += '        <b>Fläche:</b> ' + (props.flaeche ? props.flaeche.toLocaleString('de-CH') + ' m²' : '-') + '\n';
+                kmlContent += '        <b>GF:</b> ' + (props.garea_gf ? Number(props.garea_gf).toLocaleString('de-CH') + ' m²' : '-') + '\n';
                 kmlContent += '      ]]></description>\n';
                 kmlContent += '      <styleUrl>#style-' + status.replace(/\s/g, '-') + '</styleUrl>\n';
 
@@ -1038,16 +1039,15 @@
                     if (exportFeature.properties) {
                         var props = exportFeature.properties;
                         exportFeature.properties = {
-                            bldg_id: props.buildingId,
-                            name: (props.name || '').substring(0, 254),
-                            address: (props.address || '').substring(0, 254),
-                            city: (props.city || '').substring(0, 80),
-                            country: (props.country || '').substring(0, 80),
-                            status: (props.status || '').substring(0, 50),
-                            energy_cls: props.energyClass,
-                            area_m2: props.flaeche,
-                            built_year: props.constructedYear,
-                            portfolio: (props.portfolioGroup || '').substring(0, 80)
+                            bbl_id: props.bbl_id,
+                            bbl_bez: (props.bbl_bez || '').substring(0, 254),
+                            bbl_stat: (props.bbl_stat || '').substring(0, 50),
+                            adr_conct: (props.adr_conct || '').substring(0, 254),
+                            adr_ort: (props.adr_ort || '').substring(0, 80),
+                            adr_land: (props.adr_land || '').substring(0, 80),
+                            bbl_port: (props.bbl_port || '').substring(0, 80),
+                            garea_gf: props.garea_gf,
+                            bbl_bjahr: props.bbl_bjahr
                         };
                     }
                     if (!includeCoords) {
@@ -1245,10 +1245,10 @@
                 legend.style.cssText = 'margin-top: 5mm; padding: 3mm; border: 1px solid #ccc; font-size: 9pt;';
                 legend.innerHTML = '<div style="font-weight: bold; margin-bottom: 2mm;">Legende</div>' +
                     '<div style="display: flex; gap: 10mm; flex-wrap: wrap;">' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Betrieb'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Betrieb</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Aktiv'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Betrieb</span>' +
                     '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Renovation'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Renovation</span>' +
                     '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Planung'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Planung</span>' +
-                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Ausser Betrieb'] + '; border-radius: 50%; margin-right: 2mm;"></span>Ausser Betrieb</span>' +
+                    '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Verkauft'] + '; border-radius: 50%; margin-right: 2mm;"></span>Ausser Betrieb</span>' +
                     '</div>';
                 printContainer.appendChild(legend);
             }
@@ -1544,26 +1544,20 @@
 
             Promise.all([
                 fetchWithErrorHandling('data/buildings.geojson'),
-                fetchWithErrorHandling('data/area-measurements.json'),
-                fetchWithErrorHandling('data/documents.json'),
-                fetchWithErrorHandling('data/contacts.json'),
-                fetchWithErrorHandling('data/contracts.json'),
-                fetchWithErrorHandling('data/assets.json'),
-                fetchWithErrorHandling('data/costs.json'),
                 fetchWithErrorHandling('data/parcels.geojson')
             ])
                 .then(function(results) {
                     // Validate and destructure results
                     portfolioData = results[0];
+                    parcelData = results[1];
 
-                    // Safely access nested arrays with fallbacks
-                    allAreaMeasurements = (results[1] && results[1].areaMeasurements) || [];
-                    allDocuments = (results[2] && results[2].documents) || [];
-                    allContacts = (results[3] && results[3].contacts) || [];
-                    allContracts = (results[4] && results[4].contracts) || [];
-                    allAssets = (results[5] && results[5].assets) || [];
-                    allCosts = (results[6] && results[6].costs) || [];
-                    parcelData = results[7];
+                    // Legacy stubs (data files removed in simplification)
+                    allAreaMeasurements = [];
+                    allDocuments = [];
+                    allContacts = [];
+                    allContracts = [];
+                    allAssets = [];
+                    allCosts = [];
 
                     // Validate portfolio data
                     if (!portfolioData || !portfolioData.features) {
@@ -1702,6 +1696,7 @@
             document.getElementById('map-view').classList.remove('active');
             document.getElementById('gallery-view').classList.remove('active');
             document.getElementById('detail-view').classList.remove('active');
+            document.getElementById('api-docs-view').classList.remove('active');
 
             // Disable page scrolling mode when leaving detail view
             document.body.classList.remove('detail-active');
@@ -1749,7 +1744,7 @@
 
             // Find building by ID
             var building = portfolioData.features.find(function(f) {
-                return f.properties.buildingId === buildingId;
+                return f.properties.bbl_id === buildingId;
             });
 
             if (!building) {
@@ -1809,95 +1804,311 @@
                 targetContent.classList.add('active');
             }
 
-            // Render table data for the tab
-            if (tab === 'measurements') renderMeasurementsTable();
-            if (tab === 'documents') renderDocumentsTable();
-            if (tab === 'contacts') renderContactsTable();
-            if (tab === 'costs') renderCostsTable();
-            if (tab === 'contracts') renderContractsTable();
-            if (tab === 'assets') renderAssetsTable();
+            // Render tab-specific content (simplified: only overview + measurements)
+            // Measurements tab is now static HTML, no table rendering needed
         }
         
         function populateDetailView(building) {
             var props = building.properties;
             var coords = building.geometry.coordinates;
-            
+
             // Helper to access extensionData safely
-            var ext = props.extensionData || {};
+            // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
 
-            // Breadcrumb
-            document.getElementById('breadcrumb-name').textContent = props.name;
-            document.getElementById('breadcrumb-country').textContent = props.country || '—';
-            document.getElementById('breadcrumb-region').textContent = props.stateProvincePrefecture || '—';
+            // Helper to set text by id (silently skip missing elements)
+            function setText(id, value) {
+                var el = document.getElementById(id);
+                if (el) el.textContent = (value !== undefined && value !== null && value !== '') ? value : '–';
+            }
 
-            // Objekt Stammdaten
-            document.getElementById('detail-name').textContent = props.name;
-            document.getElementById('detail-id').textContent = props.buildingId;
-            document.getElementById('detail-teilportfolio').textContent = ext.portfolio || '—';
-            document.getElementById('detail-baujahr').textContent = extractYear(props.constructionYear) || '—';
+            // Breadcrumb (using BBL GIS IMMO flat field names)
+            setText('breadcrumb-name', props.bbl_bez);
+            setText('breadcrumb-country', props.adr_land);
+            setText('breadcrumb-region', props.adr_reg);
 
-            // Address
-            document.getElementById('detail-country').textContent = props.country;
-            document.getElementById('detail-region').textContent = props.stateProvincePrefecture || '—';
-            document.getElementById('detail-city').textContent = props.city;
+            // --- Tab: Übersicht ---
 
-            // Read address parts directly from properties, parse street from address
-            var addressParts = parseAddress(props.streetName);
-            document.getElementById('detail-plz').textContent = props.postalCode || '—';
-            document.getElementById('detail-street').textContent = addressParts.street || '—';
-            document.getElementById('detail-housenumber').textContent = props.houseNumber || '—';
+            // Stammdaten
+            setText('detail-status', props.bbl_stat);
+            setText('detail-name', props.bbl_bez);
+            setText('detail-id', props.bbl_id);
+            setText('detail-objektart1', props.bbl_gbda1);
+            setText('detail-objektart2', props.bbl_gbda2);
+            setText('detail-eigentum', props.bbl_eigen);
+            setText('detail-ostr', props.bbl_ostr);
+            setText('detail-mietmodell', props.bbl_mietm);
+            setText('detail-teilportfolio', props.bbl_port);
+            setText('detail-teilportfolio-gruppe', props.bbl_port2);
+            setText('detail-baujahr', props.bbl_bjahr);
+            setText('detail-vjahr', props.bbl_vjahr);
+            setText('detail-awrt', formatCHF(props.bbl_awrt));
+            setText('detail-bwrt', formatCHF(props.bbl_bwrt));
+            setText('detail-ovtw', props.bbl_ovtw);
+            setText('detail-pvtw', props.bbl_pvtw);
 
-            // Gebäudedaten
-            document.getElementById('detail-sanierung').textContent = extractYear(props.yearOfLastRefurbishment) || '—';
-            document.getElementById('detail-ladestationen').textContent = props.electricVehicleChargingStations !== undefined ? props.electricVehicleChargingStations : '—';
-            document.getElementById('detail-denkmalschutz').textContent = formatBoolean(props.monumentProtection);
-            document.getElementById('detail-parkplaetze').textContent = props.parkingSpaces !== undefined ? props.parkingSpaces : '—';
-            document.getElementById('detail-geschosse').textContent = ext.numberOfFloors !== undefined ? ext.numberOfFloors : '—';
-            document.getElementById('detail-baubewilligung').textContent = formatDate(props.buildingPermitDate) || '—';
+            // Adresse
+            setText('detail-country', props.adr_land);
+            setText('detail-region', props.adr_reg);
+            setText('detail-city', props.adr_ort);
+            setText('detail-plz', props.adr_plz);
+            setText('detail-street', props.adr_str);
+            setText('detail-housenumber', props.adr_hsnr);
+            setText('detail-address-concat', props.adr_conct);
 
-            // Energie
-            document.getElementById('detail-energieklasse').textContent = props.energyEfficiencyClass || '—';
-            document.getElementById('detail-waermeerzeuger').textContent = ext.heatingGenerator || '—';
-            document.getElementById('detail-waermequelle').textContent = ext.heatingSource || '—';
-            document.getElementById('detail-warmwasser').textContent = ext.hotWater || '—';
+            // Koordinaten (combined pairs)
+            setText('detail-wgs84', props.wgs84_lat != null && props.wgs84_lon != null
+                ? Number(props.wgs84_lat).toFixed(6) + ', ' + Number(props.wgs84_lon).toFixed(6) : null);
+            setText('detail-lv95', props.lv95_e != null && props.lv95_n != null
+                ? formatNum(props.lv95_e, 0) + ', ' + formatNum(props.lv95_n, 0) : null);
+            setText('detail-elev', formatNum(props.egm_elev, 1));
 
-            // Grundstück
-            document.getElementById('detail-grundstueck-name').textContent = ext.plotName || '—';
-            document.getElementById('detail-grundstueck-id').textContent = ext.plotId || '—';
-            document.getElementById('detail-egid').textContent = ext.egid || '—';
-            document.getElementById('detail-egrid').textContent = ext.egrid || '—';
-            document.getElementById('detail-gueltig-von').textContent = formatDate(props.validFrom) || '—';
-            document.getElementById('detail-gueltig-bis').textContent = formatDate(props.validUntil) || 'Keine Angabe';
+            // Link helper and shared variables (used by multiple sections below)
+            var lat = props.wgs84_lat;
+            var lon = props.wgs84_lon;
+            var lv95e = props.lv95_e;
+            var lv95n = props.lv95_n;
+            var linkText = 'Auf externer Karte anzeigen';
 
-            // Klassifizierung
-            document.getElementById('detail-objektart1').textContent = props.primaryTypeOfBuilding || '—';
-            document.getElementById('detail-teilportfolio-gruppe').textContent = ext.portfolioGroup || '—';
-            document.getElementById('detail-objektart2').textContent = props.secondaryTypeOfBuilding || '—';
-            document.getElementById('detail-eigentum').textContent = props.typeOfOwnership || '—';
+            function setLink(id, href, label) {
+                var el = document.getElementById(id);
+                if (!el) return;
+                if (href) {
+                    el.href = href;
+                    if (label) el.textContent = label + ' \u2197';
+                } else {
+                    el.removeAttribute('href');
+                    el.textContent = '–';
+                }
+            }
 
-            // Load measurements for this building
-            loadMeasurementsForBuilding(building);
+            // Koordinaten links
+            setLink('detail-link-gmaps',
+                lat && lon ? 'https://www.google.com/maps/search/?api=1&query=' + lat + ',' + lon : null,
+                linkText);
+            setLink('detail-link-streetview',
+                lat && lon ? 'https://www.google.com/maps/@?api=1&map_action=pano&viewpoint=' + lat + ',' + lon : null,
+                linkText);
 
-            // Load documents for this building
-            loadDocumentsForBuilding(building);
+            // Amtliche Vermessung
+            setText('detail-egid', props.av_egid);
+            setText('detail-egrid', props.av_egrid);
+            setText('detail-bfs-gem', props.bfs_gem);
+            setText('detail-bfs-gemnr', props.bfs_gemnr);
+            setLink('detail-link-geoadmin-gwr',
+                lv95e && lv95n ? 'https://map.geo.admin.ch/#/map?lang=de&center=' + lv95e + ',' + lv95n + '&z=12&crosshair=marker&topic=ech&layers=ch.swisstopo.amtliches-strassenverzeichnis;ch.bfs.gebaeude_wohnungs_register&bgLayer=ch.swisstopo.swissimage' : null,
+                linkText);
+            setLink('detail-link-geoadmin-oereb',
+                lv95e && lv95n ? 'https://map.geo.admin.ch/#/map?lang=de&center=' + lv95e + ',' + lv95n + '&z=12&crosshair=marker&topic=ech&layers=ch.swisstopo-vd.stand-oerebkataster&bgLayer=ch.swisstopo.swissimage' : null,
+                linkText);
 
-            // Load contacts for this building
-            loadContactsForBuilding(building);
+            // Bauzone
+            setText('detail-zbez', props.av_zbez);
+            setText('detail-znut', props.av_znut);
+            setLink('detail-link-bauzonen',
+                lv95e && lv95n ? 'https://map.geo.admin.ch/#/map?lang=de&center=' + lv95e + ',' + lv95n + '&z=8.589&crosshair=marker&topic=ech&layers=ch.are.bauzonen&bgLayer=ch.swisstopo.swissimage' : null,
+                linkText);
 
-            // Load costs for this building
-            loadCostsForBuilding(building);
+            // Denkmalschutz
+            setText('detail-hist', props.bbl_hist);
+            setText('detail-arch', props.bbl_arch);
+            setText('detail-kgs-kat', props.kgs_kat);
+            setText('detail-kgs-nr', props.kgs_nr);
+            setLink('detail-link-kgs',
+                lv95e && lv95n ? 'https://map.geo.admin.ch/#/map?lang=de&center=' + lv95e + ',' + lv95n + '&z=8.589&crosshair=marker&topic=ech&layers=ch.babs.kulturgueter&bgLayer=ch.swisstopo.swissimage' : null,
+                linkText);
 
-            // Load contracts for this building
-            loadContractsForBuilding(building);
+            // Sonstiges
+            setText('detail-objectid', props.objectid);
+            setText('detail-etl-ts', formatDate(props.etl_ts));
 
-            // Load assets for this building
-            loadAssetsForBuilding(building);
+            // --- Tab: Bemessungen ---
+            // All dimension fields are now flat properties (BBL GIS IMMO field names)
+            setText('detail-garea-gf', formatArea(props.garea_gf));
+            setText('detail-garea-gfo', formatArea(props.garea_gfo));
+            setText('detail-garea-gfu', formatArea(props.garea_gfu));
+            setText('detail-garea-acu', props.garea_acu);
+            setText('detail-garea-ngf', formatArea(props.garea_ngf));
+            setText('detail-garea-nf', formatArea(props.garea_nf));
+            setText('detail-garea-hnf', formatArea(props.garea_hnf));
+            setText('detail-garea-nnf', formatArea(props.garea_nnf));
+            setText('detail-garea-ff', formatArea(props.garea_ff));
+            setText('detail-garea-vf', formatArea(props.garea_vf));
+            setText('detail-garea-vmf', formatArea(props.garea_vmf));
+            setText('detail-garea-ebf', formatArea(props.garea_ebf));
+
+            // Volumes
+            setText('detail-gvol-gv', formatVolume(props.gvol_gv));
+            setText('detail-gvol-gvo', formatVolume(props.gvol_gvo));
+            setText('detail-gvol-gvu', formatVolume(props.gvol_gvu));
+            setText('detail-gvol-acu', props.gvol_acu);
+
+            // Floors
+            setText('detail-geschosse', props.gastw);
+            setText('detail-geschosse-og', props.gastw_og);
+            setText('detail-geschosse-ug', props.gastw_ug);
+            setText('detail-geschosse-acu', props.gastw_acu);
+
+            // Land areas
+            setText('detail-larea-ggf', formatArea(props.larea_ggf));
+            setText('detail-larea-gsf', formatArea(props.larea_gsf));
+            setText('detail-larea-uf', formatArea(props.larea_uf));
+            setText('detail-larea-acu', props.larea_acu);
 
             // Initialize carousel
             initCarousel();
 
             // Initialize mini map
             initMiniMap(coords);
+
+            // Initialize info icons (once)
+            initInfoIcons();
+        }
+
+        // ===== INFO TOOLTIPS FOR DETAIL LABELS =====
+        // Descriptions keyed by the text content of the label
+        var labelDescriptions = {
+            // Stammdaten
+            'Status': 'Aktueller Status des Objekts im SAP-System (bbl_stat)',
+            'Bezeichnung': 'Offizielle Objektbezeichnung gemäss SAP (bbl_bez)',
+            'ID': 'Interne BBL-ID: Buchungskreis / Wirtschaftseinheit / Teilobjekt (bbl_id)',
+            'Objektart 1': 'Gebäudeart Stufe 1 gemäss SAP (bbl_gbda1)',
+            'Objektart 2': 'Gebäudeart Stufe 2 gemäss SAP (bbl_gbda2)',
+            'Art Eigentum': 'Eigentumsverhältnis: Eigentum Bund, Miete, etc. (bbl_eigen)',
+            'Objektstrategie': 'Strategische Ausrichtung: Erhalten, Optimieren, Veräussern (bbl_ostr)',
+            'Mietmodell': 'Mietmodell gemäss SAP: Vollkosten-, Kosten-, Marktmiete (bbl_mietm)',
+            'Teilportfolio': 'Teilportfolio-Zuordnung gemäss SAP (bbl_port)',
+            'Portfoliogruppe': 'Übergeordnete Teilportfoliogruppe (bbl_port2)',
+            'Baujahr': 'Erstellungsjahr des Gebäudes (bbl_bjahr)',
+            'Verkaufsjahr': 'Jahr des Verkaufs, leer wenn nicht verkauft (bbl_vjahr)',
+            'Anschaffungswert': 'Anschaffungswert in Schweizer Franken (bbl_awrt)',
+            'Buchwert': 'Aktueller Buchwert in Schweizer Franken (bbl_bwrt)',
+            // Kontakte
+            'Verantwortlich': 'Objektverantwortliche Person gemäss SAP (bbl_ovtw)',
+            'Portfoliomanager': 'Zuständiger Portfoliomanager gemäss SAP (bbl_pvtw)',
+            // Adresse
+            'Adresse': 'Verkettet aus Strasse, Hausnummer, PLZ und Ort (adr_conct)',
+            // Koordinaten
+            'WGS84': 'Breitengrad und Längengrad im World Geodetic System 1984 (wgs84_lat, wgs84_lon)',
+            'LV95': 'Schweizer Landeskoordinaten, aus WGS84 hergeleitet (lv95_e, lv95_n)',
+            'EGM Höhe': 'Absolute Höhe über Meeresspiegel in Metern, EGM2008-Geoid (egm_elev)',
+            // Amtliche Vermessung
+            'EGID': 'Eidgenössischer Gebäudeidentifikator, nur Schweiz (av_egid)',
+            'EGRID': 'Eidgenössischer Grundstücksidentifikator, nur Schweiz (av_egrid)',
+            'Gemeindename': 'BFS Gemeindename gemäss amtlichem Gemeindeverzeichnis (bfs_gem)',
+            'Gemeindenummer': 'BFS Gemeindenummer gemäss amtlichem Gemeindeverzeichnis (bfs_gemnr)',
+            // Denkmalschutz
+            'Hist. Ausstattung': 'Historische Ausstattung gemäss SAP (bbl_hist)',
+            'Archivwürdigkeit': 'Archivwürdigkeit gemäss SAP (bbl_arch)',
+            'KGS Kategorie': 'Kategorie im Schweizerischen Kulturgüterschutz-Inventar: A, B oder C (kgs_kat)',
+            'KGS Nummer': 'Identifikationsnummer im KGS-Inventar (kgs_nr)',
+            // Bemessungen
+            'Geschossfläche GF': 'Brutto-Geschossfläche aller Geschosse nach SIA 416 (garea_gf)',
+            'GF Oberirdisch': 'Geschossfläche der oberirdischen Geschosse (garea_gfo)',
+            'GF Unterirdisch': 'Geschossfläche der unterirdischen Geschosse (garea_gfu)',
+            'Genauigkeit': 'Angabe zur Datenherkunft: Vermessen, Geschätzt, oder AV',
+            'Netto-Geschossfl. NGF': 'Nutzbare Fläche ohne Konstruktionsfläche nach SIA 416 (garea_ngf)',
+            'Nutzfläche NF': 'Summe Haupt- und Nebennutzfläche nach SIA 416 (garea_nf)',
+            'Hauptnutzfläche HNF': 'Fläche für die Hauptnutzung des Gebäudes nach SIA 416 (garea_hnf)',
+            'Nebennutzfläche NNF': 'Fläche für Nebennutzungen nach SIA 416 (garea_nnf)',
+            'Funktionsfläche FF': 'Fläche für gebäudetechnische Anlagen nach SIA 416 (garea_ff)',
+            'Verkehrsfläche VF': 'Erschliessungsfläche: Korridore, Treppenhäuser, Aufzüge (garea_vf)',
+            'Vermietbare Fl. VMF': 'Vermietbare Fläche nach SIA 416 (garea_vmf)',
+            'Energiebezugsfl. EBF': 'Energiebezugsfläche nach SIA 380, Grundlage für Energiekennzahlen (garea_ebf)',
+            'Gebäudevolumen GV': 'Gesamtes Gebäudevolumen nach SIA 416 (gvol_gv)',
+            'GV Oberirdisch': 'Volumen der oberirdischen Gebäudeteile (gvol_gvo)',
+            'GV Unterirdisch': 'Volumen der unterirdischen Gebäudeteile (gvol_gvu)',
+            'Anzahl Total': 'Gesamtanzahl Geschosse ober- und unterirdisch (gastw)',
+            'Oberirdisch': 'Anzahl Geschosse über Terrain (gastw_og)',
+            'Unterirdisch': 'Anzahl Geschosse unter Terrain (gastw_ug)',
+            'Gebäudegrundfläche GGF': 'Grundrissfläche des Gebäudes am Boden nach SIA 416 (larea_ggf)',
+            'Grundstücksfläche GSF': 'Gesamtfläche des Grundstücks nach SIA 416 (larea_gsf)',
+            'Umgebungsfläche UF': 'Grundstücksfläche abzüglich Gebäudegrundfläche (larea_uf)',
+            // Sonstiges
+            'OBJECTID': 'Interne ESRI-System-ID für GIS-Updates (objectid)',
+            'ETL Zeitstempel': 'Zeitpunkt der letzten Synchronisation aus den Quellsystemen (etl_ts)',
+        };
+
+        // Inject info icons as 3rd column and make rows clickable (run once)
+        var infoIconsInitialized = false;
+        function initInfoIcons() {
+            if (infoIconsInitialized) return;
+            infoIconsInitialized = true;
+
+            document.querySelectorAll('#detail-view .detail-grid-row').forEach(function(row) {
+                var label = row.querySelector('.detail-label');
+                if (!label) return;
+                var desc = labelDescriptions[label.textContent.trim()];
+                if (desc) {
+                    // Add data-desc to row and append icon as 3rd grid cell
+                    row.setAttribute('data-desc', desc);
+                    var icon = document.createElement('span');
+                    icon.className = 'info-icon';
+                    icon.textContent = 'info';
+                    icon.title = desc;
+                    row.appendChild(icon);
+                }
+            });
+
+            // Event delegation — clicking anywhere on a row with data-desc toggles popover
+            document.getElementById('detail-view').addEventListener('click', function(e) {
+                var row = e.target.closest('.detail-grid-row[data-desc]');
+
+                // Click outside any desc row — close open popover
+                if (!row) {
+                    var open = document.querySelector('.info-popover.active');
+                    if (open) open.remove();
+                    return;
+                }
+
+                // Don't toggle when clicking links
+                if (e.target.closest('a')) return;
+
+                var desc = row.getAttribute('data-desc');
+
+                // Close any existing popover
+                var existing = document.querySelector('.info-popover.active');
+                if (existing) {
+                    var wasOnSame = existing.parentElement === row;
+                    existing.remove();
+                    if (wasOnSame) return; // toggle off
+                }
+
+                // Create popover inside the row (spans all 3 columns)
+                var popover = document.createElement('div');
+                popover.className = 'info-popover active';
+                popover.textContent = desc;
+                row.appendChild(popover);
+            });
+        }
+
+        // Helper: Format number with Swiss thousand separator (1'000)
+        function formatNum(value, decimals) {
+            if (value === undefined || value === null || value === '') return null;
+            var num = Number(value);
+            var fixed = decimals != null ? num.toFixed(decimals) : String(num);
+            // Split integer and decimal parts
+            var parts = fixed.split('.');
+            // Add apostrophe thousand separators to integer part
+            parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'");
+            return parts.join('.');
+        }
+
+        // Helper: Format area value with m² unit
+        function formatArea(value) {
+            if (value === undefined || value === null || value === '') return null;
+            return formatNum(value, 0) + ' m²';
+        }
+
+        // Helper: Format volume value with m³ unit
+        function formatVolume(value) {
+            if (value === undefined || value === null || value === '') return null;
+            return formatNum(value, 0) + ' m³';
+        }
+
+        // Helper: Format CHF currency
+        function formatCHF(value) {
+            if (value === undefined || value === null || value === '') return null;
+            return 'CHF ' + formatNum(value, 0);
         }
         
         // Helper: Extract year from ISO 8601 date string (e.g., "1902-01-01T00:00:00Z" → "1902")
@@ -2072,6 +2283,24 @@
             switchView(previousView || 'map');
         });
 
+        // API docs footer link
+        var apiLink = document.getElementById('footer-api-link');
+        if (apiLink) {
+            apiLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Hide all views
+                document.getElementById('map-view').classList.remove('active');
+                document.getElementById('gallery-view').classList.remove('active');
+                document.getElementById('detail-view').classList.remove('active');
+                document.getElementById('api-docs-view').classList.add('active');
+                // Hide detail header
+                document.body.classList.remove('detail-active');
+                // Deactivate toggle buttons
+                document.querySelectorAll('.view-toggle-btn').forEach(function(btn) { btn.classList.remove('active'); });
+                window.scrollTo(0, 0);
+            });
+        }
+
         // View toggle click handlers
         document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
             btn.addEventListener('click', function() {
@@ -2105,15 +2334,15 @@
                     type: dataToRender.type,
                     features: dataToRender.features.filter(function(feature) {
                         var props = feature.properties;
-                        var ext = props.extensionData || {};
+                        // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
                         var searchableText = [
-                            props.buildingId,
-                            props.name,
-                            props.country,
-                            props.city,
-                            props.streetName,
-                            ext.portfolio,
-                            props.status
+                            props.bbl_id,
+                            props.bbl_bez,
+                            props.adr_land,
+                            props.adr_ort,
+                            props.adr_conct,
+                            props.bbl_port,
+                            props.bbl_stat
                         ].join(' ').toLowerCase();
                         return searchableText.includes(listSearchTerm);
                     })
@@ -2162,21 +2391,21 @@
 
             paginatedFeatures.forEach(function(feature) {
                 var props = feature.properties;
-                var ext = props.extensionData || {};
-                var statusClass = props.status === 'In Betrieb' ? 'status-active' :
-                                  props.status === 'In Renovation' ? 'status-renovation' :
-                                  props.status === 'In Planung' ? 'status-planning' : 'status-inactive';
-                var flaeche = Number(ext.netFloorArea || 0).toLocaleString('de-CH');
+                // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
+                var statusClass = props.bbl_stat === 'Aktiv' ? 'status-active' :
+                                  props.bbl_stat === 'In Renovation' ? 'status-renovation' :
+                                  props.bbl_stat === 'In Planung' ? 'status-planning' : 'status-inactive';
+                var flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
 
-                html += '<tr data-id="' + props.buildingId + '" tabindex="0" role="row">' +
-                    '<td class="col-id">' + props.buildingId + '</td>' +
-                    '<td class="col-name">' + props.name + '</td>' +
-                    '<td class="col-land">' + props.country + '</td>' +
-                    '<td class="col-ort">' + props.city + '</td>' +
-                    '<td class="col-adresse">' + props.streetName + '</td>' +
-                    '<td class="col-portfolio">' + (ext.portfolio || '—') + '</td>' +
+                html += '<tr data-id="' + props.bbl_id + '" tabindex="0" role="row">' +
+                    '<td class="col-id">' + props.bbl_id + '</td>' +
+                    '<td class="col-name">' + props.bbl_bez + '</td>' +
+                    '<td class="col-land">' + props.adr_land + '</td>' +
+                    '<td class="col-ort">' + props.adr_ort + '</td>' +
+                    '<td class="col-adresse">' + props.adr_conct + '</td>' +
+                    '<td class="col-portfolio">' + (props.bbl_port || '—') + '</td>' +
                     '<td class="col-flaeche">' + flaeche + ' m²</td>' +
-                    '<td class="col-status"><span class="status-badge ' + statusClass + '">' + props.status + '</span></td>' +
+                    '<td class="col-status"><span class="status-badge ' + statusClass + '">' + props.bbl_stat + '</span></td>' +
                 '</tr>';
             });
 
@@ -2276,24 +2505,24 @@
 
             dataToRender.features.forEach(function(feature, index) {
                 var props = feature.properties;
-                var ext = props.extensionData || {};
-                var flaeche = Number(ext.netFloorArea || 0).toLocaleString('de-CH');
-                var statusClass = props.status === 'In Betrieb' ? 'status-active' :
-                                  props.status === 'In Renovation' ? 'status-renovation' :
-                                  props.status === 'In Planung' ? 'status-planning' : 'status-inactive';
+                // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
+                var flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
+                var statusClass = props.bbl_stat === 'Aktiv' ? 'status-active' :
+                                  props.bbl_stat === 'In Renovation' ? 'status-renovation' :
+                                  props.bbl_stat === 'In Planung' ? 'status-planning' : 'status-inactive';
                 var imageUrl = placeholderImages[index % placeholderImages.length];
 
-                html += '<div class="gallery-card" data-id="' + props.buildingId + '" tabindex="0" role="article" aria-label="' + props.name + '">' +
-                    '<div class="gallery-image" style="background-image: url(' + imageUrl + ')" role="img" aria-label="Bild von ' + props.name + '">' +
-                        '<div class="gallery-image-label">' + props.country + '</div>' +
+                html += '<div class="gallery-card" data-id="' + props.bbl_id + '" tabindex="0" role="article" aria-label="' + props.bbl_bez + '">' +
+                    '<div class="gallery-image" style="background-image: url(' + imageUrl + ')" role="img" aria-label="Bild von ' + props.bbl_bez + '">' +
+                        '<div class="gallery-image-label">' + props.adr_land + '</div>' +
                     '</div>' +
                     '<div class="gallery-content">' +
-                        '<div class="gallery-title">' + props.name + '</div>' +
-                        '<div class="gallery-subtitle">' + props.streetName + '</div>' +
+                        '<div class="gallery-title">' + props.bbl_bez + '</div>' +
+                        '<div class="gallery-subtitle">' + props.adr_conct + '</div>' +
                         '<div class="gallery-meta">' +
-                            '<span class="gallery-tag">' + (ext.portfolio || '—') + '</span>' +
+                            '<span class="gallery-tag">' + (props.bbl_port || '—') + '</span>' +
                             '<span class="gallery-tag">' + flaeche + ' m²</span>' +
-                            '<span class="status-badge ' + statusClass + '">' + props.status + '</span>' +
+                            '<span class="status-badge ' + statusClass + '">' + props.bbl_stat + '</span>' +
                         '</div>' +
                     '</div>' +
                 '</div>';
@@ -2315,13 +2544,13 @@
                     features: dataToRender.features.filter(function(feature) {
                         var props = feature.properties;
                         var searchableText = [
-                            props.parcelId,
-                            props.plotNumber,
-                            props.name,
-                            props.municipality,
-                            props.canton,
-                            props.landUseZone,
-                            props.ownershipType
+                            props.bbl_id,
+                            props.av_nr,
+                            props.bbl_bez,
+                            props.bfs_gem,
+                            props.adr_reg,
+                            props.av_zbez,
+                            props.bbl_eigen
                         ].join(' ').toLowerCase();
                         return searchableText.includes(parcelSearchTerm);
                     })
@@ -2350,17 +2579,17 @@
             var html = '';
             paginatedFeatures.forEach(function(feature) {
                 var props = feature.properties;
-                var area = Number(props.area || 0).toLocaleString('de-CH');
+                var area = Number(props.larea_gsf || 0).toLocaleString('de-CH');
 
-                html += '<tr data-parcel-id="' + props.parcelId + '" tabindex="0" role="row">' +
-                    '<td class="col-parcel-id">' + props.parcelId + '</td>' +
-                    '<td class="col-parcel-plot">' + props.plotNumber + '</td>' +
-                    '<td class="col-parcel-name">' + props.name + '</td>' +
-                    '<td class="col-parcel-municipality">' + props.municipality + '</td>' +
-                    '<td class="col-parcel-canton">' + props.canton + '</td>' +
+                html += '<tr data-parcel-id="' + props.bbl_id + '" tabindex="0" role="row">' +
+                    '<td class="col-parcel-id">' + props.bbl_id + '</td>' +
+                    '<td class="col-parcel-plot">' + (props.av_nr || '–') + '</td>' +
+                    '<td class="col-parcel-name">' + props.bbl_bez + '</td>' +
+                    '<td class="col-parcel-municipality">' + (props.bfs_gem || '–') + '</td>' +
+                    '<td class="col-parcel-canton">' + (props.adr_reg || '–') + '</td>' +
                     '<td class="col-parcel-area">' + area + ' m²</td>' +
-                    '<td class="col-parcel-zone">' + props.landUseZone + '</td>' +
-                    '<td class="col-parcel-ownership">' + props.ownershipType + '</td>' +
+                    '<td class="col-parcel-zone">' + (props.av_zbez || '–') + '</td>' +
+                    '<td class="col-parcel-ownership">' + (props.bbl_eigen || '–') + '</td>' +
                 '</tr>';
             });
 
@@ -2492,7 +2721,7 @@
             var dataToSearch = filteredData || portfolioData;
             var index = -1;
             for (var i = 0; i < dataToSearch.features.length; i++) {
-                if (dataToSearch.features[i].properties.buildingId === buildingId) {
+                if (dataToSearch.features[i].properties.bbl_id === buildingId) {
                     index = i;
                     break;
                 }
@@ -3253,7 +3482,7 @@
                     id: 'parcels-highlight',
                     type: 'fill',
                     source: 'parcels',
-                    filter: ['==', ['get', 'parcelId'], ''],
+                    filter: ['==', ['get', 'bbl_id'], ''],
                     paint: {
                         'fill-color': '#1976d2',
                         'fill-opacity': 0.35
@@ -3265,7 +3494,7 @@
                     id: 'parcels-selected',
                     type: 'fill',
                     source: 'parcels',
-                    filter: ['==', ['get', 'parcelId'], ''],
+                    filter: ['==', ['get', 'bbl_id'], ''],
                     paint: {
                         'fill-color': '#1976d2',
                         'fill-opacity': 0.45
@@ -3277,7 +3506,7 @@
                     id: 'parcels-selected-outline',
                     type: 'line',
                     source: 'parcels',
-                    filter: ['==', ['get', 'parcelId'], ''],
+                    filter: ['==', ['get', 'bbl_id'], ''],
                     paint: {
                         'line-color': '#1976d2',
                         'line-width': 3,
@@ -3296,10 +3525,10 @@
                     'circle-color': [
                         'match',
                         ['get', 'status'],
-                        'In Betrieb', statusColors['In Betrieb'],
+                        'Aktiv', statusColors['Aktiv'],
                         'In Renovation', statusColors['In Renovation'],
                         'In Planung', statusColors['In Planung'],
-                        'Ausser Betrieb', statusColors['Ausser Betrieb'],
+                        'Verkauft', statusColors['Verkauft'],
                         '#6C757D'  // fallback
                     ],
                     'circle-stroke-width': 2,
@@ -3312,7 +3541,7 @@
                 id: 'portfolio-selected',
                 type: 'circle',
                 source: 'portfolio',
-                filter: ['==', ['get', 'buildingId'], ''],
+                filter: ['==', ['get', 'bbl_id'], ''],
                 paint: {
                     'circle-radius': 18,
                     'circle-color': 'transparent',
@@ -3327,7 +3556,7 @@
                 id: 'portfolio-selected-pulse',
                 type: 'circle',
                 source: 'portfolio',
-                filter: ['==', ['get', 'buildingId'], ''],
+                filter: ['==', ['get', 'bbl_id'], ''],
                 paint: {
                     'circle-radius': 24,
                     'circle-color': 'transparent',
@@ -3344,7 +3573,7 @@
                 source: 'portfolio',
                 minzoom: 16,
                 layout: {
-                    'text-field': ['get', 'buildingId'],
+                    'text-field': ['get', 'bbl_id'],
                     'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
                     'text-size': 13,
                     'text-anchor': 'bottom',
@@ -3421,7 +3650,7 @@
             map.on('click', 'portfolio-points', function(e) {
                 var props = e.features[0].properties;
                 // UPDATED: Pass 'false' so map does NOT zoom on click
-                selectBuilding(props.buildingId, false);
+                selectBuilding(props.bbl_id, false);
             });
 
             // PARCEL HANDLERS
@@ -3429,14 +3658,14 @@
                 map.on('mouseenter', 'parcels-fill', function(e) {
                     map.getCanvas().style.cursor = 'pointer';
                     if (e.features.length > 0) {
-                        var parcelId = e.features[0].properties.parcelId;
-                        map.setFilter('parcels-highlight', ['==', ['get', 'parcelId'], parcelId]);
+                        var parcelId = e.features[0].properties.bbl_id;
+                        map.setFilter('parcels-highlight', ['==', ['get', 'bbl_id'], parcelId]);
                     }
                 });
 
                 map.on('mouseleave', 'parcels-fill', function() {
                     map.getCanvas().style.cursor = '';
-                    map.setFilter('parcels-highlight', ['==', ['get', 'parcelId'], '']);
+                    map.setFilter('parcels-highlight', ['==', ['get', 'bbl_id'], '']);
                 });
 
                 map.on('click', 'parcels-fill', function(e) {
@@ -3451,7 +3680,7 @@
                         return; // Let the building click handler handle it
                     }
                     var props = e.features[0].properties;
-                    selectParcel(props.parcelId);
+                    selectParcel(props.bbl_id);
                 });
             }
 
@@ -3487,14 +3716,14 @@
             var urlParcelId = urlParams.get('parcelId');
             if (urlBuildingId) {
                 var building = portfolioData.features.find(function(f) {
-                    return f.properties.buildingId === urlBuildingId;
+                    return f.properties.bbl_id === urlBuildingId;
                 });
                 if (building) {
                     selectBuilding(urlBuildingId, true);
                 }
             } else if (urlParcelId && parcelData && parcelData.features) {
                 var parcel = parcelData.features.find(function(f) {
-                    return f.properties.parcelId === urlParcelId;
+                    return f.properties.bbl_id === urlParcelId;
                 });
                 if (parcel) {
                     selectParcel(urlParcelId, true);
@@ -3515,16 +3744,16 @@
             if (flyToBuilding === undefined) flyToBuilding = false;
 
             // Find feature props
-            var building = portfolioData.features.find(function(f) { return f.properties.buildingId === buildingId; });
+            var building = portfolioData.features.find(function(f) { return f.properties.bbl_id === buildingId; });
             if (!building) return;
 
             var props = building.properties;
-            var ext = props.extensionData || {};
-            var flaeche = Number(ext.netFloorArea || 0).toLocaleString('de-CH');
-            var baujahr = extractYear(props.constructionYear) || '—';
-            var statusClass = props.status === 'In Betrieb' ? 'status-active' :
-                              props.status === 'In Renovation' ? 'status-renovation' :
-                              props.status === 'In Planung' ? 'status-planning' : 'status-inactive';
+            // Properties are flat (BBL GIS IMMO field names), no extensionData nesting
+            var flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
+            var baujahr = props.bbl_bjahr || '—';
+            var statusClass = props.bbl_stat === 'Aktiv' ? 'status-active' :
+                              props.bbl_stat === 'In Renovation' ? 'status-renovation' :
+                              props.bbl_stat === 'In Planung' ? 'status-planning' : 'status-inactive';
 
             // Update selected IDs (clear parcel selection)
             selectedBuildingId = buildingId;
@@ -3541,7 +3770,7 @@
 
             // Find building index for placeholder image
             var buildingIndex = portfolioData.features.findIndex(function(f) {
-                return f.properties.buildingId === buildingId;
+                return f.properties.bbl_id === buildingId;
             });
             var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
 
@@ -3549,16 +3778,16 @@
             document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
 
             var infoHtml =
-                '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.buildingId + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.name + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + props.city + ', ' + props.country + '</span></div>' +
-                '<div class="info-row info-row-secondary"><span class="info-label">Adresse</span><span class="info-value">' + props.streetName + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + props.bbl_id + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + props.bbl_bez + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + props.adr_ort + ', ' + props.adr_land + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Adresse</span><span class="info-value">' + props.adr_conct + '</span></div>' +
                 '<div class="info-row info-row-secondary"><span class="info-label">Fläche NGF</span><span class="info-value">' + flaeche + ' m²</span></div>' +
                 '<div class="info-row info-row-secondary"><span class="info-label">Baujahr</span><span class="info-value">' + baujahr + '</span></div>' +
-                '<div class="info-row info-row-secondary"><span class="info-label">Verantwortlich</span><span class="info-value">' + (ext.responsiblePerson || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="status-badge ' + statusClass + '">' + props.status + '</span></span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Verantwortlich</span><span class="info-value">' + (props.bbl_ovtw || '—') + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="status-badge ' + statusClass + '">' + props.bbl_stat + '</span></span></div>' +
                 '<div class="info-footer">' +
-                    '<button class="info-detail-link" onclick="showDetailView(\'' + props.buildingId + '\')">' +
+                    '<button class="info-detail-link" onclick="showDetailView(\'' + props.bbl_id + '\')">' +
                         '<span class="material-symbols-outlined">open_in_new</span>' +
                         'Details anzeigen' +
                     '</button>' +
@@ -3581,10 +3810,10 @@
         
         function updateSelectedBuilding() {
             if (map && map.getLayer('portfolio-selected')) {
-                map.setFilter('portfolio-selected', ['==', ['get', 'buildingId'], selectedBuildingId || '']);
+                map.setFilter('portfolio-selected', ['==', ['get', 'bbl_id'], selectedBuildingId || '']);
             }
             if (map && map.getLayer('portfolio-selected-pulse')) {
-                map.setFilter('portfolio-selected-pulse', ['==', ['get', 'buildingId'], selectedBuildingId || '']);
+                map.setFilter('portfolio-selected-pulse', ['==', ['get', 'bbl_id'], selectedBuildingId || '']);
             }
             // Start or stop pulse animation based on selection
             if (selectedBuildingId && typeof window.startPulseAnimation === 'function') {
@@ -3656,13 +3885,13 @@
             if (flyToParcel === undefined) flyToParcel = false;
 
             // Find parcel feature
-            var parcel = parcelData.features.find(function(f) { return f.properties.parcelId === parcelId; });
+            var parcel = parcelData.features.find(function(f) { return f.properties.bbl_id === parcelId; });
             if (!parcel) return;
 
             var props = parcel.properties;
 
             // Format area with thousand separators
-            var formattedArea = Number(props.area || 0).toLocaleString('de-CH');
+            var formattedArea = Number(props.larea_gsf || 0).toLocaleString('de-CH');
 
             // Update selected IDs (clear building selection)
             selectedParcelId = parcelId;
@@ -3679,13 +3908,13 @@
 
             // Build info panel HTML content
             var infoHtml =
-                '<div class="info-row"><span class="info-label">Parzellen-ID</span><span class="info-value">' + escapeHtml(props.parcelId || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + escapeHtml(props.name || '—') + '</span></div>' +
-                '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + escapeHtml(props.municipality || '—') + ', ' + escapeHtml(props.canton || '—') + '</span></div>' +
-                '<div class="info-row info-row-secondary"><span class="info-label">Parzellen-Nr.</span><span class="info-value">' + escapeHtml(props.plotNumber || '—') + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Parzellen-ID</span><span class="info-value">' + escapeHtml(props.bbl_id || '—') + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + escapeHtml(props.bbl_bez || '—') + '</span></div>' +
+                '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + escapeHtml(props.bfs_gem || props.adr_ort || '—') + ', ' + escapeHtml(props.adr_reg || '—') + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Parzellen-Nr.</span><span class="info-value">' + escapeHtml(props.av_nr || '—') + '</span></div>' +
                 '<div class="info-row info-row-secondary"><span class="info-label">Fläche</span><span class="info-value">' + formattedArea + ' m²</span></div>' +
-                '<div class="info-row info-row-secondary"><span class="info-label">Nutzungszone</span><span class="info-value">' + escapeHtml(props.landUseZone || '—') + '</span></div>' +
-                '<div class="info-row info-row-secondary"><span class="info-label">Eigentum</span><span class="info-value">' + escapeHtml(props.ownershipType || '—') + '</span></div>';
+                '<div class="info-row info-row-secondary"><span class="info-label">Nutzungszone</span><span class="info-value">' + escapeHtml(props.av_zbez || '—') + '</span></div>' +
+                '<div class="info-row info-row-secondary"><span class="info-label">Eigentum</span><span class="info-value">' + escapeHtml(props.bbl_eigen || '—') + '</span></div>';
 
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
@@ -3705,10 +3934,10 @@
 
         function updateSelectedParcel() {
             if (map && map.getLayer('parcels-selected')) {
-                map.setFilter('parcels-selected', ['==', ['get', 'parcelId'], selectedParcelId || '']);
+                map.setFilter('parcels-selected', ['==', ['get', 'bbl_id'], selectedParcelId || '']);
             }
             if (map && map.getLayer('parcels-selected-outline')) {
-                map.setFilter('parcels-selected-outline', ['==', ['get', 'parcelId'], selectedParcelId || '']);
+                map.setFilter('parcels-selected-outline', ['==', ['get', 'bbl_id'], selectedParcelId || '']);
             }
         }
 
@@ -3789,9 +4018,9 @@
                     var lowerTerm = term.toLowerCase();
                     matches = portfolioData.features.filter(function(f) {
                         var p = f.properties;
-                        return (p.name && p.name.toLowerCase().includes(lowerTerm)) ||
-                               (p.streetName && p.streetName.toLowerCase().includes(lowerTerm)) ||
-                               (p.city && p.city.toLowerCase().includes(lowerTerm));
+                        return (p.bbl_bez && p.bbl_bez.toLowerCase().includes(lowerTerm)) ||
+                               (p.adr_conct && p.adr_conct.toLowerCase().includes(lowerTerm)) ||
+                               (p.adr_ort && p.adr_ort.toLowerCase().includes(lowerTerm));
                     });
                 }
                 resolve({ type: 'local', data: matches });
@@ -3836,8 +4065,8 @@
             if (localResults.length > 0) {
                 html += '<div class="search-section-header">Objekte</div>';
                 localResults.forEach(function(f) {
-                    html += '<div class="search-item" onclick="handleSearchClick(\'local\', \'' + f.properties.buildingId + '\')">' +
-                            '<div class="search-item-title">' + f.properties.name + '</div>' +
+                    html += '<div class="search-item" onclick="handleSearchClick(\'local\', \'' + f.properties.bbl_id + '\')">' +
+                            '<div class="search-item-title">' + f.properties.bbl_bez + '</div>' +
                             '<div class="search-item-subtitle">' + f.properties.streetName + ', ' + f.properties.city + '</div>' +
                             '</div>';
                 });
@@ -3895,7 +4124,7 @@
                     searchMarker = null;
                 }
 
-                var b = portfolioData.features.find(f => f.properties.buildingId === id);
+                var b = portfolioData.features.find(f => f.properties.bbl_id === id);
                 if(b) {
                     searchInput.value = b.properties.name;
                     searchClearBtn.classList.add('visible');
@@ -4074,7 +4303,7 @@
                 return '<div class="legend-footer"><span>Legende</span></div>' +
                     '<div class="internal-legend">' +
                     '<div class="internal-legend-item">' +
-                        '<span class="internal-legend-circle" style="background: ' + statusColors['In Betrieb'] + ';"></span>' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['Aktiv'] + ';"></span>' +
                         '<span>In Betrieb</span>' +
                     '</div>' +
                     '<div class="internal-legend-item">' +
@@ -4086,7 +4315,7 @@
                         '<span>In Planung</span>' +
                     '</div>' +
                     '<div class="internal-legend-item">' +
-                        '<span class="internal-legend-circle" style="background: ' + statusColors['Ausser Betrieb'] + ';"></span>' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors['Verkauft'] + ';"></span>' +
                         '<span>Ausser Betrieb</span>' +
                     '</div>' +
                     '</div>';
@@ -4336,7 +4565,7 @@
         document.getElementById('info-zoom-to').addEventListener('click', function() {
             if (selectedBuildingId && map) {
                 var building = portfolioData.features.find(function(f) {
-                    return f.properties.buildingId === selectedBuildingId;
+                    return f.properties.bbl_id === selectedBuildingId;
                 });
                 if (building && building.geometry) {
                     map.flyTo({
@@ -4346,7 +4575,7 @@
                 }
             } else if (selectedParcelId && map) {
                 var parcel = parcelData.features.find(function(f) {
-                    return f.properties.parcelId === selectedParcelId;
+                    return f.properties.bbl_id === selectedParcelId;
                 });
                 if (parcel && parcel.geometry && parcel.geometry.coordinates) {
                     var center = getPolygonCentroid(parcel.geometry.coordinates);
@@ -4670,7 +4899,7 @@
             // Load data for a building
             table.load = function(building) {
                 if (building && building.properties) {
-                    var buildingId = building.properties.buildingId;
+                    var buildingId = building.properties.bbl_id;
                     table.data = config.dataSource()
                         .filter(function(item) {
                             return item.buildingIds && item.buildingIds.includes(buildingId);
@@ -5355,8 +5584,8 @@
             return Math.round(meters) + ' m';
         }
 
-        // Format area for display
-        function formatArea(sqMeters) {
+        // Format area for map measurement tool display
+        function formatMeasureArea(sqMeters) {
             if (sqMeters >= 1000000) {
                 return (sqMeters / 1000000).toFixed(2) + ' km²';
             } else if (sqMeters >= 10000) {
@@ -5596,7 +5825,7 @@
             // Calculate and show area if polygon
             if (measureState.isClosed && points.length >= 3) {
                 var area = calculatePolygonArea(points);
-                measureTotalArea.textContent = formatArea(area);
+                measureTotalArea.textContent = formatMeasureArea(area);
                 measureAreaRow.style.display = 'flex';
             } else {
                 measureAreaRow.style.display = 'none';
