@@ -359,6 +359,9 @@
             // Update filter button state
             updateFilterButtonState();
 
+            // Update filter pills in toolbar
+            renderFilterPills();
+
             // Re-render current view
             renderCurrentView();
 
@@ -395,6 +398,66 @@
             // Zoom to fit filtered points (skip during style change restore)
             if (!skipFilterZoom) {
                 zoomToFilteredPoints();
+            }
+        }
+
+        function renderFilterPills() {
+            var container = document.getElementById('filter-pills');
+            if (!container) return;
+
+            var html = '';
+            var hasAny = false;
+
+            for (var filterKey in activeFilters) {
+                var values = activeFilters[filterKey];
+                if (!values || values.length === 0) continue;
+                hasAny = true;
+                var label = filterConfig[filterKey] ? filterConfig[filterKey].label : filterKey;
+                values.forEach(function(val) {
+                    html += '<span class="filter-pill">' +
+                        '<span class="filter-pill-label">' + label + ':</span>' +
+                        val +
+                        '<button class="filter-pill-remove" data-filter-key="' + filterKey + '" data-filter-value="' + val + '" title="Filter entfernen">close</button>' +
+                        '</span>';
+                });
+            }
+
+            if (hasAny) {
+                html += '<button class="filter-pills-reset" id="filter-pills-reset">Alle Filter zurücksetzen</button>';
+            }
+
+            container.innerHTML = html;
+
+            // Remove individual filter pill
+            container.querySelectorAll('.filter-pill-remove').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    var key = this.dataset.filterKey;
+                    var val = this.dataset.filterValue;
+                    if (activeFilters[key]) {
+                        activeFilters[key] = activeFilters[key].filter(function(v) { return v !== val; });
+                        // Also uncheck the corresponding checkbox in the drawer
+                        var cb = document.querySelector('#filter-pane input[data-filter="' + key + '"][data-value="' + val + '"]');
+                        if (cb) cb.checked = false;
+                        applyFilters();
+                    }
+                });
+            });
+
+            // Reset all filters
+            var resetBtn = document.getElementById('filter-pills-reset');
+            if (resetBtn) {
+                resetBtn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    for (var key in activeFilters) {
+                        activeFilters[key] = [];
+                    }
+                    // Uncheck all filter checkboxes in the drawer
+                    document.querySelectorAll('#filter-pane input[type="checkbox"]').forEach(function(cb) {
+                        cb.checked = false;
+                    });
+                    applyFilters();
+                });
             }
         }
 
@@ -1321,13 +1384,21 @@
         function createPrintPreviewOverlay() {
             if (printPreviewOverlay) return;
 
-            var mapView = document.getElementById('map-view');
-            if (!mapView) return;
+            // Append to #map (the actual map canvas container), not #map-view
+            var mapEl = document.getElementById('map');
+            if (!mapEl) return;
 
             printPreviewOverlay = document.createElement('div');
             printPreviewOverlay.className = 'print-preview-overlay';
-            printPreviewOverlay.innerHTML = '<svg><defs><mask id="print-preview-mask"><rect width="100%" height="100%" fill="white"/><rect id="print-crop-rect" fill="black"/></mask></defs><rect width="100%" height="100%" fill="rgba(0,0,0,0.5)" mask="url(#print-preview-mask)"/></svg><div class="print-preview-crop"><div class="print-preview-label"></div></div>';
-            mapView.appendChild(printPreviewOverlay);
+            printPreviewOverlay.innerHTML =
+                '<svg><defs><mask id="print-preview-mask">' +
+                '<rect width="100%" height="100%" fill="white"/>' +
+                '<rect id="print-crop-rect" fill="black"/>' +
+                '</mask></defs>' +
+                '<rect width="100%" height="100%" fill="rgba(0,0,0,0.5)" mask="url(#print-preview-mask)"/>' +
+                '</svg>' +
+                '<div class="print-preview-crop"><div class="print-preview-label"></div></div>';
+            mapEl.appendChild(printPreviewOverlay);
         }
 
         function showPrintPreview() {
@@ -1346,35 +1417,43 @@
 
         function updatePrintPreview() {
             if (!printPreviewOverlay || !printPreviewOverlay.classList.contains('active')) return;
+            if (!map) return;
 
-            var mapView = document.getElementById('map-view');
-            if (!mapView) return;
+            var mapEl = document.getElementById('map');
+            if (!mapEl) return;
 
             var orientation = document.getElementById('print-orientation').value;
+            var scaleOption = document.getElementById('print-scale').value;
             var printDims = getPrintDimensions(orientation);
-            var aspectRatio = printDims.width / printDims.height;
 
-            var viewRect = mapView.getBoundingClientRect();
-            var viewWidth = viewRect.width;
-            var viewHeight = viewRect.height;
+            // Determine print scale
+            var printScale = scaleOption === 'auto' ? getMapScale() : parseInt(scaleOption);
 
-            // Calculate print area dimensions to fit in map view (with padding)
-            var padding = 60;
-            var maxWidth = viewWidth - (padding * 2);
-            var maxHeight = viewHeight - (padding * 2);
+            // Calculate ground extent of the printed page (in meters)
+            // Paper dimensions are in mm; scale converts to meters on the ground
+            var groundWidthM = (printDims.width / 1000) * printScale;   // e.g., 297mm at 1:25000 = 7425m
+            var groundHeightM = (printDims.height / 1000) * printScale;
 
-            var cropWidth, cropHeight;
-            if (maxWidth / aspectRatio <= maxHeight) {
-                cropWidth = maxWidth;
-                cropHeight = maxWidth / aspectRatio;
-            } else {
-                cropHeight = maxHeight;
-                cropWidth = maxHeight * aspectRatio;
+            // Convert ground meters to screen pixels at current zoom
+            var center = map.getCenter();
+            var metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, map.getZoom());
+
+            var cropWidth = groundWidthM / metersPerPixel;
+            var cropHeight = groundHeightM / metersPerPixel;
+
+            // Clamp to map container size (don't exceed visible area)
+            var mapRect = mapEl.getBoundingClientRect();
+            var maxW = mapRect.width - 20;
+            var maxH = mapRect.height - 20;
+            if (cropWidth > maxW || cropHeight > maxH) {
+                var shrink = Math.min(maxW / cropWidth, maxH / cropHeight);
+                cropWidth *= shrink;
+                cropHeight *= shrink;
             }
 
-            // Center the crop area
-            var cropX = (viewWidth - cropWidth) / 2;
-            var cropY = (viewHeight - cropHeight) / 2;
+            // Center the crop area in the map
+            var cropX = (mapRect.width - cropWidth) / 2;
+            var cropY = (mapRect.height - cropHeight) / 2;
 
             // Update SVG mask rectangle
             var maskRect = printPreviewOverlay.querySelector('#print-crop-rect');
@@ -1395,11 +1474,12 @@
             }
 
             // Update label
-            var label = printPreviewOverlay.querySelector('.print-preview-label');
-            if (label) {
+            var labelEl = printPreviewOverlay.querySelector('.print-preview-label');
+            if (labelEl) {
                 var formatLabel = orientation.includes('a3') ? 'A3' : 'A4';
                 var orientLabel = orientation.includes('landscape') ? 'Querformat' : 'Hochformat';
-                label.textContent = formatLabel + ' ' + orientLabel;
+                var formattedScale = formatNum(printScale, 0);
+                labelEl.textContent = formatLabel + ' ' + orientLabel + ' — 1:' + formattedScale;
             }
         }
 
@@ -1519,6 +1599,7 @@
                     toggleDropdown('columns-dropdown-menu');
                 });
             }
+
 
             // Column checkboxes
             document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"]').forEach(function(checkbox) {
@@ -2907,7 +2988,8 @@
             container: 'map',
             style: mapStyles[currentMapStyle].url,
             center: startCenter,
-            zoom: startZoom
+            zoom: startZoom,
+            preserveDrawingBuffer: true
         });
         
         map.addControl(new mapboxgl.NavigationControl(), 'top-right');
@@ -4194,8 +4276,8 @@
                         updateShareLink();
                     }
 
-                    // Show print preview when Drucken accordion is opened
-                    if (lastSpan && lastSpan.textContent.trim() === 'Drucken') {
+                    // Show print preview when Karte drucken accordion is opened
+                    if (lastSpan && lastSpan.textContent.trim() === 'Karte drucken') {
                         showPrintPreview();
                     }
 
@@ -4801,6 +4883,238 @@
         // Initialize thumbnails after a short delay to ensure token is available
         setTimeout(initStyleThumbnails, 100);
         updateActiveStyleButton();
+
+        // ===== PRINT WIDGET =====
+
+        // ISO paper sizes in mm (portrait)
+        var paperSizes = {
+            'a0': { width: 841, height: 1189 },
+            'a1': { width: 594, height: 841 },
+            'a2': { width: 420, height: 594 },
+            'a3': { width: 297, height: 420 },
+            'a4': { width: 210, height: 297 },
+            'a5': { width: 148, height: 210 }
+        };
+
+        function getPrintDimensions(orientation) {
+            var parts = orientation.split('-');  // e.g., 'landscape-a4'
+            var dir = parts[0];
+            var size = parts[1];
+            var base = paperSizes[size] || paperSizes['a4'];
+            if (dir === 'landscape') {
+                return { width: base.height, height: base.width };
+            }
+            return { width: base.width, height: base.height };
+        }
+
+        // Map scale from zoom level
+        function getMapScale() {
+            if (!map) return 25000;
+            var center = map.getCenter();
+            var zoom = map.getZoom();
+            var metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, zoom);
+            var pixelsPerMeter = 96 / 0.0254;
+            return Math.round(metersPerPixel * pixelsPerMeter);
+        }
+
+        // Print preview: orientation change and map move update the overlay
+        // (showPrintPreview/hidePrintPreview/updatePrintPreview defined earlier with createPrintPreviewOverlay)
+        var printOrientationEl = document.getElementById('print-orientation');
+        if (printOrientationEl) {
+            printOrientationEl.addEventListener('change', updatePrintPreview);
+        }
+        var printScaleEl = document.getElementById('print-scale');
+        if (printScaleEl) {
+            printScaleEl.addEventListener('change', updatePrintPreview);
+        }
+        if (map) {
+            map.on('moveend', updatePrintPreview);
+            map.on('zoomend', updatePrintPreview);
+        }
+
+        // Generate print — opens a new window with the map crop
+        var printGenerateBtn = document.getElementById('print-generate-btn');
+        if (printGenerateBtn) {
+            printGenerateBtn.addEventListener('click', function() {
+                var btn = this;
+                var originalHTML = btn.innerHTML;
+                btn.disabled = true;
+                btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> Wird erstellt...';
+
+                var orientation = document.getElementById('print-orientation').value;
+                var scaleOption = document.getElementById('print-scale').value;
+                var includeLegend = document.getElementById('print-legend').checked;
+                var includeTitle = document.getElementById('print-title').checked;
+                var dims = getPrintDimensions(orientation);
+                var printScale = scaleOption === 'auto' ? getMapScale() : parseInt(scaleOption);
+
+                setTimeout(function() {
+                    try {
+                        // Capture the map canvas
+                        var mapCanvas = map.getCanvas();
+                        var srcW = mapCanvas.width;
+                        var srcH = mapCanvas.height;
+
+                        // Calculate crop area (same logic as preview)
+                        var center = map.getCenter();
+                        var metersPerPixel = 156543.03392 * Math.cos(center.lat * Math.PI / 180) / Math.pow(2, map.getZoom());
+                        var groundW = (dims.width / 1000) * printScale;
+                        var groundH = (dims.height / 1000) * printScale;
+                        var cropPxW = groundW / metersPerPixel;
+                        var cropPxH = groundH / metersPerPixel;
+
+                        // Device pixel ratio for hi-res capture
+                        var dpr = window.devicePixelRatio || 1;
+                        var cropSrcW = Math.min(cropPxW * dpr, srcW);
+                        var cropSrcH = Math.min(cropPxH * dpr, srcH);
+                        var cropSrcX = (srcW - cropSrcW) / 2;
+                        var cropSrcY = (srcH - cropSrcH) / 2;
+
+                        // Create output canvas at print resolution (150 DPI)
+                        var printDPI = 150;
+                        var outW = Math.round(dims.width / 25.4 * printDPI);
+                        var outH = Math.round(dims.height / 25.4 * printDPI);
+                        var outCanvas = document.createElement('canvas');
+                        outCanvas.width = outW;
+                        outCanvas.height = outH;
+                        var ctx = outCanvas.getContext('2d');
+
+                        // White background
+                        ctx.fillStyle = '#ffffff';
+                        ctx.fillRect(0, 0, outW, outH);
+
+                        // Layout constants (in output pixels)
+                        var margin = Math.round(10 / 25.4 * printDPI);  // 10mm margin
+                        var headerH = includeTitle ? Math.round(12 / 25.4 * printDPI) : 0;
+                        var legendH = includeLegend ? Math.round(10 / 25.4 * printDPI) : 0;
+                        var footerH = Math.round(6 / 25.4 * printDPI);
+                        var mapX = margin;
+                        var mapY = margin + headerH;
+                        var mapW = outW - margin * 2;
+                        var mapH = outH - margin * 2 - headerH - legendH - footerH;
+
+                        // Draw map crop
+                        ctx.drawImage(mapCanvas, cropSrcX, cropSrcY, cropSrcW, cropSrcH, mapX, mapY, mapW, mapH);
+
+                        // Map border
+                        ctx.strokeStyle = '#cccccc';
+                        ctx.lineWidth = 1;
+                        ctx.strokeRect(mapX, mapY, mapW, mapH);
+
+                        // Header
+                        if (includeTitle) {
+                            ctx.fillStyle = '#1a1a1a';
+                            ctx.font = 'bold ' + Math.round(14 / 25.4 * printDPI) + 'px Arial';
+                            ctx.fillText('BBL Immobilienportfolio', margin, margin + headerH * 0.6);
+                            ctx.fillStyle = '#666666';
+                            ctx.font = Math.round(8 / 25.4 * printDPI) + 'px Arial';
+                            var dateStr = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                            var dateW = ctx.measureText(dateStr).width;
+                            ctx.fillText(dateStr, outW - margin - dateW, margin + headerH * 0.6);
+                            // Header line
+                            ctx.strokeStyle = '#333333';
+                            ctx.lineWidth = 2;
+                            ctx.beginPath();
+                            ctx.moveTo(margin, margin + headerH - 2);
+                            ctx.lineTo(outW - margin, margin + headerH - 2);
+                            ctx.stroke();
+                        }
+
+                        // Scale bar on map
+                        var scaleBarY = mapY + mapH - Math.round(5 / 25.4 * printDPI);
+                        var scaleBarX = mapX + Math.round(5 / 25.4 * printDPI);
+                        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                        var scaleText = 'Massstab 1:' + formatNum(printScale, 0);
+                        ctx.font = Math.round(7 / 25.4 * printDPI) + 'px Arial';
+                        var stw = ctx.measureText(scaleText).width;
+                        ctx.fillRect(scaleBarX - 4, scaleBarY - Math.round(4 / 25.4 * printDPI), stw + 8, Math.round(6 / 25.4 * printDPI));
+                        ctx.fillStyle = '#333333';
+                        ctx.fillText(scaleText, scaleBarX, scaleBarY);
+
+                        // North arrow on map
+                        var naX = mapX + mapW - Math.round(8 / 25.4 * printDPI);
+                        var naY = mapY + Math.round(8 / 25.4 * printDPI);
+                        var naR = Math.round(4 / 25.4 * printDPI);
+                        ctx.fillStyle = 'rgba(255,255,255,0.85)';
+                        ctx.beginPath();
+                        ctx.arc(naX, naY, naR, 0, Math.PI * 2);
+                        ctx.fill();
+                        ctx.strokeStyle = '#cccccc';
+                        ctx.lineWidth = 1;
+                        ctx.stroke();
+                        ctx.fillStyle = '#333333';
+                        ctx.font = 'bold ' + Math.round(naR * 1.2) + 'px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'middle';
+                        ctx.fillText('N', naX, naY);
+                        ctx.textAlign = 'start';
+                        ctx.textBaseline = 'alphabetic';
+
+                        // Legend
+                        if (includeLegend) {
+                            var legY = mapY + mapH + Math.round(5 / 25.4 * printDPI);
+                            var legFont = Math.round(7 / 25.4 * printDPI);
+                            ctx.font = legFont + 'px Arial';
+                            var legItems = [
+                                { color: '#2e7d32', label: 'Aktiv' },
+                                { color: '#0098ff', label: 'In Renovation' },
+                                { color: '#f39621', label: 'In Planung' },
+                                { color: '#9e9e9e', label: 'Verkauft' }
+                            ];
+                            var legX = margin;
+                            var dotR = Math.round(2.5 / 25.4 * printDPI);
+                            legItems.forEach(function(item) {
+                                ctx.fillStyle = item.color;
+                                ctx.beginPath();
+                                ctx.arc(legX + dotR, legY + dotR, dotR, 0, Math.PI * 2);
+                                ctx.fill();
+                                ctx.fillStyle = '#333333';
+                                ctx.fillText(item.label, legX + dotR * 2 + 6, legY + dotR + legFont * 0.35);
+                                legX += ctx.measureText(item.label).width + dotR * 2 + 24;
+                            });
+                        }
+
+                        // Footer
+                        var footY = outH - margin;
+                        ctx.strokeStyle = '#cccccc';
+                        ctx.lineWidth = 1;
+                        ctx.beginPath();
+                        ctx.moveTo(margin, footY - footerH + 4);
+                        ctx.lineTo(outW - margin, footY - footerH + 4);
+                        ctx.stroke();
+                        ctx.fillStyle = '#999999';
+                        ctx.font = Math.round(5.5 / 25.4 * printDPI) + 'px Arial';
+                        ctx.fillText('Quelle: BBL Immobilienportfolio — Bundesamt für Bauten und Logistik', margin, footY);
+                        var copyr = '© ' + new Date().getFullYear() + ' Schweizerische Eidgenossenschaft';
+                        var cw = ctx.measureText(copyr).width;
+                        ctx.fillText(copyr, outW - margin - cw, footY);
+
+                        // Open in new window for printing
+                        var dataUrl = outCanvas.toDataURL('image/png');
+                        var printWin = window.open('', '_blank');
+                        if (printWin) {
+                            printWin.document.write(
+                                '<!DOCTYPE html><html><head><title>BBL Immobilienportfolio — Druck</title>' +
+                                '<style>@page{size:' + dims.width + 'mm ' + dims.height + 'mm;margin:0;}' +
+                                'body{margin:0;display:flex;justify-content:center;align-items:center;height:100vh;background:#f5f5f5;}' +
+                                'img{max-width:100%;max-height:100vh;box-shadow:0 2px 20px rgba(0,0,0,0.15);}' +
+                                '@media print{body{background:none;height:auto;}img{max-width:100%;max-height:none;box-shadow:none;}}</style></head>' +
+                                '<body><img src="' + dataUrl + '" onload="setTimeout(function(){window.print();},300);"></body></html>'
+                            );
+                            printWin.document.close();
+                        }
+
+                    } catch (e) {
+                        console.error('Print error:', e);
+                        alert('Fehler beim Erstellen der Druckansicht: ' + e.message);
+                    }
+
+                    btn.innerHTML = originalHTML;
+                    btn.disabled = false;
+                    showPrintPreview();
+                }, 200);
+            });
+        }
 
         // ===== SHARED TABLE UTILITIES =====
 

@@ -744,6 +744,70 @@
             color: var(--grey-500);
         }
 
+        /* Filter pills in toolbar */
+        .filter-pills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+        }
+        .filter-pills:empty {
+            display: none;
+        }
+        .filter-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 8px 3px 10px;
+            font-size: 12px;
+            color: var(--grey-700);
+            background: var(--grey-100);
+            border: 1px solid var(--grey-300);
+            border-radius: 20px;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .filter-pill-label {
+            color: var(--grey-500);
+            margin-right: 2px;
+        }
+        .filter-pill-remove {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            border: none;
+            background: none;
+            padding: 0;
+            cursor: pointer;
+            border-radius: var(--radius-full);
+            color: var(--grey-400);
+            font-family: 'Material Symbols Outlined';
+            font-size: 14px;
+            transition: color var(--transition-fast), background var(--transition-fast);
+        }
+        .filter-pill-remove:hover {
+            color: var(--grey-900);
+            background: var(--grey-200);
+        }
+        .filter-pills-reset {
+            display: inline-flex;
+            align-items: center;
+            gap: 2px;
+            padding: 3px 10px;
+            font-size: 12px;
+            color: var(--primary-red);
+            background: none;
+            border: none;
+            cursor: pointer;
+            white-space: nowrap;
+            line-height: 1;
+        }
+        .filter-pills-reset:hover {
+            text-decoration: underline;
+        }
+
         /* List View Toolbar - extends .toolbar */
         .list-toolbar-search {
             min-width: 280px;
@@ -4716,35 +4780,177 @@
             cursor: grabbing;
         }
 
+        /* ===== PRINT PANEL ===== */
+        .print-panel {
+            width: 280px;
+        }
+        .print-form {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-3);
+            padding: var(--space-3);
+        }
+        .print-form-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: var(--space-3);
+        }
+        .print-form-row label {
+            font-size: var(--text-sm);
+            color: var(--grey-700);
+            white-space: nowrap;
+        }
+        .print-select {
+            flex: 1;
+            padding: 5px 8px;
+            font-size: var(--text-sm);
+            border: 1px solid var(--grey-300);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            color: var(--grey-900);
+        }
+        .print-checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+            font-size: var(--text-sm);
+            color: var(--grey-700);
+            cursor: pointer;
+        }
+        .print-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: var(--space-2);
+            width: 100%;
+            padding: var(--space-2) var(--space-4);
+            font-size: var(--text-sm);
+            font-weight: var(--font-medium);
+            color: var(--white);
+            background: var(--primary-red);
+            border: none;
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            transition: background var(--transition-fast);
+        }
+        .print-btn:hover {
+            background: #a00;
+        }
+        .print-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+        .print-btn .material-symbols-outlined {
+            font-size: 18px;
+        }
+
+        /* Print preview overlay styles defined earlier (line ~2112) */
+
+        /* ===== PRINT CONTAINER (injected for printing) ===== */
+        .print-container {
+            display: none;
+        }
+
         /* Print styles */
         @media print {
-            #header,
-            #footer,
-            #accordion-panel,
-            #info-panel,
-            .style-switcher,
-            #menu-toggle,
-            .btn-back,
-            .btn-edit,
-            #filter-pane,
-            .toast-container,
-            .loading-overlay,
-            .map-context-menu,
-            .measure-distance-display {
-                display: none !important;
+            body * {
+                visibility: hidden;
             }
-
-            #main {
-                height: auto;
-                overflow: visible;
+            .print-container,
+            .print-container * {
+                visibility: visible !important;
+                display: block !important;
             }
-
-            .detail-view {
-                overflow: visible;
+            .print-container {
+                display: block !important;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 99999;
+                background: white;
             }
-
-            .detail-content {
-                overflow: visible;
+            .print-header {
+                display: flex !important;
+                justify-content: space-between;
+                align-items: flex-end;
+                padding-bottom: 8px;
+                border-bottom: 2px solid #333;
+                margin-bottom: 8px;
+            }
+            .print-header h1 {
+                font-size: 16pt;
+                margin: 0;
+            }
+            .print-header .print-date {
+                font-size: 9pt;
+                color: #666;
+            }
+            .print-map-container {
+                position: relative;
+                border: 1px solid #ccc;
+            }
+            .print-map-container canvas {
+                width: 100% !important;
+                height: 100% !important;
+                display: block !important;
+            }
+            .print-scale-bar {
+                position: absolute;
+                bottom: 10px;
+                left: 10px;
+                background: rgba(255,255,255,0.85);
+                padding: 3px 8px;
+                font-size: 8pt;
+                border-radius: 3px;
+                border: 1px solid #ccc;
+            }
+            .print-north-arrow {
+                position: absolute;
+                top: 10px;
+                right: 10px;
+                background: rgba(255,255,255,0.85);
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: flex !important;
+                align-items: center;
+                justify-content: center;
+                font-size: 14pt;
+                font-weight: bold;
+                border: 1px solid #ccc;
+            }
+            .print-legend {
+                display: flex !important;
+                flex-wrap: wrap;
+                gap: 12px;
+                padding-top: 8px;
+                border-top: 1px solid #ccc;
+                margin-top: 8px;
+            }
+            .print-legend-item {
+                display: flex !important;
+                align-items: center;
+                gap: 4px;
+                font-size: 8pt;
+            }
+            .print-legend-swatch {
+                width: 12px;
+                height: 12px;
+                border-radius: 50%;
+                display: inline-block !important;
+                border: 1px solid #ccc;
+            }
+            .print-footer {
+                display: flex !important;
+                justify-content: space-between;
+                padding-top: 6px;
+                border-top: 1px solid #ccc;
+                margin-top: 8px;
+                font-size: 7pt;
+                color: #999;
             }
         }
 
