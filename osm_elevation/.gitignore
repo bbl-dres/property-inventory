@@ -1,0 +1,7 @@
+# Elevation tiles (large GeoTIFFs, ~15MB each)
+data/swissalti3d/
+data/swisssurface3d/
+
+# Generated output files
+data/*.geojson
+data/*.csv

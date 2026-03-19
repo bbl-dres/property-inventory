@@ -31,7 +31,14 @@
       "WebFetch(domain:docs.mapbox.com)",
       "WebFetch(domain:3d.geo.admin.ch)",
       "WebFetch(domain:www.jsdelivr.com)",
-      "Bash(python3 -c \"import sys,json; print\\(json.dumps\\(json.load\\(sys.stdin\\), indent=2\\)\\)\")"
+      "Bash(python3 -c \"import sys,json; print\\(json.dumps\\(json.load\\(sys.stdin\\), indent=2\\)\\)\")",
+      "WebFetch(domain:opendata.swiss)",
+      "WebFetch(domain:wiki.openstreetmap.org)",
+      "WebFetch(domain:www.swisstopo.admin.ch)",
+      "WebFetch(domain:taginfo.openstreetmap.ch)",
+      "Read(//c/Users/DavidRasner/Documents/GitHub/area-estimator/**)",
+      "Bash(rm -f 01_extract_osm_buildings.py 02_compute_heights.py 03_validate.py 04_upload.py app.py main.py requirements.txt)",
+      "Bash(rm -rf templates __pycache__)"
     ]
   }
 }

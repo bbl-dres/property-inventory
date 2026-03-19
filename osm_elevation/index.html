@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OSM Building Height Enrichment</title>
+    <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet">
+    <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.1/dist/proj4.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+        .layout { display: flex; height: 100vh; }
+        #map { flex: 1; }
+        .sidebar { width: 400px; background: #fff; border-left: 1px solid #e0e0e0; display: flex; flex-direction: column; overflow: hidden; }
+        .sidebar-header { padding: 16px 20px; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
+        .sidebar-header h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
+        .sidebar-header p { font-size: 12px; color: #666; }
+        .sidebar-content { flex: 1; overflow-y: auto; padding: 16px 20px; }
+        .section { margin-bottom: 20px; }
+        .section-title { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: #888; margin-bottom: 8px; }
+        .bbox-display { font-family: monospace; font-size: 12px; background: #f5f5f5; padding: 8px 12px; border-radius: 6px; color: #333; min-height: 36px; display: flex; align-items: center; }
+        .bbox-display.empty { color: #aaa; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; }
+        .btn-primary { background: #c00; color: #fff; }
+        .btn-primary:hover { background: #a00; }
+        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-secondary:hover { background: #e0e0e0; }
+        .btn-secondary:disabled { background: #f5f5f5; color: #aaa; cursor: not-allowed; }
+        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
+        .btn-group .btn { flex: 1; }
+        .progress-bar { height: 4px; background: #e0e0e0; border-radius: 2px; margin: 8px 0; overflow: hidden; }
+        .progress-fill { height: 100%; background: #c00; border-radius: 2px; transition: width 0.3s; width: 0%; }
+        .log-area { font-family: monospace; font-size: 11px; background: #1a1a1a; color: #ccc; padding: 12px; border-radius: 6px; max-height: 250px; overflow-y: auto; line-height: 1.6; }
+        .log-step { color: #4CAF50; font-weight: 600; }
+        .log-error { color: #f44336; }
+        .log-info { color: #aaa; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+        .stat-card { background: #f5f5f5; padding: 12px; border-radius: 6px; text-align: center; }
+        .stat-value { font-size: 24px; font-weight: 700; color: #333; }
+        .stat-label { font-size: 11px; color: #888; margin-top: 2px; }
+        .status-badge { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+        .status-idle { background: #f0f0f0; color: #888; }
+        .status-running { background: #fff3e0; color: #e65100; }
+        .status-done { background: #e8f5e9; color: #2e7d32; }
+        .status-error { background: #ffebee; color: #c62828; }
+        .draw-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
+        .draw-hint.hidden { opacity: 0; }
+        .legend { font-size: 11px; color: #666; margin-top: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        .building-props { font-size: 12px; }
+        .building-props table { width: 100%; border-collapse: collapse; }
+        .building-props td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .building-props td:first-child { color: #888; font-weight: 500; width: 40%; white-space: nowrap; }
+        .building-props td:last-child { color: #333; word-break: break-all; }
+        .building-props .new-tag { background: #e8f5e9; }
+        .building-props .new-tag td { color: #2e7d32; }
+        .building-props .osm-link { color: #1976D2; text-decoration: none; }
+        .building-props .osm-link:hover { text-decoration: underline; }
+        code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 11px; }
+        .step-hint { font-size: 12px; color: #666; margin-bottom: 8px; }
+        .form-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; transition: border-color 0.15s; }
+        .form-input:focus { border-color: #999; }
+        .sidebar-footer { padding: 12px 20px; border-top: 1px solid #e0e0e0; background: #fafafa; font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-footer a { color: #666; text-decoration: none; }
+        .sidebar-footer a:hover { color: #333; text-decoration: underline; }
+    </style>
+</head>
+<body>
+<div class="layout">
+    <div id="map">
+        <div class="draw-hint" id="draw-hint">Click and drag on the map to select an area</div>
+    </div>
+    <div class="sidebar">
+        <div class="sidebar-header">
+            <h1>OSM Building Height Enrichment</h1>
+            <p>Add accurate heights to OpenStreetMap buildings using swisstopo elevation data. Runs entirely in the browser.</p>
+        </div>
+        <div class="sidebar-content">
+
+            <!-- Step 1 -->
+            <div class="section">
+                <div class="section-title">Step 1 — Select Area</div>
+                <p class="step-hint">Click and drag on the map to draw a rectangle.</p>
+                <div class="bbox-display empty" id="bbox-display">No area selected</div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" id="btn-clear" disabled>Clear</button>
+                    <button class="btn btn-primary" id="btn-run" disabled>Compute Heights</button>
+                </div>
+            </div>
+
+            <!-- Step 2 -->
+            <div class="section">
+                <div class="section-title">Step 2 — Processing <span class="status-badge status-idle" id="status-badge">Idle</span></div>
+                <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                <div class="log-area" id="log-area"><div class="log-info">Draw an area and click "Compute Heights" to start.</div></div>
+            </div>
+
+            <!-- Step 3 -->
+            <div class="section" id="results-section" style="display:none;">
+                <div class="section-title">Step 3 — Review Results</div>
+                <p class="step-hint">Click on a building in the 3D view to inspect its properties.</p>
+                <div class="stats" id="stats"></div>
+                <div class="legend" style="margin-top: 12px;">
+                    <div class="legend-item"><div class="legend-dot" style="background:#4CAF50;"></div> Enriched — new <code>height</code> tag added</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#2196F3;"></div> Already had height — not modified</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped — complex or no data</div>
+                </div>
+                <div class="btn-group" style="margin-top: 12px;">
+                    <button class="btn btn-secondary" id="btn-download">Download GeoJSON</button>
+                </div>
+            </div>
+
+            <!-- Building inspector -->
+            <div class="section" id="building-info-section" style="display:none;">
+                <div class="section-title">Building Inspector</div>
+                <div id="building-info"></div>
+            </div>
+
+            <!-- Step 4 -->
+            <div class="section" id="upload-section" style="display:none;">
+                <div class="section-title">Step 4 — Upload to OpenStreetMap</div>
+                <p class="step-hint">
+                    This adds <code>height</code> and <code>source:height</code> tags to existing OSM buildings.
+                    Buildings with existing height or roof tags are never modified.
+                </p>
+                <div style="display:flex; flex-direction:column; gap:8px; margin-top: 8px;">
+                    <div id="osm-login-area">
+                        <button class="btn btn-secondary" id="btn-osm-login">Login with OpenStreetMap</button>
+                    </div>
+                    <div id="osm-logged-in" style="display:none;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px 12px; background:#e8f5e9; border-radius:6px; font-size:13px;">
+                            <span style="color:#2e7d32;">Logged in as <strong id="osm-display-name"></strong></span>
+                            <button style="margin-left:auto; background:none; border:none; color:#888; cursor:pointer; font-size:12px;" id="btn-osm-logout">Logout</button>
+                        </div>
+                        <button class="btn btn-primary" id="btn-upload">Upload to OSM</button>
+                    </div>
+                    <div id="upload-progress" style="display:none;">
+                        <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill"></div></div>
+                        <div style="font-size:12px; color:#666;" id="upload-status-text"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="sidebar-footer">
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Source Code</a>
+            <span>Data: <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a> (OGD) + <a href="https://www.openstreetmap.org" target="_blank">OSM</a></span>
+        </div>
+    </div>
+</div>
+
+<script>
+// =============================================
+// LV95 projection (Swiss coordinates)
+// =============================================
+proj4.defs('EPSG:2056', '+proj=somerc +lat_0=46.9524055555556 +lon_0=7.43958333333333 +k_0=1 +x_0=2600000 +y_0=1200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs');
+function toLV95(lon, lat) { return proj4('EPSG:4326', 'EPSG:2056', [lon, lat]); }
+
+// =============================================
+// COG tile cache + reader
+// =============================================
+const tileCache = new Map(); // tileKey -> GeoTIFF image
+
+const ALTI3D_URL = 'https://data.geo.admin.ch/ch.swisstopo.swissalti3d/swissalti3d_{year}_{tile}/swissalti3d_{year}_{tile}_0.5_2056_5728.tif';
+const SURFACE3D_URL = 'https://data.geo.admin.ch/ch.swisstopo.swisssurface3d-raster/swisssurface3d-raster_{year}_{tile}/swisssurface3d-raster_{year}_{tile}_0.5_2056_5728.tif';
+const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019];
+
+// Cache: tileId -> year that worked, per dataset
+const yearHints = { dtm: {}, dsm: {} };
+
+function tileIdFromLV95(x, y) {
+    return Math.floor(x / 1000) + '-' + Math.floor(y / 1000);
+}
+
+async function openCOG(urlTemplate, tileId) {
+    const datasetKey = urlTemplate.includes('swissalti3d') ? 'dtm' : 'dsm';
+    const cacheKey = datasetKey + ':' + tileId;
+    if (tileCache.has(cacheKey)) return tileCache.get(cacheKey);
+
+    // Try known year for this specific tile first, then all years
+    const hint = yearHints[datasetKey][tileId];
+    const yearsToTry = hint ? [hint, ...YEARS.filter(y => y !== hint)] : YEARS;
+
+    for (const year of yearsToTry) {
+        const url = urlTemplate.replace(/{year}/g, year).replace(/{tile}/g, tileId);
+        try {
+            // Use a quick HEAD check to avoid geotiff.js parsing 404 error pages
+            const check = await fetch(url, { method: 'HEAD' }).catch(() => null);
+            if (!check || !check.ok) continue;
+
+            const tiff = await GeoTIFF.fromUrl(url, { allowFullFile: false });
+            const image = await tiff.getImage();
+            tileCache.set(cacheKey, image);
+            yearHints[datasetKey][tileId] = year;
+            addLog('info', 'Loaded ' + datasetKey.toUpperCase() + ' tile ' + tileId + ' (' + year + ')');
+            return image;
+        } catch (e) {
+            continue;
+        }
+    }
+    addLog('info', 'No tile found for ' + tileId);
+    return null;
+}
+
+// Cache for raster windows already read (datasetKey:tileId:windowKey -> Float32Array + metadata)
+const rasterWindowCache = new Map();
+
+async function samplePoints(pointsLV95, urlTemplate) {
+    // Group points by tile
+    const byTile = {};
+    for (let i = 0; i < pointsLV95.length; i++) {
+        const [x, y] = pointsLV95[i];
+        const tileId = tileIdFromLV95(x, y);
+        if (!byTile[tileId]) byTile[tileId] = [];
+        byTile[tileId].push({ x, y, idx: i });
+    }
+
+    const results = new Array(pointsLV95.length).fill(null);
+
+    for (const tileId of Object.keys(byTile)) {
+        const points = byTile[tileId];
+        const image = await openCOG(urlTemplate, tileId);
+        if (!image) continue;
+
+        const [ox, oy] = image.getOrigin();
+        const [rx, ry] = image.getResolution();
+        const imgW = image.getWidth();
+        const imgH = image.getHeight();
+
+        // Compute bounding window for all points on this tile
+        let minCol = Infinity, maxCol = -Infinity, minRow = Infinity, maxRow = -Infinity;
+        for (const p of points) {
+            const col = Math.floor((p.x - ox) / rx);
+            const row = Math.floor((p.y - oy) / ry);
+            if (col < 0 || row < 0 || col >= imgW || row >= imgH) continue;
+            if (col < minCol) minCol = col;
+            if (col > maxCol) maxCol = col;
+            if (row < minRow) minRow = row;
+            if (row > maxRow) maxRow = row;
+        }
+
+        if (minCol > maxCol || minRow > maxRow) continue;
+
+        // Add 1 pixel margin and clamp
+        maxCol = Math.min(maxCol + 1, imgW);
+        maxRow = Math.min(maxRow + 1, imgH);
+        minCol = Math.max(minCol, 0);
+        minRow = Math.max(minRow, 0);
+
+        const windowKey = urlTemplate.includes('swissalti3d') ? 'dtm' : 'dsm';
+        const cacheKey = windowKey + ':' + tileId + ':' + minCol + ',' + minRow + ',' + maxCol + ',' + maxRow;
+
+        let rasterData;
+        if (rasterWindowCache.has(cacheKey)) {
+            rasterData = rasterWindowCache.get(cacheKey);
+        } else {
+            try {
+                const data = await image.readRasters({ window: [minCol, minRow, maxCol, maxRow] });
+                rasterData = { data: data[0], width: maxCol - minCol, minCol, minRow };
+                rasterWindowCache.set(cacheKey, rasterData);
+            } catch (e) {
+                continue;
+            }
+        }
+
+        // Sample each point from the in-memory raster window
+        for (const p of points) {
+            const col = Math.floor((p.x - ox) / rx);
+            const row = Math.floor((p.y - oy) / ry);
+            if (col < minCol || col >= maxCol || row < minRow || row >= maxRow) continue;
+            const localCol = col - rasterData.minCol;
+            const localRow = row - rasterData.minRow;
+            const val = rasterData.data[localRow * rasterData.width + localCol];
+            if (val !== undefined && !isNaN(val) && val > -100) {
+                results[p.idx] = val;
+            }
+        }
+    }
+
+    return results;
+}
+
+// =============================================
+// Grid creation inside polygon
+// =============================================
+function createGridPoints(coordsLV95, spacing) {
+    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+    for (const [x, y] of coordsLV95) {
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
+    }
+    const points = [];
+    for (let x = minX + spacing / 2; x < maxX; x += spacing) {
+        for (let y = minY + spacing / 2; y < maxY; y += spacing) {
+            if (pointInPolygon(x, y, coordsLV95)) points.push([x, y]);
+        }
+    }
+    if (points.length === 0) {
+        // Centroid fallback
+        let cx = 0, cy = 0;
+        for (const [x, y] of coordsLV95) { cx += x; cy += y; }
+        points.push([cx / coordsLV95.length, cy / coordsLV95.length]);
+    }
+    return points;
+}
+
+function pointInPolygon(x, y, polygon) {
+    let inside = false;
+    for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
+        const [xi, yi] = polygon[i], [xj, yj] = polygon[j];
+        if ((yi > y) !== (yj > y) && x < (xj - xi) * (y - yi) / (yj - yi) + xi) {
+            inside = !inside;
+        }
+    }
+    return inside;
+}
+
+// =============================================
+// Height computation for one building
+// =============================================
+async function computeBuildingHeight(feature) {
+    const coords = feature.geometry.coordinates[0];
+    const lv95Coords = coords.map(c => toLV95(c[0], c[1]));
+
+    const gridPoints = createGridPoints(lv95Coords, 2); // 2m spacing (batch read = fast)
+
+    // Batch-read all sample points from DTM and DSM tiles (one HTTP request per tile)
+    const dtmVals = await samplePoints(gridPoints, ALTI3D_URL);
+    const dsmVals = await samplePoints(gridPoints, SURFACE3D_URL);
+
+    const heights = [];
+    let minDTM = Infinity, maxDSM = -Infinity;
+
+    for (let i = 0; i < gridPoints.length; i++) {
+        const dtm = dtmVals[i];
+        const dsm = dsmVals[i];
+        if (dtm !== null && dsm !== null) {
+            const h = dsm - dtm;
+            if (h > 0) {
+                heights.push(h);
+                if (dtm < minDTM) minDTM = dtm;
+                if (dsm > maxDSM) maxDSM = dsm;
+            }
+        }
+    }
+
+    if (heights.length === 0) return null;
+
+    return {
+        height_max: Math.round(Math.max(...heights) * 10) / 10,
+        height_mean: Math.round((heights.reduce((a, b) => a + b, 0) / heights.length) * 10) / 10,
+        elevation_ground: Math.round(minDTM * 10) / 10,
+        elevation_roof: Math.round(maxDSM * 10) / 10,
+        sample_points: heights.length,
+    };
+}
+
+// =============================================
+// Overpass API
+// =============================================
+const OVERPASS_URL = 'https://overpass.osm.ch/api/interpreter';
+
+async function extractBuildings(bbox) {
+    const [west, south, east, north] = bbox;
+    const query = `[out:json][timeout:180];(way["building"](${south},${west},${north},${east}););out body;>;out skel qt;`;
+
+    addLog('step', 'Extracting OSM buildings...');
+    const resp = await fetch(OVERPASS_URL, { method: 'POST', body: 'data=' + encodeURIComponent(query), headers: { 'Content-Type': 'application/x-www-form-urlencoded' } });
+    if (!resp.ok) throw new Error('Overpass API error: ' + resp.status);
+    const data = await resp.json();
+
+    // Index nodes
+    const nodes = {};
+    for (const el of data.elements) {
+        if (el.type === 'node') nodes[el.id] = [el.lon, el.lat];
+    }
+
+    // Build features
+    const features = [];
+    for (const el of data.elements) {
+        if (el.type !== 'way' || !el.tags) continue;
+        const coords = (el.nodes || []).map(id => nodes[id]).filter(Boolean);
+        if (coords.length < 4) continue;
+        if (coords[0][0] !== coords[coords.length-1][0] || coords[0][1] !== coords[coords.length-1][1]) {
+            coords.push(coords[0]);
+        }
+
+        const props = { osm_id: el.id, osm_type: 'way', building: el.tags.building || 'yes' };
+        for (const k of ['height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'name', 'addr:street', 'addr:housenumber']) {
+            if (el.tags[k]) props[k] = el.tags[k];
+        }
+
+        features.push({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [coords] }, properties: props });
+    }
+
+    return { type: 'FeatureCollection', features };
+}
+
+// =============================================
+// Main pipeline
+// =============================================
+let resultGeoJSON = null;
+
+async function runPipeline(bbox) {
+    const startTime = Date.now();
+    tileCache.clear();
+    resultGeoJSON = null;
+
+    // Step 1: Extract
+    setStatus('running', 'Running');
+    setProgress(0);
+    let geojson;
+    try {
+        geojson = await extractBuildings(bbox);
+    } catch (e) {
+        addLog('error', 'Extraction failed: ' + e.message);
+        setStatus('error', 'Error');
+        return;
+    }
+
+    const total = geojson.features.length;
+    const withHeight = geojson.features.filter(f => f.properties.height).length;
+    addLog('step', `Extracted ${total} buildings (${withHeight} already have height)`);
+
+    if (total === 0) {
+        addLog('error', 'No buildings found in selected area');
+        setStatus('error', 'Error');
+        return;
+    }
+
+    // Step 2: Compute heights
+    addLog('step', 'Computing heights from swisstopo DSM/DTM...');
+    let enriched = 0, skipped = 0, alreadyHad = 0;
+
+    for (let i = 0; i < total; i++) {
+        const feature = geojson.features[i];
+        const props = feature.properties;
+
+        if (i % 10 === 0) {
+            setProgress((i / total) * 100);
+            addLog('info', `Progress: ${i + 1}/${total}`);
+            await new Promise(r => setTimeout(r, 0)); // yield to UI
+        }
+
+        // Skip filters
+        if (props.height) { alreadyHad++; continue; }
+        if (Object.keys(props).some(k => k.startsWith('roof:'))) { skipped++; continue; }
+        const coords = feature.geometry.coordinates;
+        if (coords.length > 1 || coords[0].length > 30) { skipped++; continue; }
+
+        try {
+            const result = await computeBuildingHeight(feature);
+            if (result && result.height_max >= 2 && result.height_max <= 60) {
+                props.height = String(result.height_max);
+                props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
+                enriched++;
+            } else {
+                skipped++;
+            }
+        } catch (e) {
+            skipped++;
+        }
+    }
+
+    setProgress(100);
+
+    // Step 3: Report
+    const elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
+    addLog('step', `Done in ${elapsed}s`);
+    addLog('info', `Enriched: ${enriched}, Already had: ${alreadyHad}, Skipped: ${skipped}`);
+
+    // Height stats
+    const heights = geojson.features
+        .filter(f => f.properties['source:height'])
+        .map(f => parseFloat(f.properties.height))
+        .filter(h => !isNaN(h));
+    if (heights.length > 0) {
+        heights.sort((a, b) => a - b);
+        const mean = (heights.reduce((a, b) => a + b, 0) / heights.length).toFixed(1);
+        const median = heights[Math.floor(heights.length / 2)].toFixed(1);
+        addLog('info', `Height range: ${heights[0]}m - ${heights[heights.length-1]}m`);
+        addLog('info', `Mean: ${mean}m, Median: ${median}m`);
+    }
+
+    resultGeoJSON = geojson;
+    setStatus('done', 'Complete');
+    showResults(total, enriched, alreadyHad, skipped);
+
+    // Auto-show 3D results on map
+    map.getSource('result-buildings').setData(geojson);
+    map.setLayoutProperty('result-fill', 'visibility', 'visible');
+    map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+}
+
+// =============================================
+// Map + UI
+// =============================================
+const map = new maplibregl.Map({
+    container: 'map',
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    center: [7.45, 46.95],
+    zoom: 14,
+});
+map.addControl(new maplibregl.NavigationControl(), 'top-left');
+
+let drawing = false, startLngLat = null, bboxStr = null, running = false;
+
+map.on('load', function() {
+    map.addSource('draw-rect', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({ id: 'draw-rect-fill', type: 'fill', source: 'draw-rect', paint: { 'fill-color': '#c00', 'fill-opacity': 0.1 } });
+    map.addLayer({ id: 'draw-rect-line', type: 'line', source: 'draw-rect', paint: { 'line-color': '#c00', 'line-width': 2, 'line-dasharray': [3, 2] } });
+    map.addSource('result-buildings', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({
+        id: 'result-fill', type: 'fill-extrusion', source: 'result-buildings',
+        paint: {
+            'fill-extrusion-color': ['case', ['has', 'source:height'], '#4CAF50', ['has', 'height'], '#2196F3', '#9E9E9E'],
+            'fill-extrusion-height': ['case', ['has', 'height'], ['to-number', ['get', 'height'], 5], 5],
+            'fill-extrusion-base': 0,
+            'fill-extrusion-opacity': 0.85,
+        },
+        layout: { visibility: 'none' },
+    });
+});
+
+map.on('mousedown', function(e) {
+    if (running) return;
+    drawing = true;
+    startLngLat = e.lngLat;
+    map.getCanvasContainer().style.cursor = 'crosshair';
+    map.dragPan.disable();
+});
+map.on('mousemove', function(e) {
+    if (!drawing || !startLngLat) return;
+    updateRect(startLngLat, e.lngLat);
+});
+map.on('mouseup', function(e) {
+    if (!drawing) return;
+    drawing = false;
+    map.getCanvasContainer().style.cursor = '';
+    map.dragPan.enable();
+    if (!startLngLat) return;
+    updateRect(startLngLat, e.lngLat);
+    const sw = startLngLat, ne = e.lngLat;
+    bboxStr = [Math.min(sw.lng,ne.lng), Math.min(sw.lat,ne.lat), Math.max(sw.lng,ne.lng), Math.max(sw.lat,ne.lat)].map(v => v.toFixed(5)).join(',');
+    document.getElementById('bbox-display').textContent = bboxStr;
+    document.getElementById('bbox-display').classList.remove('empty');
+    document.getElementById('btn-run').disabled = false;
+    document.getElementById('btn-clear').disabled = false;
+    document.getElementById('draw-hint').classList.add('hidden');
+});
+
+function updateRect(sw, ne) {
+    map.getSource('draw-rect').setData({
+        type: 'Feature',
+        geometry: { type: 'Polygon', coordinates: [[[Math.min(sw.lng,ne.lng),Math.min(sw.lat,ne.lat)],[Math.max(sw.lng,ne.lng),Math.min(sw.lat,ne.lat)],[Math.max(sw.lng,ne.lng),Math.max(sw.lat,ne.lat)],[Math.min(sw.lng,ne.lng),Math.max(sw.lat,ne.lat)],[Math.min(sw.lng,ne.lng),Math.min(sw.lat,ne.lat)]]] },
+    });
+}
+
+document.getElementById('btn-clear').onclick = function() {
+    bboxStr = null; resultGeoJSON = null;
+    map.getSource('draw-rect').setData({ type: 'FeatureCollection', features: [] });
+    map.getSource('result-buildings').setData({ type: 'FeatureCollection', features: [] });
+    map.setLayoutProperty('result-fill', 'visibility', 'none');
+    map.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+    document.getElementById('bbox-display').textContent = 'Draw a rectangle on the map';
+    document.getElementById('bbox-display').classList.add('empty');
+    document.getElementById('btn-run').disabled = true;
+    document.getElementById('btn-clear').disabled = true;
+    document.getElementById('draw-hint').classList.remove('hidden');
+    document.getElementById('results-section').style.display = 'none';
+    document.getElementById('upload-section').style.display = 'none';
+    document.getElementById('building-info-section').style.display = 'none';
+};
+
+document.getElementById('btn-run').onclick = async function() {
+    if (!bboxStr || running) return;
+    running = true;
+    document.getElementById('btn-run').disabled = true;
+    document.getElementById('btn-clear').disabled = true;
+    document.getElementById('results-section').style.display = 'none';
+    clearLog();
+    const bbox = bboxStr.split(',').map(Number);
+    await runPipeline(bbox);
+    running = false;
+    document.getElementById('btn-clear').disabled = false;
+};
+
+// Click on 3D building → show properties in sidebar
+map.on('click', 'result-fill', function(e) {
+    if (!e.features || !e.features.length) return;
+    const props = e.features[0].properties;
+    const isEnriched = !!props['source:height'];
+    const osmId = props.osm_id;
+
+    let html = '<div class="building-props"><table>';
+    html += '<tr><td>OSM</td><td><a class="osm-link" href="https://www.openstreetmap.org/way/' + osmId + '" target="_blank">way/' + osmId + '</a></td></tr>';
+
+    // Show all properties, highlight new tags
+    const skipKeys = ['osm_id', 'osm_type'];
+    const newKeys = ['height', 'source:height'];
+    for (const [k, v] of Object.entries(props)) {
+        if (skipKeys.includes(k) || v === null || v === undefined) continue;
+        const isNew = isEnriched && newKeys.includes(k);
+        html += '<tr class="' + (isNew ? 'new-tag' : '') + '"><td>' + k + '</td><td>' + v + (isNew ? ' ✓' : '') + '</td></tr>';
+    }
+    html += '</table></div>';
+
+    document.getElementById('building-info').innerHTML = html;
+    document.getElementById('building-info-section').style.display = 'block';
+});
+
+map.on('mouseenter', 'result-fill', function() { map.getCanvas().style.cursor = 'pointer'; });
+map.on('mouseleave', 'result-fill', function() { map.getCanvas().style.cursor = ''; });
+
+document.getElementById('btn-download').onclick = function() {
+    if (!resultGeoJSON) return;
+    const blob = new Blob([JSON.stringify(resultGeoJSON, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'osm_buildings_enriched.geojson';
+    a.click(); URL.revokeObjectURL(url);
+};
+
+// =============================================
+// OSM OAuth2 PKCE
+// =============================================
+const OSM_CLIENT_ID = 'WdC41vuWg3WP-gCvPOX35IWrdZdnP1QZhVf_w9F0Jp0';
+const OSM_CLIENT_SECRET = '-Jak21r-sZFfuZ9G9I6UQ3jatGlePYAKyai12v4_5WE';
+const OSM_REDIRECT_URI = window.location.origin + window.location.pathname;
+const OSM_AUTH_URL = 'https://www.openstreetmap.org/oauth2/authorize';
+const OSM_TOKEN_URL = 'https://www.openstreetmap.org/oauth2/token';
+
+let osmAccessToken = null;
+
+// PKCE helpers
+function generateCodeVerifier() {
+    const arr = new Uint8Array(32);
+    crypto.getRandomValues(arr);
+    return btoa(String.fromCharCode(...arr)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+async function generateCodeChallenge(verifier) {
+    const data = new TextEncoder().encode(verifier);
+    const hash = await crypto.subtle.digest('SHA-256', data);
+    return btoa(String.fromCharCode(...new Uint8Array(hash))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+}
+
+// Start OAuth login
+document.getElementById('btn-osm-login').onclick = async function() {
+    const codeVerifier = generateCodeVerifier();
+    const codeChallenge = await generateCodeChallenge(codeVerifier);
+    sessionStorage.setItem('osm_code_verifier', codeVerifier);
+
+    const params = new URLSearchParams({
+        response_type: 'code',
+        client_id: OSM_CLIENT_ID,
+        redirect_uri: OSM_REDIRECT_URI,
+        scope: 'write_api',
+        code_challenge: codeChallenge,
+        code_challenge_method: 'S256',
+    });
+    window.location.href = OSM_AUTH_URL + '?' + params.toString();
+};
+
+// Handle OAuth callback (check URL for auth code on page load)
+async function handleOAuthCallback() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (!code) return;
+
+    const codeVerifier = sessionStorage.getItem('osm_code_verifier');
+    if (!codeVerifier) return;
+
+    // Clean URL
+    window.history.replaceState({}, '', window.location.pathname);
+    sessionStorage.removeItem('osm_code_verifier');
+
+    addLog('step', 'Exchanging OAuth code for token...');
+
+    try {
+        const resp = await fetch(OSM_TOKEN_URL, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: new URLSearchParams({
+                grant_type: 'authorization_code',
+                code: code,
+                redirect_uri: OSM_REDIRECT_URI,
+                client_id: OSM_CLIENT_ID,
+                client_secret: OSM_CLIENT_SECRET,
+                code_verifier: codeVerifier,
+            }),
+        });
+
+        if (!resp.ok) {
+            const errText = await resp.text();
+            throw new Error('Token exchange failed: ' + resp.status + ' ' + errText);
+        }
+
+        const data = await resp.json();
+        osmAccessToken = data.access_token;
+
+        // Fetch user info
+        const userResp = await fetch('https://api.openstreetmap.org/api/0.6/user/details.json', {
+            headers: { 'Authorization': 'Bearer ' + osmAccessToken },
+        });
+        if (userResp.ok) {
+            const userData = await userResp.json();
+            const displayName = userData.user.display_name;
+            document.getElementById('osm-display-name').textContent = displayName;
+            addLog('step', 'Logged in as ' + displayName);
+        }
+
+        document.getElementById('osm-login-area').style.display = 'none';
+        document.getElementById('osm-logged-in').style.display = 'block';
+
+    } catch (e) {
+        addLog('error', 'OAuth failed: ' + e.message);
+    }
+}
+
+document.getElementById('btn-osm-logout').onclick = function() {
+    osmAccessToken = null;
+    document.getElementById('osm-login-area').style.display = 'block';
+    document.getElementById('osm-logged-in').style.display = 'none';
+};
+
+// Run on page load
+handleOAuthCallback();
+
+// =============================================
+// OSM Upload
+// =============================================
+document.getElementById('btn-upload').onclick = async function() {
+    if (!resultGeoJSON || !osmAccessToken) return;
+
+    // Collect buildings to upload (enriched, way only, valid height range)
+    const toUpload = resultGeoJSON.features.filter(f => {
+        const p = f.properties;
+        if (!p['source:height'] || p.osm_type !== 'way') return false;
+        const h = parseFloat(p.height);
+        return h >= 2 && h <= 60;
+    });
+
+    if (toUpload.length === 0) {
+        alert('No buildings to upload');
+        return;
+    }
+
+    if (!confirm('Upload height tags for ' + toUpload.length + ' buildings to OSM?\n\nTags added:\n  height = <computed value>\n  source:height = swisstopo/swissALTI3D;swissSURFACE3D\n\nThis modifies live OSM data.')) {
+        return;
+    }
+
+    const btn = document.getElementById('btn-upload');
+    btn.disabled = true;
+    btn.textContent = 'Uploading...';
+    document.getElementById('upload-progress').style.display = 'block';
+
+    const OSM_API = 'https://api.openstreetmap.org/api/0.6';
+    const auth = 'Bearer ' + osmAccessToken;
+    let updated = 0, errors = 0;
+
+    try {
+        // Create changeset
+        const csBody = '<osm><changeset>' +
+            '<tag k="comment" v="Add building heights from swisstopo DSM/DTM elevation models"/>' +
+            '<tag k="source" v="swisstopo/swissALTI3D;swissSURFACE3D"/>' +
+            '<tag k="created_by" v="osm_elevation_browser"/>' +
+            '</changeset></osm>';
+
+        const csResp = await fetch(OSM_API + '/changeset/create', {
+            method: 'PUT', headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
+            body: csBody,
+        });
+        if (!csResp.ok) {
+            const errText = await csResp.text();
+            throw new Error('Failed to create changeset: ' + csResp.status + ' ' + errText);
+        }
+        const changesetId = await csResp.text();
+        addLog('step', 'Created changeset ' + changesetId);
+
+        for (let i = 0; i < toUpload.length; i++) {
+            const props = toUpload[i].properties;
+            const osmId = props.osm_id;
+
+            document.getElementById('upload-progress-fill').style.width = ((i + 1) / toUpload.length * 100) + '%';
+            document.getElementById('upload-status-text').textContent = (i + 1) + '/' + toUpload.length;
+
+            try {
+                // Fetch current way
+                const wayResp = await fetch(OSM_API + '/way/' + osmId, { headers: { 'Authorization': auth } });
+                if (!wayResp.ok) { errors++; continue; }
+                const wayXml = await wayResp.text();
+
+                // Parse and check for existing height/roof tags
+                const parser = new DOMParser();
+                const doc = parser.parseFromString(wayXml, 'text/xml');
+                const way = doc.querySelector('way');
+                if (!way) { errors++; continue; }
+
+                const existingTags = {};
+                way.querySelectorAll('tag').forEach(t => { existingTags[t.getAttribute('k')] = t.getAttribute('v'); });
+
+                if (existingTags['height']) {
+                    addLog('info', 'way/' + osmId + ': already has height, skipping');
+                    continue;
+                }
+                if (Object.keys(existingTags).some(k => k.startsWith('roof:'))) {
+                    addLog('info', 'way/' + osmId + ': has roof tags, skipping');
+                    continue;
+                }
+
+                // Add height tags
+                const heightTag = doc.createElement('tag');
+                heightTag.setAttribute('k', 'height');
+                heightTag.setAttribute('v', props.height);
+                way.appendChild(heightTag);
+
+                const sourceTag = doc.createElement('tag');
+                sourceTag.setAttribute('k', 'source:height');
+                sourceTag.setAttribute('v', 'swisstopo/swissALTI3D;swissSURFACE3D');
+                way.appendChild(sourceTag);
+
+                // Set changeset
+                way.setAttribute('changeset', changesetId);
+
+                // Upload
+                const updateXml = '<osm>' + new XMLSerializer().serializeToString(way) + '</osm>';
+                const updateResp = await fetch(OSM_API + '/way/' + osmId, {
+                    method: 'PUT', headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
+                    body: updateXml,
+                });
+
+                if (updateResp.ok) {
+                    updated++;
+                } else {
+                    const errText = await updateResp.text();
+                    addLog('error', 'way/' + osmId + ': ' + errText);
+                    errors++;
+                }
+
+                // Rate limit
+                await new Promise(r => setTimeout(r, 100));
+
+            } catch (e) {
+                addLog('error', 'way/' + osmId + ': ' + e.message);
+                errors++;
+                if (errors >= 10) {
+                    addLog('error', 'Too many errors, stopping');
+                    break;
+                }
+            }
+        }
+
+        // Close changeset
+        await fetch(OSM_API + '/changeset/' + changesetId + '/close', {
+            method: 'PUT', headers: { 'Authorization': auth },
+        });
+
+        addLog('step', 'Upload complete: ' + updated + ' updated, ' + errors + ' errors');
+        addLog('info', 'Changeset: https://www.openstreetmap.org/changeset/' + changesetId);
+
+    } catch (e) {
+        addLog('error', 'Upload failed: ' + e.message);
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Upload to OSM';
+};
+
+// UI helpers
+function setStatus(cls, text) {
+    const el = document.getElementById('status-badge');
+    el.className = 'status-badge status-' + cls;
+    el.textContent = text;
+}
+function setProgress(pct) { document.getElementById('progress-fill').style.width = Math.min(100, pct) + '%'; }
+function clearLog() { document.getElementById('log-area').innerHTML = ''; }
+function addLog(type, text) {
+    const el = document.getElementById('log-area');
+    const line = document.createElement('div');
+    line.className = 'log-' + type;
+    line.textContent = text;
+    el.appendChild(line);
+    el.scrollTop = el.scrollHeight;
+}
+function showResults(total, enriched, alreadyHad, skipped) {
+    document.getElementById('results-section').style.display = 'block';
+    document.getElementById('upload-section').style.display = 'block';
+    document.getElementById('stats').innerHTML =
+        '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">Total Buildings</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + enriched + '</div><div class="stat-label">Enriched</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + alreadyHad + '</div><div class="stat-label">Had Height</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + skipped + '</div><div class="stat-label">Skipped</div></div>';
+}
+</script>
+</body>
+</html>
