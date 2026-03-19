@@ -30,7 +30,8 @@
       "WebFetch(domain:github.com)",
       "WebFetch(domain:docs.mapbox.com)",
       "WebFetch(domain:3d.geo.admin.ch)",
-      "WebFetch(domain:www.jsdelivr.com)"
+      "WebFetch(domain:www.jsdelivr.com)",
+      "Bash(python3 -c \"import sys,json; print\\(json.dumps\\(json.load\\(sys.stdin\\), indent=2\\)\\)\")"
     ]
   }
 }

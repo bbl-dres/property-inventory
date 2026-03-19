@@ -5,7 +5,8 @@ import { statusColors, mapStyles, placeholderImages } from './config.js';
 import { escapeHtml, getStatusClassName } from './utils.js';
 import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
-// import { showSwisstopo3D, hideSwisstopo3D } from './tiles3d.js';
+// Google 3D tiles disabled — requires API key with sufficient quota
+// import { showGoogle3D, hideGoogle3D } from './tiles3d.js';
 import {
   identifySwisstopoFeatures,
   clearIdentifyHighlight,
@@ -32,7 +33,7 @@ function initMap() {
 
   // Defaults (Switzerland)
   let startCenter = [8.2275, 46.8182];
-  let startZoom = 2;
+  let startZoom = 3;
   let startPitch = 0;
   let startBearing = 0;
 
@@ -51,7 +52,12 @@ function initMap() {
     zoom: startZoom,
     pitch: startPitch,
     bearing: startBearing,
-    preserveDrawingBuffer: true
+    canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true }
+  });
+
+  // Enable globe projection after style loads
+  map.on('style.load', function() {
+    map.setProjection({ type: 'globe' });
   });
 
   state.map = map;
@@ -104,12 +110,12 @@ function initMap() {
     button.onclick = function() {
       state.is3D = !state.is3D;
       if (state.is3D) {
-        map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+        map.flyTo({ pitch: 60, bearing: -20, duration: 800, center: map.getCenter(), zoom: map.getZoom() });
         button.textContent = '2D';
         button.classList.add('active');
         show3DBuildings();
       } else {
-        map.easeTo({ pitch: 0, bearing: 0, duration: 800 });
+        map.flyTo({ pitch: 0, bearing: 0, duration: 800, center: map.getCenter(), zoom: map.getZoom() });
         button.textContent = '3D';
         button.classList.remove('active');
         hide3DBuildings();
@@ -223,27 +229,10 @@ function show3DBuildings() {
   var map = state.map;
   if (!map) return;
 
-  // Enable 3D terrain elevation (after pitch animation completes)
-  map.once('idle', function() {
-    if (!map.getSource('terrain-dem')) {
-      map.addSource('terrain-dem', {
-        type: 'raster-dem',
-        tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
-        encoding: 'terrarium',
-        maxzoom: 15,
-        tileSize: 256,
-        attribution: '<a href="https://github.com/tilezen/joerd">Tilezen Joerd</a>'
-      });
-    }
-    map.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
-  });
+  // Google 3D tiles disabled — uncomment when API key has sufficient quota
+  // showGoogle3D(map);
 
-  // Load swisstopo 3D tiles (photogrammetric buildings for Switzerland)
-  // NOTE: Three.js custom layers don't work with MapLibre terrain,
-  // so swisstopo 3D tiles are disabled while terrain is active
-  // showSwisstopo3D(map);
-
-  // Show fill-extrusion buildings (these DO work with terrain)
+  // Already added — just show it
   if (map.getLayer('3d-buildings')) {
     map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
     return;
@@ -262,12 +251,8 @@ function show3DBuildings() {
 
   // Hide basemap's own building layers to prevent double-rendering
   var layers = map.getStyle().layers;
-  var labelLayerId;
   for (var i = 0; i < layers.length; i++) {
     var layer = layers[i];
-    if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
-      if (!labelLayerId) labelLayerId = layer.id;
-    }
     if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
       map.setLayoutProperty(layer.id, 'visibility', 'none');
     }
@@ -303,12 +288,7 @@ function hide3DBuildings() {
   var map = state.map;
   if (!map) return;
 
-  // Disable 3D terrain (after pitch animation completes)
-  map.once('idle', function() {
-    if (map.getTerrain()) {
-      map.setTerrain(null);
-    }
-  });
+  // hideGoogle3D(map);
 
   // Hide fill-extrusion buildings
   if (map.getLayer('3d-buildings')) {
@@ -1166,7 +1146,10 @@ function initStyleSwitcher() {
       // MapLibre v4 emits after setStyle). Register after setStyle since
       // idle is always async (fires after next render frame).
       state.map.setStyle(mapStyles[styleId].url);
-      state.map.once('idle', restoreLayersAfterStyleChange);
+      state.map.once('idle', function() {
+        restoreLayersAfterStyleChange();
+        state.map.setProjection({ type: 'globe' });
+      });
 
       // Close panel
       state.stylePanelOpen = false;
