@@ -221,7 +221,7 @@ export function initSearch() {
       });
 
       // 3. Add Red Marker
-      state.searchMarker = new mapboxgl.Marker({ color: '#c00' })
+      state.searchMarker = new maplibregl.Marker({ color: '#c00' })
         .setLngLat([lon, lat])
         .addTo(state.map);
 

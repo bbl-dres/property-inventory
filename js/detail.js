@@ -317,7 +317,8 @@ function initCarousel() {
 function updateCarouselImage() {
   var images = getCarouselImages();
   var imageEl = document.getElementById('carousel-image');
-  imageEl.style.backgroundImage = 'url(' + images[state.currentCarouselIndex] + ')';
+  var imgUrl = images[state.currentCarouselIndex];
+  imageEl.style.backgroundImage = "url('" + imgUrl.replace(/'/g, "\\'").replace(/\)/g, '\\)') + "')";
 
   // Update dots
   document.querySelectorAll('.carousel-dot').forEach(function(dot, index) {
@@ -351,58 +352,69 @@ function initMiniMap(coords) {
   }
 
   // Create new mini map
-  state.miniMap = new mapboxgl.Map({
+  state.miniMap = new maplibregl.Map({
     container: 'mini-map',
-    style: 'mapbox://styles/mapbox/light-v11',
+    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     center: coords,
     zoom: 17,
     pitch: 50,
     bearing: -17
   });
 
-  // Add 3D buildings layer
+  // Add 3D buildings layer and marker
   state.miniMap.on('load', function() {
-    // Add 3D buildings
-    var layers = state.miniMap.getStyle().layers;
-    var labelLayerId;
-    for (var i = 0; i < layers.length; i++) {
-      if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
-        labelLayerId = layers[i].id;
+    // Find the vector tile source (CARTO uses 'carto')
+    var sources = state.miniMap.getStyle().sources;
+    var vectorSourceId = null;
+    for (var key in sources) {
+      if (sources[key].type === 'vector') {
+        vectorSourceId = key;
         break;
       }
     }
 
-    state.miniMap.addLayer({
-      'id': '3d-buildings',
-      'source': 'composite',
-      'source-layer': 'building',
-      'filter': ['==', 'extrude', 'true'],
-      'type': 'fill-extrusion',
-      'minzoom': 15,
-      'paint': {
-        'fill-extrusion-color': '#A8B0B7',
-        'fill-extrusion-height': [
-          'interpolate', ['linear'], ['zoom'],
-          15, 0,
-          15.05, ['get', 'height']
-        ],
-        'fill-extrusion-base': [
-          'interpolate', ['linear'], ['zoom'],
-          15, 0,
-          15.05, ['get', 'min_height']
-        ],
-        'fill-extrusion-opacity': 0.6
+    if (vectorSourceId) {
+      // Find first label layer to insert 3D buildings below
+      var layers = state.miniMap.getStyle().layers;
+      var labelLayerId;
+      for (var i = 0; i < layers.length; i++) {
+        if (layers[i].type === 'symbol' && layers[i].layout && layers[i].layout['text-field']) {
+          labelLayerId = layers[i].id;
+          break;
+        }
       }
-    }, labelLayerId);
+
+      state.miniMap.addLayer({
+        'id': '3d-buildings',
+        'source': vectorSourceId,
+        'source-layer': 'building',
+        'type': 'fill-extrusion',
+        'minzoom': 15,
+        'paint': {
+          'fill-extrusion-color': '#A8B0B7',
+          'fill-extrusion-height': [
+            'interpolate', ['linear'], ['zoom'],
+            15, 0,
+            15.05, ['coalesce', ['get', 'render_height'], 0]
+          ],
+          'fill-extrusion-base': [
+            'interpolate', ['linear'], ['zoom'],
+            15, 0,
+            15.05, ['coalesce', ['get', 'render_min_height'], 0]
+          ],
+          'fill-extrusion-opacity': 0.6
+        }
+      }, labelLayerId);
+    }
 
     // Add marker
-    new mapboxgl.Marker({ color: '#c00' })
+    new maplibregl.Marker({ color: '#c00' })
       .setLngLat(coords)
       .addTo(state.miniMap);
   });
 
   // Add navigation controls
-  state.miniMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+  state.miniMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
 
   // Force resize after container settles its width
   state.miniMap.on('load', function() { state.miniMap.resize(); });

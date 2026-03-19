@@ -238,7 +238,10 @@ function initInfoPanel() {
   document.getElementById('info-close').addEventListener('click', function() {
     document.getElementById('info-panel').classList.remove('show');
     state.selectedBuildingId = null;
+    state.selectedParcelId = null;
     updateSelectedBuilding();
+    updateSelectedParcel();
+    updateUrlWithSelection();
   });
 
   // Info panel zoom to

@@ -47,7 +47,7 @@ export function renderGalleryView() {
     var imageUrl = images[0] || placeholderImages[index % placeholderImages.length];
 
     html += '<div class="gallery-card" data-id="' + escapeHtml(props.bbl_id) + '" tabindex="0" role="article" aria-label="' + escapeHtml(props.bbl_bez) + '">' +
-      '<div class="gallery-image" style="background-image: url(' + imageUrl + ')" role="img" aria-label="Bild von ' + escapeHtml(props.bbl_bez) + '">' +
+      '<div class="gallery-image" style="background-image: url(\'' + imageUrl.replace(/'/g, "\\'").replace(/\)/g, '\\)') + '\')" role="img" aria-label="Bild von ' + escapeHtml(props.bbl_bez) + '">' +
         '<div class="gallery-image-label">' + escapeHtml(props.adr_land) + '</div>' +
       '</div>' +
       '<div class="gallery-content">' +

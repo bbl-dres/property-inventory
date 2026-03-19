@@ -1,6 +1,7 @@
 // Parcels table: rendering, pagination, initialization
 
 import { state } from './state.js';
+import { escapeHtml } from './utils.js';
 import { t } from './i18n.js';
 
 // ===== RENDER PARCELS VIEW =====
@@ -53,15 +54,15 @@ export function renderParcelsView() {
     var props = feature.properties;
     var area = Number(props.larea_gsf || 0).toLocaleString('de-CH');
 
-    html += '<tr data-parcel-id="' + props.bbl_id + '" tabindex="0" role="row">' +
-      '<td class="col-parcel-id">' + props.bbl_id + '</td>' +
-      '<td class="col-parcel-plot">' + (props.av_nr || '\u2013') + '</td>' +
-      '<td class="col-parcel-name">' + props.bbl_bez + '</td>' +
-      '<td class="col-parcel-municipality">' + (props.bfs_gem || '\u2013') + '</td>' +
-      '<td class="col-parcel-canton">' + (props.adr_reg || '\u2013') + '</td>' +
+    html += '<tr data-parcel-id="' + escapeHtml(props.bbl_id) + '" tabindex="0" role="row">' +
+      '<td class="col-parcel-id">' + escapeHtml(props.bbl_id) + '</td>' +
+      '<td class="col-parcel-plot">' + escapeHtml(props.av_nr || '\u2013') + '</td>' +
+      '<td class="col-parcel-name">' + escapeHtml(props.bbl_bez) + '</td>' +
+      '<td class="col-parcel-municipality">' + escapeHtml(props.bfs_gem || '\u2013') + '</td>' +
+      '<td class="col-parcel-canton">' + escapeHtml(props.adr_reg || '\u2013') + '</td>' +
       '<td class="col-parcel-area">' + area + ' m\u00B2</td>' +
-      '<td class="col-parcel-zone">' + (props.av_zbez || '\u2013') + '</td>' +
-      '<td class="col-parcel-ownership">' + (props.bbl_eigen || '\u2013') + '</td>' +
+      '<td class="col-parcel-zone">' + escapeHtml(props.av_zbez || '\u2013') + '</td>' +
+      '<td class="col-parcel-ownership">' + escapeHtml(props.bbl_eigen || '\u2013') + '</td>' +
     '</tr>';
   });
 

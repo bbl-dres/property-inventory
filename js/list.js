@@ -123,30 +123,42 @@ export function initBuildingTableHeaders() {
   });
 }
 
-// Column search filter
+// Column search filter with clear button
 var colSearchInput = document.getElementById('columns-search-input');
+var colSearchClear = document.getElementById('columns-search-clear');
+
+function filterColumnsList() {
+  var term = colSearchInput.value.toLowerCase().trim();
+  if (colSearchClear) colSearchClear.hidden = !term;
+  var activeList = state.activeTableTab === 'parcels'
+    ? document.getElementById('parcel-columns-list')
+    : document.getElementById('columns-list');
+  if (!activeList) return;
+  activeList.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
+    var text = item.textContent.toLowerCase();
+    item.style.display = text.includes(term) ? '' : 'none';
+  });
+  // Hide group labels that have no visible items after them
+  activeList.querySelectorAll('.columns-group-label').forEach(function(label) {
+    var next = label.nextElementSibling;
+    var hasVisible = false;
+    while (next && !next.classList.contains('columns-group-label')) {
+      if (next.style.display !== 'none') hasVisible = true;
+      next = next.nextElementSibling;
+    }
+    label.style.display = hasVisible ? '' : 'none';
+  });
+}
+
 if (colSearchInput) {
-  colSearchInput.addEventListener('input', function() {
-    var term = this.value.toLowerCase().trim();
-    // Filter the currently visible columns list
-    var activeList = state.activeTableTab === 'parcels'
-      ? document.getElementById('parcel-columns-list')
-      : document.getElementById('columns-list');
-    if (!activeList) return;
-    activeList.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
-      var text = item.textContent.toLowerCase();
-      item.style.display = text.includes(term) ? '' : 'none';
-    });
-    // Hide group labels that have no visible items after them
-    activeList.querySelectorAll('.columns-group-label').forEach(function(label) {
-      var next = label.nextElementSibling;
-      var hasVisible = false;
-      while (next && !next.classList.contains('columns-group-label')) {
-        if (next.style.display !== 'none') hasVisible = true;
-        next = next.nextElementSibling;
-      }
-      label.style.display = hasVisible ? '' : 'none';
-    });
+  colSearchInput.addEventListener('input', filterColumnsList);
+}
+if (colSearchClear) {
+  colSearchClear.addEventListener('click', function() {
+    colSearchInput.value = '';
+    colSearchClear.hidden = true;
+    filterColumnsList();
+    colSearchInput.focus();
   });
 }
 
@@ -547,16 +559,26 @@ export function initListToolbar() {
     });
   });
 
-  // Search input (debounced)
+  // Search input (debounced) with clear button
   var searchInput = document.getElementById('list-search-input');
+  var searchClearBtn = document.getElementById('list-search-clear');
   var searchDebounceTimer = null;
   if (searchInput) {
     searchInput.addEventListener('input', function() {
       var value = this.value;
+      if (searchClearBtn) searchClearBtn.hidden = !value;
       clearTimeout(searchDebounceTimer);
       searchDebounceTimer = setTimeout(function() {
         handleListSearch(value);
       }, 200);
+    });
+  }
+  if (searchClearBtn) {
+    searchClearBtn.addEventListener('click', function() {
+      searchInput.value = '';
+      searchClearBtn.hidden = true;
+      handleListSearch('');
+      searchInput.focus();
     });
   }
 }
@@ -684,7 +706,7 @@ export function syncTableToParcel(parcelId) {
   // Find the index of this parcel
   var index = -1;
   for (var i = 0; i < state.parcelData.features.length; i++) {
-    if (state.parcelData.features[i].properties.parcelId === parcelId) {
+    if (state.parcelData.features[i].properties.bbl_id === parcelId) {
       index = i;
       break;
     }

@@ -35,7 +35,7 @@ function initMap() {
     startZoom = initialZoom;
   }
 
-  var map = new mapboxgl.Map({
+  var map = new maplibregl.Map({
     container: 'map',
     style: mapStyles[state.currentMapStyle].url,
     center: startCenter,
@@ -45,15 +45,15 @@ function initMap() {
 
   state.map = map;
 
-  map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-  map.addControl(new mapboxgl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
+  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+  map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
 
   // Home button control
   var HomeControl = function() {};
   HomeControl.prototype.onAdd = function(mapInstance) {
     this._map = mapInstance;
     this._container = document.createElement('div');
-    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
     var button = document.createElement('button');
     button.className = 'map-home-btn';
@@ -83,7 +83,7 @@ function initMap() {
   Toggle3DControl.prototype.onAdd = function(mapInstance) {
     this._map = mapInstance;
     this._container = document.createElement('div');
-    this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
     var button = document.createElement('button');
     button.className = 'map-3d-btn';
@@ -486,8 +486,8 @@ function selectBuilding(buildingId, flyToBuilding) {
   var images = props.img_url || [];
   var imageUrl = images[0] || placeholderImages[0];
 
-  // Set preview image
-  document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
+  // Set preview image (quote URL to prevent CSS injection)
+  document.getElementById('info-preview-image').style.backgroundImage = "url('" + imageUrl.replace(/'/g, "\\'").replace(/\)/g, '\\)') + "')";
 
   var infoHtml =
     '<div class="info-row"><span class="info-label">' + t('info.label.id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id) + '</span></div>' +
@@ -629,14 +629,10 @@ function updateSelectedParcel() {
 
 // ===== STYLE SWITCHER =====
 
-// Generate thumbnail URL using Mapbox Static Images API
-function getStyleThumbnail(styleId, width, height) {
-  var lon = 8.2275;
-  var lat = 46.8182;
-  var zoom = 6;
-  return 'https://api.mapbox.com/styles/v1/mapbox/' + styleId + '/static/' +
-    lon + ',' + lat + ',' + zoom + '/' + width + 'x' + height +
-    '?access_token=' + mapboxgl.accessToken;
+// Get thumbnail URL from config (static tile images, no API key needed)
+function getStyleThumbnail(styleId) {
+  var style = mapStyles[styleId];
+  return style && style.thumbnail ? style.thumbnail : '';
 }
 
 // FIX #24: Lazy thumbnail initialization — only called when style panel is first opened
@@ -649,11 +645,11 @@ function initStyleThumbnails() {
   Object.keys(mapStyles).forEach(function(styleId) {
     var thumbEl = document.getElementById('thumb-' + styleId);
     if (thumbEl) {
-      thumbEl.src = getStyleThumbnail(styleId, 140, 100);
+      thumbEl.src = getStyleThumbnail(styleId);
     }
   });
   // Set current style thumbnail
-  document.getElementById('current-style-thumb').src = getStyleThumbnail(state.currentMapStyle, 160, 120);
+  document.getElementById('current-style-thumb').src = getStyleThumbnail(state.currentMapStyle);
 }
 
 // Update active style button
@@ -664,7 +660,7 @@ function updateActiveStyleButton() {
       btn.classList.add('active');
     }
   });
-  document.getElementById('current-style-thumb').src = getStyleThumbnail(state.currentMapStyle, 160, 120);
+  document.getElementById('current-style-thumb').src = getStyleThumbnail(state.currentMapStyle);
 }
 
 // Toggle style panel
@@ -698,32 +694,9 @@ function initStyleSwitcher() {
     toggleStylePanel();
   });
 
-  // Style option click handlers
-  document.querySelectorAll('.style-option').forEach(function(btn) {
-    btn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      var styleId = this.dataset.style;
-      if (styleId === state.currentMapStyle) {
-        toggleStylePanel();
-        return;
-      }
-
-      state.currentMapStyle = styleId;
-      localStorage.setItem('mapStyle', styleId);
-      updateActiveStyleButton();
-
-      // Change map style
-      state.map.setStyle(mapStyles[styleId].url);
-
-      // Close panel
-      state.stylePanelOpen = false;
-      stylePanel.classList.remove('show');
-    });
-  });
-
-  // Re-add layers after style change — preserve filters and selection
-  state.map.on('style.load', function() {
-    if (state.portfolioData && !state.map.getSource('portfolio')) {
+  // Restore all custom layers after a style change
+  function restoreLayersAfterStyleChange() {
+    if (state.portfolioData) {
       addMapLayers();
 
       // Restore active filters without triggering zoom
@@ -747,6 +720,33 @@ function initStyleSwitcher() {
 
     // Re-add Swisstopo layers that were active before style change
     readdSwisstopoLayers();
+  }
+
+  // Style option click handlers
+  document.querySelectorAll('.style-option').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var styleId = this.dataset.style;
+      if (styleId === state.currentMapStyle) {
+        toggleStylePanel();
+        return;
+      }
+
+      state.currentMapStyle = styleId;
+      localStorage.setItem('mapStyle', styleId);
+      updateActiveStyleButton();
+
+      // Change map style — use once('idle') to restore layers after the
+      // new style is fully loaded and rendered. This avoids race conditions
+      // with MapLibre's style.load event which can fire multiple times
+      // or before the style is fully settled.
+      state.map.setStyle(mapStyles[styleId].url);
+      state.map.once('idle', restoreLayersAfterStyleChange);
+
+      // Close panel
+      state.stylePanelOpen = false;
+      stylePanel.classList.remove('show');
+    });
   });
 
   updateActiveStyleButton();

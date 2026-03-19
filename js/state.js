@@ -7,8 +7,8 @@ var activeFilters = {};
 Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
 // Load saved map style from localStorage
-var savedMapStyle = localStorage.getItem('mapStyle') || 'light-v11';
-if (!mapStyles[savedMapStyle]) savedMapStyle = 'light-v11';
+var savedMapStyle = localStorage.getItem('mapStyle') || 'positron';
+if (!mapStyles[savedMapStyle]) savedMapStyle = 'positron';
 
 export var state = {
   // Data

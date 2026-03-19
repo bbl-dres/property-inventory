@@ -217,7 +217,7 @@ export function zoomToFilteredPoints() {
     });
   } else {
     // Multiple points - fit bounds
-    var bounds = new mapboxgl.LngLatBounds();
+    var bounds = new maplibregl.LngLatBounds();
     features.forEach(function(feature) {
       bounds.extend(feature.geometry.coordinates);
     });
@@ -479,8 +479,8 @@ export function initFilterOptions() {
       var checked = state.activeFilters[filterKey].includes(value) ? 'checked' : '';
 
       html += '<div class="filter-option">' +
-        '<input type="checkbox" id="' + id + '" data-filter="' + filterKey + '" data-value="' + value + '" ' + checked + '>' +
-        '<label for="' + id + '">' + value + '</label>' +
+        '<input type="checkbox" id="' + id + '" data-filter="' + escapeHtml(filterKey) + '" data-value="' + escapeHtml(value) + '" ' + checked + '>' +
+        '<label for="' + id + '">' + escapeHtml(value) + '</label>' +
         '</div>';
     });
 
@@ -547,16 +547,29 @@ export function initFilterPane() {
     navigateToAllObjects();
   });
 
-  // Filter search input
+  // Filter search input with clear button
   var filterSearchInput = document.getElementById('filter-search-input');
+  var filterSearchClear = document.getElementById('filter-search-clear');
+
+  function filterSections() {
+    var term = filterSearchInput.value.toLowerCase().trim();
+    if (filterSearchClear) filterSearchClear.hidden = !term;
+    document.querySelectorAll('.filter-section').forEach(function(section) {
+      var title = section.querySelector('.filter-section-title');
+      var text = title ? title.textContent.toLowerCase() : '';
+      section.style.display = (!term || text.includes(term)) ? '' : 'none';
+    });
+  }
+
   if (filterSearchInput) {
-    filterSearchInput.addEventListener('input', function() {
-      var term = this.value.toLowerCase().trim();
-      document.querySelectorAll('.filter-section').forEach(function(section) {
-        var title = section.querySelector('.filter-section-title');
-        var text = title ? title.textContent.toLowerCase() : '';
-        section.style.display = (!term || text.includes(term)) ? '' : 'none';
-      });
+    filterSearchInput.addEventListener('input', filterSections);
+  }
+  if (filterSearchClear) {
+    filterSearchClear.addEventListener('click', function() {
+      filterSearchInput.value = '';
+      filterSearchClear.hidden = true;
+      filterSections();
+      filterSearchInput.focus();
     });
   }
 }

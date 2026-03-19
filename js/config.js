@@ -23,10 +23,38 @@ export const filterConfig = {
 };
 
 export const mapStyles = {
-  'light-v11': { name: 'Light', url: 'mapbox://styles/mapbox/light-v11' },
-  'streets-v12': { name: 'Standard', url: 'mapbox://styles/mapbox/streets-v12' },
-  'satellite-v9': { name: 'Luftbild', url: 'mapbox://styles/mapbox/satellite-v9' },
-  'satellite-streets-v12': { name: 'Hybrid', url: 'mapbox://styles/mapbox/satellite-streets-v12' }
+  'positron': {
+    name: 'Light',
+    url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+    thumbnail: 'https://basemaps.cartocdn.com/light_all/8/134/91.png'
+  },
+  'voyager': {
+    name: 'Standard',
+    url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+    thumbnail: 'https://basemaps.cartocdn.com/rastertiles/voyager/8/134/91.png'
+  },
+  'swissimage': {
+    name: 'Luftbild',
+    url: {
+      version: 8,
+      sources: {
+        'swissimage': {
+          type: 'raster',
+          tiles: ['https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg'],
+          tileSize: 256,
+          maxzoom: 20,
+          attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
+        }
+      },
+      layers: [{ id: 'swissimage', type: 'raster', source: 'swissimage' }]
+    },
+    thumbnail: 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/8/134/91.jpeg'
+  },
+  'dark-matter': {
+    name: 'Dark',
+    url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+    thumbnail: 'https://basemaps.cartocdn.com/dark_all/8/134/91.png'
+  }
 };
 
 export const placeholderImages = [

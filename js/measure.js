@@ -89,7 +89,7 @@ function addMeasurePoint(lngLat, index) {
   // Create marker if new point
   if (index >= measureState.markers.length) {
     var markerEl = createMeasureMarkerElement();
-    var marker = new mapboxgl.Marker({
+    var marker = new maplibregl.Marker({
       element: markerEl,
       draggable: true,
       anchor: 'center'
@@ -241,7 +241,7 @@ function updateMeasureLabels() {
     var midLat = (p1[1] + p2[1]) / 2;
 
     var labelEl = createDistanceLabel(distance);
-    var labelMarker = new mapboxgl.Marker({
+    var labelMarker = new maplibregl.Marker({
       element: labelEl,
       anchor: 'center'
     })
@@ -261,7 +261,7 @@ function updateMeasureLabels() {
     var closingMidLat = (pLast[1] + pFirst[1]) / 2;
 
     var closingLabelEl = createDistanceLabel(closingDistance);
-    var closingLabelMarker = new mapboxgl.Marker({
+    var closingLabelMarker = new maplibregl.Marker({
       element: closingLabelEl,
       anchor: 'center'
     })

@@ -85,12 +85,17 @@ export function formatCurrencyWithUnit(amount, einheit) {
     var parts = einheit.split('/');
     if (parts.length > 0) currency = parts[0].trim();
   }
-  return new Intl.NumberFormat('de-CH', {
-    style: 'currency',
-    currency: currency,
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
+  try {
+    return new Intl.NumberFormat('de-CH', {
+      style: 'currency',
+      currency: currency,
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0
+    }).format(amount);
+  } catch (e) {
+    // Fallback if currency code is invalid
+    return Number(amount).toLocaleString('de-CH') + ' ' + currency;
+  }
 }
 
 export function getContractStatusClassName(status) {

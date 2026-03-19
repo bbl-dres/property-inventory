@@ -585,6 +585,31 @@
   color: var(--grey-500);
 }
 
+.toolbar-search-clear {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--grey-400);
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.toolbar-search-clear[hidden] {
+  display: none;
+}
+
+.toolbar-search-clear .material-symbols-outlined {
+  font-size: var(--icon-sm);
+}
+
+.toolbar-search-clear:hover {
+  color: var(--grey-700);
+}
+
 /* Filter pills in toolbar */
 .filter-pills {
   display: flex;
@@ -2491,20 +2516,20 @@ body.detail-active #detail-view {
   color: var(--grey-800);
 }
 
-/* Mapbox popup overrides */
-.mapboxgl-popup-content {
+/* MapLibre popup overrides */
+.maplibregl-popup-content {
   padding: var(--space-3) var(--space-4);
   border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
 }
 
-.mapboxgl-popup-close-button {
+.maplibregl-popup-close-button {
   font-size: var(--icon-md);
   padding: var(--space-1) var(--space-2);
   color: var(--grey-500);
 }
 
-.mapboxgl-popup-close-button:hover {
+.maplibregl-popup-close-button:hover {
   background: var(--grey-100);
   color: var(--grey-700);
 }
@@ -2688,13 +2713,13 @@ body.detail-active #detail-view {
   text-decoration: underline;
 }
 
-/* Mapbox Controls */
-.mapboxgl-ctrl-top-right {
+/* MapLibre Controls */
+.maplibregl-ctrl-top-right {
   top: var(--space-3);
   right: var(--space-3);
 }
 
-/* Home Button Control - matches Mapbox default control size for visual consistency */
+/* Home Button Control - matches MapLibre default control size for visual consistency */
 .map-home-btn {
   background: var(--white);
   border: none;

@@ -263,11 +263,11 @@
     "fr": "Vue aérienne",
     "it": "Vista aerea"
   },
-  "map.style.hybrid": {
-    "de": "Hybrid",
-    "en": "Hybrid",
-    "fr": "Hybride",
-    "it": "Ibrido"
+  "map.style.dark": {
+    "de": "Dark",
+    "en": "Dark",
+    "fr": "Sombre",
+    "it": "Scuro"
   },
   "map.context.copy": {
     "de": "Klicken zum Kopieren",

@@ -490,7 +490,7 @@ export function showIdentifiedFeature(result, lngLat) {
   html += '</div></div>';
 
   // Create and show popup
-  state.identifiedFeaturePopup = new mapboxgl.Popup({
+  state.identifiedFeaturePopup = new maplibregl.Popup({
     closeButton: true,
     closeOnClick: false,
     maxWidth: '320px'
@@ -524,9 +524,18 @@ export function showLayerInfo(layerId) {
       return response.text();
     })
     .then(function(html) {
-      // BUG FIX #6: API response HTML is injected raw via innerHTML.
-      // Known XSS risk — wrapped in container div for potential future sanitization.
-      layerInfoContent.innerHTML = '<div class="layer-info-api-content">' + html + '</div>';
+      // Sanitize API HTML: parse in a detached document, strip scripts and event handlers
+      var doc = new DOMParser().parseFromString(html, 'text/html');
+      doc.querySelectorAll('script, iframe, object, embed, form').forEach(function(el) { el.remove(); });
+      doc.querySelectorAll('*').forEach(function(el) {
+        Array.from(el.attributes).forEach(function(attr) {
+          if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().startsWith('javascript:')) {
+            el.removeAttribute(attr.name);
+          }
+        });
+      });
+      var sanitized = doc.body ? doc.body.innerHTML : '';
+      layerInfoContent.innerHTML = '<div class="layer-info-api-content">' + sanitized + '</div>';
     })
     .catch(function(error) {
       console.error('Fehler beim Laden der Layer-Informationen:', error);
