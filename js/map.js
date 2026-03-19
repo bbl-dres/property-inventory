@@ -289,7 +289,7 @@ function addMapLayers() {
     minzoom: 16,
     layout: {
       'text-field': ['get', 'bbl_id'],
-      'text-font': ['DIN Pro Bold', 'Arial Unicode MS Bold'],
+      'text-font': ['Open Sans Bold', 'Noto Sans Bold'],
       'text-size': 13,
       'text-anchor': 'bottom',
       'text-offset': [0, -1.5],
