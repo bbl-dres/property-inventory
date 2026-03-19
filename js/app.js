@@ -133,10 +133,6 @@ function initInternalLayerToggles() {
   }
 }
 
-// ===== INITIALIZE MAP =====
-
-initMap();
-
 // ===== DATA LOADING =====
 
 function loadAllData() {
@@ -222,6 +218,7 @@ function loadAllData() {
 
 // Load translations first, then initialize everything
 initI18n().then(function() {
+  initMap();
   initSearch();
   initContextMenu();
   initMeasure();

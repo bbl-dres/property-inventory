@@ -19,7 +19,8 @@
       "Bash(grep -oE \"t\\\\\\([''''\"\"][^''''\"\"]+[''''\"\"]\" js/*.js)",
       "Bash(grep -oE 't\\\\\\(['\"''''\"'\"\"\"\"][^'\"''''\"'\"\"\"\"]+['\"''''\"'\"\"\"\"]' js/*.js)",
       "Bash(grep -n \"t\\(''''info\\\\|t\\(''''col\\\\|t\\(''''empty\\\\|t\\(''''pagination\\\\|t\\(''''status\" js/*.js)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "WebFetch(domain:basemaps.cartocdn.com)"
     ]
   }
 }

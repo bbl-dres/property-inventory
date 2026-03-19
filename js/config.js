@@ -37,7 +37,7 @@ export const mapStyles = {
     name: 'Luftbild',
     url: {
       version: 8,
-      glyphs: 'https://fonts.openmaptiles.org/{fontstack}/{range}.pbf',
+      glyphs: 'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
       sources: {
         'swissimage': {
           type: 'raster',

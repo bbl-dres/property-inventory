@@ -153,9 +153,7 @@ function addMapLayers() {
   var map = state.map;
 
   // Prevent duplicate source errors if called multiple times
-  if (map.getSource('portfolio')) {
-    return;
-  }
+  if (map.getSource('portfolio')) return;
 
   map.addSource('portfolio', {
     type: 'geojson',
@@ -736,10 +734,9 @@ function initStyleSwitcher() {
       localStorage.setItem('mapStyle', styleId);
       updateActiveStyleButton();
 
-      // Change map style — use once('idle') to restore layers after the
-      // new style is fully loaded and rendered. This avoids race conditions
-      // with MapLibre's style.load event which can fire multiple times
-      // or before the style is fully settled.
+      // Change map style — use 'idle' event (the only reliable event
+      // MapLibre v4 emits after setStyle). Register after setStyle since
+      // idle is always async (fires after next render frame).
       state.map.setStyle(mapStyles[styleId].url);
       state.map.once('idle', restoreLayersAfterStyleChange);
 
