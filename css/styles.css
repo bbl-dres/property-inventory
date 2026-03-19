@@ -4420,6 +4420,10 @@ body.detail-active #detail-view {
   }
 
 
+  #info-preview-image {
+    display: none !important;
+  }
+
   /* Info panel - full width bottom sheet on mobile, above accordion */
   #info-panel {
     position: fixed;
@@ -4598,14 +4602,48 @@ body.detail-active #detail-view {
     white-space: nowrap;
   }
 
+  #detail-view {
+    max-width: 100vw;
+    overflow-x: hidden;
+  }
+
   .detail-content {
-    padding: var(--space-4);
+    padding: var(--space-3);
+    overflow-x: hidden;
+    box-sizing: border-box;
+  }
+
+  /* Stack label above value on mobile instead of side-by-side */
+  .detail-grid-row {
+    grid-template-columns: 1fr 24px;
+    gap: 0 var(--space-2);
+  }
+
+  .detail-label {
+    font-size: var(--text-xs);
+    grid-column: 1;
+  }
+
+  .detail-value {
+    font-size: var(--text-sm);
+    grid-column: 1;
+    word-break: break-word;
+  }
+
+  .info-icon {
+    grid-row: 1 / 3;
+    grid-column: 2;
+    align-self: center;
+  }
+
+  .detail-overline {
+    font-size: 10px;
+    padding: var(--space-2);
   }
 
   .detail-grid {
     grid-template-columns: 1fr;
   }
-
 
   .carousel {
     height: 200px;
