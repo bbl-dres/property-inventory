@@ -135,8 +135,9 @@ async function uploadToOSM(features, onProgress, onLog) {
         return h >= 2 && h <= 60;
     });
 
+    var relations = features.filter(function(f) { return f.properties.osm_type === 'relation' && f.properties['source:height']; }).length;
     var preFiltered = features.length - toUpload.length;
-    onLog('info', 'Pre-filtered: ' + toUpload.length + ' to upload, ' + preFiltered + ' skipped');
+    onLog('info', toUpload.length + ' ways to upload, ' + preFiltered + ' skipped' + (relations > 0 ? ' (' + relations + ' relations — upload not supported yet)' : ''));
 
     if (toUpload.length === 0) throw new Error('No buildings to upload');
 
@@ -224,17 +225,23 @@ async function uploadToOSM(features, onProgress, onLog) {
                 continue;
             }
 
-            // Build way XML with all existing data + new tags
+            // Build way XML with existing data + new tags (no duplicates)
             var wayXml = '<way id="' + w.id + '" version="' + w.version + '" changeset="' + changesetId + '">';
             for (var ni = 0; ni < (w.nodes || []).length; ni++) {
                 wayXml += '<nd ref="' + w.nodes[ni] + '"/>';
             }
+            // Copy existing tags, replacing height/source:height with our values
+            var newTags = {};
             for (var tk in w.tags) {
-                wayXml += '<tag k="' + escapeXml(tk) + '" v="' + escapeXml(w.tags[tk]) + '"/>';
+                if (tk !== 'height' && tk !== 'source:height') {
+                    newTags[tk] = w.tags[tk];
+                }
             }
-            // Add new tags
-            wayXml += '<tag k="height" v="' + escapeXml(computedHeight) + '"/>';
-            wayXml += '<tag k="source:height" v="swisstopo/swissALTI3D;swissSURFACE3D"/>';
+            newTags['height'] = computedHeight;
+            newTags['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
+            for (var ntk in newTags) {
+                wayXml += '<tag k="' + escapeXml(ntk) + '" v="' + escapeXml(newTags[ntk]) + '"/>';
+            }
             wayXml += '</way>';
 
             osmChangeWays.push(wayXml);
@@ -252,6 +259,8 @@ async function uploadToOSM(features, onProgress, onLog) {
         var BATCH_SIZE = 100; // small batches to avoid 429
         var BATCH_DELAY_MS = 1500; // pause between batches
         var MAX_RETRIES = 5;
+        var MAX_PER_CHANGESET = 9000; // OSM limit is 10K, leave margin
+        var elementsInChangeset = 0;
         var batches = [];
         for (var bi = 0; bi < osmChangeWays.length; bi += BATCH_SIZE) {
             batches.push(osmChangeWays.slice(bi, bi + BATCH_SIZE));
@@ -261,6 +270,29 @@ async function uploadToOSM(features, onProgress, onLog) {
 
         for (var batchIdx = 0; batchIdx < batches.length; batchIdx++) {
             var batch = batches[batchIdx];
+
+            // Split to new changeset if approaching OSM's 10K element limit
+            if (elementsInChangeset + batch.length > MAX_PER_CHANGESET) {
+                await fetch(OSM_API + '/changeset/' + changesetId + '/close', {
+                    method: 'PUT', headers: { 'Authorization': auth },
+                });
+                var newCsResp = await fetch(OSM_API + '/changeset/create', {
+                    method: 'PUT',
+                    headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
+                    body: csBody,
+                });
+                if (!newCsResp.ok) throw new Error('Failed to create new changeset: ' + newCsResp.status);
+                changesetId = (await newCsResp.text()).trim();
+                elementsInChangeset = 0;
+                // Update changeset ID in remaining batch XMLs
+                for (var rbi = batchIdx; rbi < batches.length; rbi++) {
+                    batches[rbi] = batches[rbi].map(function(xml) {
+                        return xml.replace(/changeset="[^"]*"/, 'changeset="' + changesetId + '"');
+                    });
+                }
+                batch = batches[batchIdx]; // re-read after update
+                onLog('info', 'New changeset ' + changesetId + ' (previous reached ' + MAX_PER_CHANGESET + ' element limit)');
+            }
 
             var osmChangeXml = '<osmChange version="0.6">\n<modify>\n' +
                 batch.join('\n') +
@@ -277,6 +309,7 @@ async function uploadToOSM(features, onProgress, onLog) {
 
                 if (uploadResp.ok) {
                     updated += batch.length;
+                    elementsInChangeset += batch.length;
                     onLog('info', 'Batch ' + (batchIdx + 1) + '/' + batches.length + ': ' + batch.length + ' buildings uploaded');
                     success = true;
                     break;
@@ -310,8 +343,13 @@ async function uploadToOSM(features, onProgress, onLog) {
             }
 
             if (!success) {
-                onLog('error', 'Batch ' + (batchIdx + 1) + ' failed after ' + MAX_RETRIES + ' retries — skipping remaining batches');
-                errors += osmChangeWays.slice((batchIdx) * BATCH_SIZE).length;
+                // Current batch failed after all retries (429 rate limiting)
+                errors += batch.length;
+                // Count remaining batches as errors too (we're giving up)
+                var remaining = 0;
+                for (var ri = batchIdx + 1; ri < batches.length; ri++) remaining += batches[ri].length;
+                if (remaining > 0) errors += remaining;
+                onLog('error', 'Batch ' + (batchIdx + 1) + ' failed after ' + MAX_RETRIES + ' retries — ' + (remaining > 0 ? remaining + ' buildings in remaining batches skipped' : 'no remaining batches'));
                 break;
             }
 

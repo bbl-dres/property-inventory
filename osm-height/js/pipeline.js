@@ -156,12 +156,10 @@ function createGridPoints(coordsLV95, spacing) {
     }
 
     var points = [];
-    // For simple buildings (< 6 vertices), skip polygon test — bbox is enough
-    var simpleBuilding = coordsLV95.length <= 6;
 
     for (var gx = minX + spacing / 2; gx < maxX; gx += spacing) {
         for (var gy = minY + spacing / 2; gy < maxY; gy += spacing) {
-            if (simpleBuilding || pointInPolygon(gx, gy, coordsLV95)) {
+            if (pointInPolygon(gx, gy, coordsLV95)) {
                 points.push([gx, gy]);
             }
         }
@@ -214,8 +212,14 @@ function computeBuildingHeightSync(feature) {
 
     if (heights.length === 0) return null;
 
+    // Use 95th percentile to filter outliers (chimneys, antennas, overhanging trees)
+    var sorted = heights.slice().sort(function(a, b) { return a - b; });
+    var p95idx = Math.min(Math.floor(sorted.length * 0.95), sorted.length - 1);
+    var height_p95 = sorted[p95idx];
+
     return {
-        height_max: Math.round(Math.max.apply(null, heights) * 10) / 10,
+        height: Math.round(height_p95 * 10) / 10,
+        height_max: Math.round(sorted[sorted.length - 1] * 10) / 10,
         height_mean: Math.round((heights.reduce(function(a, b) { return a + b; }, 0) / heights.length) * 10) / 10,
         elevation_ground: Math.round(minDTM * 10) / 10,
         elevation_roof: Math.round(maxDSM * 10) / 10,
@@ -230,7 +234,7 @@ var OVERPASS_URL = 'https://overpass.osm.ch/api/interpreter';
 
 async function extractBuildings(bbox, onLog) {
     var west = bbox[0], south = bbox[1], east = bbox[2], north = bbox[3];
-    var query = '[out:json][timeout:180];(way["building"](' + south + ',' + west + ',' + north + ',' + east + '););out body;>;out skel qt;';
+    var query = '[out:json][timeout:180];(way["building"](' + south + ',' + west + ',' + north + ',' + east + ');relation["building"](' + south + ',' + west + ',' + north + ',' + east + '););out body;>;out skel qt;';
 
     if (onLog) onLog('Extracting OSM buildings...');
     var resp = await fetch(OVERPASS_URL, {
@@ -253,9 +257,13 @@ async function extractBuildings(bbox, onLog) {
     var features = [];
     var tagsToCopy = ['height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'roof:levels', 'roof:colour', 'roof:material', 'name', 'addr:street', 'addr:housenumber'];
 
+    // Build ways lookup for relation member resolution
+    var waysById = {};
     for (var j = 0; j < data.elements.length; j++) {
         var el2 = data.elements[j];
-        if (el2.type !== 'way' || !el2.tags) continue;
+        if (el2.type === 'way') waysById[el2.id] = el2;
+
+        if (el2.type !== 'way' || !el2.tags || !el2.tags.building) continue;
         var coords = [];
         for (var n = 0; n < (el2.nodes || []).length; n++) {
             var node = nodes[el2.nodes[n]];
@@ -275,6 +283,44 @@ async function extractBuildings(bbox, onLog) {
             type: 'Feature',
             geometry: { type: 'Polygon', coordinates: [coords] },
             properties: props,
+        });
+    }
+
+    // Parse relation buildings (use outer ring for height computation)
+    for (var rj = 0; rj < data.elements.length; rj++) {
+        var rel = data.elements[rj];
+        if (rel.type !== 'relation' || !rel.tags || !rel.tags.building) continue;
+
+        // Find outer member way
+        var outerCoords = null;
+        for (var mi = 0; mi < (rel.members || []).length; mi++) {
+            var member = rel.members[mi];
+            if (member.type === 'way' && member.role === 'outer') {
+                var outerWay = waysById[member.ref];
+                if (!outerWay || !outerWay.nodes) continue;
+                var rc = [];
+                for (var rn = 0; rn < outerWay.nodes.length; rn++) {
+                    var rnode = nodes[outerWay.nodes[rn]];
+                    if (rnode) rc.push(rnode);
+                }
+                if (rc.length >= 4) {
+                    if (rc[0][0] !== rc[rc.length - 1][0] || rc[0][1] !== rc[rc.length - 1][1]) rc.push(rc[0]);
+                    outerCoords = rc;
+                    break; // use first outer ring
+                }
+            }
+        }
+        if (!outerCoords) continue;
+
+        var rprops = { osm_id: rel.id, osm_type: 'relation', building: rel.tags.building || 'yes' };
+        for (var rt = 0; rt < tagsToCopy.length; rt++) {
+            if (rel.tags[tagsToCopy[rt]]) rprops[tagsToCopy[rt]] = rel.tags[tagsToCopy[rt]];
+        }
+
+        features.push({
+            type: 'Feature',
+            geometry: { type: 'Polygon', coordinates: [outerCoords] },
+            properties: rprops,
         });
     }
 
@@ -361,10 +407,10 @@ async function runPipeline(bbox, callbacks) {
         if (!result) {
             props['_skip_reason'] = 'no_data'; skipped++; continue;
         }
-        if (result.height_max < 2 || result.height_max > 60) {
+        if (result.height < 2 || result.height > 60) {
             props['_skip_reason'] = 'out_of_range'; skipped++; continue;
         }
-        props.height = String(result.height_max);
+        props.height = String(result.height);
         props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
         enriched++;
     }

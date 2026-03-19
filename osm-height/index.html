@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSM Building Height Enrichment</title>
     <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet">
-    <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.1/dist/proj4.js"></script>
+    <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js" integrity="sha384-pEfbADcwebVj4NNOvWFLUkm+FiGTICE5bChpV647czG7OpSqcHNgxM8QawfAkbRO" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js" integrity="sha384-m5adk5PRgt3JjiYbYoG8oXxc3EgRFKc1aCBgKzyxqxnbYpdiAMlHkR0gVDp03Q/H" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.1/dist/proj4.js" integrity="sha384-eCfO4pOi+VsP6z/nsQni5JF69AVBgkaI2kwPfFh+J64UMLNVDIBVvowHHM9Q62TF" crossorigin="anonymous"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 14px; line-height: 1.5; }
@@ -476,7 +476,9 @@ document.getElementById('btn-run').onclick = async function() {
     var parts = bboxStr.split(',').map(Number);
     var kmW = Math.abs(parts[2] - parts[0]) * 111 * Math.cos(parts[1] * Math.PI / 180);
     var kmH = Math.abs(parts[3] - parts[1]) * 111;
-    if (kmW * kmH > 2 && !confirm('Area is ~' + (kmW * kmH).toFixed(1) + ' km². This may take a while.\n\nContinue?')) return;
+    var areaSqKm = kmW * kmH;
+    if (areaSqKm > 25) { alert('Area is ~' + areaSqKm.toFixed(1) + ' km² — maximum is 25 km².\nPlease draw a smaller area.'); return; }
+    if (areaSqKm > 2 && !confirm('Area is ~' + areaSqKm.toFixed(1) + ' km². This may take a while.\n\nContinue?')) return;
 
     running = true;
     document.getElementById('btn-run').disabled = true;
