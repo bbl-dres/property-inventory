@@ -33,7 +33,7 @@ function initMap() {
 
   // Defaults (Switzerland)
   let startCenter = [8.2275, 46.8182];
-  let startZoom = 3;
+  let startZoom = 2;
   let startPitch = 0;
   let startBearing = 0;
 
@@ -55,10 +55,6 @@ function initMap() {
     canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true }
   });
 
-  // Enable globe projection after style loads
-  map.on('style.load', function() {
-    map.setProjection({ type: 'globe' });
-  });
 
   state.map = map;
 
@@ -1146,10 +1142,7 @@ function initStyleSwitcher() {
       // MapLibre v4 emits after setStyle). Register after setStyle since
       // idle is always async (fires after next render frame).
       state.map.setStyle(mapStyles[styleId].url);
-      state.map.once('idle', function() {
-        restoreLayersAfterStyleChange();
-        state.map.setProjection({ type: 'globe' });
-      });
+      state.map.once('idle', restoreLayersAfterStyleChange);
 
       // Close panel
       state.stylePanelOpen = false;
