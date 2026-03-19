@@ -148,6 +148,33 @@ function initMap() {
   return map;
 }
 
+// ===== SMART FLY-TO =====
+// Adapts duration based on distance: snappy for nearby, smooth for far away
+
+function smartFlyTo(options) {
+  var map = state.map;
+  if (!map) return;
+
+  var target = options.center;
+  var current = map.getCenter();
+
+  // Distance in degrees (rough approximation)
+  var dx = target[0] - current.lng;
+  var dy = target[1] - current.lat;
+  var dist = Math.sqrt(dx * dx + dy * dy);
+
+  // Duration: 300ms minimum (nearby), 2000ms max (far away)
+  // ~0.01 deg ≈ 1km → 300ms, ~1 deg ≈ 100km → 1000ms, ~10 deg → 2000ms
+  var duration = Math.min(2000, Math.max(300, Math.round(dist * 800 + 200)));
+
+  map.flyTo({
+    center: target,
+    zoom: options.zoom,
+    duration: duration,
+    essential: true
+  });
+}
+
 // ===== 3D BUILDINGS =====
 
 function show3DBuildings() {
@@ -558,10 +585,7 @@ function addMapLayers() {
     const clusterId = features[0].properties.cluster_id;
     map.getSource('buildings').getClusterExpansionZoom(clusterId, function(err, zoom) {
       if (err) return;
-      map.easeTo({
-        center: features[0].geometry.coordinates,
-        zoom: zoom
-      });
+      smartFlyTo({ center: features[0].geometry.coordinates, zoom: zoom });
     });
   });
 
@@ -773,10 +797,7 @@ function selectBuilding(buildingId, flyToBuilding) {
 
   // Only fly to building if explicitly requested (e.g. from Search)
   if (state.map && flyToBuilding) {
-    state.map.flyTo({
-      center: building.geometry.coordinates,
-      zoom: 16
-    });
+    smartFlyTo({ center: building.geometry.coordinates, zoom: 16 });
   }
 }
 
@@ -876,11 +897,8 @@ function selectParcel(parcelId, flyToParcel) {
 
   // Fly to parcel if requested
   if (state.map && flyToParcel && parcel.geometry && parcel.geometry.coordinates) {
-    const center = getPolygonCentroid(parcel.geometry.coordinates);
-    state.map.flyTo({
-      center: center,
-      zoom: 16
-    });
+    var center = getPolygonCentroid(parcel.geometry.coordinates);
+    smartFlyTo({ center: center, zoom: 16 });
   }
 }
 
@@ -937,7 +955,7 @@ function selectLandCover(objectid, flyToLandCover) {
 
   if (state.map && flyToLandCover && lc.geometry && lc.geometry.coordinates) {
     var center = getPolygonCentroid(lc.geometry.coordinates);
-    state.map.flyTo({ center: center, zoom: 17 });
+    smartFlyTo({ center: center, zoom: 17 });
   }
 }
 
@@ -1259,6 +1277,7 @@ function initContextMenu() {
 export {
   initMap,
   addMapLayers,
+  smartFlyTo,
   selectBuilding,
   selectParcel,
   selectLandCover,

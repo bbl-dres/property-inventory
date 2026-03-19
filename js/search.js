@@ -2,7 +2,7 @@
 
 import { state } from './state.js';
 import { escapeHtml } from './utils.js';
-import { selectBuilding, updateSelectedBuilding, updateUrlWithSelection } from './map.js';
+import { selectBuilding, smartFlyTo, updateSelectedBuilding, updateUrlWithSelection } from './map.js';
 import { addSwisstopoLayer } from './swisstopo.js';
 import { switchView } from './ui.js';
 import { t } from './i18n.js';
@@ -49,10 +49,7 @@ export function handleSearchClick(type, id, lat, lon, zoom, title) {
     }
 
     // 2. Fly to location
-    state.map.flyTo({
-      center: [lon, lat],
-      zoom: zoom
-    });
+    smartFlyTo({ center: [lon, lat], zoom: zoom });
 
     // 3. Add Red Marker
     state.searchMarker = new maplibregl.Marker({ color: '#c00' })

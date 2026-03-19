@@ -193,22 +193,22 @@ export function zoomToFilteredPoints() {
   const features = state.filteredData.features;
 
   if (features.length === 1) {
-    // Single point - fly to it with a reasonable zoom level
-    const coords = features[0].geometry.coordinates;
+    // Single point - fly to it
+    var coords = features[0].geometry.coordinates;
     state.map.flyTo({
       center: coords,
       zoom: 14,
-      duration: 1000
+      duration: 800
     });
   } else {
     // Multiple points - fit bounds
-    const bounds = new maplibregl.LngLatBounds();
+    var bounds = new maplibregl.LngLatBounds();
     features.forEach(function(feature) {
       bounds.extend(feature.geometry.coordinates);
     });
     state.map.fitBounds(bounds, {
       padding: 80,
-      duration: 1000,
+      duration: 800,
       maxZoom: 16
     });
   }

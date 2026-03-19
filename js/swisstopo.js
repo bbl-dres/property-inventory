@@ -630,6 +630,27 @@ export function buildLegendHTML(layerKey) {
       '</div>' +
       '</div>';
   }
+  if (layerKey === 'landcovers') {
+    return '<div class="legend-footer"><span>' + t('print.legend') + '</span></div>' +
+      '<div class="internal-legend">' +
+      '<div class="internal-legend-item">' +
+        '<span class="internal-legend-rect" style="background: rgba(139, 195, 74, 0.25); border: 2px solid #689F38;"></span>' +
+        '<span>Gebaeude</span>' +
+      '</div>' +
+      '<div class="internal-legend-item">' +
+        '<span class="internal-legend-rect" style="background: rgba(158, 158, 158, 0.25); border: 2px solid #9E9E9E;"></span>' +
+        '<span>befestigt</span>' +
+      '</div>' +
+      '<div class="internal-legend-item">' +
+        '<span class="internal-legend-rect" style="background: rgba(102, 187, 106, 0.25); border: 2px solid #66BB6A;"></span>' +
+        '<span>humusiert</span>' +
+      '</div>' +
+      '<div class="internal-legend-item">' +
+        '<span class="internal-legend-rect" style="background: rgba(66, 165, 245, 0.25); border: 2px solid #42A5F5;"></span>' +
+        '<span>Gewaesser</span>' +
+      '</div>' +
+      '</div>';
+  }
   // Parcels: single color
   return '<div class="legend-footer"><span>' + t('print.legend') + '</span></div>' +
     '<div class="internal-legend">' +

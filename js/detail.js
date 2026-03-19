@@ -11,7 +11,8 @@ import {
   formatDate,
   formatCurrency,
   formatCurrencyWithUnit,
-  getContractStatusClassName
+  getContractStatusClassName,
+  getStatusClassName
 } from './utils.js';
 
 // ===== POPULATE DETAIL VIEW =====
@@ -35,7 +36,14 @@ function populateDetailView(building) {
   // --- Tab: \u00dcbersicht ---
 
   // Stammdaten
-  setText('detail-status', props.bbl_stat);
+  var statusEl = document.getElementById('detail-status');
+  if (statusEl) {
+    if (props.bbl_stat) {
+      statusEl.innerHTML = '<span class="badge status-badge ' + getStatusClassName(props.bbl_stat) + '">' + props.bbl_stat + '</span>';
+    } else {
+      statusEl.textContent = '\u2013';
+    }
+  }
   setText('detail-name', props.bbl_bez);
   setText('detail-id', props.bbl_id);
   setText('detail-objektart1', props.bbl_gbda1);
@@ -335,10 +343,20 @@ function getCarouselImages() {
   return (images && images.length > 0) ? images : placeholderImages;
 }
 
+let carouselClickInitialized = false;
+
 function initCarousel() {
   state.currentCarouselIndex = 0;
   const images = getCarouselImages();
   updateCarouselImage();
+
+  // Click on carousel image to open lightbox
+  if (!carouselClickInitialized) {
+    carouselClickInitialized = true;
+    document.getElementById('carousel-image').addEventListener('click', function() {
+      openLightbox(state.currentCarouselIndex);
+    });
+  }
 
   // Create dots
   const dotsContainer = document.getElementById('carousel-dots');
@@ -378,6 +396,102 @@ function carouselNext() {
   updateCarouselImage();
 }
 
+
+// ===== FULLSCREEN LIGHTBOX =====
+
+let lightboxInitialized = false;
+let lightboxIndex = 0;
+
+function getFilenameFromUrl(url) {
+  try {
+    var parts = url.split('/');
+    var last = parts[parts.length - 1].split('?')[0];
+    return last || 'image';
+  } catch (e) {
+    return 'image';
+  }
+}
+
+function openLightbox(index) {
+  var images = getCarouselImages();
+  if (!images || images.length === 0) return;
+
+  lightboxIndex = index;
+  var lightbox = document.getElementById('lightbox');
+  lightbox.classList.add('active');
+  updateLightbox();
+  document.body.style.overflow = 'hidden';
+
+  if (!lightboxInitialized) {
+    lightboxInitialized = true;
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-backdrop') || document.querySelector('.lightbox-backdrop');
+    lightbox.querySelector('.lightbox-backdrop').addEventListener('click', closeLightbox);
+
+    document.getElementById('lightbox-prev').addEventListener('click', function(e) {
+      e.stopPropagation();
+      lightboxPrev();
+    });
+    document.getElementById('lightbox-next').addEventListener('click', function(e) {
+      e.stopPropagation();
+      lightboxNext();
+    });
+    document.getElementById('lightbox-download').addEventListener('click', function(e) {
+      e.stopPropagation();
+      var images = getCarouselImages();
+      var url = images[lightboxIndex];
+      var a = document.createElement('a');
+      a.href = url;
+      a.download = getFilenameFromUrl(url);
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.click();
+    });
+
+    document.addEventListener('keydown', function(e) {
+      var lightbox = document.getElementById('lightbox');
+      if (!lightbox.classList.contains('active')) return;
+      if (e.key === 'Escape') {
+        e.stopImmediatePropagation();
+        closeLightbox();
+      } else if (e.key === 'ArrowLeft') {
+        lightboxPrev();
+      } else if (e.key === 'ArrowRight') {
+        lightboxNext();
+      }
+    });
+  }
+}
+
+function closeLightbox() {
+  document.getElementById('lightbox').classList.remove('active');
+  document.body.style.overflow = '';
+}
+
+function lightboxPrev() {
+  var images = getCarouselImages();
+  lightboxIndex = (lightboxIndex - 1 + images.length) % images.length;
+  updateLightbox();
+}
+
+function lightboxNext() {
+  var images = getCarouselImages();
+  lightboxIndex = (lightboxIndex + 1) % images.length;
+  updateLightbox();
+}
+
+function updateLightbox() {
+  var images = getCarouselImages();
+  var url = images[lightboxIndex];
+  document.getElementById('lightbox-image').src = url;
+  document.getElementById('lightbox-counter').textContent = (lightboxIndex + 1) + ' / ' + images.length;
+  document.getElementById('lightbox-filename').textContent = getFilenameFromUrl(url);
+
+  // Sync carousel
+  state.currentCarouselIndex = lightboxIndex;
+  updateCarouselImage();
+}
 
 // ===== MINI MAP =====
 

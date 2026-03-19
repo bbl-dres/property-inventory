@@ -9,7 +9,7 @@ import { updateMapFilter } from './filters.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
 import { updateShareLink, getShareUrl, updateExportCount } from './export.js';
 import { loadGeokatalog } from './swisstopo.js';
-import { selectBuilding, selectParcel, selectLandCover, updateSelectedBuilding, updateSelectedParcel, updateSelectedLandCover, updateUrlWithSelection, getPolygonCentroid } from './map.js';
+import { selectBuilding, selectParcel, selectLandCover, smartFlyTo, updateSelectedBuilding, updateSelectedParcel, updateSelectedLandCover, updateUrlWithSelection, getPolygonCentroid } from './map.js';
 
 // ===== TOAST NOTIFICATION SYSTEM =====
 
@@ -551,30 +551,19 @@ function initInfoPanel() {
   // Info panel zoom to
   document.getElementById('info-zoom-to').addEventListener('click', function() {
     if (state.selectedBuildingId && map) {
-      const building = state.buildingIndex.get(state.selectedBuildingId);
+      var building = state.buildingIndex.get(state.selectedBuildingId);
       if (building && building.geometry) {
-        map.flyTo({
-          center: building.geometry.coordinates,
-          zoom: 16
-        });
+        smartFlyTo({ center: building.geometry.coordinates, zoom: 16 });
       }
     } else if (state.selectedParcelId && map) {
-      const parcel = state.parcelIndex.get(state.selectedParcelId);
+      var parcel = state.parcelIndex.get(state.selectedParcelId);
       if (parcel && parcel.geometry && parcel.geometry.coordinates) {
-        const center = getPolygonCentroid(parcel.geometry.coordinates);
-        map.flyTo({
-          center: center,
-          zoom: 16
-        });
+        smartFlyTo({ center: getPolygonCentroid(parcel.geometry.coordinates), zoom: 16 });
       }
     } else if (state.selectedLandCoverId != null && map) {
       var lc = state.landCoverIndex.get(state.selectedLandCoverId);
       if (lc && lc.geometry && lc.geometry.coordinates) {
-        var lcCenter = getPolygonCentroid(lc.geometry.coordinates);
-        map.flyTo({
-          center: lcCenter,
-          zoom: 17
-        });
+        smartFlyTo({ center: getPolygonCentroid(lc.geometry.coordinates), zoom: 17 });
       }
     }
   });
