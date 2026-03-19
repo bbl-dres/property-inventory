@@ -5,6 +5,7 @@ import { statusColors, mapStyles, placeholderImages } from './config.js';
 import { escapeHtml, getStatusClassName } from './utils.js';
 import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
+// import { showSwisstopo3D, hideSwisstopo3D } from './tiles3d.js';
 import {
   identifySwisstopoFeatures,
   clearIdentifyHighlight,
@@ -25,22 +26,31 @@ function initMap() {
   const initialLat = parseFloat(urlParams.get('lat'));
   const initialLng = parseFloat(urlParams.get('lng'));
   const initialZoom = parseFloat(urlParams.get('zoom'));
+  const initialPitch = parseFloat(urlParams.get('pitch'));
+  const initialBearing = parseFloat(urlParams.get('bearing'));
+  const initial3D = urlParams.get('3d') === '1';
 
   // Defaults (Switzerland)
   let startCenter = [8.2275, 46.8182];
   let startZoom = 2;
+  let startPitch = 0;
+  let startBearing = 0;
 
   // Override defaults if URL params exist
   if (!isNaN(initialLat) && !isNaN(initialLng) && !isNaN(initialZoom)) {
     startCenter = [initialLng, initialLat];
     startZoom = initialZoom;
   }
+  if (!isNaN(initialPitch)) startPitch = initialPitch;
+  if (!isNaN(initialBearing)) startBearing = initialBearing;
 
   const map = new maplibregl.Map({
     container: 'map',
     style: mapStyles[state.currentMapStyle].url,
     center: startCenter,
     zoom: startZoom,
+    pitch: startPitch,
+    bearing: startBearing,
     preserveDrawingBuffer: true
   });
 
@@ -104,6 +114,14 @@ function initMap() {
         button.classList.remove('active');
         hide3DBuildings();
       }
+      // Update URL with 3D state
+      var url = new URL(window.location);
+      if (state.is3D) {
+        url.searchParams.set('3d', '1');
+      } else {
+        url.searchParams.delete('3d');
+      }
+      window.history.replaceState({}, '', url);
     };
 
     this._container.appendChild(button);
@@ -116,6 +134,19 @@ function initMap() {
 
   map.addControl(new Toggle3DControl(), 'top-right');
 
+  // Restore 3D state from URL
+  if (initial3D) {
+    state.is3D = true;
+    var btn3d = document.querySelector('.map-3d-btn');
+    if (btn3d) {
+      btn3d.textContent = '2D';
+      btn3d.classList.add('active');
+    }
+    map.once('idle', function() {
+      show3DBuildings();
+    });
+  }
+
   // Update URL on map move/zoom
   map.on('moveend', function() {
     if (state.currentView === 'detail') return;
@@ -127,6 +158,17 @@ function initMap() {
     url.searchParams.set('lng', center.lng.toFixed(5));
     url.searchParams.set('lat', center.lat.toFixed(5));
     url.searchParams.set('zoom', zoom.toFixed(2));
+
+    // Persist pitch/bearing for 3D view sharing
+    var pitch = map.getPitch();
+    var bearing = map.getBearing();
+    if (pitch > 0) {
+      url.searchParams.set('pitch', pitch.toFixed(1));
+      url.searchParams.set('bearing', bearing.toFixed(1));
+    } else {
+      url.searchParams.delete('pitch');
+      url.searchParams.delete('bearing');
+    }
 
     window.history.replaceState({}, '', url);
   });
@@ -181,7 +223,27 @@ function show3DBuildings() {
   var map = state.map;
   if (!map) return;
 
-  // Already added — just show it
+  // Enable 3D terrain elevation (after pitch animation completes)
+  map.once('idle', function() {
+    if (!map.getSource('terrain-dem')) {
+      map.addSource('terrain-dem', {
+        type: 'raster-dem',
+        tiles: ['https://s3.amazonaws.com/elevation-tiles-prod/terrarium/{z}/{x}/{y}.png'],
+        encoding: 'terrarium',
+        maxzoom: 15,
+        tileSize: 256,
+        attribution: '<a href="https://github.com/tilezen/joerd">Tilezen Joerd</a>'
+      });
+    }
+    map.setTerrain({ source: 'terrain-dem', exaggeration: 1.0 });
+  });
+
+  // Load swisstopo 3D tiles (photogrammetric buildings for Switzerland)
+  // NOTE: Three.js custom layers don't work with MapLibre terrain,
+  // so swisstopo 3D tiles are disabled while terrain is active
+  // showSwisstopo3D(map);
+
+  // Show fill-extrusion buildings (these DO work with terrain)
   if (map.getLayer('3d-buildings')) {
     map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
     return;
@@ -239,9 +301,19 @@ function show3DBuildings() {
 
 function hide3DBuildings() {
   var map = state.map;
-  if (!map || !map.getLayer('3d-buildings')) return;
+  if (!map) return;
 
-  map.setLayoutProperty('3d-buildings', 'visibility', 'none');
+  // Disable 3D terrain (after pitch animation completes)
+  map.once('idle', function() {
+    if (map.getTerrain()) {
+      map.setTerrain(null);
+    }
+  });
+
+  // Hide fill-extrusion buildings
+  if (map.getLayer('3d-buildings')) {
+    map.setLayoutProperty('3d-buildings', 'visibility', 'none');
+  }
 
   // Restore basemap's building layers
   var layers = map.getStyle().layers;
