@@ -101,6 +101,12 @@
     "fr": "Vue galerie",
     "it": "Vista galleria"
   },
+  "gallery.filter.count": {
+    "de": "{filtered} von {total} Gebäude",
+    "en": "{filtered} of {total} buildings",
+    "fr": "{filtered} sur {total} bâtiments",
+    "it": "{filtered} di {total} edifici"
+  },
   "loading.data": {
     "de": "Daten werden geladen...",
     "en": "Loading data...",

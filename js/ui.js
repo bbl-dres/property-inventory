@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { escapeHtml } from './utils.js';
 import { setLang, getLang, t } from './i18n.js';
-import { renderListView, renderGalleryView, renderParcelsView, renderLandCoversView } from './list.js';
+import { renderListView, renderGalleryView, renderParcelsView, renderLandCoversView, syncGalleryFilter } from './list.js';
 import { populateDetailView, renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
 import { updateMapFilter } from './filters.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
@@ -208,8 +208,9 @@ export function switchView(view) {
     }, 100);
   }
 
-  // Re-render gallery view if dirty
-  if (view === 'gallery' && state.galleryViewDirty) {
+  // Sync gallery filter with search input and re-render
+  if (view === 'gallery') {
+    syncGalleryFilter();
     renderGalleryView();
     state.galleryViewDirty = false;
   }

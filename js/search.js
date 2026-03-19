@@ -48,8 +48,8 @@ export function handleSearchClick(type, id, lat, lon, zoom, title) {
   const searchTerm = _searchInput ? _searchInput.value.trim() : '';
   if (searchTerm) saveToSearchHistory(searchTerm);
 
-  // Close detail view if open
-  if (state.currentView === 'detail') {
+  // Switch to map view if not already there
+  if (state.currentView !== 'map') {
     switchView('map');
   }
 
@@ -170,6 +170,8 @@ export function initSearch() {
     searchClearBtn.classList.remove('visible');
     searchResults.classList.remove('active');
     searchInput.focus();
+    // Dispatch input event so gallery filter reacts to the cleared value
+    searchInput.dispatchEvent(new Event('input'));
 
     // Remove the search marker if it exists
     if (state.searchMarker) {

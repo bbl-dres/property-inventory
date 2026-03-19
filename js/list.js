@@ -1113,13 +1113,52 @@ export function syncTableToLandCover(objectid) {
 
 const GALLERY_PAGE_SIZE = 48;
 let galleryCurrentPage = 1;
+let galleryFilterTerm = '';
+
+export function initGalleryFilter() {
+  const input = document.getElementById('search-input');
+  if (!input) return;
+
+  // Listen for input changes — re-filter gallery if in gallery view
+  input.addEventListener('input', function() {
+    if (state.currentView !== 'gallery') return;
+    const val = input.value.trim().toLowerCase();
+    if (val === galleryFilterTerm) return;
+    galleryFilterTerm = val;
+    galleryCurrentPage = 1;
+    renderGalleryView();
+  });
+}
+
+// Called when switching views — sync gallery filter with current search value
+export function syncGalleryFilter() {
+  const input = document.getElementById('search-input');
+  galleryFilterTerm = input ? input.value.trim().toLowerCase() : '';
+  galleryCurrentPage = 1;
+}
+
+function getGalleryFilteredFeatures(features) {
+  if (!galleryFilterTerm) return features;
+  return features.filter(function(f) {
+    const p = f.properties;
+    return (p.bbl_bez && p.bbl_bez.toLowerCase().includes(galleryFilterTerm)) ||
+           (p.adr_conct && p.adr_conct.toLowerCase().includes(galleryFilterTerm)) ||
+           (p.adr_ort && p.adr_ort.toLowerCase().includes(galleryFilterTerm)) ||
+           (p.bbl_id && p.bbl_id.toLowerCase().includes(galleryFilterTerm));
+  });
+}
 
 export function renderGalleryView() {
   if (!state.buildingsData) return;
 
-  const dataToRender = state.filteredData || state.buildingsData;
+  const baseData = state.filteredData || state.buildingsData;
+  const allFeatures = baseData.features;
+  const filteredFeatures = getGalleryFilteredFeatures(allFeatures);
+  const dataToRender = { features: filteredFeatures };
   const galleryGrid = document.getElementById('gallery-grid');
   let html = '';
+
+  const isFiltered = galleryFilterTerm.length > 0;
 
   // Handle empty state
   if (dataToRender.features.length === 0) {
@@ -1165,10 +1204,10 @@ export function renderGalleryView() {
     '</div>';
   });
 
-  // Add pagination footer if multiple pages
+  // Gallery footer: pagination + filter count
+  html += '<div class="gallery-pagination">';
   if (totalPages > 1) {
-    html += '<div class="gallery-pagination">' +
-      '<span class="pagination-info">' + t('pagination.info', {start: startIndex + 1, end: endIndex, total: totalItems}) + '</span>' +
+    html += '<span class="pagination-info">' + t('pagination.info', {start: startIndex + 1, end: endIndex, total: totalItems}) + '</span>' +
       '<div class="pagination-nav">' +
         '<button class="pagination-btn gallery-prev-btn" ' + (galleryCurrentPage <= 1 ? 'disabled' : '') + '>' +
           '<span class="material-symbols-outlined">chevron_left</span>' +
@@ -1177,9 +1216,14 @@ export function renderGalleryView() {
         '<button class="pagination-btn gallery-next-btn" ' + (galleryCurrentPage >= totalPages ? 'disabled' : '') + '>' +
           '<span class="material-symbols-outlined">chevron_right</span>' +
         '</button>' +
-      '</div>' +
-    '</div>';
+      '</div>';
   }
+  if (isFiltered) {
+    html += '<span class="gallery-result-count">' +
+      t('gallery.filter.count', { filtered: filteredFeatures.length, total: allFeatures.length }) +
+    '</span>';
+  }
+  html += '</div>';
 
   galleryGrid.innerHTML = html;
 }

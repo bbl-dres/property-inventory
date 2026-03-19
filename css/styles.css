@@ -1112,6 +1112,12 @@
   display: block;
 }
 
+.gallery-result-count {
+  font-size: var(--text-xs);
+  color: var(--grey-500);
+  padding: 0 var(--space-6) var(--space-2);
+}
+
 .gallery-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));

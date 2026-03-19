@@ -17,7 +17,7 @@ import {
   initBuildingTableHeaders, renderListView, initListPagination,
   initDelegatedListeners, initListToolbar, initTableTabs,
   renderGalleryView, renderParcelsView, initParcelsTable,
-  renderLandCoversView, initLandCoversTable
+  renderLandCoversView, initLandCoversTable, initGalleryFilter
 } from './list.js';
 import { initAllEntityTables, carouselPrev, carouselNext } from './detail.js';
 import { initMap, addMapLayers, initStyleSwitcher, initContextMenu } from './map.js';
@@ -226,6 +226,7 @@ function loadAllData() {
       initDelegatedListeners();
       initListToolbar();
       initListPagination();
+      initGalleryFilter();
       initParcelsTable();
       initLandCoversTable();
       initTableTabs();
