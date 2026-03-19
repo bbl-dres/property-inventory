@@ -1,9 +1,9 @@
 {
   "app.title": {
-    "de": "BBL Immobilienportfolio - GIS POC",
-    "en": "BBL Real Estate Portfolio - GIS POC",
-    "fr": "OFCL Portefeuille immobilier - SIG POC",
-    "it": "UFCL Portafoglio immobiliare - GIS POC"
+    "de": "Liegenschaften Inventar BBL",
+    "en": "BBL Property Inventory",
+    "fr": "Inventaire immobilier OFCL",
+    "it": "Inventario immobili UFCL"
   },
   "app.logo.flag_alt": {
     "de": "Schweizer Flagge",
@@ -1378,6 +1378,18 @@
     "en": "Places",
     "fr": "Lieux",
     "it": "Luoghi"
+  },
+  "search.section.history": {
+    "de": "Letzte Suchen",
+    "en": "Recent searches",
+    "fr": "Recherches récentes",
+    "it": "Ricerche recenti"
+  },
+  "search.history.remove": {
+    "de": "Aus Verlauf entfernen",
+    "en": "Remove from history",
+    "fr": "Supprimer de l'historique",
+    "it": "Rimuovi dalla cronologia"
   },
   "search.empty": {
     "de": "Keine Resultate gefunden",

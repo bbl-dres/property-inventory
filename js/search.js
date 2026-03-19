@@ -7,6 +7,29 @@ import { addSwisstopoLayer } from './swisstopo.js';
 import { switchView } from './ui.js';
 import { t } from './i18n.js';
 
+// --- Search history (localStorage) ---
+const HISTORY_KEY = 'searchHistory';
+const HISTORY_MAX = 15;
+
+function getSearchHistory() {
+  try {
+    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+  } catch { return []; }
+}
+
+function saveToSearchHistory(term) {
+  if (!term || term.length < 2) return;
+  const history = getSearchHistory().filter(h => h !== term);
+  history.unshift(term);
+  if (history.length > HISTORY_MAX) history.length = HISTORY_MAX;
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
+function removeFromSearchHistory(term) {
+  const history = getSearchHistory().filter(h => h !== term);
+  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+}
+
 // Strip HTML tags from API results (e.g., Swisstopo returns <b>, <i> markup)
 function stripHtml(str) {
   if (!str) return '';
@@ -20,6 +43,10 @@ let _searchClearBtn = null;
 
 export function handleSearchClick(type, id, lat, lon, zoom, title) {
   _searchResults.classList.remove('active');
+
+  // Save search term to history
+  const searchTerm = _searchInput ? _searchInput.value.trim() : '';
+  if (searchTerm) saveToSearchHistory(searchTerm);
 
   // Close detail view if open
   if (state.currentView === 'detail') {
@@ -82,6 +109,33 @@ export function initSearch() {
   _searchResults = searchResults;
   _searchClearBtn = searchClearBtn;
 
+  // Show search history on focus (when input is empty or short)
+  searchInput.addEventListener('focus', function() {
+    const val = searchInput.value.trim();
+    if (val.length < 2) {
+      showSearchHistory();
+    }
+  });
+
+  function showSearchHistory() {
+    const history = getSearchHistory();
+    if (history.length === 0) return;
+
+    let html = '<div class="search-section-header">' + t('search.section.history') + '</div>';
+    history.forEach(function(term) {
+      html += '<div class="search-item search-history-item" data-action="searchHistory" data-term="' + escapeHtml(term) + '">' +
+              '<span class="material-symbols-outlined search-history-icon" aria-hidden="true">history</span>' +
+              '<div class="search-item-title">' + escapeHtml(term) + '</div>' +
+              '<button class="search-history-remove" data-term="' + escapeHtml(term) + '" title="' + t('search.history.remove') + '">' +
+              '<span class="material-symbols-outlined" aria-hidden="true">close</span>' +
+              '</button>' +
+              '</div>';
+    });
+
+    searchResults.innerHTML = html;
+    searchResults.classList.add('active');
+  }
+
   // Listen for input
   searchInput.addEventListener('input', function(e) {
     clearTimeout(searchDebounceTimer);
@@ -95,8 +149,12 @@ export function initSearch() {
     }
 
     if (val.length < 2) {
-      searchResults.classList.remove('active');
       searchSpinner.style.display = 'none';
+      if (val.length === 0) {
+        showSearchHistory();
+      } else {
+        searchResults.classList.remove('active');
+      }
       return;
     }
 
@@ -117,6 +175,29 @@ export function initSearch() {
     if (state.searchMarker) {
       state.searchMarker.remove();
       state.searchMarker = null;
+    }
+  });
+
+  // Handle history item clicks (remove button + re-search)
+  searchResults.addEventListener('click', function(e) {
+    // Remove button
+    const removeBtn = e.target.closest('.search-history-remove');
+    if (removeBtn) {
+      e.stopPropagation();
+      removeFromSearchHistory(removeBtn.dataset.term);
+      showSearchHistory();
+      return;
+    }
+    // History item click → fill input and search
+    const historyItem = e.target.closest('[data-action="searchHistory"]');
+    if (historyItem) {
+      e.stopPropagation();
+      const term = historyItem.dataset.term;
+      searchInput.value = term;
+      searchClearBtn.classList.add('visible');
+      searchResults.classList.remove('active');
+      searchSpinner.style.display = 'block';
+      performSearch(term);
     }
   });
 
