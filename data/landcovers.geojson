@@ -1,0 +1,294 @@
+{
+  "type": "FeatureCollection",
+  "name": "BBL_GIS_IMMO_LandCover",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4840/01",
+        "geb_id": "1000/4840/AF",
+        "av_stat": "Gültig",
+        "av_egid": "301001234",
+        "av_egrid": "CH938391457759",
+        "av_type": "Gebaeude",
+        "lc_area": 1920.0,
+        "wgs84_lat": 46.9465,
+        "wgs84_lon": 7.4441,
+        "lv95_e": 2600416.2,
+        "lv95_n": 1199490.6,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 1,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.44380, 46.94630], [7.44440, 46.94630], [7.44440, 46.94670], [7.44380, 46.94670], [7.44380, 46.94630]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4840/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH938391457759",
+        "av_type": "befestigt",
+        "lc_area": 640.0,
+        "wgs84_lat": 46.9462,
+        "wgs84_lon": 7.4439,
+        "lv95_e": 2600402.0,
+        "lv95_n": 1199457.2,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 2,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.44350, 46.94600], [7.44430, 46.94600], [7.44430, 46.94625], [7.44350, 46.94625], [7.44350, 46.94600]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4840/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH938391457759",
+        "av_type": "humusiert",
+        "lc_area": 3540.0,
+        "wgs84_lat": 46.9488,
+        "wgs84_lon": 7.4415,
+        "lv95_e": 2600226.0,
+        "lv95_n": 1199746.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 3,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.44100, 46.94850], [7.44200, 46.94850], [7.44210, 46.94910], [7.44090, 46.94910], [7.44100, 46.94850]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4850/01",
+        "geb_id": "1000/4850/AG",
+        "av_stat": "Gültig",
+        "av_egid": "301098765",
+        "av_egrid": "CH111222333444",
+        "av_type": "Gebaeude",
+        "lc_area": 2400.0,
+        "wgs84_lat": 46.951,
+        "wgs84_lon": 7.4388,
+        "lv95_e": 2600020.0,
+        "lv95_n": 1199990.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 4,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.43840, 46.95075], [7.43920, 46.95075], [7.43920, 46.95125], [7.43840, 46.95125], [7.43840, 46.95075]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4850/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH111222333444",
+        "av_type": "befestigt",
+        "lc_area": 720.0,
+        "wgs84_lat": 46.9508,
+        "wgs84_lon": 7.4393,
+        "lv95_e": 2600058.0,
+        "lv95_n": 1199968.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 5,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.43890, 46.95040], [7.43970, 46.95040], [7.43970, 46.95070], [7.43890, 46.95070], [7.43890, 46.95040]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/3120/01",
+        "geb_id": "1000/3120/AB",
+        "av_stat": "Gültig",
+        "av_egid": "100345678",
+        "av_egrid": "CH672819345012",
+        "av_type": "Gebaeude",
+        "lc_area": 2500.0,
+        "wgs84_lat": 47.3769,
+        "wgs84_lon": 8.532,
+        "lv95_e": 2683127.0,
+        "lv95_n": 1247314.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 6,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[8.53150, 47.37665], [8.53250, 47.37665], [8.53250, 47.37715], [8.53150, 47.37715], [8.53150, 47.37665]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/3120/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH672819345012",
+        "av_type": "humusiert",
+        "lc_area": 910.0,
+        "wgs84_lat": 47.3773,
+        "wgs84_lon": 8.5325,
+        "lv95_e": 2683165.0,
+        "lv95_n": 1247358.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 7,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[8.53210, 47.37720], [8.53290, 47.37720], [8.53290, 47.37755], [8.53210, 47.37755], [8.53210, 47.37720]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4100/01",
+        "geb_id": "1000/4100/AC",
+        "av_stat": "Gültig",
+        "av_egid": "400567890",
+        "av_egrid": "CH456789123456",
+        "av_type": "Gebaeude",
+        "lc_area": 3600.0,
+        "wgs84_lat": 46.2044,
+        "wgs84_lon": 6.1432,
+        "lv95_e": 2500546.0,
+        "lv95_n": 1117058.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 8,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[6.14270, 46.20410], [6.14370, 46.20410], [6.14370, 46.20470], [6.14270, 46.20470], [6.14270, 46.20410]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/2800/01",
+        "geb_id": "1000/2800/AD",
+        "av_stat": "Gültig",
+        "av_egid": "200123456",
+        "av_egrid": "CH789012345678",
+        "av_type": "Gebaeude",
+        "lc_area": 3540.0,
+        "wgs84_lat": 47.5596,
+        "wgs84_lon": 7.5886,
+        "lv95_e": 2611436.0,
+        "lv95_n": 1267554.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 9,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.58810, 47.55930], [7.58910, 47.55930], [7.58910, 47.55990], [7.58810, 47.55990], [7.58810, 47.55930]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/2800/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH789012345678",
+        "av_type": "befestigt",
+        "lc_area": 480.0,
+        "wgs84_lat": 47.5593,
+        "wgs84_lon": 7.5882,
+        "lv95_e": 2611406.0,
+        "lv95_n": 1267521.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 10,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[7.58770, 47.55895], [7.58870, 47.55895], [7.58870, 47.55925], [7.58770, 47.55925], [7.58770, 47.55895]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/1950/01",
+        "geb_id": "1000/1950/AE",
+        "av_stat": "Gültig",
+        "av_egid": "500678901",
+        "av_egrid": "CH345678901234",
+        "av_type": "Gebaeude",
+        "lc_area": 3540.0,
+        "wgs84_lat": 46.0037,
+        "wgs84_lon": 8.9512,
+        "lv95_e": 2717820.0,
+        "lv95_n": 1094788.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 11,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[8.95070, 46.00340], [8.95170, 46.00340], [8.95170, 46.00400], [8.95070, 46.00400], [8.95070, 46.00340]]]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/1950/01",
+        "geb_id": null,
+        "av_stat": "Gültig",
+        "av_egid": null,
+        "av_egrid": "CH345678901234",
+        "av_type": "Gewaesser",
+        "lc_area": 750.0,
+        "wgs84_lat": 46.0034,
+        "wgs84_lon": 8.9518,
+        "lv95_e": 2717866.0,
+        "lv95_n": 1094754.0,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 12,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [[[8.95130, 46.00305], [8.95230, 46.00305], [8.95230, 46.00335], [8.95130, 46.00335], [8.95130, 46.00305]]]
+      }
+    }
+  ]
+}

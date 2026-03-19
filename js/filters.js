@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { filterConfig } from './config.js';
 import { escapeHtml, getNestedProperty } from './utils.js';
-import { renderListView, updateFilteredExportHeader, renderGalleryView, renderParcelsView } from './list.js';
+import { renderListView, updateFilteredExportHeader, renderGalleryView, renderParcelsView, renderLandCoversView } from './list.js';
 import { switchView } from './ui.js';
 import { updateExportCount } from './export.js';
 
@@ -111,31 +111,18 @@ export function applyFilters() {
 }
 
 export function updateMapFilter() {
-  if (!state.map || !state.map.getLayer('buildings-points')) return;
+  if (!state.map || !state.map.getSource('buildings')) return;
 
-  // If no active filters, show all buildings
-  if (getActiveFilterCount() === 0) {
-    state.map.setFilter('buildings-points', null);
-    if (state.map.getLayer('buildings-labels')) {
-      state.map.setFilter('buildings-labels', null);
-    }
-    return;
-  }
+  // With clustering enabled, layer-level setFilter doesn't affect cluster composition.
+  // Instead, update the source data so clusters are recomputed from filtered features.
+  var dataToShow = (getActiveFilterCount() === 0)
+    ? state.buildingsData
+    : state.filteredData;
 
-  const filteredIds = state.filteredData.features.map(function(f) {
-    return f.properties.bbl_id;
-  });
-
-  // Apply filter to show only filtered buildings
-  state.map.setFilter('buildings-points', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
-
-  // Also filter labels layer if it exists
-  if (state.map.getLayer('buildings-labels')) {
-    state.map.setFilter('buildings-labels', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
-  }
+  state.map.getSource('buildings').setData(dataToShow);
 
   // Zoom to fit filtered points (skip during style change restore)
-  if (!state.skipFilterZoom) {
+  if (getActiveFilterCount() > 0 && !state.skipFilterZoom) {
     zoomToFilteredPoints();
   }
 }
@@ -324,10 +311,11 @@ export function updateFilterButtonState() {
 }
 
 export function renderCurrentView() {
-  // Only render list/parcels if table panel is visible and we're in map view
+  // Only render tables if table panel is visible and we're in map view
   if (state.currentView === 'map' && state.tableOpen) {
     renderListView();
     renderParcelsView();
+    renderLandCoversView();
   } else {
     state.listViewDirty = true;
   }
@@ -374,7 +362,6 @@ export function initDrawerResize() {
   const handle = drawer.querySelector('.filter-panel-resize-handle');
   if (!handle) return;
 
-  let isResizing = false;
   let startX, startWidth;
 
   // Get min/max from CSS variables
@@ -388,31 +375,17 @@ export function initDrawerResize() {
     document.documentElement.style.setProperty('--drawer-width', savedWidth + 'px');
   }
 
-  handle.addEventListener('mousedown', function(e) {
-    isResizing = true;
-    startX = e.clientX;
-    startWidth = drawer.offsetWidth;
-    handle.classList.add('dragging');
-    drawer.classList.add('resizing');
-    document.body.style.cursor = 'ew-resize';
-    document.body.style.userSelect = 'none';
-    e.preventDefault();
-  });
-
-  document.addEventListener('mousemove', function(e) {
-    if (!isResizing) return;
-
-    // Calculate new width (dragging left = wider, right = narrower)
+  // Mousemove/mouseup handlers added only during drag to avoid per-move checks
+  function onResizeMove(e) {
     const delta = startX - e.clientX;
     const newWidth = Math.min(maxWidth, Math.max(minWidth, startWidth + delta));
-
     document.documentElement.style.setProperty('--drawer-width', newWidth + 'px');
-  });
+  }
 
-  document.addEventListener('mouseup', function() {
-    if (!isResizing) return;
+  function onResizeEnd() {
+    document.removeEventListener('mousemove', onResizeMove);
+    document.removeEventListener('mouseup', onResizeEnd);
 
-    isResizing = false;
     handle.classList.remove('dragging');
     drawer.classList.remove('resizing');
     document.body.style.cursor = '';
@@ -426,6 +399,19 @@ export function initDrawerResize() {
     if (state.map) {
       state.map.resize();
     }
+  }
+
+  handle.addEventListener('mousedown', function(e) {
+    startX = e.clientX;
+    startWidth = drawer.offsetWidth;
+    handle.classList.add('dragging');
+    drawer.classList.add('resizing');
+    document.body.style.cursor = 'ew-resize';
+    document.body.style.userSelect = 'none';
+    e.preventDefault();
+
+    document.addEventListener('mousemove', onResizeMove);
+    document.addEventListener('mouseup', onResizeEnd);
   });
 }
 

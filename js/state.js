@@ -14,7 +14,13 @@ export const state = {
   // Data
   buildingsData: null,
   parcelData: null,
+  landCoverData: null,
   filteredData: null,
+
+  // Feature lookup indexes — built on data load for O(1) lookups
+  buildingIndex: new Map(),    // Map<bbl_id, feature>
+  parcelIndex: new Map(),      // Map<bbl_id, feature>
+  landCoverIndex: new Map(),   // Map<objectid, feature>
 
   // Entity data (stubs - not yet loaded from backend)
   allAreaMeasurements: [],
@@ -28,6 +34,7 @@ export const state = {
   currentDetailBuilding: null,
   selectedBuildingId: null,
   selectedParcelId: null,
+  selectedLandCoverId: null,
 
   // Views
   currentView: 'map',
@@ -46,6 +53,11 @@ export const state = {
   parcelCurrentPage: 1,
   parcelRowsPerPage: 50,
   parcelSearchTerm: '',
+
+  // Pagination - land covers
+  landCoverCurrentPage: 1,
+  landCoverRowsPerPage: 50,
+  landCoverSearchTerm: '',
 
   // Map
   map: null,

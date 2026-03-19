@@ -275,6 +275,13 @@
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
+                                <div class="active-layer-item" data-internal-layer="landcovers">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" title="Bodenabdeckung ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="landcovers" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
@@ -342,6 +349,7 @@
                         <div class="table-tabs" role="tablist">
                             <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="table.tab.buildings">Gebäude</button>
                             <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="table.tab.parcels">Grundstücke</button>
+                            <button class="table-tab" data-table-tab="landcovers" role="tab" aria-selected="false" data-i18n="table.tab.landcovers">Bodenabdeckung</button>
                         </div>
                         <div class="toolbar-search list-toolbar-search">
                             <span class="material-symbols-outlined">search</span>
@@ -392,27 +400,14 @@
                                     </div>
                                     <!-- Building columns (shown when Gebäude tab active) -->
                                     <div class="columns-list" id="columns-list" data-columns-tab="buildings">
-                                        <!-- Stammdaten -->
+                                        <!-- Sorted to match DATAMODEL.json -->
                                         <div class="columns-group-label" data-i18n="columns.group.master">Stammdaten</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_buch"> Buchungskreis (bbl_buch)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_we"> Wirtschaftseinheit (bbl_we)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_tobj"> Teilobjekt (bbl_tobj)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda1"> Objektart 1 (bbl_gbda1)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda2"> Objektart 2 (bbl_gbda2)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_eigen"> Art Eigentum (bbl_eigen)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ostr"> Objektstrategie (bbl_ostr)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_mietm"> Mietmodell (bbl_mietm)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port"> Teilportfolio (bbl_port)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port2"> Portfoliogruppe (bbl_port2)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bjahr"> Baujahr (bbl_bjahr)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_vjahr"> Verkaufsjahr (bbl_vjahr)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_awrt"> Anschaffungswert (bbl_awrt)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bwrt"> Buchwert (bbl_bwrt)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ovtw"> Verantwortlich (bbl_ovtw)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_obj"> Teilobjekt (bbl_obj)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
                                         <!-- Adresse -->
                                         <div class="columns-group-label" data-i18n="columns.group.address">Adresse</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_land"> Land (adr_land)</label>
@@ -428,6 +423,22 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lon"> WGS84 Lon (wgs84_lon)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_e"> LV95 E (lv95_e)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_n"> LV95 N (lv95_n)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-egm_elev"> Höhe (egm_elev)</label>
+                                        <!-- Stammdaten 2 -->
+                                        <div class="columns-group-label" data-i18n="columns.group.master2">Stammdaten 2</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_eigen"> Art Eigentum (bbl_eigen)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ostr"> Objektstrategie (bbl_ostr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_mietm"> Mietmodell (bbl_mietm)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bjahr"> Baujahr (bbl_bjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_vjahr"> Verkaufsjahr (bbl_vjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_port"> Teilportfolio (bbl_port)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port2"> Portfoliogruppe (bbl_port2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_awrt"> Anschaffungswert (bbl_awrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bwrt"> Buchwert (bbl_bwrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_gbda1"> Objektart 1 (bbl_gbda1)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda2"> Objektart 2 (bbl_gbda2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_ovtw"> Verantwortlich (bbl_ovtw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
                                         <!-- Amtliche Vermessung -->
                                         <div class="columns-group-label" data-i18n="columns.group.survey">Amtliche Vermessung</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egid"> EGID (av_egid)</label>
@@ -444,12 +455,16 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_arch"> Archivwürdigkeit (bbl_arch)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_kat"> KGS Kategorie (kgs_kat)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_nr"> KGS Nummer (kgs_nr)</label>
+                                        <!-- Sonstiges -->
+                                        <div class="columns-group-label" data-i18n="columns.group.other">Sonstiges</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
                                         <!-- Flächen -->
                                         <div class="columns-group-label" data-i18n="columns.group.areas">Flächen (SIA 416/380)</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gf"> GF (garea_gf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfo"> GF oberird. (garea_gfo)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfu"> GF unterird. (garea_gfu)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ngf"> NGF (garea_ngf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_acu"> GF Genauigkeit (garea_acu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-garea_ngf"> NGF (garea_ngf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nf"> NF (garea_nf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_hnf"> HNF (garea_hnf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nnf"> NNF (garea_nnf)</label>
@@ -457,22 +472,22 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vf"> VF (garea_vf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vmf"> VMF (garea_vmf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ebf"> EBF (garea_ebf)</label>
-                                        <!-- Volumen -->
+                                        <!-- Volumen / Geschosse -->
                                         <div class="columns-group-label" data-i18n="columns.group.volumes">Volumen / Geschosse</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gv"> GV (gvol_gv)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvo"> GV oberird. (gvol_gvo)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvu"> GV unterird. (gvol_gvu)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw"> Geschosse (gastw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_acu"> GV Genauigkeit (gvol_acu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-gastw"> Geschosse (gastw)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_og"> Gesch. oberird. (gastw_og)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_ug"> Gesch. unterird. (gastw_ug)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_acu"> Gesch. Genauigkeit (gastw_acu)</label>
                                         <!-- Grundstück -->
                                         <div class="columns-group-label" data-i18n="columns.group.land">Grundstück</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_ggf"> GGF (larea_ggf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_gsf"> GSF (larea_gsf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_uf"> UF (larea_uf)</label>
-                                        <!-- Sonstiges -->
-                                        <div class="columns-group-label" data-i18n="columns.group.other">Sonstiges</div>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_acu"> GSF Genauigkeit (larea_acu)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-etl_ts"> ETL Zeitstempel (etl_ts)</label>
                                     </div>
                                     <!-- Parcel columns (shown when Grundstücke tab active) -->
@@ -485,6 +500,23 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> <span data-i18n="col.parcel.area">Fläche</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
+                                    </div>
+                                    <div class="columns-list" id="landcover-columns-list" data-columns-tab="landcovers" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-bbl_id"> Grundstück ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-geb_id"> Gebäude ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_type"> Typ</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-lc_area"> Fläche</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_stat"> AV Status</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-av_egid"> EGID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_egrid"> EGRID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lat"> Lat</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lon"> Lon</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_e"> LV95 E</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_n"> LV95 N</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid"> FID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid_src"> FID Quelle</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-objectid"> OBJECTID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-etl_ts"> ETL</label>
                                     </div>
                                 </div>
                             </div>
@@ -567,6 +599,55 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="table-tab-content" id="landcovers-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="base-table list-table" id="landcovers-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-lc-bbl_id"><span data-i18n="col.lc.bbl_id">Grundstück ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-geb_id"><span data-i18n="col.lc.geb_id">Gebäude ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_type"><span data-i18n="col.lc.av_type">Typ</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lc_area"><span data-i18n="col.lc.lc_area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_stat"><span data-i18n="col.lc.av_stat">AV Status</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_egid">EGID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_egrid">EGRID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-wgs84_lat">Lat <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-wgs84_lon">Lon <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lv95_e">LV95 E <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lv95_n">LV95 N <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-fid">FID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-fid_src"><span data-i18n="col.lc.fid_src">FID Quelle</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-objectid">OBJECTID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-etl_ts">ETL <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="landcovers-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="landcovers-pagination">
+                            <div class="pagination-info" id="landcovers-pagination-info" aria-live="polite">
+                                0 von 0 Bodenabdeckungen
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="landcovers-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="landcovers-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="landcovers-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="landcovers-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -576,6 +657,22 @@
         </div>
 
         <div id="api-docs-view">
+            <div class="api-docs-nav">
+                <div class="detail-header-inner">
+                    <div class="breadcrumb">
+                        <span class="material-symbols-outlined">public</span>
+                        <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
+                        <span>></span>
+                        <span class="current" data-i18n="api.breadcrumb">API Dokumentation</span>
+                    </div>
+                    <div class="detail-header-actions">
+                        <button class="btn-back" id="btn-back-api">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            <span data-i18n="detail.back">Zurück</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
             <div class="api-docs-content">
                 <div class="api-docs-header">
                     <h1>BBL GIS IMMO — API Dokumentation</h1>
@@ -777,18 +874,7 @@ Content-Type: application/geo+json
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_pvtw">Portfoliomanager</span><span class="detail-value" id="detail-pvtw">–</span></div>
                     </div>
 
-                    <div class="detail-overline" data-i18n="columns.group.address">Adresse</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_land">Land</span><span class="detail-value" id="detail-country">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_reg">Region</span><span class="detail-value" id="detail-region">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_ort">Ort</span><span class="detail-value" id="detail-city">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_plz">PLZ</span><span class="detail-value" id="detail-plz">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_str">Strasse</span><span class="detail-value" id="detail-street">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_hsnr">Hausnummer</span><span class="detail-value" id="detail-housenumber">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.adr_conct">Adresse</span><span class="detail-value" id="detail-address-concat">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="columns.group.coords">Koordinaten</div>
+                    <div class="detail-overline" data-i18n="detail.section.location">Standort</div>
                     <div class="detail-card">
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.wgs84">WGS84</span><span class="detail-value" id="detail-wgs84">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.lv95">LV95</span><span class="detail-value" id="detail-lv95">–</span></div>
@@ -796,7 +882,32 @@ Content-Type: application/geo+json
                         <div class="detail-grid-spacer"></div>
                         <div class="detail-grid-row"><span class="detail-label">Google Maps</span><span class="detail-value"><a id="detail-link-gmaps" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
                         <div class="detail-grid-row"><span class="detail-label">Google Street View</span><span class="detail-value"><a id="detail-link-streetview" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                        <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                        <div class="mini-map-wrapper">
+                            <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                            <div class="mini-map-footer" id="mini-map-address">–</div>
+                        </div>
+                        <table class="address-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="col.adr_land">Land</th>
+                                    <th data-i18n="col.adr_reg">Region</th>
+                                    <th data-i18n="col.adr_ort">Ort</th>
+                                    <th data-i18n="col.adr_plz">PLZ</th>
+                                    <th data-i18n="col.adr_str">Strasse</th>
+                                    <th data-i18n="col.adr_hsnr">Nr.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="detail-country">–</td>
+                                    <td id="detail-region">–</td>
+                                    <td id="detail-city">–</td>
+                                    <td id="detail-plz">–</td>
+                                    <td id="detail-street">–</td>
+                                    <td id="detail-housenumber">–</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
 
                     <div class="detail-overline" data-i18n="columns.group.survey">Amtliche Vermessung</div>

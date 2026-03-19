@@ -26,11 +26,11 @@ function populateDetailView(building) {
     if (el) el.textContent = (value !== undefined && value !== null && value !== '') ? value : '\u2013';
   }
 
-  // Breadcrumb: adr_land > adr_ort > bbl_we > bbl_tobj
+  // Breadcrumb: adr_land > adr_ort > bbl_we > bbl_obj
   setText('breadcrumb-country', props.adr_land);
   setText('breadcrumb-city', props.adr_ort);
   setText('breadcrumb-we', props.bbl_we);
-  setText('breadcrumb-tobj', props.bbl_tobj);
+  setText('breadcrumb-tobj', props.bbl_obj);
 
   // --- Tab: \u00dcbersicht ---
 
@@ -59,7 +59,8 @@ function populateDetailView(building) {
   setText('detail-plz', props.adr_plz);
   setText('detail-street', props.adr_str);
   setText('detail-housenumber', props.adr_hsnr);
-  setText('detail-address-concat', props.adr_conct);
+  // Mini-map address footer
+  setText('mini-map-address', props.adr_conct);
 
   // Koordinaten (combined pairs)
   setText('detail-wgs84', props.wgs84_lat != null && props.wgs84_lon != null
@@ -167,6 +168,45 @@ function populateDetailView(building) {
 
   // Initialize info icons (once)
   initInfoIcons();
+
+  // Initialize collapsible sections (once)
+  initCollapsibleSections();
+}
+
+// ===== COLLAPSIBLE DETAIL SECTIONS =====
+
+let collapsibleSectionsInitialized = false;
+
+// i18n keys of sections that should be collapsed by default
+const collapsedByDefault = [
+  'columns.group.survey',
+  'columns.group.zone',
+  'columns.group.heritage',
+  'columns.group.other'
+];
+
+function initCollapsibleSections() {
+  if (collapsibleSectionsInitialized) return;
+  collapsibleSectionsInitialized = true;
+
+  document.querySelectorAll('#detail-view .detail-overline').forEach(function(overline) {
+    // Add chevron icon
+    var chevron = document.createElement('span');
+    chevron.className = 'material-symbols-outlined detail-overline-chevron';
+    chevron.textContent = 'expand_more';
+    overline.appendChild(chevron);
+
+    // Collapse sections that should be collapsed by default
+    var i18nKey = overline.getAttribute('data-i18n');
+    if (i18nKey && collapsedByDefault.indexOf(i18nKey) !== -1) {
+      overline.classList.add('collapsed');
+    }
+
+    // Toggle on click
+    overline.addEventListener('click', function() {
+      this.classList.toggle('collapsed');
+    });
+  });
 }
 
 // ===== INFO TOOLTIPS FOR DETAIL LABELS =====
@@ -371,13 +411,18 @@ function initMiniMap(coords) {
     }
 
     if (vectorSourceId) {
-      // Find first label layer to insert 3D buildings below
+      // Find first label layer to insert 3D buildings below,
+      // and hide the basemap's own building layers (2D fill + built-in 3D)
+      // to prevent double-rendering that causes a "transparent" look
       const layers = state.miniMap.getStyle().layers;
       let labelLayerId;
       for (let i = 0; i < layers.length; i++) {
-        if (layers[i].type === 'symbol' && layers[i].layout && layers[i].layout['text-field']) {
-          labelLayerId = layers[i].id;
-          break;
+        var layer = layers[i];
+        if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
+          if (!labelLayerId) labelLayerId = layer.id;
+        }
+        if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
+          state.miniMap.setLayoutProperty(layer.id, 'visibility', 'none');
         }
       }
 
@@ -387,19 +432,12 @@ function initMiniMap(coords) {
         'source-layer': 'building',
         'type': 'fill-extrusion',
         'minzoom': 15,
+        'filter': ['!=', ['get', 'hide_3d'], true],
         'paint': {
-          'fill-extrusion-color': '#A8B0B7',
-          'fill-extrusion-height': [
-            'interpolate', ['linear'], ['zoom'],
-            15, 0,
-            15.05, ['coalesce', ['get', 'render_height'], 0]
-          ],
-          'fill-extrusion-base': [
-            'interpolate', ['linear'], ['zoom'],
-            15, 0,
-            15.05, ['coalesce', ['get', 'render_min_height'], 0]
-          ],
-          'fill-extrusion-opacity': 0.6
+          'fill-extrusion-color': '#d0d0d0',
+          'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 5],
+          'fill-extrusion-base': 0,
+          'fill-extrusion-opacity': 1
         }
       }, labelLayerId);
     }

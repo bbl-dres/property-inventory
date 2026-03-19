@@ -12,7 +12,7 @@ import {
   loadLayersFromUrl,
   readdSwisstopoLayers
 } from './swisstopo.js';
-import { syncTableToBuilding, syncTableToParcel } from './list.js';
+import { syncTableToBuilding, syncTableToParcel, syncTableToLandCover } from './list.js';
 import { getActiveFilterCount, updateMapFilter, applyFilters } from './filters.js';
 import { startMeasurement, clearMeasurement } from './measure.js';
 import { getShareUrl } from './export.js';
@@ -97,10 +97,12 @@ function initMap() {
         map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
         button.textContent = '2D';
         button.classList.add('active');
+        show3DBuildings();
       } else {
         map.easeTo({ pitch: 0, bearing: 0, duration: 800 });
         button.textContent = '3D';
         button.classList.remove('active');
+        hide3DBuildings();
       }
     };
 
@@ -146,53 +148,126 @@ function initMap() {
   return map;
 }
 
+// ===== 3D BUILDINGS =====
+
+function show3DBuildings() {
+  var map = state.map;
+  if (!map) return;
+
+  // Already added — just show it
+  if (map.getLayer('3d-buildings')) {
+    map.setLayoutProperty('3d-buildings', 'visibility', 'visible');
+    return;
+  }
+
+  // Find the vector tile source from the basemap
+  var sources = map.getStyle().sources;
+  var vectorSourceId = null;
+  for (var key in sources) {
+    if (sources[key].type === 'vector') {
+      vectorSourceId = key;
+      break;
+    }
+  }
+  if (!vectorSourceId) return;
+
+  // Hide basemap's own building layers to prevent double-rendering
+  var layers = map.getStyle().layers;
+  var labelLayerId;
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    if (layer.type === 'symbol' && layer.layout && layer.layout['text-field']) {
+      if (!labelLayerId) labelLayerId = layer.id;
+    }
+    if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
+      map.setLayoutProperty(layer.id, 'visibility', 'none');
+    }
+  }
+
+  // Insert 3D buildings below our data layers (landcovers/parcels/buildings)
+  var beforeLayer = null;
+  if (map.getLayer('landcovers-fill')) {
+    beforeLayer = 'landcovers-fill';
+  } else if (map.getLayer('parcels-fill')) {
+    beforeLayer = 'parcels-fill';
+  } else if (map.getLayer('buildings-clusters')) {
+    beforeLayer = 'buildings-clusters';
+  }
+
+  map.addLayer({
+    'id': '3d-buildings',
+    'source': vectorSourceId,
+    'source-layer': 'building',
+    'type': 'fill-extrusion',
+    'minzoom': 15,
+    'filter': ['!=', ['get', 'hide_3d'], true],
+    'paint': {
+      'fill-extrusion-color': '#d0d0d0',
+      'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 5],
+      'fill-extrusion-base': 0,
+      'fill-extrusion-opacity': 1
+    }
+  }, beforeLayer);
+}
+
+function hide3DBuildings() {
+  var map = state.map;
+  if (!map || !map.getLayer('3d-buildings')) return;
+
+  map.setLayoutProperty('3d-buildings', 'visibility', 'none');
+
+  // Restore basemap's building layers
+  var layers = map.getStyle().layers;
+  for (var i = 0; i < layers.length; i++) {
+    var layer = layers[i];
+    if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
+      map.setLayoutProperty(layer.id, 'visibility', 'visible');
+    }
+  }
+}
+
 // ===== PULSE ANIMATION (module-level) =====
+// Uses setInterval at ~20fps instead of rAF at 60fps — purely cosmetic effect
 
 let pulseRadius = 24;
 let pulseOpacity = 0.4;
 let pulseDirection = 1;
-let pulseAnimationId = null;
-let pulseFrameCount = 0;
+let pulseIntervalId = null;
 
-function animatePulse() {
+function pulseStep() {
   if (!state.selectedBuildingId) {
-    pulseAnimationId = null;
+    stopPulseAnimation();
     return;
   }
 
-  pulseFrameCount++;
-  if (pulseFrameCount % 3 === 0) {
-    pulseRadius += 0.9 * pulseDirection;
-    pulseOpacity -= 0.03 * pulseDirection;
+  pulseRadius += 0.9 * pulseDirection;
+  pulseOpacity -= 0.03 * pulseDirection;
 
-    if (pulseRadius >= 32) {
-      pulseDirection = -1;
-    } else if (pulseRadius <= 24) {
-      pulseDirection = 1;
-    }
-
-    if (state.map && state.map.getLayer('buildings-selected-pulse')) {
-      state.map.setPaintProperty('buildings-selected-pulse', 'circle-radius', pulseRadius);
-      state.map.setPaintProperty('buildings-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
-    }
+  if (pulseRadius >= 32) {
+    pulseDirection = -1;
+  } else if (pulseRadius <= 24) {
+    pulseDirection = 1;
   }
 
-  pulseAnimationId = requestAnimationFrame(animatePulse);
+  if (state.map && state.map.getLayer('buildings-selected-pulse')) {
+    state.map.setPaintProperty('buildings-selected-pulse', 'circle-radius', pulseRadius);
+    state.map.setPaintProperty('buildings-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+  }
 }
 
 function startPulseAnimation() {
-  if (pulseAnimationId === null) {
+  if (pulseIntervalId === null) {
     pulseRadius = 24;
     pulseOpacity = 0.4;
     pulseDirection = 1;
-    animatePulse();
+    pulseIntervalId = setInterval(pulseStep, 50); // ~20fps
   }
 }
 
 function stopPulseAnimation() {
-  if (pulseAnimationId !== null) {
-    cancelAnimationFrame(pulseAnimationId);
-    pulseAnimationId = null;
+  if (pulseIntervalId !== null) {
+    clearInterval(pulseIntervalId);
+    pulseIntervalId = null;
   }
 }
 
@@ -208,8 +283,83 @@ function addMapLayers() {
 
   map.addSource('buildings', {
     type: 'geojson',
-    data: state.buildingsData
+    data: state.buildingsData,
+    cluster: true,
+    clusterMaxZoom: 14,
+    clusterRadius: 50
   });
+
+  // Add land cover source and layers (below parcels and buildings)
+  if (state.landCoverData && state.landCoverData.features) {
+    map.addSource('landcovers', {
+      type: 'geojson',
+      data: state.landCoverData
+    });
+
+    map.addLayer({
+      id: 'landcovers-fill',
+      type: 'fill',
+      source: 'landcovers',
+      minzoom: 14,
+      paint: {
+        'fill-color': ['match', ['get', 'av_type'],
+          'Gebaeude', '#8BC34A',
+          'befestigt', '#9E9E9E',
+          'humusiert', '#66BB6A',
+          'Gewaesser', '#42A5F5',
+          '#8BC34A'
+        ],
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.25]
+      }
+    });
+
+    map.addLayer({
+      id: 'landcovers-outline',
+      type: 'line',
+      source: 'landcovers',
+      minzoom: 14,
+      paint: {
+        'line-color': '#689F38',
+        'line-width': 1.5,
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.7]
+      }
+    });
+
+    map.addLayer({
+      id: 'landcovers-highlight',
+      type: 'fill',
+      source: 'landcovers',
+      minzoom: 14,
+      filter: ['==', ['get', 'objectid'], -1],
+      paint: {
+        'fill-color': '#8BC34A',
+        'fill-opacity': 0.4
+      }
+    });
+
+    map.addLayer({
+      id: 'landcovers-selected',
+      type: 'fill',
+      source: 'landcovers',
+      filter: ['==', ['get', 'objectid'], -1],
+      paint: {
+        'fill-color': '#8BC34A',
+        'fill-opacity': 0.5
+      }
+    });
+
+    map.addLayer({
+      id: 'landcovers-selected-outline',
+      type: 'line',
+      source: 'landcovers',
+      filter: ['==', ['get', 'objectid'], -1],
+      paint: {
+        'line-color': '#689F38',
+        'line-width': 3,
+        'line-opacity': 1
+      }
+    });
+  }
 
   // Add parcels source and layers
   if (state.parcelData && state.parcelData.features) {
@@ -218,14 +368,15 @@ function addMapLayers() {
       data: state.parcelData
     });
 
-    // Parcel fill layer
+    // Parcel fill layer (visible from zoom 12 — plot-level detail)
     map.addLayer({
       id: 'parcels-fill',
       type: 'fill',
       source: 'parcels',
+      minzoom: 12,
       paint: {
         'fill-color': '#1976d2',
-        'fill-opacity': 0.15
+        'fill-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.15]
       }
     });
 
@@ -234,10 +385,11 @@ function addMapLayers() {
       id: 'parcels-outline',
       type: 'line',
       source: 'parcels',
+      minzoom: 12,
       paint: {
         'line-color': '#1976d2',
         'line-width': 2,
-        'line-opacity': 0.8
+        'line-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.8]
       }
     });
 
@@ -246,6 +398,7 @@ function addMapLayers() {
       id: 'parcels-highlight',
       type: 'fill',
       source: 'parcels',
+      minzoom: 12,
       filter: ['==', ['get', 'bbl_id'], ''],
       paint: {
         'fill-color': '#1976d2',
@@ -253,7 +406,7 @@ function addMapLayers() {
       }
     });
 
-    // Parcel selected fill layer (persistent selection)
+    // Parcel selected fill layer (no minzoom — selection should always be visible)
     map.addLayer({
       id: 'parcels-selected',
       type: 'fill',
@@ -265,7 +418,7 @@ function addMapLayers() {
       }
     });
 
-    // Parcel selected outline layer (persistent selection)
+    // Parcel selected outline layer (no minzoom — selection should always be visible)
     map.addLayer({
       id: 'parcels-selected-outline',
       type: 'line',
@@ -279,11 +432,55 @@ function addMapLayers() {
     });
   }
 
-  // Main points layer
+  // ===== CLUSTER LAYERS =====
+
+  // Cluster circles — sized by point count
+  map.addLayer({
+    id: 'buildings-clusters',
+    type: 'circle',
+    source: 'buildings',
+    filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': [
+        'step', ['get', 'point_count'],
+        '#42A5F5',   // < 10
+        10, '#1976d2', // 10–49
+        50, '#0D47A1'  // 50+
+      ],
+      'circle-radius': [
+        'step', ['get', 'point_count'],
+        18,       // < 10
+        10, 24,   // 10–49
+        50, 32    // 50+
+      ],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff'
+    }
+  });
+
+  // Cluster count labels
+  map.addLayer({
+    id: 'buildings-cluster-count',
+    type: 'symbol',
+    source: 'buildings',
+    filter: ['has', 'point_count'],
+    layout: {
+      'text-field': ['get', 'point_count_abbreviated'],
+      'text-font': ['Open Sans Bold', 'Noto Sans Bold'],
+      'text-size': 13,
+      'text-allow-overlap': true
+    },
+    paint: {
+      'text-color': '#ffffff'
+    }
+  });
+
+  // Main points layer (unclustered only)
   map.addLayer({
     id: 'buildings-points',
     type: 'circle',
     source: 'buildings',
+    filter: ['!', ['has', 'point_count']],
     paint: {
       'circle-radius': 10,
       'circle-color': [
@@ -300,12 +497,12 @@ function addMapLayers() {
     }
   });
 
-  // Selected point highlight layer - outer ring
+  // Selected point highlight layer - outer ring (unclustered only)
   map.addLayer({
     id: 'buildings-selected',
     type: 'circle',
     source: 'buildings',
-    filter: ['==', ['get', 'bbl_id'], ''],
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], '']],
     paint: {
       'circle-radius': 18,
       'circle-color': 'transparent',
@@ -315,12 +512,12 @@ function addMapLayers() {
     }
   });
 
-  // Selected point pulse animation layer
+  // Selected point pulse animation layer (unclustered only)
   map.addLayer({
     id: 'buildings-selected-pulse',
     type: 'circle',
     source: 'buildings',
-    filter: ['==', ['get', 'bbl_id'], ''],
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], '']],
     paint: {
       'circle-radius': 24,
       'circle-color': 'transparent',
@@ -330,11 +527,12 @@ function addMapLayers() {
     }
   });
 
-  // Building ID labels (visible at zoom >= 16)
+  // Building ID labels (visible at zoom >= 16, unclustered only)
   map.addLayer({
     id: 'buildings-labels',
     type: 'symbol',
     source: 'buildings',
+    filter: ['!', ['has', 'point_count']],
     minzoom: 16,
     layout: {
       'text-field': ['get', 'bbl_id'],
@@ -350,6 +548,32 @@ function addMapLayers() {
       'text-halo-width': 2
     }
   });
+
+  // ===== CLUSTER INTERACTION =====
+
+  // Click cluster to zoom in
+  map.on('click', 'buildings-clusters', function(e) {
+    const features = map.queryRenderedFeatures(e.point, { layers: ['buildings-clusters'] });
+    if (!features.length) return;
+    const clusterId = features[0].properties.cluster_id;
+    map.getSource('buildings').getClusterExpansionZoom(clusterId, function(err, zoom) {
+      if (err) return;
+      map.easeTo({
+        center: features[0].geometry.coordinates,
+        zoom: zoom
+      });
+    });
+  });
+
+  map.on('mouseenter', 'buildings-clusters', function() {
+    map.getCanvas().style.cursor = 'pointer';
+  });
+
+  map.on('mouseleave', 'buildings-clusters', function() {
+    map.getCanvas().style.cursor = '';
+  });
+
+  // ===== INDIVIDUAL POINT INTERACTION =====
 
   map.on('mouseenter', 'buildings-points', function() {
     map.getCanvas().style.cursor = 'pointer';
@@ -381,30 +605,69 @@ function addMapLayers() {
     });
 
     map.on('click', 'parcels-fill', function(e) {
+      // Parcels yield to buildings/clusters AND land covers (parcels are the bottom layer)
       const bbox = [
         [e.point.x - 15, e.point.y - 15],
         [e.point.x + 15, e.point.y + 15]
       ];
       const buildingFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-points'] });
-      if (buildingFeatures.length > 0) {
-        return; // Let the building click handler handle it
+      const clusterFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-clusters'] });
+      const landCoverFeatures = state.landCoverData && state.landCoverData.features
+        ? map.queryRenderedFeatures(bbox, { layers: ['landcovers-fill'] })
+        : [];
+      if (buildingFeatures.length > 0 || clusterFeatures.length > 0 || landCoverFeatures.length > 0) {
+        return; // Let the higher layer's click handler handle it
       }
       const props = e.features[0].properties;
       selectParcel(props.bbl_id);
     });
   }
 
-  // Click on map (not on a point or parcel) to deselect or identify Swisstopo features
+  // LAND COVER HANDLERS
+  if (state.landCoverData && state.landCoverData.features) {
+    map.on('mouseenter', 'landcovers-fill', function(e) {
+      map.getCanvas().style.cursor = 'pointer';
+      if (e.features.length > 0) {
+        map.setFilter('landcovers-highlight', ['==', ['get', 'objectid'], e.features[0].properties.objectid]);
+      }
+    });
+
+    map.on('mouseleave', 'landcovers-fill', function() {
+      map.getCanvas().style.cursor = '';
+      map.setFilter('landcovers-highlight', ['==', ['get', 'objectid'], -1]);
+    });
+
+    map.on('click', 'landcovers-fill', function(e) {
+      // Land covers yield only to buildings/clusters (not parcels — land covers are above parcels)
+      var bbox = [[e.point.x - 15, e.point.y - 15], [e.point.x + 15, e.point.y + 15]];
+      var buildingFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-points'] });
+      var clusterFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-clusters'] });
+      if (buildingFeatures.length > 0 || clusterFeatures.length > 0) {
+        return;
+      }
+      selectLandCover(e.features[0].properties.objectid);
+    });
+  }
+
+  // Click on map (not on a feature) to deselect or identify Swisstopo features
   map.on('click', function(e) {
+    const clusterFeatures = map.queryRenderedFeatures(e.point, { layers: ['buildings-clusters'] });
+    if (clusterFeatures.length > 0) return;
+
     const pointFeatures = map.queryRenderedFeatures(e.point, { layers: ['buildings-points'] });
     const parcelFeatures = state.parcelData && state.parcelData.features
       ? map.queryRenderedFeatures(e.point, { layers: ['parcels-fill'] })
       : [];
-    if (pointFeatures.length === 0 && parcelFeatures.length === 0) {
+    const landCoverFeatures = state.landCoverData && state.landCoverData.features
+      ? map.queryRenderedFeatures(e.point, { layers: ['landcovers-fill'] })
+      : [];
+    if (pointFeatures.length === 0 && parcelFeatures.length === 0 && landCoverFeatures.length === 0) {
       state.selectedBuildingId = null;
       state.selectedParcelId = null;
+      state.selectedLandCoverId = null;
       updateSelectedBuilding();
       updateSelectedParcel();
+      updateSelectedLandCover();
       updateUrlWithSelection();
       document.getElementById('info-panel').classList.remove('show');
 
@@ -423,23 +686,23 @@ function addMapLayers() {
     updateMapFilter();
   }
 
-  // Select building or parcel from URL parameter if present
+  // Select building, parcel, or land cover from URL parameter if present
   const urlParams = new URLSearchParams(window.location.search);
   const urlBuildingId = urlParams.get('id');
   const urlParcelId = urlParams.get('parcelId');
+  const urlLandCoverId = urlParams.get('landCoverId');
   if (urlBuildingId) {
-    const building = state.buildingsData.features.find(function(f) {
-      return f.properties.bbl_id === urlBuildingId;
-    });
-    if (building) {
+    if (state.buildingIndex.has(urlBuildingId)) {
       selectBuilding(urlBuildingId, true);
     }
-  } else if (urlParcelId && state.parcelData && state.parcelData.features) {
-    const parcel = state.parcelData.features.find(function(f) {
-      return f.properties.bbl_id === urlParcelId;
-    });
-    if (parcel) {
+  } else if (urlParcelId) {
+    if (state.parcelIndex.has(urlParcelId)) {
       selectParcel(urlParcelId, true);
+    }
+  } else if (urlLandCoverId) {
+    var lcId = parseInt(urlLandCoverId, 10);
+    if (state.landCoverIndex.has(lcId)) {
+      selectLandCover(lcId, true);
     }
   }
 
@@ -456,9 +719,7 @@ function addMapLayers() {
 function selectBuilding(buildingId, flyToBuilding) {
   if (flyToBuilding === undefined) flyToBuilding = false;
 
-  const building = state.buildingsData.features.find(function(f) {
-    return f.properties.bbl_id === buildingId;
-  });
+  const building = state.buildingIndex.get(buildingId);
   if (!building) return;
 
   const props = building.properties;
@@ -466,11 +727,13 @@ function selectBuilding(buildingId, flyToBuilding) {
   const baujahr = props.bbl_bjahr || '\u2014';
   const statusClass = getStatusClassName(props.bbl_stat);
 
-  // Update selected IDs (clear parcel selection)
+  // Update selected IDs (clear parcel and land cover selection)
   state.selectedBuildingId = buildingId;
   state.selectedParcelId = null;
+  state.selectedLandCoverId = null;
   updateSelectedBuilding();
   updateSelectedParcel();
+  updateSelectedLandCover();
   updateUrlWithSelection();
 
   // Update header title
@@ -519,11 +782,12 @@ function selectBuilding(buildingId, flyToBuilding) {
 
 function updateSelectedBuilding() {
   const map = state.map;
+  const id = state.selectedBuildingId || '';
   if (map && map.getLayer('buildings-selected')) {
-    map.setFilter('buildings-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
+    map.setFilter('buildings-selected', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], id]]);
   }
   if (map && map.getLayer('buildings-selected-pulse')) {
-    map.setFilter('buildings-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
+    map.setFilter('buildings-selected-pulse', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], id]]);
   }
   // Start or stop pulse animation based on selection
   if (state.selectedBuildingId) {
@@ -547,6 +811,11 @@ function updateUrlWithSelection() {
   } else {
     url.searchParams.delete('parcelId');
   }
+  if (state.selectedLandCoverId != null) {
+    url.searchParams.set('landCoverId', state.selectedLandCoverId);
+  } else {
+    url.searchParams.delete('landCoverId');
+  }
   window.history.replaceState({}, '', url);
 }
 
@@ -566,9 +835,7 @@ function getPolygonCentroid(coordinates) {
 function selectParcel(parcelId, flyToParcel) {
   if (flyToParcel === undefined) flyToParcel = false;
 
-  const parcel = state.parcelData.features.find(function(f) {
-    return f.properties.bbl_id === parcelId;
-  });
+  const parcel = state.parcelIndex.get(parcelId);
   if (!parcel) return;
 
   const props = parcel.properties;
@@ -576,11 +843,13 @@ function selectParcel(parcelId, flyToParcel) {
   // Format area with thousand separators
   const formattedArea = Number(props.larea_gsf || 0).toLocaleString('de-CH');
 
-  // Update selected IDs (clear building selection)
+  // Update selected IDs (clear building and land cover selection)
   state.selectedParcelId = parcelId;
   state.selectedBuildingId = null;
+  state.selectedLandCoverId = null;
   updateSelectedBuilding();
   updateSelectedParcel();
+  updateSelectedLandCover();
   updateUrlWithSelection();
 
   // Update header title
@@ -622,6 +891,64 @@ function updateSelectedParcel() {
   }
   if (map && map.getLayer('parcels-selected-outline')) {
     map.setFilter('parcels-selected-outline', ['==', ['get', 'bbl_id'], state.selectedParcelId || '']);
+  }
+}
+
+// ===== LAND COVER SELECTION =====
+
+function selectLandCover(objectid, flyToLandCover) {
+  if (flyToLandCover === undefined) flyToLandCover = false;
+
+  var lc = state.landCoverIndex.get(objectid);
+  if (!lc) return;
+
+  var props = lc.properties;
+
+  // Update selected IDs (clear building and parcel selection)
+  state.selectedLandCoverId = objectid;
+  state.selectedBuildingId = null;
+  state.selectedParcelId = null;
+  updateSelectedBuilding();
+  updateSelectedParcel();
+  updateSelectedLandCover();
+  updateUrlWithSelection();
+
+  // Update header title
+  document.getElementById('info-header-title').textContent = t('info.title.landcover');
+
+  // Hide preview image
+  document.getElementById('info-preview-image').style.display = 'none';
+
+  var lcArea = props.lc_area != null ? Number(props.lc_area).toLocaleString('de-CH') + ' m\u00B2' : '\u2014';
+
+  var infoHtml =
+    '<div class="info-row"><span class="info-label">' + t('info.label.parcel_id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id) + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.type') + '</span><span class="info-value">' + escapeHtml(props.av_type || '\u2014') + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.area') + '</span><span class="info-value">' + lcArea + '</span></div>' +
+    (props.geb_id ? '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.building_id') + '</span><span class="info-value">' + escapeHtml(props.geb_id) + '</span></div>' : '') +
+    (props.av_egid ? '<div class="info-row info-row-secondary"><span class="info-label">EGID</span><span class="info-value">' + escapeHtml(props.av_egid) + '</span></div>' : '') +
+    '<div class="info-row info-row-secondary"><span class="info-label">EGRID</span><span class="info-value">' + escapeHtml(props.av_egrid || '\u2014') + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">AV Status</span><span class="info-value">' + escapeHtml(props.av_stat || '\u2014') + '</span></div>';
+
+  document.getElementById('info-body').innerHTML = infoHtml;
+  document.getElementById('info-panel').classList.add('show');
+
+  syncTableToLandCover(objectid);
+
+  if (state.map && flyToLandCover && lc.geometry && lc.geometry.coordinates) {
+    var center = getPolygonCentroid(lc.geometry.coordinates);
+    state.map.flyTo({ center: center, zoom: 17 });
+  }
+}
+
+function updateSelectedLandCover() {
+  var map = state.map;
+  var id = state.selectedLandCoverId != null ? state.selectedLandCoverId : -1;
+  if (map && map.getLayer('landcovers-selected')) {
+    map.setFilter('landcovers-selected', ['==', ['get', 'objectid'], id]);
+  }
+  if (map && map.getLayer('landcovers-selected-outline')) {
+    map.setFilter('landcovers-selected-outline', ['==', ['get', 'objectid'], id]);
   }
 }
 
@@ -702,10 +1029,10 @@ function initStyleSwitcher() {
       applyFilters();
       state.skipFilterZoom = false;
 
-      // Restore selected building highlight
+      // Restore selected building highlight (cluster-aware filters)
       if (state.selectedBuildingId && state.map.getLayer('buildings-selected')) {
-        state.map.setFilter('buildings-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
-        state.map.setFilter('buildings-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
+        state.map.setFilter('buildings-selected', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], state.selectedBuildingId]]);
+        state.map.setFilter('buildings-selected-pulse', ['all', ['!', ['has', 'point_count']], ['==', ['get', 'bbl_id'], state.selectedBuildingId]]);
         startPulseAnimation();
       }
 
@@ -714,6 +1041,17 @@ function initStyleSwitcher() {
         state.map.setFilter('parcels-selected', ['==', ['get', 'bbl_id'], state.selectedParcelId]);
         state.map.setFilter('parcels-selected-outline', ['==', ['get', 'bbl_id'], state.selectedParcelId]);
       }
+
+      // Restore selected land cover highlight
+      if (state.selectedLandCoverId != null && state.map.getLayer('landcovers-selected')) {
+        state.map.setFilter('landcovers-selected', ['==', ['get', 'objectid'], state.selectedLandCoverId]);
+        state.map.setFilter('landcovers-selected-outline', ['==', ['get', 'objectid'], state.selectedLandCoverId]);
+      }
+    }
+
+    // Restore 3D buildings if active
+    if (state.is3D) {
+      show3DBuildings();
     }
 
     // Re-add Swisstopo layers that were active before style change
@@ -923,8 +1261,10 @@ export {
   addMapLayers,
   selectBuilding,
   selectParcel,
+  selectLandCover,
   updateSelectedBuilding,
   updateSelectedParcel,
+  updateSelectedLandCover,
   updateUrlWithSelection,
   getPolygonCentroid,
   initStyleSwitcher,

@@ -1,5 +1,14 @@
 // Utility functions
 
+// Cached Intl.NumberFormat instances (construction is expensive)
+const chfFormatter = new Intl.NumberFormat('de-CH', {
+  style: 'currency',
+  currency: 'CHF',
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 0
+});
+const deChNumberFormatter = new Intl.NumberFormat('de-CH');
+
 export function escapeHtml(text) {
   if (text == null) return '';
   return String(text)
@@ -70,12 +79,7 @@ export function formatDate(isoDate) {
 
 export function formatCurrency(amount) {
   if (amount == null) return '\u2014';
-  return new Intl.NumberFormat('de-CH', {
-    style: 'currency',
-    currency: 'CHF',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0
-  }).format(amount);
+  return chfFormatter.format(amount);
 }
 
 export function formatCurrencyWithUnit(amount, einheit) {
@@ -85,6 +89,7 @@ export function formatCurrencyWithUnit(amount, einheit) {
     const parts = einheit.split('/');
     if (parts.length > 0) currency = parts[0].trim();
   }
+  if (currency === 'CHF') return chfFormatter.format(amount);
   try {
     return new Intl.NumberFormat('de-CH', {
       style: 'currency',
@@ -93,8 +98,7 @@ export function formatCurrencyWithUnit(amount, einheit) {
       maximumFractionDigits: 0
     }).format(amount);
   } catch (e) {
-    // Fallback if currency code is invalid
-    return Number(amount).toLocaleString('de-CH') + ' ' + currency;
+    return deChNumberFormatter.format(Number(amount)) + ' ' + currency;
   }
 }
 

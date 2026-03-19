@@ -21,7 +21,7 @@ export function t(key, params) {
   }
   if (params) {
     Object.keys(params).forEach(function(param) {
-      value = value.replace(new RegExp('\\{' + param + '\\}', 'g'), params[param]);
+      value = value.split('{' + param + '}').join(params[param]);
     });
   }
   return value;
@@ -136,24 +136,21 @@ function loadAllTranslations() {
 //   data-i18n-aria-label="key"     → sets aria-label
 //   data-i18n-alt="key"            → sets alt
 function applyTranslationsToDOM() {
-  document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    const key = el.getAttribute('data-i18n');
+  // Single querySelectorAll pass instead of 5 separate queries
+  document.querySelectorAll('[data-i18n],[data-i18n-placeholder],[data-i18n-title],[data-i18n-aria-label],[data-i18n-alt]').forEach(function(el) {
+    var key = el.getAttribute('data-i18n');
     if (key) el.textContent = t(key);
-  });
-  document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-    const key = el.getAttribute('data-i18n-placeholder');
+
+    key = el.getAttribute('data-i18n-placeholder');
     if (key) el.placeholder = t(key);
-  });
-  document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
-    const key = el.getAttribute('data-i18n-title');
+
+    key = el.getAttribute('data-i18n-title');
     if (key) el.title = t(key);
-  });
-  document.querySelectorAll('[data-i18n-aria-label]').forEach(function(el) {
-    const key = el.getAttribute('data-i18n-aria-label');
+
+    key = el.getAttribute('data-i18n-aria-label');
     if (key) el.setAttribute('aria-label', t(key));
-  });
-  document.querySelectorAll('[data-i18n-alt]').forEach(function(el) {
-    const key = el.getAttribute('data-i18n-alt');
+
+    key = el.getAttribute('data-i18n-alt');
     if (key) el.alt = t(key);
   });
 }

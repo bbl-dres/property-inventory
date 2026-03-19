@@ -61,9 +61,7 @@ export function getExportData() {
   } else if (selection === 'all') {
     return state.buildingsData ? state.buildingsData.features : [];
   } else if (selection === 'selected' && state.selectedBuildingId) {
-    const building = state.buildingsData.features.find(function(b) {
-      return b.properties.bbl_id === state.selectedBuildingId;
-    });
+    const building = state.buildingIndex.get(state.selectedBuildingId);
     return building ? [building] : [];
   }
   return [];

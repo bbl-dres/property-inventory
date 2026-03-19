@@ -3,37 +3,24 @@
 import { state } from './state.js';
 import { placeholderImages } from './config.js';
 import { formatCHF, formatArea, formatVolume, formatNum, escapeHtml, downloadBlob, getStatusClassName } from './utils.js';
-import { selectBuilding, selectParcel } from './map.js';
+import { selectBuilding, selectParcel, selectLandCover } from './map.js';
 import { showDetailView, showToast } from './ui.js';
 import { t, onLangChange } from './i18n.js';
 
 // ===== BUILDING TABLE COLUMN DEFINITIONS =====
 const buildingColumns = [
-  // Stammdaten
+  // Sorted to match DATAMODEL.json — Internal Master Data
   { field: 'bbl_id', label: 'ID' },
+  { field: 'bbl_buch', label: 'Buchungskreis' },
+  { field: 'bbl_we', label: 'WE' },
+  { field: 'bbl_obj', label: 'Teilobjekt' },
   { field: 'bbl_bez', label: 'Bezeichnung' },
   { field: 'bbl_stat', label: 'Status', format: function(v) {
     if (!v) return '\u2013';
     const cls = getStatusClassName(v);
     return '<span class="badge status-badge ' + cls + '">' + v + '</span>';
   }},
-  { field: 'bbl_buch', label: 'Buchungskreis' },
-  { field: 'bbl_we', label: 'WE' },
-  { field: 'bbl_tobj', label: 'Teilobjekt' },
-  { field: 'bbl_gbda1', label: 'Objektart 1' },
-  { field: 'bbl_gbda2', label: 'Objektart 2' },
-  { field: 'bbl_eigen', label: 'Eigentum' },
-  { field: 'bbl_ostr', label: 'Strategie' },
-  { field: 'bbl_mietm', label: 'Mietmodell' },
-  { field: 'bbl_port', label: 'Teilportfolio' },
-  { field: 'bbl_port2', label: 'Portfoliogruppe' },
-  { field: 'bbl_bjahr', label: 'Baujahr' },
-  { field: 'bbl_vjahr', label: 'Verkaufsjahr' },
-  { field: 'bbl_awrt', label: 'Anschaffungswert', format: function(v) { return v != null ? formatCHF(v) : '\u2013'; } },
-  { field: 'bbl_bwrt', label: 'Buchwert', format: function(v) { return v != null ? formatCHF(v) : '\u2013'; } },
-  { field: 'bbl_ovtw', label: 'Verantwortlich' },
-  { field: 'bbl_pvtw', label: 'Portfoliomanager' },
-  // Adresse
+  // Address
   { field: 'adr_land', label: 'Land' },
   { field: 'adr_reg', label: 'Region' },
   { field: 'adr_ort', label: 'Ort' },
@@ -41,28 +28,46 @@ const buildingColumns = [
   { field: 'adr_str', label: 'Strasse' },
   { field: 'adr_hsnr', label: 'Hausnr.' },
   { field: 'adr_conct', label: 'Adresse' },
-  // Koordinaten
+  // Coordinates
   { field: 'wgs84_lat', label: 'Lat' },
   { field: 'wgs84_lon', label: 'Lon' },
   { field: 'lv95_e', label: 'LV95 E', format: function(v) { return v != null ? formatNum(v, 0) : '\u2013'; } },
   { field: 'lv95_n', label: 'LV95 N', format: function(v) { return v != null ? formatNum(v, 0) : '\u2013'; } },
-  // Amtliche Vermessung
+  { field: 'egm_elev', label: 'H\u00F6he' },
+  // Internal Master Data 2
+  { field: 'bbl_eigen', label: 'Eigentum' },
+  { field: 'bbl_ostr', label: 'Strategie' },
+  { field: 'bbl_mietm', label: 'Mietmodell' },
+  { field: 'bbl_bjahr', label: 'Baujahr' },
+  { field: 'bbl_vjahr', label: 'Verkaufsjahr' },
+  { field: 'bbl_port', label: 'Teilportfolio' },
+  { field: 'bbl_port2', label: 'Portfoliogruppe' },
+  { field: 'bbl_awrt', label: 'Anschaffungswert', format: function(v) { return v != null ? formatCHF(v) : '\u2013'; } },
+  { field: 'bbl_bwrt', label: 'Buchwert', format: function(v) { return v != null ? formatCHF(v) : '\u2013'; } },
+  { field: 'bbl_gbda1', label: 'Objektart 1' },
+  { field: 'bbl_gbda2', label: 'Objektart 2' },
+  { field: 'bbl_ovtw', label: 'Verantwortlich' },
+  { field: 'bbl_pvtw', label: 'Portfoliomanager' },
+  // Official Survey
   { field: 'av_egid', label: 'EGID' },
   { field: 'av_egrid', label: 'EGRID' },
   { field: 'bfs_gem', label: 'Gemeinde' },
   { field: 'bfs_gemnr', label: 'Gemeinde Nr.' },
-  // Bauzone
+  // Zoning
   { field: 'av_zbez', label: 'Bauzone' },
   { field: 'av_znut', label: 'Nutzung' },
-  // Denkmalschutz
+  // Heritage Protection
   { field: 'bbl_hist', label: 'Hist. Ausstattung' },
   { field: 'bbl_arch', label: 'Archivw\u00FCrdigkeit' },
   { field: 'kgs_kat', label: 'KGS Kat.' },
   { field: 'kgs_nr', label: 'KGS Nr.' },
-  // Fl\u00E4chen
+  // Other (objectid)
+  { field: 'objectid', label: 'OBJECTID' },
+  // Dimensions - SIA 416
   { field: 'garea_gf', label: 'GF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_gfo', label: 'GF oberird.', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_gfu', label: 'GF unterird.', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
+  { field: 'garea_acu', label: 'GF Genauigkeit' },
   { field: 'garea_ngf', label: 'NGF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_nf', label: 'NF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_hnf', label: 'HNF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
@@ -70,20 +75,24 @@ const buildingColumns = [
   { field: 'garea_ff', label: 'FF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_vf', label: 'VF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'garea_vmf', label: 'VMF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
+  // Dimensions - SIA 380
   { field: 'garea_ebf', label: 'EBF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
-  // Volumen / Geschosse
+  // Volumes
   { field: 'gvol_gv', label: 'GV', format: function(v) { return v != null ? formatVolume(v) : '\u2013'; } },
   { field: 'gvol_gvo', label: 'GV oberird.', format: function(v) { return v != null ? formatVolume(v) : '\u2013'; } },
   { field: 'gvol_gvu', label: 'GV unterird.', format: function(v) { return v != null ? formatVolume(v) : '\u2013'; } },
+  { field: 'gvol_acu', label: 'GV Genauigkeit' },
+  // Floors
   { field: 'gastw', label: 'Geschosse' },
   { field: 'gastw_og', label: 'Gesch. oberird.' },
   { field: 'gastw_ug', label: 'Gesch. unterird.' },
-  // Grundst\u00FCck
+  { field: 'gastw_acu', label: 'Gesch. Genauigkeit' },
+  // Land areas
   { field: 'larea_ggf', label: 'GGF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'larea_gsf', label: 'GSF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
   { field: 'larea_uf', label: 'UF', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
-  // Sonstiges
-  { field: 'objectid', label: 'OBJECTID' },
+  { field: 'larea_acu', label: 'GSF Genauigkeit' },
+  // Other
   { field: 'etl_ts', label: 'ETL' },
 ];
 
@@ -128,6 +137,8 @@ function filterColumnsList() {
   if (colSearchClear) colSearchClear.hidden = !term;
   const activeList = state.activeTableTab === 'parcels'
     ? document.getElementById('parcel-columns-list')
+    : state.activeTableTab === 'landcovers'
+    ? document.getElementById('landcover-columns-list')
     : document.getElementById('columns-list');
   if (!activeList) return;
   activeList.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
@@ -344,9 +355,32 @@ export function initDelegatedListeners() {
     });
   }
 
-  // Gallery: click to show detail
+  // Gallery: click to show detail or paginate (delegated so no per-render re-attachment)
   if (galleryGrid) {
     galleryGrid.addEventListener('click', function(e) {
+      // Pagination buttons
+      if (e.target.closest('.gallery-prev-btn')) {
+        e.stopPropagation();
+        if (galleryCurrentPage > 1) {
+          galleryCurrentPage--;
+          renderGalleryView();
+          document.getElementById('gallery-view').scrollTo(0, 0);
+        }
+        return;
+      }
+      if (e.target.closest('.gallery-next-btn')) {
+        e.stopPropagation();
+        const dataToRender = state.filteredData || state.buildingsData;
+        const totalPages = Math.ceil(dataToRender.features.length / GALLERY_PAGE_SIZE);
+        if (galleryCurrentPage < totalPages) {
+          galleryCurrentPage++;
+          renderGalleryView();
+          document.getElementById('gallery-view').scrollTo(0, 0);
+        }
+        return;
+      }
+
+      // Card click
       const card = e.target.closest('.gallery-card[data-id]');
       if (!card) return;
       showDetailView(card.dataset.id);
@@ -373,6 +407,26 @@ export function initDelegatedListeners() {
     parcelsBody.addEventListener('keydown', function(e) {
       if (e.key === 'Enter' || e.key === ' ') {
         const row = e.target.closest('tr[data-parcel-id]');
+        if (!row) return;
+        e.preventDefault();
+        row.click();
+      }
+    });
+  }
+
+  // Land covers table: click to select & zoom
+  var landCoversBody = document.getElementById('landcovers-body');
+  if (landCoversBody) {
+    landCoversBody.addEventListener('click', function(e) {
+      var row = e.target.closest('tr[data-landcover-id]');
+      if (!row) return;
+      landCoversBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+      row.classList.add('row-active');
+      selectLandCover(parseInt(row.dataset.landcoverId, 10), true);
+    });
+    landCoversBody.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' || e.key === ' ') {
+        var row = e.target.closest('tr[data-landcover-id]');
         if (!row) return;
         e.preventDefault();
         row.click();
@@ -421,6 +475,8 @@ function toggleAllColumns(showAll) {
   // Only toggle columns for the currently visible list
   const activeList = state.activeTableTab === 'parcels'
     ? document.getElementById('parcel-columns-list')
+    : state.activeTableTab === 'landcovers'
+    ? document.getElementById('landcover-columns-list')
     : document.getElementById('columns-list');
   if (!activeList) return;
 
@@ -437,6 +493,10 @@ export function handleListSearch(query) {
     state.parcelSearchTerm = term;
     state.parcelCurrentPage = 1;
     renderParcelsView();
+  } else if (state.activeTableTab === 'landcovers') {
+    state.landCoverSearchTerm = term;
+    state.landCoverCurrentPage = 1;
+    renderLandCoversView();
   } else {
     state.listSearchTerm = term;
     state.listCurrentPage = 1;
@@ -500,9 +560,10 @@ function quickExportCSV(data) {
 }
 
 function quickExportGeoJSON(data) {
+  // No need to deep-clone — we serialize directly to JSON for download
   const featureCollection = {
     type: 'FeatureCollection',
-    features: data.map(function(f) { return JSON.parse(JSON.stringify(f)); })
+    features: data
   };
   const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
   downloadBlob(blob, 'bbl-portfolio-export.geojson');
@@ -605,29 +666,37 @@ export function switchTableTab(tabName) {
   // Show/hide tab content
   document.getElementById('buildings-table-content').classList.toggle('active', tabName === 'buildings');
   document.getElementById('parcels-table-content').classList.toggle('active', tabName === 'parcels');
+  var lcContent = document.getElementById('landcovers-table-content');
+  if (lcContent) lcContent.classList.toggle('active', tabName === 'landcovers');
 
   // Update search placeholder
   const searchInput = document.getElementById('list-search-input');
   if (searchInput) {
-    searchInput.placeholder = tabName === 'buildings' ? t('table.search.buildings') : t('table.search.parcels');
+    var placeholderKey = tabName === 'parcels' ? 'table.search.parcels'
+      : tabName === 'landcovers' ? 'table.search.landcovers'
+      : 'table.search.buildings';
+    searchInput.placeholder = t(placeholderKey);
     searchInput.value = '';
   }
 
   // Clear search terms
   state.listSearchTerm = '';
   state.parcelSearchTerm = '';
+  state.landCoverSearchTerm = '';
 
   // Switch columns dropdown to match active tab
   const buildingCols = document.getElementById('columns-list');
   const parcelCols = document.getElementById('parcel-columns-list');
-  if (buildingCols && parcelCols) {
-    buildingCols.style.display = tabName === 'buildings' ? '' : 'none';
-    parcelCols.style.display = tabName === 'parcels' ? '' : 'none';
-  }
+  const lcCols = document.getElementById('landcover-columns-list');
+  if (buildingCols) buildingCols.style.display = tabName === 'buildings' ? '' : 'none';
+  if (parcelCols) parcelCols.style.display = tabName === 'parcels' ? '' : 'none';
+  if (lcCols) lcCols.style.display = tabName === 'landcovers' ? '' : 'none';
 
   // Render the active table
   if (tabName === 'parcels') {
     renderParcelsView();
+  } else if (tabName === 'landcovers') {
+    renderLandCoversView();
   } else {
     renderListView();
   }
@@ -648,7 +717,7 @@ export function initTableTabs() {
   // Restore table tab from URL
   const urlParams = new URLSearchParams(window.location.search);
   const savedTab = urlParams.get('tableTab');
-  if (savedTab === 'parcels' || savedTab === 'buildings') {
+  if (savedTab === 'parcels' || savedTab === 'buildings' || savedTab === 'landcovers') {
     switchTableTab(savedTab);
   }
 }
@@ -865,6 +934,181 @@ export function initParcelsTable() {
   }
 }
 
+// ===== LAND COVERS TABLE =====
+
+const landCoverColumns = [
+  // Sorted to match DATAMODEL.json
+  { field: 'bbl_id', label: 'Grundstück ID' },
+  { field: 'geb_id', label: 'Gebäude ID' },
+  { field: 'av_type', label: 'Typ' },
+  { field: 'lc_area', label: 'Fläche', format: function(v) { return v != null ? formatArea(v) : '\u2013'; } },
+  { field: 'av_stat', label: 'AV Status' },
+  { field: 'av_egid', label: 'EGID' },
+  { field: 'av_egrid', label: 'EGRID' },
+  { field: 'wgs84_lat', label: 'Lat' },
+  { field: 'wgs84_lon', label: 'Lon' },
+  { field: 'lv95_e', label: 'LV95 E', format: function(v) { return v != null ? formatNum(v, 0) : '\u2013'; } },
+  { field: 'lv95_n', label: 'LV95 N', format: function(v) { return v != null ? formatNum(v, 0) : '\u2013'; } },
+  { field: 'fid', label: 'FID' },
+  { field: 'fid_src', label: 'FID Quelle' },
+  { field: 'objectid', label: 'OBJECTID' },
+  { field: 'etl_ts', label: 'ETL' }
+];
+
+export function renderLandCoversView() {
+  if (!state.landCoverData) return;
+
+  var dataToRender = state.landCoverData;
+
+  if (state.landCoverSearchTerm) {
+    dataToRender = {
+      type: dataToRender.type,
+      features: dataToRender.features.filter(function(feature) {
+        var props = feature.properties;
+        var searchableText = [
+          props.objectid,
+          props.bbl_id,
+          props.av_type,
+          props.av_stat,
+          props.av_egid,
+          props.av_egrid
+        ].join(' ').toLowerCase();
+        return searchableText.includes(state.landCoverSearchTerm);
+      })
+    };
+  }
+
+  var lcBody = document.getElementById('landcovers-body');
+  if (!lcBody) return;
+
+  if (dataToRender.features.length === 0) {
+    lcBody.innerHTML = '<tr><td colspan="13" style="text-align:center; padding:24px; color:var(--grey-500);">' + t('empty.landcovers') + '</td></tr>';
+    updateLandCoversPaginationInfo(1, 1, 0);
+    return;
+  }
+
+  var totalItems = dataToRender.features.length;
+  var totalPages = Math.ceil(totalItems / state.landCoverRowsPerPage);
+  if (state.landCoverCurrentPage > totalPages) state.landCoverCurrentPage = totalPages;
+  if (state.landCoverCurrentPage < 1) state.landCoverCurrentPage = 1;
+
+  var startIndex = (state.landCoverCurrentPage - 1) * state.landCoverRowsPerPage;
+  var endIndex = Math.min(startIndex + state.landCoverRowsPerPage, totalItems);
+  var paginatedFeatures = dataToRender.features.slice(startIndex, endIndex);
+
+  var html = '';
+  paginatedFeatures.forEach(function(feature) {
+    var props = feature.properties;
+    html += '<tr data-landcover-id="' + props.objectid + '" tabindex="0" role="row">';
+    landCoverColumns.forEach(function(col) {
+      var val = props[col.field];
+      var display = (val !== null && val !== undefined && val !== '') ? String(val) : '\u2013';
+      if (col.format) display = col.format(val, props);
+      html += '<td class="col-lc-' + col.field + '">' + display + '</td>';
+    });
+    html += '</tr>';
+  });
+
+  lcBody.innerHTML = html;
+  updateLandCoversPaginationInfo(state.landCoverCurrentPage, totalPages, totalItems);
+
+  // Re-apply column visibility
+  document.querySelectorAll('#landcover-columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
+    if (!cb.checked) {
+      var columnClass = cb.getAttribute('data-column');
+      document.querySelectorAll('.' + columnClass).forEach(function(cell) {
+        cell.style.display = 'none';
+      });
+    }
+  });
+}
+
+function updateLandCoversPaginationInfo(currentPage, totalPages, totalItems) {
+  var infoEl = document.getElementById('landcovers-pagination-info');
+  var pageInfoEl = document.getElementById('landcovers-page-info');
+  var prevBtn = document.getElementById('landcovers-prev-btn');
+  var nextBtn = document.getElementById('landcovers-next-btn');
+
+  if (infoEl) {
+    if (totalItems === 0) {
+      infoEl.textContent = t('pagination.landcovers.empty');
+    } else {
+      var s = (currentPage - 1) * state.landCoverRowsPerPage + 1;
+      var e = Math.min(currentPage * state.landCoverRowsPerPage, totalItems);
+      infoEl.textContent = t('pagination.landcovers.info', {start: s, end: e, total: totalItems});
+    }
+  }
+  if (pageInfoEl) {
+    pageInfoEl.textContent = totalItems === 0 ? '' : t('pagination.page', {current: currentPage, total: totalPages});
+  }
+  if (prevBtn) prevBtn.disabled = currentPage <= 1;
+  if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
+}
+
+export function initLandCoversTable() {
+  var rowsSelect = document.getElementById('landcovers-rows-per-page');
+  var prevBtn = document.getElementById('landcovers-prev-btn');
+  var nextBtn = document.getElementById('landcovers-next-btn');
+
+  if (rowsSelect) {
+    rowsSelect.addEventListener('change', function() {
+      state.landCoverRowsPerPage = parseInt(this.value, 10);
+      state.landCoverCurrentPage = 1;
+      renderLandCoversView();
+    });
+  }
+  if (prevBtn) {
+    prevBtn.addEventListener('click', function() {
+      if (state.landCoverCurrentPage > 1) {
+        state.landCoverCurrentPage--;
+        renderLandCoversView();
+      }
+    });
+  }
+  if (nextBtn) {
+    nextBtn.addEventListener('click', function() {
+      if (!state.landCoverData) return;
+      var totalPages = Math.ceil(state.landCoverData.features.length / state.landCoverRowsPerPage);
+      if (state.landCoverCurrentPage < totalPages) {
+        state.landCoverCurrentPage++;
+        renderLandCoversView();
+      }
+    });
+  }
+}
+
+export function syncTableToLandCover(objectid) {
+  if (!state.landCoverData) return;
+
+  if (state.activeTableTab !== 'landcovers') {
+    switchTableTab('landcovers');
+  }
+
+  var index = -1;
+  for (var i = 0; i < state.landCoverData.features.length; i++) {
+    if (state.landCoverData.features[i].properties.objectid === objectid) {
+      index = i;
+      break;
+    }
+  }
+  if (index === -1) return;
+
+  var targetPage = Math.floor(index / state.landCoverRowsPerPage) + 1;
+  if (state.landCoverCurrentPage !== targetPage) {
+    state.landCoverCurrentPage = targetPage;
+    renderLandCoversView();
+  }
+
+  var lcBody = document.getElementById('landcovers-body');
+  if (!lcBody) return;
+  lcBody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
+  var row = lcBody.querySelector('tr[data-landcover-id="' + objectid + '"]');
+  if (row) {
+    row.classList.add('row-active');
+    row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+}
+
 // ===== GALLERY VIEW =====
 
 const GALLERY_PAGE_SIZE = 48;
@@ -938,30 +1182,6 @@ export function renderGalleryView() {
   }
 
   galleryGrid.innerHTML = html;
-
-  // Attach pagination event listeners
-  const prevBtn = galleryGrid.querySelector('.gallery-prev-btn');
-  const nextBtn = galleryGrid.querySelector('.gallery-next-btn');
-  if (prevBtn) {
-    prevBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (galleryCurrentPage > 1) {
-        galleryCurrentPage--;
-        renderGalleryView();
-        document.getElementById('gallery-view').scrollTo(0, 0);
-      }
-    });
-  }
-  if (nextBtn) {
-    nextBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      if (galleryCurrentPage < totalPages) {
-        galleryCurrentPage++;
-        renderGalleryView();
-        document.getElementById('gallery-view').scrollTo(0, 0);
-      }
-    });
-  }
 }
 
 export function resetGalleryPage() {

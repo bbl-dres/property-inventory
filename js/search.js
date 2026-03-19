@@ -36,9 +36,7 @@ export function handleSearchClick(type, id, lat, lon, zoom, title) {
       state.searchMarker = null;
     }
 
-    // BUG FIX #11: use bbl_bez instead of non-existent name property
-    // BUG FIX #12: use function expression instead of arrow function
-    const b = state.buildingsData.features.find(function(f) { return f.properties.bbl_id === id; });
+    const b = state.buildingIndex.get(id);
     if (b) {
       _searchInput.value = b.properties.bbl_bez;
       _searchClearBtn.classList.add('visible');

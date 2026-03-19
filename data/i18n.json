@@ -677,7 +677,7 @@
     "fr": "Unité économique",
     "it": "Unità economica"
   },
-  "col.bbl_tobj": {
+  "col.bbl_obj": {
     "de": "Teilobjekt",
     "en": "Sub-object",
     "fr": "Sous-objet",
@@ -1751,6 +1751,12 @@
     "fr": "Contact",
     "it": "Contatto"
   },
+  "detail.section.location": {
+    "de": "Standort",
+    "en": "Location",
+    "fr": "Emplacement",
+    "it": "Posizione"
+  },
   "detail.section.contacts": {
     "de": "Kontakte",
     "en": "Contacts",
@@ -2116,5 +2122,107 @@
     "en": "Information could not be loaded.",
     "fr": "Les informations n'ont pas pu être chargées.",
     "it": "Le informazioni non sono state caricate."
+  },
+  "api.breadcrumb": {
+    "de": "API Dokumentation",
+    "en": "API Documentation",
+    "fr": "Documentation API",
+    "it": "Documentazione API"
+  },
+  "table.tab.landcovers": {
+    "de": "Bodenabdeckung",
+    "en": "Land Cover",
+    "fr": "Couverture du sol",
+    "it": "Copertura del suolo"
+  },
+  "table.search.landcovers": {
+    "de": "Bodenabdeckung durchsuchen...",
+    "en": "Search land cover...",
+    "fr": "Rechercher couverture du sol...",
+    "it": "Cerca copertura del suolo..."
+  },
+  "pagination.landcovers.info": {
+    "de": "{start}\u2013{end} von {total} Bodenabdeckungen",
+    "en": "{start}\u2013{end} of {total} land covers",
+    "fr": "{start}\u2013{end} de {total} couvertures",
+    "it": "{start}\u2013{end} di {total} coperture"
+  },
+  "pagination.landcovers.empty": {
+    "de": "Keine Bodenabdeckungen",
+    "en": "No land covers",
+    "fr": "Aucune couverture du sol",
+    "it": "Nessuna copertura del suolo"
+  },
+  "empty.landcovers": {
+    "de": "Keine Bodenabdeckungen gefunden",
+    "en": "No land covers found",
+    "fr": "Aucune couverture du sol trouvée",
+    "it": "Nessuna copertura del suolo trovata"
+  },
+  "info.title.landcover": {
+    "de": "Bodenabdeckung",
+    "en": "Land Cover",
+    "fr": "Couverture du sol",
+    "it": "Copertura del suolo"
+  },
+  "info.label.type": {
+    "de": "Typ",
+    "en": "Type",
+    "fr": "Type",
+    "it": "Tipo"
+  },
+  "col.lc.bbl_id": {
+    "de": "Grundstück ID",
+    "en": "Parcel ID",
+    "fr": "ID parcelle",
+    "it": "ID parcella"
+  },
+  "col.lc.geb_id": {
+    "de": "Gebäude ID",
+    "en": "Building ID",
+    "fr": "ID bâtiment",
+    "it": "ID edificio"
+  },
+  "col.lc.lc_area": {
+    "de": "Fläche",
+    "en": "Area",
+    "fr": "Surface",
+    "it": "Superficie"
+  },
+  "info.label.parcel_id": {
+    "de": "Grundstück ID",
+    "en": "Parcel ID",
+    "fr": "ID parcelle",
+    "it": "ID parcella"
+  },
+  "info.label.building_id": {
+    "de": "Gebäude ID",
+    "en": "Building ID",
+    "fr": "ID bâtiment",
+    "it": "ID edificio"
+  },
+  "col.lc.av_type": {
+    "de": "Typ",
+    "en": "Type",
+    "fr": "Type",
+    "it": "Tipo"
+  },
+  "col.lc.av_stat": {
+    "de": "AV Status",
+    "en": "AV Status",
+    "fr": "Statut MO",
+    "it": "Stato MU"
+  },
+  "col.lc.fid_src": {
+    "de": "FID Quelle",
+    "en": "FID Source",
+    "fr": "Source FID",
+    "it": "Fonte FID"
+  },
+  "accordion.layers.landcovers": {
+    "de": "Bodenabdeckung",
+    "en": "Land Cover",
+    "fr": "Couverture du sol",
+    "it": "Copertura del suolo"
   }
 }

@@ -103,6 +103,8 @@ export function addSwisstopoLayer(layerId, title, silent) {
           beforeLayer = identifyHighlightLayerId;
         } else if (state.map.getLayer('parcels-fill')) {
           beforeLayer = 'parcels-fill';
+        } else if (state.map.getLayer('buildings-clusters')) {
+          beforeLayer = 'buildings-clusters';
         } else if (state.map.getLayer('buildings-points')) {
           beforeLayer = 'buildings-points';
         }
@@ -262,8 +264,12 @@ export function readdSwisstopoLayers() {
       let beforeLayer = null;
       if (state.map.getLayer(identifyHighlightLayerId)) {
         beforeLayer = identifyHighlightLayerId;
+      } else if (state.map.getLayer('landcovers-fill')) {
+        beforeLayer = 'landcovers-fill';
       } else if (state.map.getLayer('parcels-fill')) {
         beforeLayer = 'parcels-fill';
+      } else if (state.map.getLayer('buildings-clusters')) {
+        beforeLayer = 'buildings-clusters';
       } else if (state.map.getLayer('buildings-points')) {
         beforeLayer = 'buildings-points';
       }
@@ -332,10 +338,14 @@ export function initIdentifyHighlightLayer() {
       data: { type: 'FeatureCollection', features: [] }
     });
 
-    // Find the layer to insert before (should be above Swisstopo layers, below parcels/points)
+    // Find the layer to insert before (should be above Swisstopo layers, below landcovers/parcels/points)
     let beforeLayer = null;
-    if (state.map.getLayer('parcels-fill')) {
+    if (state.map.getLayer('landcovers-fill')) {
+      beforeLayer = 'landcovers-fill';
+    } else if (state.map.getLayer('parcels-fill')) {
       beforeLayer = 'parcels-fill';
+    } else if (state.map.getLayer('buildings-clusters')) {
+      beforeLayer = 'buildings-clusters';
     } else if (state.map.getLayer('buildings-points')) {
       beforeLayer = 'buildings-points';
     }
@@ -587,6 +597,14 @@ const internalLayerMeta = {
     geometryType: 'Polygon',
     format: 'GeoJSON',
     dataKey: 'parcelData'
+  },
+  landcovers: {
+    title: 'Bodenabdeckung (Bundesamt für Bauten und Logistik BBL)',
+    description: 'Gebäudefussabdrücke und Bodenabdeckungsflächen aus der amtlichen Vermessung der Schweiz. Verknüpft mit Gebäuden und Grundstücken über EGID/EGRID.',
+    source: 'BBL / Amtliche Vermessung',
+    geometryType: 'Polygon',
+    format: 'GeoJSON',
+    dataKey: 'landCoverData'
   }
 };
 

@@ -3,13 +3,13 @@
 import { state } from './state.js';
 import { escapeHtml } from './utils.js';
 import { setLang, getLang, t } from './i18n.js';
-import { renderListView, renderGalleryView, renderParcelsView } from './list.js';
+import { renderListView, renderGalleryView, renderParcelsView, renderLandCoversView } from './list.js';
 import { populateDetailView, renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
 import { updateMapFilter } from './filters.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
 import { updateShareLink, getShareUrl, updateExportCount } from './export.js';
 import { loadGeokatalog } from './swisstopo.js';
-import { selectBuilding, selectParcel, updateSelectedBuilding, updateSelectedParcel, updateUrlWithSelection, getPolygonCentroid } from './map.js';
+import { selectBuilding, selectParcel, selectLandCover, updateSelectedBuilding, updateSelectedParcel, updateSelectedLandCover, updateUrlWithSelection, getPolygonCentroid } from './map.js';
 
 // ===== TOAST NOTIFICATION SYSTEM =====
 
@@ -163,7 +163,7 @@ export function setTabInURL(tab) {
 // ===== VIEW SWITCHING =====
 export function switchView(view) {
   if (view !== 'detail') {
-    state.previousView = state.currentView !== 'detail' ? state.currentView : state.previousView;
+    state.previousView = (state.currentView !== 'detail' && state.currentView !== 'api-docs') ? state.currentView : state.previousView;
   }
   state.currentView = view;
   setViewInURL(view);
@@ -214,10 +214,11 @@ export function switchView(view) {
     state.galleryViewDirty = false;
   }
 
-  // Re-render list/parcels views if dirty when switching to map
+  // Re-render table views if dirty when switching to map
   if (view === 'map' && state.listViewDirty && state.tableOpen) {
     renderListView();
     renderParcelsView();
+    renderLandCoversView();
     state.listViewDirty = false;
   }
 }
@@ -229,10 +230,8 @@ export function showDetailView(buildingId, tab) {
   // Default tab to overview if not specified
   if (!tab) tab = 'overview';
 
-  // Find building by ID
-  const building = state.buildingsData.features.find(function(f) {
-    return f.properties.bbl_id === buildingId;
-  });
+  // Find building by ID (O(1) index lookup)
+  const building = state.buildingIndex.get(buildingId);
 
   if (!building) {
     console.error('Building not found:', buildingId);
@@ -361,18 +360,34 @@ function initBackButton() {
 }
 
 // ===== FOOTER API LINK =====
+function showApiDocsView() {
+  state.previousView = state.currentView !== 'detail' ? state.currentView : state.previousView;
+  state.currentView = 'api-docs';
+  document.getElementById('map-view').classList.remove('active');
+  document.getElementById('gallery-view').classList.remove('active');
+  document.getElementById('detail-view').classList.remove('active');
+  document.getElementById('api-docs-view').classList.add('active');
+  document.body.classList.remove('detail-active');
+  document.querySelectorAll('.view-toggle-btn').forEach(function(btn) { btn.classList.remove('active'); });
+  var styleSwitcher = document.getElementById('style-switcher');
+  if (styleSwitcher) styleSwitcher.classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+
 function initFooterApiLink() {
-  const apiLink = document.getElementById('footer-api-link');
+  var apiLink = document.getElementById('footer-api-link');
   if (apiLink) {
     apiLink.addEventListener('click', function(e) {
       e.preventDefault();
-      document.getElementById('map-view').classList.remove('active');
-      document.getElementById('gallery-view').classList.remove('active');
-      document.getElementById('detail-view').classList.remove('active');
-      document.getElementById('api-docs-view').classList.add('active');
-      document.body.classList.remove('detail-active');
-      document.querySelectorAll('.view-toggle-btn').forEach(function(btn) { btn.classList.remove('active'); });
-      window.scrollTo(0, 0);
+      showApiDocsView();
+    });
+  }
+
+  // Back button in API docs header
+  var backBtn = document.getElementById('btn-back-api');
+  if (backBtn) {
+    backBtn.addEventListener('click', function() {
+      switchView(state.previousView || 'map');
     });
   }
 }
@@ -507,13 +522,14 @@ function initMenuToggle() {
     updateMenuTogglePositionDebounced();
   });
 
-  // BUG FIX #22: The MutationObserver fires on every attribute/child/subtree
-  // change in the accordion panel, which can be very frequent. Using a more
-  // aggressive debounce (50ms) to batch rapid mutations into a single layout pass.
+  // BUG FIX #22: Replaced broad subtree MutationObserver with a narrow observer
+  // that only watches direct class/style changes on the accordion panel itself.
+  // Accordion open/close and Swisstopo layer additions trigger explicit calls
+  // to updateMenuTogglePositionDebounced() at their call sites.
   const observer = new MutationObserver(function() {
     updateMenuTogglePositionDebounced();
   });
-  observer.observe(accordionPanel, { attributes: true, childList: true, subtree: true });
+  observer.observe(accordionPanel, { attributes: true, attributeFilter: ['class', 'style'] });
 }
 
 // ===== INFO PANEL CLOSE / ZOOM / SHARE =====
@@ -525,17 +541,17 @@ function initInfoPanel() {
     document.getElementById('info-panel').classList.remove('show');
     state.selectedBuildingId = null;
     state.selectedParcelId = null;
+    state.selectedLandCoverId = null;
     updateSelectedBuilding();
     updateSelectedParcel();
+    updateSelectedLandCover();
     updateUrlWithSelection();
   });
 
   // Info panel zoom to
   document.getElementById('info-zoom-to').addEventListener('click', function() {
     if (state.selectedBuildingId && map) {
-      const building = state.buildingsData.features.find(function(f) {
-        return f.properties.bbl_id === state.selectedBuildingId;
-      });
+      const building = state.buildingIndex.get(state.selectedBuildingId);
       if (building && building.geometry) {
         map.flyTo({
           center: building.geometry.coordinates,
@@ -543,14 +559,21 @@ function initInfoPanel() {
         });
       }
     } else if (state.selectedParcelId && map) {
-      const parcel = state.parcelData.features.find(function(f) {
-        return f.properties.bbl_id === state.selectedParcelId;
-      });
+      const parcel = state.parcelIndex.get(state.selectedParcelId);
       if (parcel && parcel.geometry && parcel.geometry.coordinates) {
         const center = getPolygonCentroid(parcel.geometry.coordinates);
         map.flyTo({
           center: center,
           zoom: 16
+        });
+      }
+    } else if (state.selectedLandCoverId != null && map) {
+      var lc = state.landCoverIndex.get(state.selectedLandCoverId);
+      if (lc && lc.geometry && lc.geometry.coordinates) {
+        var lcCenter = getPolygonCentroid(lc.geometry.coordinates);
+        map.flyTo({
+          center: lcCenter,
+          zoom: 17
         });
       }
     }

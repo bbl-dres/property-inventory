@@ -16,7 +16,8 @@ import { initExportPanel, copyShareLink } from './export.js';
 import {
   initBuildingTableHeaders, renderListView, initListPagination,
   initDelegatedListeners, initListToolbar, initTableTabs,
-  renderGalleryView, renderParcelsView, initParcelsTable
+  renderGalleryView, renderParcelsView, initParcelsTable,
+  renderLandCoversView, initLandCoversTable
 } from './list.js';
 import { initAllEntityTables, carouselPrev, carouselNext } from './detail.js';
 import { initMap, addMapLayers, initStyleSwitcher, initContextMenu } from './map.js';
@@ -64,6 +65,7 @@ function initTablePanel() {
     if (state.tableOpen && state.listViewDirty) {
       renderListView();
       renderParcelsView();
+      renderLandCoversView();
       state.listViewDirty = false;
     }
     setTimeout(function() {
@@ -115,7 +117,7 @@ function initInternalLayerToggles() {
   if (buildingsToggle) {
     buildingsToggle.addEventListener('change', function() {
       const vis = this.checked ? 'visible' : 'none';
-      ['buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels'].forEach(function(id) {
+      ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels'].forEach(function(id) {
         if (state.map.getLayer(id)) state.map.setLayoutProperty(id, 'visibility', vis);
       });
     });
@@ -129,6 +131,16 @@ function initInternalLayerToggles() {
       });
     });
   }
+
+  var landCoversToggle = document.getElementById('layer-toggle-landcovers');
+  if (landCoversToggle) {
+    landCoversToggle.addEventListener('change', function() {
+      var vis = this.checked ? 'visible' : 'none';
+      ['landcovers-fill', 'landcovers-outline', 'landcovers-highlight', 'landcovers-selected', 'landcovers-selected-outline'].forEach(function(id) {
+        if (state.map.getLayer(id)) state.map.setLayoutProperty(id, 'visibility', vis);
+      });
+    });
+  }
 }
 
 // ===== DATA LOADING =====
@@ -138,15 +150,35 @@ function loadAllData() {
 
   Promise.all([
     fetchWithErrorHandling('data/buildings.geojson'),
-    fetchWithErrorHandling('data/parcels.geojson')
+    fetchWithErrorHandling('data/parcels.geojson'),
+    fetchWithErrorHandling('data/landcovers.geojson')
   ])
     .then(function(results) {
       state.buildingsData = results[0];
       state.parcelData = results[1];
+      state.landCoverData = results[2];
 
       // Validate buildings data
       if (!state.buildingsData || !state.buildingsData.features) {
         throw new Error('Ung\u00FCltiges Datenformat: Geb\u00E4udedaten fehlen');
+      }
+
+      // Build O(1) lookup indexes
+      state.buildingIndex = new Map();
+      state.buildingsData.features.forEach(function(f) {
+        state.buildingIndex.set(f.properties.bbl_id, f);
+      });
+      state.parcelIndex = new Map();
+      if (state.parcelData && state.parcelData.features) {
+        state.parcelData.features.forEach(function(f) {
+          state.parcelIndex.set(f.properties.bbl_id, f);
+        });
+      }
+      state.landCoverIndex = new Map();
+      if (state.landCoverData && state.landCoverData.features) {
+        state.landCoverData.features.forEach(function(f) {
+          state.landCoverIndex.set(f.properties.objectid, f);
+        });
       }
 
       // Initialize filters from URL
@@ -164,10 +196,12 @@ function loadAllData() {
       initBuildingTableHeaders();
       renderListView();
       renderParcelsView();
+      renderLandCoversView();
       initDelegatedListeners();
       initListToolbar();
       initListPagination();
       initParcelsTable();
+      initLandCoversTable();
       initTableTabs();
       initInternalLayerToggles();
       initTablePanel();

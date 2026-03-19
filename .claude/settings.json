@@ -21,7 +21,14 @@
       "Bash(grep -n \"t\\(''''info\\\\|t\\(''''col\\\\|t\\(''''empty\\\\|t\\(''''pagination\\\\|t\\(''''status\" js/*.js)",
       "Read(//tmp/**)",
       "WebFetch(domain:basemaps.cartocdn.com)",
-      "Bash(ls c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/*.js)"
+      "Bash(ls c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/*.js)",
+      "Bash(python3 -c \":*)",
+      "WebSearch",
+      "WebFetch(domain:maplibre.org)",
+      "WebFetch(domain:docs.stadiamaps.com)",
+      "WebFetch(domain:openmaptiles.org)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:docs.mapbox.com)"
     ]
   }
 }
