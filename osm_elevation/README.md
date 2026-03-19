@@ -82,11 +82,49 @@ Only two tags are added per building. No geometry or other tags are modified.
 
 ## Safety filters
 
-Buildings are skipped if they:
-- Already have a `height` tag (never overwrite)
-- Have `roof:*` tags (already detailed in OSM)
-- Have complex footprints (holes, >30 vertices)
-- Computed height < 2m or > 60m (noise/outliers)
+The pipeline is designed to be **non-destructive** — it only adds missing data, never
+modifies existing tags or geometry. Buildings are skipped for the following reasons:
+
+### Already has height (blue on map)
+
+Buildings with an existing `height` tag are never modified. The original value is
+preserved regardless of whether it matches our computation.
+
+### Geometric roof tags (orange on map)
+
+Buildings with `roof:shape` or `roof:height` tags are skipped. These tags define
+explicit 3D roof geometry in OSM, and adding a computed `height` could conflict
+with the detailed roof model.
+
+Tags that are **not** skipped:
+- `roof:levels` — informational (floor count in roof), safe to enrich
+- `roof:colour` — cosmetic, no geometric conflict
+- `roof:material` — cosmetic, no geometric conflict
+
+### Complex footprint (grey on map)
+
+Buildings with complex geometry are skipped to avoid inaccurate height computation:
+- Multipolygon geometry (holes in footprint)
+- More than 30 vertices (unusually complex shape)
+- Invalid geometry (self-intersecting, etc.)
+
+### Height out of range (grey on map)
+
+Computed heights outside a plausible range are discarded:
+- **< 2m** — likely noise, sheds, or measurement error
+- **\> 60m** — likely spires, antennas, cranes, or vegetation artifacts in the DSM
+
+### No elevation data
+
+Buildings in areas without swisstopo coverage (outside Switzerland) or where
+elevation tiles are unavailable are skipped silently.
+
+### Upload re-checks
+
+At upload time, each building is re-fetched from OSM and checked again:
+- If `height` was added since extraction → skip
+- If `roof:shape` or `roof:height` was added since extraction → skip
+- This prevents conflicts with concurrent OSM edits
 
 ## Technology
 
@@ -100,11 +138,12 @@ No npm, no webpack, no build step, no server-side code.
 
 ## Known limitations
 
-- **Browser performance**: ~3m grid spacing (vs 2m in Python version) for speed
-- **COG range requests**: slower than local file reads — best for < 1000 buildings
-- **Vegetation**: DSM includes tree canopy — buildings near trees may have inflated heights
-- **Spires/antennas**: filtered by max height threshold (60m)
-- **Upload**: not implemented in browser version — use the Python version for OSM upload
+- **Vegetation**: DSM includes tree canopy — buildings under/near trees may have inflated heights
+- **Temporal mismatch**: DTM and DSM tiles may be from different years (2017–2025)
+- **Small footprints**: Buildings < 2m² use a single sample point (centroid), less accurate
+- **Spires/antennas**: filtered by 60m max threshold, but short spires may still inflate values
+- **Area size**: recommended < 1 km² per run for browser performance; larger areas work but take longer
+- **Swiss coverage only**: swisstopo elevation data covers Switzerland; buildings outside are skipped
 
 ## Python version
 
