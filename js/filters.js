@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { filterConfig } from './config.js';
 import { escapeHtml, getNestedProperty } from './utils.js';
-import { renderListView } from './list.js';
+import { renderListView, updateFilteredExportHeader } from './list.js';
 import { renderGalleryView } from './gallery.js';
 import { renderParcelsView } from './parcels.js';
 import { switchView } from './views.js';
@@ -95,6 +95,7 @@ export function applyFilters() {
 
   // Update export count
   updateExportCount();
+  updateFilteredExportHeader();
 
   // Update filter button state
   updateFilterButtonState();

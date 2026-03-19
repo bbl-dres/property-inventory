@@ -26,9 +26,52 @@ The data model follows these core principles:
 | **Traceability** | All entities include `validFrom`/`validUntil` for temporal tracking and `eventType` for domain events |
 | **Standards Compliance** | Uses ISO 8601 for dates, ISO 3166 for countries, and aligns with Swiss SIA standards for measurements |
 | **Separation of Concerns** | Core building data is separate from operational measurements, documents, and contracts |
-| **Bilingual Support** | All enumerations provide both English (EN) and German (DE) values; the current demo uses German values |
+| **Multilingual Support** | UI supports DE, FR, IT, EN via `i18n/*.json` translation files; all enumerations provide both English (EN) and German (DE) values |
 
-### 1.3 Swiss Context
+### 1.3 Internationalisation (i18n)
+
+The application supports four official languages via a single translation file `data/i18n.json`:
+
+| Language | Key | Locale | Label |
+|----------|-----|--------|-------|
+| German | `de` | `de-CH` | Deutsch |
+| French | `fr` | `fr-CH` | Français |
+| Italian | `it` | `it-CH` | Italiano |
+| English | `en` | `en-CH` | English |
+
+**Key concepts:**
+
+- **Translation keys** follow a dot-separated namespace (`header.search.placeholder`, `col.bbl_bez`, `pagination.info`).
+- **Parameterised strings** use `{param}` placeholders: `"Seite {current} von {total}"`.
+- **HTML elements** use `data-i18n` attributes for static text, `data-i18n-placeholder`, `data-i18n-title`, `data-i18n-aria-label`, and `data-i18n-alt` for attribute translations.
+- **Language detection** priority: URL parameter (`?lang=fr`) → `localStorage` → browser language → fallback (`de`).
+- **Number/date formatting** uses `Intl.NumberFormat` with the locale derived from the active language (e.g. `fr-CH`).
+
+**Property alias translations** (column headers and field labels):
+
+| Property ID | DE | FR | IT | EN |
+|-------------|----|----|----|----|
+| `bbl_id` | ID | ID | ID | ID |
+| `bbl_bez` | Bezeichnung | Désignation | Designazione | Description |
+| `bbl_stat` | Status | Statut | Stato | Status |
+| `bbl_eigen` | Art Eigentum | Type de propriété | Tipo di proprietà | Ownership type |
+| `bbl_ostr` | Objektstrategie | Stratégie objet | Strategia oggetto | Object strategy |
+| `bbl_mietm` | Mietmodell | Modèle de location | Modello di locazione | Rental model |
+| `bbl_port` | Teilportfolio | Sous-portefeuille | Sotto-portafoglio | Sub-portfolio |
+| `bbl_bjahr` | Baujahr | Année de construction | Anno di costruzione | Year built |
+| `bbl_awrt` | Anschaffungswert | Valeur d'acquisition | Valore d'acquisto | Acquisition value |
+| `bbl_bwrt` | Buchwert | Valeur comptable | Valore contabile | Book value |
+| `adr_land` | Land | Pays | Paese | Country |
+| `adr_ort` | Ort | Localité | Località | City |
+| `adr_conct` | Adresse | Adresse | Indirizzo | Address |
+| `garea_gf` | GF | SP | SP | GF |
+| `garea_ngf` | NGF | SUP | SU netta | NGF |
+| `garea_ebf` | EBF | SRE | SRE | EBF |
+| `larea_gsf` | GSF | ST | ST | GSF |
+
+> **Full translations** are maintained in `data/i18n.json` under each language's `col.*` keys.
+
+### 1.4 Swiss Context
 
 The model incorporates several Switzerland-specific standards and identifiers:
 
@@ -41,7 +84,7 @@ The model incorporates several Switzerland-specific standards and identifiers:
 | **LV95** | Swiss coordinate reference system | Alternative to WGS84 for precise Swiss coordinates |
 | **SN 506 511** | Swiss standard for building operating costs | Cost group classification |
 
-### 1.4 BuildingMinds Alignment
+### 1.5 BuildingMinds Alignment
 
 This data model is designed for compatibility with the BuildingMinds platform schema. Key alignment points:
 

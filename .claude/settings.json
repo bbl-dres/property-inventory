@@ -11,7 +11,8 @@
       "Bash(done)",
       "Bash(ls -lh \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/\"*.js)",
       "Read(//c/Users/DavidRasner/Documents/GitHub/property-inventory/**)",
-      "Read(//c/Users/DavidRasner/.claude/projects/c--Users-DavidRasner-Documents-GitHub-property-inventory/8ee226a5-14d7-4b64-9cb2-3271a62788a8/tool-results/**)"
+      "Read(//c/Users/DavidRasner/.claude/projects/c--Users-DavidRasner-Documents-GitHub-property-inventory/8ee226a5-14d7-4b64-9cb2-3271a62788a8/tool-results/**)",
+      "Bash(node -e \":*)"
     ]
   }
 }

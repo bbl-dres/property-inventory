@@ -717,6 +717,11 @@
   border-bottom: 1px solid var(--grey-100);
 }
 
+.dropdown-menu-header:not(:first-child) {
+  border-top: 1px solid var(--grey-200);
+  margin-top: var(--space-1);
+}
+
 .dropdown-menu-item,
 .context-menu-item {
   display: flex;

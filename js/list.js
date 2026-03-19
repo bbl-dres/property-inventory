@@ -7,6 +7,9 @@ import { selectBuilding } from './map.js';
 import { selectParcel } from './map.js';
 import { showDetailView } from './views.js';
 import { renderParcelsView } from './parcels.js';
+import { showToast } from './toast.js';
+import { downloadBlob } from './utils.js';
+import { t, onLangChange } from './i18n.js';
 
 // ===== BUILDING TABLE COLUMN DEFINITIONS =====
 var buildingColumns = [
@@ -94,13 +97,29 @@ export function initBuildingTableHeaders() {
   if (!headerRow) return;
   var html = '';
   buildingColumns.forEach(function(col) {
-    html += '<th class="col-' + col.field + '">' + col.label + ' <span class="material-symbols-outlined">unfold_more</span></th>';
+    var label = t('col.' + col.field);
+    html += '<th class="col-' + col.field + '">' + label + ' <span class="material-symbols-outlined">unfold_more</span></th>';
   });
   headerRow.innerHTML = html;
 
   // Apply initial visibility from building column checkboxes
   document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
     handleColumnToggle(cb);
+  });
+
+  // Re-render headers when language changes
+  onLangChange(function() {
+    var row = document.getElementById('list-table-header-row');
+    if (!row) return;
+    var h = '';
+    buildingColumns.forEach(function(col) {
+      h += '<th class="col-' + col.field + '">' + t('col.' + col.field) + ' <span class="material-symbols-outlined">unfold_more</span></th>';
+    });
+    row.innerHTML = h;
+    // Re-apply column visibility
+    document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
+      handleColumnToggle(cb);
+    });
   });
 }
 
@@ -417,6 +436,70 @@ export function handleListSearch(query) {
   }
 }
 
+// ===== QUICK EXPORT =====
+function handleQuickExport(format, scope) {
+  var data;
+  if (scope === 'all') {
+    data = state.portfolioData ? state.portfolioData.features : [];
+  } else {
+    data = state.filteredData ? state.filteredData.features : [];
+  }
+
+  if (data.length === 0) {
+    showToast({ type: 'error', message: 'Keine Daten zum Exportieren vorhanden' });
+    return;
+  }
+
+  try {
+    if (format === 'csv' || format === 'excel') {
+      quickExportCSV(data);
+    } else if (format === 'geojson') {
+      quickExportGeoJSON(data);
+    }
+    showToast({ type: 'success', message: data.length + ' Objekte exportiert' });
+  } catch (e) {
+    console.error('Export error:', e);
+    showToast({ type: 'error', message: 'Fehler beim Export: ' + e.message });
+  }
+
+  // Close dropdown
+  document.querySelectorAll('.dropdown-menu').forEach(function(d) { d.classList.remove('show'); });
+}
+
+function quickExportCSV(data) {
+  var columns = ['bbl_id', 'bbl_bez', 'bbl_stat', 'bbl_eigen', 'bbl_port',
+    'adr_land', 'adr_ort', 'adr_conct', 'garea_ngf', 'wgs84_lat', 'wgs84_lon'];
+  var csvContent = columns.join(';') + '\n';
+
+  data.forEach(function(feature) {
+    var props = feature.properties || {};
+    var row = columns.map(function(col) {
+      if (col === 'wgs84_lat' && feature.geometry && feature.geometry.coordinates) return feature.geometry.coordinates[1];
+      if (col === 'wgs84_lon' && feature.geometry && feature.geometry.coordinates) return feature.geometry.coordinates[0];
+      var value = props[col];
+      if (value === null || value === undefined) return '';
+      var strValue = String(value);
+      if (strValue.includes(';') || strValue.includes('"') || strValue.includes('\n')) {
+        strValue = '"' + strValue.replace(/"/g, '""') + '"';
+      }
+      return strValue;
+    });
+    csvContent += row.join(';') + '\n';
+  });
+
+  var blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' });
+  downloadBlob(blob, 'bbl-portfolio-export.csv');
+}
+
+function quickExportGeoJSON(data) {
+  var featureCollection = {
+    type: 'FeatureCollection',
+    features: data.map(function(f) { return JSON.parse(JSON.stringify(f)); })
+  };
+  var blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
+  downloadBlob(blob, 'bbl-portfolio-export.geojson');
+}
+
 // ===== LIST TOOLBAR =====
 export function initListToolbar() {
   // Dropdown buttons
@@ -437,6 +520,26 @@ export function initListToolbar() {
     });
   }
 
+  // Export menu items
+  document.querySelectorAll('#export-dropdown-menu .dropdown-menu-item[data-export-format]').forEach(function(item) {
+    item.addEventListener('click', function() {
+      handleQuickExport(this.dataset.exportFormat, this.dataset.exportScope);
+    });
+  });
+
+  // Update filtered export header with count
+  updateFilteredExportHeader();
+
+  // Column toggle all/none buttons
+  var toggleAllBtn = document.getElementById('columns-toggle-all');
+  var toggleNoneBtn = document.getElementById('columns-toggle-none');
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener('click', function() { toggleAllColumns(true); });
+  }
+  if (toggleNoneBtn) {
+    toggleNoneBtn.addEventListener('click', function() { toggleAllColumns(false); });
+  }
+
   // Column checkboxes
   document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"]').forEach(function(checkbox) {
     checkbox.addEventListener('change', function() {
@@ -455,6 +558,19 @@ export function initListToolbar() {
         handleListSearch(value);
       }, 200);
     });
+  }
+}
+
+// Update the "Gefiltert exportieren" header to show count
+export function updateFilteredExportHeader() {
+  var header = document.getElementById('export-filtered-header');
+  if (!header) return;
+  var filtered = state.filteredData ? state.filteredData.features.length : 0;
+  var total = state.portfolioData ? state.portfolioData.features.length : 0;
+  if (filtered === total) {
+    header.textContent = 'Gefiltert exportieren';
+  } else {
+    header.textContent = 'Gefiltert exportieren (' + filtered + ')';
   }
 }
 

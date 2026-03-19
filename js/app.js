@@ -26,6 +26,7 @@ import { initContextMenu } from './context-menu.js';
 import { initMeasure } from './measure.js';
 import { initUI, updateMenuTogglePositionDebounced } from './ui.js';
 import { initPrintWidget } from './print.js';
+import { initI18n } from './i18n.js';
 
 // Make updateMenuTogglePositionDebounced available globally for geokatalog
 window.updateMenuTogglePositionDebounced = updateMenuTogglePositionDebounced;
@@ -220,13 +221,15 @@ function loadAllData() {
 
 // ===== INITIALIZE UI COMPONENTS =====
 
-initSearch();
-initContextMenu();
-initMeasure();
-initStyleSwitcher();
-initPrintWidget();
-initUI();
+// Load translations first, then initialize everything
+initI18n().then(function() {
+  initSearch();
+  initContextMenu();
+  initMeasure();
+  initStyleSwitcher();
+  initPrintWidget();
+  initUI();
 
-// ===== START DATA LOAD =====
-
-loadAllData();
+  // ===== START DATA LOAD =====
+  loadAllData();
+});

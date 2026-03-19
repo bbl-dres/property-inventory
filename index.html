@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BBL Immobilienportfolio - GIS POC</title>
+    <title data-i18n="app.title">BBL Immobilienportfolio - GIS POC</title>
 
     <link rel="preconnect" href="https://api.mapbox.com" crossorigin>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -22,70 +22,70 @@
     <!-- Loading overlay (shown during initial data fetch) -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner"></div>
-        <div class="loading-text">Daten werden geladen...</div>
+        <div class="loading-text" data-i18n="loading.data">Daten werden geladen...</div>
     </div>
 
     <!-- Layer info modal -->
     <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
         <div class="layer-info-modal-content">
-            <button class="layer-info-modal-close" aria-label="Schliessen">
+            <button class="layer-info-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div id="layer-info-content" class="layer-info-body">
-                <div class="layer-info-loading">Lade Informationen...</div>
+                <div class="layer-info-loading" data-i18n="loading.info">Lade Informationen...</div>
             </div>
         </div>
     </div>
 
     <!-- Skip link for keyboard navigation -->
-    <a href="#main" class="skip-link">Zum Hauptinhalt springen</a>
+    <a href="#main" class="skip-link" data-i18n="skip.main">Zum Hauptinhalt springen</a>
 
     <header id="header" role="banner">
         <div class="header-main">
             <div id="logo-area">
-                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge" width="30" height="30">
-                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft" width="300" height="18">
+                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" data-i18n-alt="app.logo.flag_alt" alt="Schweizer Flagge" width="30" height="30">
+                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" data-i18n-alt="app.logo.text_alt" alt="Schweizerische Eidgenossenschaft" width="300" height="18">
                 <div class="logo-divider"></div>
                 <div id="logo-title">
-                    <strong>Bundesamt für Bauten und Logistik BBL</strong>
-                    <span class="logo-subtitle"><br>Liegenschaften Inventar</span>
+                    <strong data-i18n="app.logo.org">Bundesamt für Bauten und Logistik BBL</strong>
+                    <span class="logo-subtitle"><br><span data-i18n="app.logo.subtitle">Liegenschaften Inventar</span></span>
                 </div>
             </div>
 
             <div id="search-area" role="search">
                 <div id="search-wrapper">
                     <div id="search-container">
-                        <button id="search-icon-btn" aria-label="Suche starten" type="button">
+                        <button id="search-icon-btn" data-i18n-aria-label="header.search.start" aria-label="Suche starten" type="button">
                             <span class="material-symbols-outlined" aria-hidden="true">search</span>
                         </button>
-                        <input type="search" id="search-input" placeholder="Suche nach Objekten, Orten oder Karten" aria-label="Suchbegriff eingeben" autocomplete="off">
-                        <button id="search-clear-btn" title="Suche löschen" aria-label="Suche löschen" type="button">
+                        <input type="search" id="search-input" data-i18n-placeholder="header.search.placeholder" placeholder="Suche nach Objekten, Orten oder Karten" aria-label="Suchbegriff eingeben" autocomplete="off">
+                        <button id="search-clear-btn" data-i18n-title="header.search.clear" data-i18n-aria-label="header.search.clear" title="Suche löschen" aria-label="Suche löschen" type="button">
                             <span class="material-symbols-outlined" aria-hidden="true">close</span>
                         </button>
-                        <div id="search-spinner" class="spinner" role="status" aria-label="Suche läuft"></div>
+                        <div id="search-spinner" class="spinner" role="status" data-i18n-aria-label="header.search.loading" aria-label="Suche läuft"></div>
                     </div>
-                    <div id="search-results" role="listbox" aria-label="Suchergebnisse"></div>
+                    <div id="search-results" role="listbox" data-i18n-aria-label="header.search.results" aria-label="Suchergebnisse"></div>
                 </div>
 
                 <div class="view-toggle" role="tablist" aria-label="Ansicht wählen">
-                    <button class="view-toggle-btn active" data-view="map" title="Karte" aria-label="Kartenansicht" role="tab" aria-selected="true">
+                    <button class="view-toggle-btn active" data-view="map" data-i18n-title="view.map" data-i18n-aria-label="view.map.title" title="Karte" aria-label="Kartenansicht" role="tab" aria-selected="true">
                         <span class="material-symbols-outlined" aria-hidden="true">map</span>
-                        <span class="view-label">Karte</span>
+                        <span class="view-label" data-i18n="view.map">Karte</span>
                     </button>
-                    <button class="view-toggle-btn" data-view="gallery" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
+                    <button class="view-toggle-btn" data-view="gallery" data-i18n-title="view.gallery" data-i18n-aria-label="view.gallery.title" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
                         <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
-                        <span class="view-label">Galerie</span>
+                        <span class="view-label" data-i18n="view.gallery">Galerie</span>
                     </button>
                 </div>
             </div>
 
             <div id="header-right">
-                <button class="header-btn" id="filter-panel-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
+                <button class="header-btn" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-                    Filter
+                    <span data-i18n="header.filter">Filter</span>
                 </button>
                 <div id="lang-selector">
-                    <button id="lang-btn" class="header-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                    <button id="lang-btn" class="header-btn" data-i18n-title="header.lang" data-i18n-aria-label="header.lang" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
                         <span class="material-symbols-outlined" aria-hidden="true">language</span>
                         <span id="lang-current">DE</span>
                     </button>
@@ -108,26 +108,26 @@
             <!-- Style Switcher (inside map for correct positioning) -->
             <div class="style-switcher" id="style-switcher">
                 <div class="style-switcher-panel" id="style-panel">
-                    <button class="style-option active" data-style="light-v11" title="Light">
+                    <button class="style-option active" data-style="light-v11" data-i18n-title="map.style.light" title="Light">
                         <img id="thumb-light-v11" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Light">
-                        <span>Light</span>
+                        <span data-i18n="map.style.light">Light</span>
                     </button>
-                    <button class="style-option" data-style="streets-v12" title="Standard">
+                    <button class="style-option" data-style="streets-v12" data-i18n-title="map.style.standard" title="Standard">
                         <img id="thumb-streets-v12" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Standard">
-                        <span>Standard</span>
+                        <span data-i18n="map.style.standard">Standard</span>
                     </button>
-                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
+                    <button class="style-option" data-style="satellite-v9" data-i18n-title="map.style.aerial" title="Luftbild">
                         <img id="thumb-satellite-v9" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Luftbild">
-                        <span>Luftbild</span>
+                        <span data-i18n="map.style.aerial">Luftbild</span>
                     </button>
-                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
+                    <button class="style-option" data-style="satellite-streets-v12" data-i18n-title="map.style.hybrid" title="Luftbild + Strassen">
                         <img id="thumb-satellite-streets-v12" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Luftbild + Strassen">
-                        <span>Hybrid</span>
+                        <span data-i18n="map.style.hybrid">Hybrid</span>
                     </button>
                 </div>
-                <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
+                <button class="style-switcher-btn" id="style-switcher-btn" data-i18n-title="map.style.title" title="Hintergrund wechseln">
                     <img id="current-style-thumb" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Aktueller Stil">
-                    <span>Hintergrund</span>
+                    <span data-i18n="map.style.label">Hintergrund</span>
                 </button>
             </div>
 
@@ -138,46 +138,46 @@
             <div id="measure-distance-display" class="measure-distance-display">
                 <div class="measure-distance-header">
                     <span class="material-symbols-outlined">straighten</span>
-                    <span>Distanz messen</span>
-                    <button id="measure-distance-close" class="measure-distance-close" title="Schliessen">
+                    <span data-i18n="measure.title">Distanz messen</span>
+                    <button id="measure-distance-close" class="measure-distance-close" data-i18n-title="modal.close" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
-                <div class="measure-distance-info">
+                <div class="measure-distance-info" data-i18n="measure.info">
                     Klicken Sie auf die Karte, um einen Pfad zu zeichnen.
                 </div>
                 <div class="measure-distance-result" id="measure-distance-result">
                     <div class="measure-result-row">
-                        <span class="measure-result-label">Gesamtdistanz:</span>
+                        <span class="measure-result-label" data-i18n="measure.distance">Gesamtdistanz:</span>
                         <span class="measure-result-value" id="measure-total-distance">0 m</span>
                     </div>
                     <div class="measure-result-row" id="measure-area-row" style="display: none;">
-                        <span class="measure-result-label">Fläche:</span>
+                        <span class="measure-result-label" data-i18n="measure.area">Fläche:</span>
                         <span class="measure-result-value" id="measure-total-area">0 m²</span>
                     </div>
                 </div>
             </div>
 
             <!-- Table toggle button (inside #map for correct positioning) -->
-            <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden">
+            <button id="tbl-toggle" class="tbl-toggle" data-i18n-title="table.toggle.title" data-i18n-aria-label="table.toggle.title" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden">
                 <span class="material-symbols-outlined">expand_more</span>
-                <span class="tbl-toggle-label">Tabelle</span>
+                <span class="tbl-toggle-label" data-i18n="table.toggle">Tabelle</span>
             </button>
             </div>
             
-            <aside id="accordion-panel" aria-label="Werkzeuge">
+            <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
                 <div class="accordion-item">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span>Teilen</span>
+                        <span data-i18n="accordion.share">Teilen</span>
                     </button>
                     <div class="accordion-content">
                         <div class="share-panel">
                             <div class="share-link-section">
-                                <span class="share-link-label">Link zum Teilen:</span>
+                                <span class="share-link-label" data-i18n="accordion.share.label">Link zum Teilen:</span>
                                 <div class="share-link-row">
                                     <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
-                                    <button class="share-copy-btn" onclick="copyShareLink()" aria-label="Link in die Zwischenablage kopieren">Link kopieren</button>
+                                    <button class="share-copy-btn" onclick="copyShareLink()" aria-label="Link in die Zwischenablage kopieren" data-i18n="accordion.share.copy">Link kopieren</button>
                                 </div>
                             </div>
                         </div>
@@ -188,9 +188,9 @@
                 <div class="accordion-item">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span>Zeichnen & Messen auf der Karte</span>
+                        <span data-i18n="accordion.draw">Zeichnen & Messen auf der Karte</span>
                     </button>
-                    <div class="accordion-content">
+                    <div class="accordion-content" data-i18n="accordion.draw.desc">
                         Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
                     </div>
                 </div>
@@ -198,29 +198,29 @@
                 <div class="accordion-item" id="print-accordion-item">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span>Karte drucken</span>
+                        <span data-i18n="accordion.print">Karte drucken</span>
                     </button>
                     <div class="accordion-content">
                         <div class="print-form">
                             <div class="print-form-row">
-                                <label for="print-orientation">Format</label>
+                                <label for="print-orientation" data-i18n="accordion.print.format">Format</label>
                                 <select id="print-orientation" class="custom-select print-select">
-                                    <option value="landscape-a4" selected>A4 Querformat</option>
-                                    <option value="portrait-a4">A4 Hochformat</option>
-                                    <option value="landscape-a3">A3 Querformat</option>
-                                    <option value="portrait-a3">A3 Hochformat</option>
-                                    <option value="landscape-a2">A2 Querformat</option>
-                                    <option value="portrait-a2">A2 Hochformat</option>
-                                    <option value="landscape-a1">A1 Querformat</option>
-                                    <option value="portrait-a1">A1 Hochformat</option>
-                                    <option value="landscape-a0">A0 Querformat</option>
-                                    <option value="portrait-a0">A0 Hochformat</option>
+                                    <option value="landscape-a4" selected data-i18n="format.a4_landscape">A4 Querformat</option>
+                                    <option value="portrait-a4" data-i18n="format.a4_portrait">A4 Hochformat</option>
+                                    <option value="landscape-a3" data-i18n="format.a3_landscape">A3 Querformat</option>
+                                    <option value="portrait-a3" data-i18n="format.a3_portrait">A3 Hochformat</option>
+                                    <option value="landscape-a2" data-i18n="format.a2_landscape">A2 Querformat</option>
+                                    <option value="portrait-a2" data-i18n="format.a2_portrait">A2 Hochformat</option>
+                                    <option value="landscape-a1" data-i18n="format.a1_landscape">A1 Querformat</option>
+                                    <option value="portrait-a1" data-i18n="format.a1_portrait">A1 Hochformat</option>
+                                    <option value="landscape-a0" data-i18n="format.a0_landscape">A0 Querformat</option>
+                                    <option value="portrait-a0" data-i18n="format.a0_portrait">A0 Hochformat</option>
                                 </select>
                             </div>
                             <div class="print-form-row">
-                                <label for="print-scale">Massstab</label>
+                                <label for="print-scale" data-i18n="accordion.print.scale">Massstab</label>
                                 <select id="print-scale" class="custom-select print-select">
-                                    <option value="auto" selected>Automatisch</option>
+                                    <option value="auto" selected data-i18n="accordion.print.scale.auto">Automatisch</option>
                                     <option value="500">1:500</option>
                                     <option value="1000">1:1'000</option>
                                     <option value="2500">1:2'500</option>
@@ -232,14 +232,14 @@
                                 </select>
                             </div>
                             <label class="print-checkbox-label">
-                                <input type="checkbox" id="print-legend" checked> Legende anzeigen
+                                <input type="checkbox" id="print-legend" checked> <span data-i18n="accordion.print.legend">Legende anzeigen</span>
                             </label>
                             <label class="print-checkbox-label">
-                                <input type="checkbox" id="print-title" checked> Titel und Datum
+                                <input type="checkbox" id="print-title" checked> <span data-i18n="accordion.print.title_date">Titel und Datum</span>
                             </label>
                             <button class="print-btn" id="print-generate-btn">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
-                                PDF erstellen
+                                <span data-i18n="accordion.print.button">PDF erstellen</span>
                             </button>
                         </div>
                     </div>
@@ -248,12 +248,12 @@
                 <div class="accordion-item" id="geokatalog-accordion">
                     <div class="accordion-header geokatalog-header">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span>Geokatalog</span>
-                        <span class="geokatalog-theme-switch">Thema wechseln</span>
+                        <span data-i18n="accordion.catalog">Geokatalog</span>
+                        <span class="geokatalog-theme-switch" data-i18n="accordion.catalog.theme">Thema wechseln</span>
                     </div>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
-                            <div class="geokatalog-loading">Lade Katalog...</div>
+                            <div class="geokatalog-loading" data-i18n="loading.catalog">Lade Katalog...</div>
                         </div>
                     </div>
                 </div>
@@ -261,31 +261,31 @@
                 <div class="accordion-item" id="active-layers-accordion">
                     <button class="accordion-header active" aria-expanded="true">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span>Dargestellte Karten</span>
+                        <span data-i18n="accordion.layers">Dargestellte Karten</span>
                     </button>
                     <div class="accordion-content show">
                         <div class="active-layers-list">
                             <div class="layer-group">
-                                <div class="layer-group-label">Interne Karten</div>
+                                <div class="layer-group-label" data-i18n="accordion.layers.internal">Interne Karten</div>
                                 <div class="active-layer-item" data-internal-layer="buildings">
-                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" title="Gebäude ein-/ausblenden">
-                                    <span class="active-layer-title">Gebäude</span>
-                                    <button class="active-layer-info" onclick="showInternalLayerInfo('buildings')" title="Layer-Informationen">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('buildings')" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
-                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden">
-                                    <span class="active-layer-title">Grundstücke</span>
-                                    <button class="active-layer-info" onclick="showInternalLayerInfo('parcels')" title="Layer-Informationen">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('parcels')" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                             </div>
                             <div class="layer-group">
-                                <div class="layer-group-label">Externe Karten</div>
+                                <div class="layer-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
                                 <div id="external-layers-list">
-                                    <div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                    <div class="active-layers-empty" data-i18n="accordion.layers.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
                                 </div>
                             </div>
                         </div>
@@ -295,43 +295,43 @@
             
             <div id="menu-toggle">
                 <span class="material-symbols-outlined">expand_less</span>
-                <span id="menu-toggle-text">Menü schliessen</span>
+                <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
             </div>
-            
+
             <aside id="info-panel" role="complementary" aria-label="Objektinformation">
                 <div id="info-header">
-                    <span id="info-header-title">Objekt-Information</span>
+                    <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
                     <div id="info-header-actions">
-                        <button id="info-zoom-to" title="Hinzoomen" aria-label="Zum Objekt zoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
-                        <button id="info-share" title="Teilen" aria-label="Objekt teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
-                        <button id="info-close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                        <button id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                        <button id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                        <button id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                     </div>
                 </div>
-                <div id="info-preview-image" role="img" aria-label="Vorschaubild des Objekts"></div>
+                <div id="info-preview-image" role="img" data-i18n-aria-label="info.preview" aria-label="Vorschaubild des Objekts"></div>
                 <div id="info-body"></div>
             </aside>
 
             <!-- Map Context Menu (Right-Click) -->
             <div id="map-context-menu" class="map-context-menu">
-                <div class="context-menu-item context-menu-coords" id="context-menu-coords" title="Klicken zum Kopieren">
+                <div class="context-menu-item context-menu-coords" id="context-menu-coords" data-i18n-title="map.context.copy" title="Klicken zum Kopieren">
                     <span id="context-menu-coords-text">47.37623, 8.53048</span>
                 </div>
                 <div class="context-menu-item" id="context-menu-share">
-                    <span>Teilen</span>
+                    <span data-i18n="map.context.share">Teilen</span>
                 </div>
                 <div class="context-menu-item" id="context-menu-measure">
-                    <span id="context-menu-measure-text">Distanz messen</span>
+                    <span id="context-menu-measure-text" data-i18n="map.context.measure">Distanz messen</span>
                 </div>
                 <div class="context-menu-item" id="context-menu-print">
-                    <span>Drucken</span>
+                    <span data-i18n="map.context.print">Drucken</span>
                 </div>
                 <div class="context-menu-item" id="context-menu-report">
-                    <span>Problem melden</span>
+                    <span data-i18n="map.context.report">Problem melden</span>
                 </div>
             </div>
 
             <!-- Resize handle between map and table -->
-            <div id="tbl-resize-handle" class="tbl-resize-handle" title="Grösse ändern"></div>
+            <div id="tbl-resize-handle" class="tbl-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
 
             <!-- Table panel (below map) -->
             <div id="table-panel" class="table-panel">
@@ -339,12 +339,12 @@
                     <!-- Toolbar -->
                     <div class="toolbar">
                         <div class="table-tabs" role="tablist">
-                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true">Gebäude</button>
-                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false">Grundstücke</button>
+                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="table.tab.buildings">Gebäude</button>
+                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="table.tab.parcels">Grundstücke</button>
                         </div>
                         <div class="toolbar-search list-toolbar-search">
                             <span class="material-symbols-outlined">search</span>
-                            <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
+                            <input type="text" id="list-search-input" data-i18n-placeholder="table.search" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
                         </div>
                         <div class="filter-pills" id="filter-pills"></div>
                         <div class="toolbar-actions">
@@ -356,10 +356,14 @@
                                     <span class="material-symbols-outlined">expand_more</span>
                                 </button>
                                 <div class="dropdown-menu" id="export-dropdown-menu">
-                                    <div class="dropdown-menu-header">Exportieren als</div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('csv')">CSV (.csv)</div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('excel')">Excel (.xlsx)</div>
-                                    <div class="dropdown-menu-item" onclick="handleExport('geojson')">GeoJSON (.geojson)</div>
+                                    <div class="dropdown-menu-header" data-i18n="export.all">Alle exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all" data-i18n="export.format.excel">Excel (.xlsx)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
+                                    <div class="dropdown-menu-header" id="export-filtered-header" data-i18n="export.filtered">Gefiltert exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered" data-i18n="export.format.excel">Excel (.xlsx)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
                                 </div>
                             </div>
                             <!-- Columns Dropdown -->
@@ -370,19 +374,19 @@
                                     <span class="material-symbols-outlined">expand_more</span>
                                 </button>
                                 <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
-                                    <div class="dropdown-menu-header">Spalten anzeigen</div>
+                                    <div class="dropdown-menu-header" data-i18n="columns.header">Spalten anzeigen</div>
                                     <div class="dropdown-menu-toggle-row">
-                                        <button class="dropdown-toggle-btn" onclick="toggleAllColumns(true)">Alle</button>
-                                        <button class="dropdown-toggle-btn" onclick="toggleAllColumns(false)">Keine</button>
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-all" data-i18n="columns.all">Alle</button>
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-none" data-i18n="columns.none">Keine</button>
                                     </div>
                                     <div class="columns-search">
                                         <span class="material-symbols-outlined">search</span>
-                                        <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen">
+                                        <input type="text" id="columns-search-input" data-i18n-placeholder="columns.search" placeholder="Spalte suchen..." aria-label="Spalte suchen">
                                     </div>
                                     <!-- Building columns (shown when Gebäude tab active) -->
                                     <div class="columns-list" id="columns-list" data-columns-tab="buildings">
                                         <!-- Stammdaten -->
-                                        <div class="columns-group-label">Stammdaten</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.master">Stammdaten</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
@@ -403,7 +407,7 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ovtw"> Verantwortlich (bbl_ovtw)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
                                         <!-- Adresse -->
-                                        <div class="columns-group-label">Adresse</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.address">Adresse</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_land"> Land (adr_land)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_reg"> Region (adr_reg)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_ort"> Ort (adr_ort)</label>
@@ -412,29 +416,29 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_hsnr"> Hausnummer (adr_hsnr)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_conct"> Adresse (adr_conct)</label>
                                         <!-- Koordinaten -->
-                                        <div class="columns-group-label">Koordinaten</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.coords">Koordinaten</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lat"> WGS84 Lat (wgs84_lat)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lon"> WGS84 Lon (wgs84_lon)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_e"> LV95 E (lv95_e)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_n"> LV95 N (lv95_n)</label>
                                         <!-- Amtliche Vermessung -->
-                                        <div class="columns-group-label">Amtliche Vermessung</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.survey">Amtliche Vermessung</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egid"> EGID (av_egid)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egrid"> EGRID (av_egrid)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gem"> Gemeindename (bfs_gem)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gemnr"> Gemeindenr. (bfs_gemnr)</label>
                                         <!-- Bauzone -->
-                                        <div class="columns-group-label">Bauzone</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.zone">Bauzone</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_zbez"> Bauzone (av_zbez)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_znut"> Nutzung (av_znut)</label>
                                         <!-- Denkmalschutz -->
-                                        <div class="columns-group-label">Denkmalschutz</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.heritage">Denkmalschutz</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_hist"> Hist. Ausstattung (bbl_hist)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_arch"> Archivwürdigkeit (bbl_arch)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_kat"> KGS Kategorie (kgs_kat)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_nr"> KGS Nummer (kgs_nr)</label>
                                         <!-- Flächen -->
-                                        <div class="columns-group-label">Flächen (SIA 416/380)</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.areas">Flächen (SIA 416/380)</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gf"> GF (garea_gf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfo"> GF oberird. (garea_gfo)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfu"> GF unterird. (garea_gfu)</label>
@@ -447,7 +451,7 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vmf"> VMF (garea_vmf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ebf"> EBF (garea_ebf)</label>
                                         <!-- Volumen -->
-                                        <div class="columns-group-label">Volumen / Geschosse</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.volumes">Volumen / Geschosse</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gv"> GV (gvol_gv)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvo"> GV oberird. (gvol_gvo)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvu"> GV unterird. (gvol_gvu)</label>
@@ -455,25 +459,25 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_og"> Gesch. oberird. (gastw_og)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_ug"> Gesch. unterird. (gastw_ug)</label>
                                         <!-- Grundstück -->
-                                        <div class="columns-group-label">Grundstück</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.land">Grundstück</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_ggf"> GGF (larea_ggf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_gsf"> GSF (larea_gsf)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_uf"> UF (larea_uf)</label>
                                         <!-- Sonstiges -->
-                                        <div class="columns-group-label">Sonstiges</div>
+                                        <div class="columns-group-label" data-i18n="columns.group.other">Sonstiges</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-etl_ts"> ETL Zeitstempel (etl_ts)</label>
                                     </div>
                                     <!-- Parcel columns (shown when Grundstücke tab active) -->
                                     <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> Parzellen-ID</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> Grundstück-Nr.</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> Bezeichnung</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> Gemeinde</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> Kanton</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> Fläche</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> Nutzungszone</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> Eigentum</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> <span data-i18n="col.parcel.id">ID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> <span data-i18n="col.parcel.plot">Grundstück-Nr.</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> <span data-i18n="col.parcel.municipality">Gemeinde</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> <span data-i18n="col.parcel.canton">Kanton</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> <span data-i18n="col.parcel.area">Fläche</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
                                     </div>
                                 </div>
                             </div>
@@ -504,7 +508,7 @@
                                 </button>
                             </div>
                             <div class="pagination-rows">
-                                <span>Zeilen pro Seite:</span>
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
                                 <select id="list-rows-per-page" class="custom-select">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
@@ -520,14 +524,14 @@
                             <table class="base-table list-table" id="parcels-table">
                                 <thead>
                                     <tr>
-                                        <th class="col-parcel-id">Parzellen-ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-plot">Grundstück-Nr. <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-municipality">Gemeinde <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-canton">Kanton <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-area">Fläche <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-zone">Nutzungszone <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-ownership">Eigentum <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-id"><span data-i18n="col.parcel.id">ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-plot"><span data-i18n="col.parcel.plot">Grundstück-Nr.</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-name"><span data-i18n="col.parcel.name">Bezeichnung</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-municipality"><span data-i18n="col.parcel.municipality">Gemeinde</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-canton"><span data-i18n="col.parcel.canton">Kanton</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-area"><span data-i18n="col.parcel.area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-zone"><span data-i18n="col.parcel.zone">Nutzungszone</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-ownership"><span data-i18n="col.parcel.ownership">Eigentum</span> <span class="material-symbols-outlined">unfold_more</span></th>
                                     </tr>
                                 </thead>
                                 <tbody id="parcels-body"></tbody>
@@ -547,7 +551,7 @@
                                 </button>
                             </div>
                             <div class="pagination-rows">
-                                <span>Zeilen pro Seite:</span>
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
                                 <select id="parcels-rows-per-page" class="custom-select">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
@@ -715,7 +719,7 @@ Content-Type: application/geo+json
                         <div class="detail-header-actions">
                             <button class="btn-back" id="btn-back">
                                 <span class="material-symbols-outlined">arrow_back</span>
-                                Zurück
+                                <span data-i18n="detail.back">Zurück</span>
                             </button>
                         </div>
                     </div>
@@ -731,8 +735,8 @@ Content-Type: application/geo+json
 
                 <!-- Tabs (inside content, scrollable) -->
                 <div class="detail-tabs-inline" role="tablist" aria-label="Detailansicht Tabs">
-                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0">Übersicht</button>
-                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1">Bemessungen</button>
+                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0" data-i18n="detail.tab.overview">Übersicht</button>
+                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1" data-i18n="detail.tab.measurements">Bemessungen</button>
                 </div>
 
                 <!-- ===== Tab: Übersicht ===== -->
@@ -880,17 +884,17 @@ Content-Type: application/geo+json
 
         <!-- Filter Drawer -->
         <aside id="filter-panel" role="complementary" aria-label="Filter">
-            <div class="filter-panel-resize-handle" title="Grösse ändern"></div>
+            <div class="filter-panel-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
             <div class="panel-header filter-panel-header">
                 <span class="filter-panel-title">
                     <span class="material-symbols-outlined">filter_list</span>
-                    Filter
+                    <span data-i18n="filter.title">Filter</span>
                 </span>
                 <div class="filter-panel-actions">
-                    <button class="filter-panel-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
+                    <button class="filter-panel-btn" id="drawer-reset-btn" data-i18n-title="filter.reset" title="Zurücksetzen">
                         <span class="material-symbols-outlined">replay</span>
                     </button>
-                    <button class="filter-panel-btn" id="drawer-close-btn" title="Schliessen">
+                    <button class="filter-panel-btn" id="drawer-close-btn" data-i18n-title="modal.close" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -899,57 +903,57 @@ Content-Type: application/geo+json
             <!-- Filter Search -->
             <div class="filter-search">
                 <span class="material-symbols-outlined">search</span>
-                <input type="text" id="filter-search-input" placeholder="Filter suchen..." aria-label="Filter suchen">
+                <input type="text" id="filter-search-input" data-i18n-placeholder="filter.search" placeholder="Filter suchen..." aria-label="Filter suchen">
             </div>
 
             <!-- Filter Content -->
             <div class="filter-panel-content" id="drawer-filter-content">
                 <div class="filter-section open" data-filter="status">
-                    <div class="filter-section-header"><span class="filter-section-title">Status (bbl_stat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.status">Status (bbl_stat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-status-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="eigentum">
-                    <div class="filter-section-header"><span class="filter-section-title">Art Eigentum (bbl_eigen)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.eigentum">Art Eigentum (bbl_eigen)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-eigentum-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="strategie">
-                    <div class="filter-section-header"><span class="filter-section-title">Objektstrategie (bbl_ostr)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.strategie">Objektstrategie (bbl_ostr)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-strategie-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="mietmodell">
-                    <div class="filter-section-header"><span class="filter-section-title">Mietmodell (bbl_mietm)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.mietmodell">Mietmodell (bbl_mietm)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-mietmodell-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="teilportfolio">
-                    <div class="filter-section-header"><span class="filter-section-title">Teilportfolio (bbl_port)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.teilportfolio">Teilportfolio (bbl_port)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-teilportfolio-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="portfoliogruppe">
-                    <div class="filter-section-header"><span class="filter-section-title">Portfoliogruppe (bbl_port2)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.portfoliogruppe">Portfoliogruppe (bbl_port2)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-portfoliogruppe-options"></div>
                 </div>
                 <div class="filter-section open" data-filter="gebaeudeart">
-                    <div class="filter-section-header"><span class="filter-section-title">Gebäudeart (bbl_gbda1)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.gebaeudeart">Gebäudeart (bbl_gbda1)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-gebaeudeart-options"></div>
                 </div>
                 <div class="filter-section" data-filter="land">
-                    <div class="filter-section-header"><span class="filter-section-title">Land (adr_land)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.land">Land (adr_land)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-land-options"></div>
                 </div>
                 <div class="filter-section" data-filter="region">
-                    <div class="filter-section-header"><span class="filter-section-title">Region (adr_reg)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.region">Region (adr_reg)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-region-options"></div>
                 </div>
                 <div class="filter-section" data-filter="ort">
-                    <div class="filter-section-header"><span class="filter-section-title">Ort (adr_ort)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.ort">Ort (adr_ort)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-ort-options"></div>
                 </div>
                 <div class="filter-section" data-filter="gemeinde">
-                    <div class="filter-section-header"><span class="filter-section-title">Gemeinde (bfs_gem)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.gemeinde">Gemeinde (bfs_gem)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-gemeinde-options"></div>
                 </div>
                 <div class="filter-section" data-filter="kgskat">
-                    <div class="filter-section-header"><span class="filter-section-title">KGS Kategorie (kgs_kat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.kgskat">KGS Kategorie (kgs_kat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-kgskat-options"></div>
                 </div>
             </div>
@@ -958,13 +962,13 @@ Content-Type: application/geo+json
     </main>
 
     <footer id="footer">
-        <div id="coordinates">WGS 84 | Koordinaten: --</div>
+        <div id="coordinates" data-i18n="map.coordinates.default">WGS 84 | Koordinaten: --</div>
         <div id="footer-links">
-            <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener">Quellencode</a>
-            <a href="#" id="footer-api-link">API</a>
-            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Rechtliches</a>
-            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener">Hilfe</a>
-            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Kontakt</a>
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+            <a href="#" id="footer-api-link" data-i18n="footer.api">API</a>
+            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
+            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
         </div>
     </footer>
 

@@ -4,6 +4,7 @@ import { state } from './state.js';
 import { statusColors, mapStyles, placeholderImages } from './config.js';
 import { escapeHtml, escapeForJs } from './utils.js';
 import { showToast } from './toast.js';
+import { t } from './i18n.js';
 import {
   identifySwisstopoFeatures,
   clearIdentifyHighlight,
@@ -476,7 +477,7 @@ function selectBuilding(buildingId, flyToBuilding) {
   updateUrlWithSelection();
 
   // Update header title
-  document.getElementById('info-header-title').textContent = 'Geb\u00e4ude';
+  document.getElementById('info-header-title').textContent = t('info.title.building');
 
   // Show preview image for buildings
   document.getElementById('info-preview-image').style.display = 'block';
@@ -491,18 +492,18 @@ function selectBuilding(buildingId, flyToBuilding) {
   document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';
 
   var infoHtml =
-    '<div class="info-row"><span class="info-label">Objekt-ID</span><span class="info-value">' + escapeHtml(props.bbl_id) + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + escapeHtml(props.bbl_bez) + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + escapeHtml(props.adr_ort) + ', ' + escapeHtml(props.adr_land) + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Adresse</span><span class="info-value">' + escapeHtml(props.adr_conct) + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Fl\u00e4che NGF</span><span class="info-value">' + flaeche + ' m\u00b2</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Baujahr</span><span class="info-value">' + escapeHtml(baujahr) + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Verantwortlich</span><span class="info-value">' + escapeHtml(props.bbl_ovtw || '\u2014') + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Status</span><span class="info-value"><span class="badge status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span></span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id) + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.name') + '</span><span class="info-value">' + escapeHtml(props.bbl_bez) + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.location') + '</span><span class="info-value">' + escapeHtml(props.adr_ort) + ', ' + escapeHtml(props.adr_land) + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.address') + '</span><span class="info-value">' + escapeHtml(props.adr_conct) + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.area_ngf') + '</span><span class="info-value">' + flaeche + ' m\u00b2</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.year') + '</span><span class="info-value">' + escapeHtml(baujahr) + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.responsible') + '</span><span class="info-value">' + escapeHtml(props.bbl_ovtw || '\u2014') + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.status') + '</span><span class="info-value"><span class="badge status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span></span></div>' +
     '<div class="info-footer">' +
       '<button class="info-detail-link" onclick="showDetailView(\'' + escapeForJs(props.bbl_id) + '\')">' +
         '<span class="material-symbols-outlined">open_in_new</span>' +
-        'Details anzeigen' +
+        t('info.details') +
       '</button>' +
     '</div>';
 
@@ -587,20 +588,20 @@ function selectParcel(parcelId, flyToParcel) {
   updateUrlWithSelection();
 
   // Update header title
-  document.getElementById('info-header-title').textContent = 'Parzelle';
+  document.getElementById('info-header-title').textContent = t('info.title.parcel');
 
   // Hide preview image for parcels
   document.getElementById('info-preview-image').style.display = 'none';
 
   // Build info panel HTML content
   var infoHtml =
-    '<div class="info-row"><span class="info-label">Parzellen-ID</span><span class="info-value">' + escapeHtml(props.bbl_id || '\u2014') + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Name</span><span class="info-value">' + escapeHtml(props.bbl_bez || '\u2014') + '</span></div>' +
-    '<div class="info-row"><span class="info-label">Ort</span><span class="info-value">' + escapeHtml(props.bfs_gem || props.adr_ort || '\u2014') + ', ' + escapeHtml(props.adr_reg || '\u2014') + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Parzellen-Nr.</span><span class="info-value">' + escapeHtml(props.av_nr || '\u2014') + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Fl\u00e4che</span><span class="info-value">' + formattedArea + ' m\u00b2</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Nutzungszone</span><span class="info-value">' + escapeHtml(props.av_zbez || '\u2014') + '</span></div>' +
-    '<div class="info-row info-row-secondary"><span class="info-label">Eigentum</span><span class="info-value">' + escapeHtml(props.bbl_eigen || '\u2014') + '</span></div>';
+    '<div class="info-row"><span class="info-label">' + t('info.label.id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id || '\u2014') + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.name') + '</span><span class="info-value">' + escapeHtml(props.bbl_bez || '\u2014') + '</span></div>' +
+    '<div class="info-row"><span class="info-label">' + t('info.label.location') + '</span><span class="info-value">' + escapeHtml(props.bfs_gem || props.adr_ort || '\u2014') + ', ' + escapeHtml(props.adr_reg || '\u2014') + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.plot') + '</span><span class="info-value">' + escapeHtml(props.av_nr || '\u2014') + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.area') + '</span><span class="info-value">' + formattedArea + ' m\u00b2</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.zone') + '</span><span class="info-value">' + escapeHtml(props.av_zbez || '\u2014') + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.ownership') + '</span><span class="info-value">' + escapeHtml(props.bbl_eigen || '\u2014') + '</span></div>';
 
   document.getElementById('info-body').innerHTML = infoHtml;
   document.getElementById('info-panel').classList.add('show');

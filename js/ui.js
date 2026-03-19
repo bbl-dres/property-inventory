@@ -1,5 +1,6 @@
 import { state } from './state.js';
 import { showToast } from './toast.js';
+import { setLang, getLang } from './i18n.js';
 import { switchView, showDetailView, getBuildingIdFromURL, getTabFromURL, setTabInURL } from './views.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
 import { updateShareLink } from './share.js';
@@ -104,15 +105,23 @@ function initLanguageSelector() {
     langBtn.setAttribute('aria-expanded', !isOpen);
   });
 
+  // Set initial active state from current language
+  var currentLang = getLang();
+  langCurrent.textContent = currentLang.toUpperCase();
+  langDropdown.querySelectorAll('.lang-option').forEach(function(o) {
+    o.classList.toggle('active', o.dataset.lang === currentLang);
+  });
+
   langDropdown.addEventListener('click', function(e) {
     var option = e.target.closest('.lang-option');
     if (!option) return;
+    var lang = option.dataset.lang;
     langDropdown.querySelectorAll('.lang-option').forEach(function(o) { o.classList.remove('active'); });
     option.classList.add('active');
     langCurrent.textContent = option.textContent;
     langDropdown.classList.remove('open');
     langBtn.setAttribute('aria-expanded', 'false');
-    // TODO: implement actual language switching
+    setLang(lang);
   });
 
   document.addEventListener('click', function(e) {
