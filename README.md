@@ -8,7 +8,13 @@
 
 Interactive GIS web application mockup for visualizing and managing a real estate portfolio. Features map, list, and gallery views with Mapbox GL JS.
 
-**Live Demo:** https://bbl-dres.github.io/property-inventory/
+**Simple Version:** https://bbl-dres.github.io/property-inventory/
+
+**OSM Height Enrichment:** https://bbl-dres.github.io/property-inventory/osm-height
+
+**Advanced Prototype:** https://bbl-dres.github.io/property-inventory/prototype1
+
+
 
 <p align="center">
   <img src="assets/images/preview1.jpg" width="90%"/>
