@@ -24,26 +24,30 @@ python -m http.server 8080
 ```mermaid
 flowchart TB
     subgraph "Browser — no server required"
-        A["User draws rectangle on map"] --> B["fetch() → Overpass API"]
-        B --> C["OSM building footprints"]
+        A["1. User draws rectangle on map"] --> B["fetch() → Overpass API"]
+        B --> C["OSM buildings (ways + relations)"]
         C --> D{For each building}
-        D -->|has height?| SKIP1[Skip]
-        D -->|has roof tags?| SKIP2[Skip]
-        D -->|complex shape?| SKIP3[Skip]
-        D -->|simple building| E["Create 3m sample grid inside footprint"]
-        E --> F["geotiff.js reads swissALTI3D COG via HTTP range request"]
-        E --> G["geotiff.js reads swissSURFACE3D COG via HTTP range request"]
-        F --> H["height = max(DSM) − min(DTM)"]
+        D -->|has height?| SKIP1["Skip (blue)"]
+        D -->|has roof:height?| SKIP2["Skip (orange)"]
+        D -->|multipolygon?| SKIP3["Skip (grey)"]
+        D -->|processable| E["Create 3m sample grid inside footprint"]
+        E --> F["geotiff.js → swissALTI3D COG"]
+        E --> G["geotiff.js → swissSURFACE3D COG"]
+        F --> H["height = P95(DSM) − min(DTM)"]
         G --> H
-        H --> I["Add height + source:height to feature"]
-        I --> J["Enriched GeoJSON"]
-        J --> K["3D visualization on map"]
+        H -->|< 2m or > 60m| SKIP4["Skip (out of range)"]
+        H -->|2m–60m| I["Add height + source:height"]
+        I --> J["2. Enriched GeoJSON"]
+        J --> K["3. Review: 3D visualization + stats"]
         J --> L["Download GeoJSON"]
+        K --> M["4. OAuth2 login → OSM API"]
+        M --> N["Batch upload via OsmChange XML"]
     end
 
-    style SKIP1 fill:#f5f5f5,stroke:#ccc
-    style SKIP2 fill:#f5f5f5,stroke:#ccc
+    style SKIP1 fill:#e3f2fd,stroke:#90caf9
+    style SKIP2 fill:#fff3e0,stroke:#ffcc80
     style SKIP3 fill:#f5f5f5,stroke:#ccc
+    style SKIP4 fill:#f5f5f5,stroke:#ccc
 ```
 
 For each building, a grid of sample points (3m spacing) is created inside the footprint.
@@ -52,9 +56,12 @@ swisstopo Cloud Optimized GeoTIFF (COG) files via HTTP range requests — no dow
 The building height is computed as:
 
 ```
-height = max(DSM inside footprint) − min(DTM inside footprint)
-       = roof ridge − lowest ground contact
+height = P95(DSM inside footprint) − min(DTM inside footprint)
+       = 95th percentile roof height − lowest ground contact
 ```
+
+The 95th percentile filters outliers from chimneys, antennas, and overhanging trees.
+`max()` would overestimate due to these point features in the DSM.
 
 This matches the [OSM height definition](https://wiki.openstreetmap.org/wiki/Key:height):
 *"the distance between the top edge of the building (including roof, excluding antennas)
@@ -77,7 +84,7 @@ Only two tags are added per building. No geometry or other tags are modified.
 
 | Tag | Example | Description |
 |-----|---------|-------------|
-| `height` | `19.2` | Max height in meters (decimal, no unit suffix) |
+| `height` | `19.2` | 95th percentile height in meters (decimal, no unit suffix) |
 | `source:height` | `swisstopo/swissALTI3D;swissSURFACE3D` | Data source attribution |
 
 ## Safety filters
@@ -127,6 +134,55 @@ At upload time, each building is re-fetched from OSM and checked again:
 - If `roof:shape` or `roof:height` was added since extraction → skip
 - This prevents conflicts with concurrent OSM edits
 
+## Upload to OSM
+
+The tool supports uploading enriched heights directly to OpenStreetMap via OAuth2.
+
+### Setup
+
+1. Register an OAuth2 app at https://www.openstreetmap.org/oauth2/applications
+   - **Name**: `OSM Building Height Enrichment`
+   - **Redirect URI**: your deployment URL (e.g. `https://yourname.github.io/...`)
+   - **Confidential**: No (uncheck)
+   - **Permissions**: `Modify the map` + `Read user preferences`
+2. Copy the Client ID into the tool's Step 4
+3. Click "Login with OpenStreetMap" to authorize
+
+### Rate limits
+
+OSM enforces rate limits on edits ([source](https://github.com/openstreetmap/openstreetmap-website/pull/4319)):
+
+| Account age | Limit |
+|------------|-------|
+| New (< 1 day) | ~1,000 changes/hour |
+| 1 week | ~100,000 changes/hour |
+| With `importer` role | Higher (granted by moderators) |
+
+The limit ramps up quadratically over the first week. Each modified way counts as
+1 change. The tool handles rate limits automatically:
+
+- Uploads in batches of 50 elements with 6s pauses
+- On 429 (rate limited): retries with progressive backoff (30s → 60s → 90s → ...)
+- After each rate limit hit, future batch delays increase
+- Up to 10 retries before giving up on a batch
+
+**For large uploads (>1,000 buildings):** wait until your account is at least 1 week old,
+or request the `importer` role from OSM moderators.
+
+### Upload batching
+
+- OsmChange XML is used for efficient batch uploads (1 HTTP request per batch)
+- Ways are batch-fetched (`GET /api/0.6/ways?ways=id1,id2,...`) before upload
+- Changesets are automatically split at 9,000 elements (below OSM's 10K limit)
+
+### Import guidelines
+
+For large-scale imports, follow the [OSM Import Guidelines](https://wiki.openstreetmap.org/wiki/Import/Guidelines):
+1. Document the import on the OSM wiki
+2. Use a dedicated account (e.g. `swisstopo_height_import`)
+3. Announce on the Swiss OSM mailing list
+4. Wait 2 weeks for community feedback
+
 ## Technology
 
 Single HTML file using:
@@ -139,12 +195,14 @@ No npm, no webpack, no build step, no server-side code.
 
 ## Known limitations
 
-- **Vegetation**: DSM includes tree canopy — buildings under/near trees may have inflated heights
+- **Vegetation**: DSM includes tree canopy — buildings under/near trees may have inflated heights (mitigated by P95)
 - **Temporal mismatch**: DTM and DSM tiles may be from different years (2017–2025)
 - **Small footprints**: Buildings < 2m² use a single sample point (centroid), less accurate
-- **Spires/antennas**: filtered by 60m max threshold, but short spires may still inflate values
-- **Area size**: recommended < 1 km² per run for browser performance; larger areas work but take longer
+- **Spires/antennas**: filtered by P95 + 60m max threshold, but short spires on small buildings may still inflate values
+- **Area size limit**: hard limit at 25 km² per run; recommended < 2 km² for best performance
 - **Swiss coverage only**: swisstopo elevation data covers Switzerland; buildings outside are skipped
+- **Relations**: multipolygon buildings are extracted and computed but **not uploaded** (upload not yet supported)
+- **Rate limits**: new OSM accounts are limited to ~1,000 edits/hour; the tool retries automatically but large uploads may take time
 
 ## Python version
 
