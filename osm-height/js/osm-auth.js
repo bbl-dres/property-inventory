@@ -211,6 +211,8 @@ async function uploadToOSM(features, onProgress, onLog) {
         changesetId = (await csResp.text()).trim();
         onLog('info', 'Created changeset ' + changesetId);
 
+        var osmChangeWays = [];
+        var skippedAtUpload = 0;
         for (var wi = 0; wi < ways.length; wi++) {
             var w = ways[wi];
             var computedHeight = heightByOsmId[w.id];
