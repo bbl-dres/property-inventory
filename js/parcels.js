@@ -66,6 +66,16 @@ export function renderParcelsView() {
 
   parcelsBody.innerHTML = html;
   updateParcelsPaginationInfo(state.parcelCurrentPage, totalPages, totalItems);
+
+  // Re-apply parcel column visibility
+  document.querySelectorAll('#parcel-columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
+    if (!cb.checked) {
+      var columnClass = cb.getAttribute('data-column');
+      document.querySelectorAll('.' + columnClass).forEach(function(cell) {
+        cell.style.display = 'none';
+      });
+    }
+  });
 }
 
 // ===== PAGINATION INFO =====

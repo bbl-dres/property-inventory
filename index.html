@@ -379,7 +379,8 @@
                                         <span class="material-symbols-outlined">search</span>
                                         <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen">
                                     </div>
-                                    <div class="columns-list" id="columns-list">
+                                    <!-- Building columns (shown when Gebäude tab active) -->
+                                    <div class="columns-list" id="columns-list" data-columns-tab="buildings">
                                         <!-- Stammdaten -->
                                         <div class="columns-group-label">Stammdaten</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
@@ -462,6 +463,17 @@
                                         <div class="columns-group-label">Sonstiges</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-etl_ts"> ETL Zeitstempel (etl_ts)</label>
+                                    </div>
+                                    <!-- Parcel columns (shown when Grundstücke tab active) -->
+                                    <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> Parzellen-ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> Grundstück-Nr.</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> Bezeichnung</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> Gemeinde</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> Kanton</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> Fläche</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> Nutzungszone</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> Eigentum</label>
                                     </div>
                                 </div>
                             </div>

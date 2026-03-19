@@ -3994,7 +3994,9 @@ body.detail-active #detail-view {
     height: var(--header-main-height);
   }
 
-  #logo-text-img {
+  #logo-text-img,
+  .logo-divider,
+  #logo-title {
     display: none;
   }
 
@@ -4044,6 +4046,11 @@ body.detail-active #detail-view {
     gap: var(--space-4);
   }
 
+  .toolbar-search,
+  .list-toolbar-search {
+    min-width: auto;
+  }
+
   /* Smart-drawer fixed positioning for tablet - uses overridden CSS variables */
   .gallery-grid {
     grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
@@ -4088,9 +4095,14 @@ body.detail-active #detail-view {
 
   #search-area {
     order: 3;
+    position: static;
     width: 100%;
     padding: 0;
     flex-wrap: wrap;
+  }
+
+  #header-right {
+    min-width: auto;
   }
 
   #search-wrapper {
@@ -4099,7 +4111,16 @@ body.detail-active #detail-view {
     min-width: 200px;
   }
 
-  /* Header detail on mobile */
+  #search-results {
+    max-height: 60vh;
+  }
+
+  /* Hide resize handles on mobile — panels are fixed-size */
+  .filter-panel-resize-handle,
+  .tbl-resize-handle {
+    display: none;
+  }
+
   /* Smart drawer - full screen on mobile */
   #filter-panel {
     position: fixed;
@@ -4128,6 +4149,7 @@ body.detail-active #detail-view {
     max-height: 60vh;
     margin: 0;
     border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    overflow-y: auto;
   }
 
   #menu-toggle {
@@ -4339,6 +4361,20 @@ body.detail-active #detail-view {
     padding: var(--space-2) var(--space-1);
   }
 
+  /* Pagination adjustments */
+  .pagination-footer {
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .pagination-info {
+    flex-basis: 100%;
+  }
+
+  .pagination-rows {
+    order: -1;
+  }
+
   /* Footer adjustments */
   #footer {
     padding: var(--space-2) var(--space-3);
@@ -4358,10 +4394,6 @@ body.detail-active #detail-view {
 
 /* Small mobile (< 480px) */
 @media screen and (max-width: 479px) {
-  .logo-subtitle {
-    display: none;
-  }
-
   #info-panel {
     max-height: 80vh;
   }
@@ -4382,6 +4414,17 @@ body.detail-active #detail-view {
   .detail-tab {
     padding: var(--space-2) var(--space-3);
     font-size: var(--text-xs);
+  }
+
+  .dropdown-menu {
+    min-width: 0;
+    max-width: calc(100vw - 32px);
+  }
+
+  .columns-dropdown {
+    min-width: 0;
+    width: calc(100vw - 32px);
+    max-width: 320px;
   }
 }
 

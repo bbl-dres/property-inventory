@@ -17,6 +17,12 @@ var menuToggleIcon = null;
 var menuOpen = true;
 
 function updateMenuTogglePosition() {
+  // On mobile (≤767px), CSS handles positioning via position: fixed; bottom: 10px
+  if (window.matchMedia('(max-width: 767px)').matches) {
+    menuToggle.style.top = '';
+    return;
+  }
+
   var mainRect = document.getElementById('map-view').getBoundingClientRect();
 
   if (menuOpen) {

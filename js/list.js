@@ -98,8 +98,8 @@ export function initBuildingTableHeaders() {
   });
   headerRow.innerHTML = html;
 
-  // Apply initial visibility from checkboxes
-  document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"][data-column]').forEach(function(cb) {
+  // Apply initial visibility from building column checkboxes
+  document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
     handleColumnToggle(cb);
   });
 }
@@ -109,14 +109,17 @@ var colSearchInput = document.getElementById('columns-search-input');
 if (colSearchInput) {
   colSearchInput.addEventListener('input', function() {
     var term = this.value.toLowerCase().trim();
-    var list = document.getElementById('columns-list');
-    if (!list) return;
-    list.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
+    // Filter the currently visible columns list
+    var activeList = state.activeTableTab === 'parcels'
+      ? document.getElementById('parcel-columns-list')
+      : document.getElementById('columns-list');
+    if (!activeList) return;
+    activeList.querySelectorAll('.dropdown-menu-item').forEach(function(item) {
       var text = item.textContent.toLowerCase();
       item.style.display = text.includes(term) ? '' : 'none';
     });
     // Hide group labels that have no visible items after them
-    list.querySelectorAll('.columns-group-label').forEach(function(label) {
+    activeList.querySelectorAll('.columns-group-label').forEach(function(label) {
       var next = label.nextElementSibling;
       var hasVisible = false;
       while (next && !next.classList.contains('columns-group-label')) {
@@ -212,7 +215,7 @@ export function renderListView() {
   listBody.innerHTML = html;
 
   // Re-apply column visibility to new rows
-  document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"][data-column]').forEach(function(cb) {
+  document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
     if (!cb.checked) handleColumnToggle(cb);
   });
 
@@ -388,9 +391,13 @@ function handleColumnToggle(checkbox) {
 }
 
 function toggleAllColumns(showAll) {
-  var checkboxes = document.querySelectorAll('#columns-dropdown-menu input[type="checkbox"]');
+  // Only toggle columns for the currently visible list
+  var activeList = state.activeTableTab === 'parcels'
+    ? document.getElementById('parcel-columns-list')
+    : document.getElementById('columns-list');
+  if (!activeList) return;
 
-  checkboxes.forEach(function(checkbox) {
+  activeList.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
     checkbox.checked = showAll;
     handleColumnToggle(checkbox);
   });
@@ -475,6 +482,14 @@ export function switchTableTab(tabName) {
   // Clear search terms
   state.listSearchTerm = '';
   state.parcelSearchTerm = '';
+
+  // Switch columns dropdown to match active tab
+  var buildingCols = document.getElementById('columns-list');
+  var parcelCols = document.getElementById('parcel-columns-list');
+  if (buildingCols && parcelCols) {
+    buildingCols.style.display = tabName === 'buildings' ? '' : 'none';
+    parcelCols.style.display = tabName === 'parcels' ? '' : 'none';
+  }
 
   // Render the active table
   if (tabName === 'parcels') {
