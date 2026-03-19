@@ -90,23 +90,24 @@ modifies existing tags or geometry. Buildings are skipped for the following reas
 Buildings with an existing `height` tag are never modified. The original value is
 preserved regardless of whether it matches our computation.
 
-### Geometric roof tags (orange on map)
+### Measured roof height (orange on map)
 
-Buildings with `roof:shape` or `roof:height` tags are skipped. These tags define
-explicit 3D roof geometry in OSM, and adding a computed `height` could conflict
-with the detailed roof model.
+Buildings with a `roof:height` tag are skipped. This tag means someone already
+measured the building precisely — our DSM-based estimate could be less accurate.
 
 Tags that are **not** skipped:
+- `roof:shape` — defines shape (gabled, hipped, etc.) but not total height. Adding
+  `height` actually helps: the renderer calculates `wall = height - roof:height`.
 - `roof:levels` — informational (floor count in roof), safe to enrich
-- `roof:colour` — cosmetic, no geometric conflict
-- `roof:material` — cosmetic, no geometric conflict
+- `roof:colour`, `roof:material` — cosmetic, no geometric conflict
 
 ### Complex footprint (grey on map)
 
-Buildings with complex geometry are skipped to avoid inaccurate height computation:
-- Multipolygon geometry (holes in footprint)
-- More than 30 vertices (unusually complex shape)
-- Invalid geometry (self-intersecting, etc.)
+Buildings with multipolygon geometry (holes in the footprint) are skipped.
+The grid sampling could hit the open courtyard, producing incorrect heights.
+
+Single-ring polygons of any vertex count are processed — even detailed
+footprints like the Bundeshaus (106 vertices) work fine.
 
 ### Height out of range (grey on map)
 

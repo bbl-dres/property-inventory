@@ -106,18 +106,21 @@
         /* Misc */
         code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 11px; }
         .maplibregl-popup { max-width: 320px !important; }
-        .maplibregl-popup-content { padding: 0 !important; border-radius: 8px !important; overflow: hidden; }
-        .popup-header { padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
-        .popup-header a { font-size: 12px; font-weight: 600; color: #1976D2; text-decoration: none; }
+        .maplibregl-popup-content { padding: 0 !important; border-radius: 8px !important; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
+        .maplibregl-popup-close-button { font-size: 16px; width: 28px; height: 28px; line-height: 28px; text-align: center; padding: 0; color: #999; border-radius: 50%; top: 4px; right: 4px; }
+        .maplibregl-popup-close-button:hover { color: #333; background: #eee; }
+        .popup-header { padding: 10px 14px; background: #f5f5f5; border-bottom: 1px solid #eee; }
+        .popup-header a { font-size: 13px; font-weight: 600; color: #1976D2; text-decoration: none; }
         .popup-header a:hover { text-decoration: underline; }
-        .popup-body { padding: 8px 12px; }
+        .popup-body { padding: 6px 0; }
         .popup-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .popup-body td { padding: 3px 6px; border-bottom: 1px solid #f5f5f5; }
-        .popup-body td:first-child { color: #888; font-weight: 500; white-space: nowrap; width: 40%; }
-        .popup-body .new-tag { background: #e8f5e9; }
-        .popup-body .new-tag td { color: #2e7d32; }
-        .popup-body .roof-tag { background: #fff3e0; }
-        .popup-body .roof-tag td { color: #e65100; }
+        .popup-body td { padding: 5px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .popup-body tr:last-child td { border-bottom: none; }
+        .popup-body td:first-child { color: #888; font-weight: 500; white-space: nowrap; padding-right: 12px; }
+        .popup-body td:last-child { color: #333; word-break: break-word; }
+        .popup-body .new-tag td { background: #e8f5e9; color: #2e7d32; }
+        .popup-body .roof-tag td { background: #fff3e0; color: #e65100; }
+        .popup-footer { padding: 6px 14px 10px; font-size: 11px; color: #aaa; text-align: center; border-top: 1px solid #f0f0f0; }
         .draw-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
         .draw-hint.hidden { opacity: 0; }
     </style>
@@ -526,10 +529,15 @@ map.on('click', 'result-fill', function(e) {
         if (isRoofTag) html += ' &#128274;'; // lock icon for roof tags
         html += '</td></tr>';
     }
-    if (isRoof) {
-        html += '<tr class="roof-tag"><td colspan="2" style="text-align:center; font-size:11px; padding:6px;">Skipped — has roof tags</td></tr>';
-    }
     html += '</table></div>';
+
+    // Status footer
+    var statusText = isEnriched ? 'Enriched — height tag will be added' :
+                     isRoof ? 'Skipped — has roof:height tag' :
+                     props.height ? 'Already has height — not modified' :
+                     'Skipped';
+    var statusColor = isEnriched ? '#2e7d32' : isRoof ? '#e65100' : props.height ? '#1976D2' : '#999';
+    html += '<div class="popup-footer" style="color:' + statusColor + ';">' + statusText + '</div>';
 
     buildingPopup.setLngLat(e.lngLat).setHTML(html).addTo(map);
 });

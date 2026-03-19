@@ -347,17 +347,15 @@ async function runPipeline(bbox, callbacks) {
         // Skip filters
         if (props.height) { props['_skip_reason'] = 'has_height'; alreadyHad++; continue; }
 
-        // Only skip buildings with geometric roof definitions (shape, height)
-        // roof:levels, roof:colour, roof:material are informational — safe to enrich
-        var ROOF_SKIP_TAGS = ['roof:shape', 'roof:height'];
-        var hasGeometricRoof = false;
-        for (var ri = 0; ri < ROOF_SKIP_TAGS.length; ri++) {
-            if (props[ROOF_SKIP_TAGS[ri]]) { hasGeometricRoof = true; break; }
-        }
-        if (hasGeometricRoof) { props['_skip_reason'] = 'roof'; skipped++; continue; }
+        // Only skip buildings where someone already measured roof height precisely.
+        // roof:shape alone is fine — adding height actually helps the 3D renderer.
+        // roof:height means someone measured carefully — don't override with DSM estimate.
+        if (props['roof:height']) { props['_skip_reason'] = 'roof'; skipped++; continue; }
 
         var fcoords = feature.geometry.coordinates;
-        if (fcoords.length > 1 || fcoords[0].length > 30) { skipped++; continue; }
+        // Skip multipolygons (holes — grid might sample open courtyard)
+        // Single rings of any vertex count are fine
+        if (fcoords.length > 1) { skipped++; continue; }
 
         var result = computeBuildingHeightSync(feature);
         if (result && result.height_max >= 2 && result.height_max <= 60) {

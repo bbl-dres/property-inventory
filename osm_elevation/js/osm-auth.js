@@ -198,7 +198,7 @@ async function uploadToOSM(features, onProgress, onLog) {
                 way.querySelectorAll('tag').forEach(function(t) {
                     existingTags[t.getAttribute('k')] = t.getAttribute('v');
                 });
-                if (existingTags['height'] || existingTags['roof:shape'] || existingTags['roof:height']) {
+                if (existingTags['height'] || existingTags['roof:height']) {
                     skippedAtUpload++;
                     onProgress(i + 1, toUpload.length);
                     continue;
