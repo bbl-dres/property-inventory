@@ -4141,11 +4141,16 @@ body.detail-active #detail-view {
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Intermediate breakpoint (1024px - 1200px) */
-/* Small laptop breakpoint (1024px - 1366px) */
-@media screen and (max-width: 1366px) {
+/* Hide logo title + divider first (keep Swiss coat of arms text) */
+@media screen and (max-width: 1800px) {
   #logo-title,
-  .logo-divider,
+  .logo-divider {
+    display: none;
+  }
+}
+
+/* Small laptop — also hide coat of arms text */
+@media screen and (max-width: 1366px) {
   #logo-text-img {
     display: none;
   }
