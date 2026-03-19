@@ -426,7 +426,6 @@ function openLightbox(index) {
     lightboxInitialized = true;
 
     document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
-    document.getElementById('lightbox-backdrop') || document.querySelector('.lightbox-backdrop');
     lightbox.querySelector('.lightbox-backdrop').addEventListener('click', closeLightbox);
 
     document.getElementById('lightbox-prev').addEventListener('click', function(e) {
@@ -1123,11 +1122,8 @@ function renderAssetsTable() { assetsTable.render(); }
 
 export {
   populateDetailView,
-  initInfoIcons,
-  initCarousel,
   carouselPrev,
   carouselNext,
-  initMiniMap,
   initAllEntityTables,
   loadMeasurementsForBuilding,
   loadDocumentsForBuilding,

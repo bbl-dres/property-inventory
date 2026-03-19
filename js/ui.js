@@ -302,39 +302,6 @@ let menuToggleText = null;
 let menuToggleIcon = null;
 let menuOpen = true;
 
-function updateMenuTogglePosition() {
-  // On mobile (≤767px), CSS handles positioning via position: fixed; bottom: 10px
-  if (window.matchMedia('(max-width: 767px)').matches) {
-    menuToggle.style.top = '';
-    return;
-  }
-
-  const mainRect = document.getElementById('map-view').getBoundingClientRect();
-
-  if (menuOpen) {
-    const panelRect = accordionPanel.getBoundingClientRect();
-    const calculatedTop = panelRect.bottom - mainRect.top;
-    // Ensure button stays below the panel - if panel hasn't rendered yet, retry
-    if (panelRect.height < 50) {
-      setTimeout(updateMenuTogglePosition, 50);
-      return;
-    }
-    menuToggle.style.top = calculatedTop + 'px';
-  } else {
-    menuToggle.style.top = '10px';
-  }
-}
-
-// BUG FIX #22: Debounced more aggressively (50ms instead of 10ms) to reduce
-// excessive MutationObserver-triggered layout recalculations
-let menuToggleDebounceTimer = null;
-function updateMenuTogglePositionDebounced() {
-  if (menuToggleDebounceTimer) {
-    clearTimeout(menuToggleDebounceTimer);
-  }
-  menuToggleDebounceTimer = setTimeout(updateMenuTogglePosition, 50);
-}
-
 // Initialize all UI components
 function initUI() {
   initLanguageSelector();
@@ -347,6 +314,7 @@ function initUI() {
   initPopstate();
   initBackButton();
   initFooterApiLink();
+  initMobileMenu();
 }
 
 // ===== BACK BUTTON =====
@@ -357,6 +325,180 @@ function initBackButton() {
       switchView(state.previousView || 'map');
     });
   }
+}
+
+// ===== MOBILE HAMBURGER MENU =====
+
+function initMobileMenu() {
+  var hamburgerBtn = document.getElementById('hamburger-btn');
+  var menu = document.getElementById('mobile-menu');
+  var backdrop = document.getElementById('mobile-menu-backdrop');
+  var closeBtn = document.getElementById('mobile-menu-close');
+  if (!hamburgerBtn || !menu) return;
+
+  function openMenu() {
+    menu.classList.add('active');
+    backdrop.classList.add('active');
+    hamburgerBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeMenu() {
+    menu.classList.remove('active');
+    backdrop.classList.remove('active');
+    hamburgerBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  hamburgerBtn.addEventListener('click', openMenu);
+  closeBtn.addEventListener('click', closeMenu);
+  backdrop.addEventListener('click', closeMenu);
+
+  // Escape key closes menu
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape' && menu.classList.contains('active')) {
+      e.stopImmediatePropagation();
+      closeMenu();
+    }
+  });
+
+  // Filter button in mobile menu → opens filter panel, closes menu
+  var mobileFilterBtn = document.getElementById('mobile-filter-btn');
+  if (mobileFilterBtn) {
+    mobileFilterBtn.addEventListener('click', function() {
+      closeMenu();
+      // Trigger the existing filter panel button
+      var filterBtn = document.getElementById('filter-panel-btn');
+      if (filterBtn) filterBtn.click();
+    });
+  }
+
+  // Language pills in mobile menu
+  document.querySelectorAll('.mobile-lang-pill').forEach(function(pill) {
+    pill.addEventListener('click', function() {
+      var lang = this.dataset.lang;
+      document.querySelectorAll('.mobile-lang-pill').forEach(function(p) { p.classList.remove('active'); });
+      this.classList.add('active');
+      setLang(lang);
+      // Sync desktop lang selector
+      var langCurrent = document.getElementById('lang-current');
+      if (langCurrent) langCurrent.textContent = lang.toUpperCase();
+      document.querySelectorAll('.lang-option').forEach(function(o) {
+        o.classList.toggle('active', o.dataset.lang === lang);
+      });
+    });
+  });
+
+  // Mobile view toggle
+  document.querySelectorAll('.mobile-view-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var view = this.dataset.view;
+      document.querySelectorAll('.mobile-view-btn').forEach(function(b) { b.classList.remove('active'); });
+      this.classList.add('active');
+      closeMenu();
+      switchView(view);
+    });
+  });
+
+  // Mobile API link
+  var mobileApiLink = document.getElementById('mobile-api-link');
+  if (mobileApiLink) {
+    mobileApiLink.addEventListener('click', function(e) {
+      e.preventDefault();
+      closeMenu();
+      showApiDocsView();
+    });
+  }
+
+  // Populate layers section
+  populateMobileLayers();
+
+}
+
+function populateMobileLayers() {
+  var container = document.getElementById('mobile-layers-section');
+  if (!container) return;
+
+  var layers = [
+    { id: 'buildings', toggle: 'layer-toggle-buildings', label: 'accordion.layers.buildings' },
+    { id: 'landcovers', toggle: 'layer-toggle-landcovers', label: 'accordion.layers.landcovers' },
+    { id: 'parcels', toggle: 'layer-toggle-parcels', label: 'accordion.layers.parcels' }
+  ];
+
+  var html = '<div class="mobile-layers-group-label">' + t('accordion.layers.internal') + '</div>';
+
+  layers.forEach(function(layer) {
+    var desktopCheckbox = document.getElementById(layer.toggle);
+    var checked = desktopCheckbox && desktopCheckbox.checked ? 'checked' : '';
+    html += '<div class="mobile-layer-item">' +
+      '<input type="checkbox" ' + checked + ' data-sync-toggle="' + layer.toggle + '">' +
+      '<span class="mobile-layer-title" data-i18n="' + layer.label + '">' + t(layer.label) + '</span>' +
+      '<button class="mobile-layer-info" data-action="showInternalLayerInfo" data-layer-key="' + layer.id + '">' +
+        '<span class="material-symbols-outlined">info</span>' +
+      '</button>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Sync mobile checkboxes with desktop layer toggles
+  container.querySelectorAll('input[data-sync-toggle]').forEach(function(cb) {
+    cb.addEventListener('change', function() {
+      var desktopCb = document.getElementById(this.dataset.syncToggle);
+      if (desktopCb) {
+        desktopCb.checked = this.checked;
+        // Fire change event on desktop checkbox to trigger layer visibility
+        desktopCb.dispatchEvent(new Event('change'));
+      }
+    });
+  });
+}
+
+function populateMobileAccordion() {
+  var container = document.getElementById('mobile-accordion-section');
+  if (!container) return;
+
+  var items = [
+    { icon: 'draw', i18n: 'accordion.draw' },
+    { icon: 'print', i18n: 'accordion.print' },
+    { icon: 'layers', i18n: 'accordion.catalog' }
+  ];
+
+  var html = '';
+  items.forEach(function(item) {
+    html += '<div class="mobile-accordion-item" data-accordion-key="' + item.i18n + '">' +
+      '<span class="material-symbols-outlined">' + item.icon + '</span>' +
+      '<span data-i18n="' + item.i18n + '">' + t(item.i18n) + '</span>' +
+    '</div>';
+  });
+
+  container.innerHTML = html;
+
+  // Clicking opens the corresponding desktop accordion and closes the mobile menu
+  container.querySelectorAll('.mobile-accordion-item').forEach(function(item) {
+    item.addEventListener('click', function() {
+      var key = this.dataset.accordionKey;
+      // Close mobile menu
+      document.getElementById('mobile-menu').classList.remove('active');
+      document.getElementById('mobile-menu-backdrop').classList.remove('active');
+      document.body.style.overflow = '';
+
+      // Find and click the matching desktop accordion header
+      document.querySelectorAll('.accordion-header').forEach(function(header) {
+        var spans = header.querySelectorAll(':scope > span[data-i18n]');
+        var headerKey = spans.length > 0 ? spans[spans.length - 1].getAttribute('data-i18n') : '';
+        if (headerKey === key) {
+          // Open the accordion panel first
+          var panel = document.getElementById('accordion-panel');
+          if (panel && panel.classList.contains('collapsed')) {
+            var toggle = document.getElementById('menu-toggle');
+            if (toggle) toggle.click();
+          }
+          header.click();
+        }
+      });
+    });
+  });
 }
 
 // ===== FOOTER API LINK =====
@@ -443,7 +585,10 @@ function initAccordion() {
       const isActive = this.classList.contains('active');
       const isGeokatalog = this.parentElement.id === 'geokatalog-accordion';
 
-      document.querySelectorAll('.accordion-header').forEach(function(h) { h.classList.remove('active'); });
+      document.querySelectorAll('.accordion-header').forEach(function(h) {
+        h.classList.remove('active');
+        h.setAttribute('aria-expanded', 'false');
+      });
       document.querySelectorAll('.accordion-content').forEach(function(c) { c.classList.remove('show'); });
       geokatalogAccordion.classList.remove('expanded');
 
@@ -452,16 +597,12 @@ function initAccordion() {
 
       if (!isActive) {
         this.classList.add('active');
+        this.setAttribute('aria-expanded', 'true');
         content.classList.add('show');
 
         // Match accordion by data-i18n key instead of text content
         const headerSpans = this.querySelectorAll(':scope > span[data-i18n]');
         const i18nKey = headerSpans.length > 0 ? headerSpans[headerSpans.length - 1].getAttribute('data-i18n') : '';
-
-        // Update share link when Share accordion is opened
-        if (i18nKey === 'accordion.share') {
-          updateShareLink();
-        }
 
         // Show print preview when Print accordion is opened
         if (i18nKey === 'accordion.print') {
@@ -475,7 +616,6 @@ function initAccordion() {
         }
       }
 
-      updateMenuTogglePositionDebounced();
     });
   });
 }
@@ -504,8 +644,6 @@ function initMenuToggle() {
   menuToggleIcon = menuToggle.querySelector('.material-symbols-outlined');
   menuOpen = true;
 
-  setTimeout(updateMenuTogglePosition, 100);
-
   menuToggle.addEventListener('click', function() {
     menuOpen = !menuOpen;
 
@@ -518,18 +656,7 @@ function initMenuToggle() {
       menuToggleText.textContent = t('menu.open');
       menuToggleIcon.textContent = 'expand_more';
     }
-
-    updateMenuTogglePositionDebounced();
   });
-
-  // BUG FIX #22: Replaced broad subtree MutationObserver with a narrow observer
-  // that only watches direct class/style changes on the accordion panel itself.
-  // Accordion open/close and Swisstopo layer additions trigger explicit calls
-  // to updateMenuTogglePositionDebounced() at their call sites.
-  const observer = new MutationObserver(function() {
-    updateMenuTogglePositionDebounced();
-  });
-  observer.observe(accordionPanel, { attributes: true, attributeFilter: ['class', 'style'] });
 }
 
 // ===== INFO PANEL CLOSE / ZOOM / SHARE =====
@@ -694,4 +821,4 @@ function initPopstate() {
   });
 }
 
-export { initUI, updateMenuTogglePositionDebounced };
+export { initUI };

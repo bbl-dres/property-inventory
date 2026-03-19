@@ -122,9 +122,70 @@
                     </div>
                 </div>
             </div>
+            <button id="hamburger-btn" class="hamburger-btn" aria-label="Menü öffnen" aria-expanded="false">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
         </div>
 
     </header>
+
+    <!-- Mobile hamburger menu (slide-in from right) -->
+    <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Hauptmenü">
+        <div class="mobile-menu-header">
+            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="mobile-menu-body">
+            <!-- View toggle -->
+            <div class="mobile-menu-view-toggle" id="mobile-view-toggle">
+                <button class="mobile-view-btn active" data-view="map">
+                    <span class="material-symbols-outlined">map</span>
+                    <span data-i18n="view.map">Karte</span>
+                </button>
+                <button class="mobile-view-btn" data-view="gallery">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    <span data-i18n="view.gallery">Galerie</span>
+                </button>
+            </div>
+            <!-- Filter button -->
+            <button class="mobile-menu-item" id="mobile-filter-btn">
+                <span class="material-symbols-outlined">tune</span>
+                <span data-i18n="header.filter">Filter</span>
+                <span class="material-symbols-outlined mobile-menu-arrow">chevron_right</span>
+            </button>
+            <!-- Language selector -->
+            <div class="mobile-menu-lang">
+                <span class="material-symbols-outlined">language</span>
+                <div class="mobile-lang-pills" id="mobile-lang-pills">
+                    <button class="mobile-lang-pill active" data-lang="de">DE</button>
+                    <button class="mobile-lang-pill" data-lang="fr">FR</button>
+                    <button class="mobile-lang-pill" data-lang="it">IT</button>
+                    <button class="mobile-lang-pill" data-lang="en">EN</button>
+                </div>
+            </div>
+            <div class="mobile-menu-divider"></div>
+            <!-- Layer toggles (populated from accordion via JS) -->
+            <div id="mobile-layers-section"></div>
+            <!-- External layers + Geokatalog -->
+            <div id="mobile-external-section">
+                <div class="mobile-layers-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
+                <div id="mobile-external-layers-list" class="mobile-external-layers-list">
+                    <div class="mobile-external-empty" data-i18n="accordion.layers.external.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                </div>
+            </div>
+            <div class="mobile-menu-divider"></div>
+            <!-- Footer links -->
+            <div class="mobile-menu-links">
+                <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+                <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
+                <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+                <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
+                <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
 
     <main id="main">
         <div class="main-content">
@@ -190,26 +251,8 @@
             </button>
             </div>
             
+            <div id="accordion-wrapper">
             <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
-                <div class="accordion-item">
-                    <button class="accordion-header" aria-expanded="false">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span data-i18n="accordion.share">Teilen</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="share-panel">
-                            <div class="share-link-section">
-                                <span class="share-link-label" data-i18n="accordion.share.label">Link zum Teilen:</span>
-                                <div class="share-link-row">
-                                    <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
-                                    <button class="share-copy-btn" data-action="copyShareLink" aria-label="Link in die Zwischenablage kopieren" data-i18n="accordion.share.copy">Link kopieren</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-
                 <div class="accordion-item">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
@@ -271,11 +314,11 @@
                 </div>
 
                 <div class="accordion-item" id="geokatalog-accordion">
-                    <div class="accordion-header geokatalog-header">
+                    <button class="accordion-header geokatalog-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span data-i18n="accordion.catalog">Geokatalog</span>
                         <span class="geokatalog-theme-switch" data-i18n="accordion.catalog.theme">Thema wechseln</span>
-                    </div>
+                    </button>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
                             <div class="geokatalog-loading" data-i18n="loading.catalog">Lade Katalog...</div>
@@ -329,6 +372,7 @@
                 <span class="material-symbols-outlined">expand_less</span>
                 <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
             </div>
+            </div><!-- /#accordion-wrapper -->
 
             <aside id="info-panel" role="complementary" aria-label="Objektinformation">
                 <div id="info-header">

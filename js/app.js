@@ -57,8 +57,30 @@ function initTablePanel() {
   const panel = document.getElementById('table-panel');
   const handle = document.getElementById('tbl-resize-handle');
 
+  // Table visibility: check URL param first, then auto-decide by viewport size
+  var urlParams = new URLSearchParams(window.location.search);
+  var tableParam = urlParams.get('table');
+  var showTable;
+  if (tableParam === 'open') {
+    showTable = true;
+  } else if (tableParam === 'closed') {
+    showTable = false;
+  } else {
+    // Default: show only on large screens
+    showTable = window.innerWidth > 1024 && window.innerHeight > 800;
+  }
+
+  if (!showTable) {
+    state.tableOpen = false;
+    panel.classList.add('collapsed');
+    toggleBtn.classList.add('collapsed');
+    if (handle) handle.style.display = 'none';
+  }
+
   toggleBtn.addEventListener('click', function() {
     state.tableOpen = !state.tableOpen;
+    // Clear any inline height from drag-resize so CSS classes take effect
+    panel.style.height = '';
     panel.classList.toggle('collapsed', !state.tableOpen);
     toggleBtn.classList.toggle('collapsed', !state.tableOpen);
     handle.style.display = state.tableOpen ? '' : 'none';
@@ -68,6 +90,10 @@ function initTablePanel() {
       renderLandCoversView();
       state.listViewDirty = false;
     }
+    // Persist table visibility in URL
+    var url = new URL(window.location);
+    url.searchParams.set('table', state.tableOpen ? 'open' : 'closed');
+    window.history.replaceState({}, '', url);
     setTimeout(function() {
       if (state.map) state.map.resize();
     }, 280);

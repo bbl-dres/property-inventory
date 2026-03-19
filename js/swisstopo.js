@@ -3,7 +3,6 @@
 import { state } from './state.js';
 import { escapeHtml } from './utils.js';
 import { showToast } from './ui.js';
-import { updateMenuTogglePositionDebounced } from './ui.js';
 import { t } from './i18n.js';
 import { statusColors } from './config.js';
 
@@ -722,7 +721,6 @@ export function loadGeokatalog() {
         treeContainer.innerHTML = '<div class="geokatalog-error">Keine Daten verfügbar</div>';
       }
 
-      updateMenuTogglePositionDebounced();
     })
     .catch(function(error) {
       console.error('Geokatalog Fehler:', error);
@@ -796,8 +794,7 @@ export function renderCatalogTree(items, container) {
         e.stopPropagation();
         itemEl.classList.toggle('expanded');
         nodeEl.classList.toggle('expanded');
-        updateMenuTogglePositionDebounced();
-      });
+        });
     } else {
       // Click on leaf node toggles layer
       const layerId = item.layerBodId;

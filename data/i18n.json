@@ -131,12 +131,6 @@
     "fr": "Les données du portefeuille n'ont pas pu être chargées. Veuillez vérifier votre connexion internet.",
     "it": "Non è stato possibile caricare i dati del portafoglio. Verificare la connessione internet."
   },
-  "error.data.invalid": {
-    "de": "Ungültiges Datenformat: Gebäudedaten fehlen",
-    "en": "Invalid data format: building data missing",
-    "fr": "Format de données invalide : données des bâtiments manquantes",
-    "it": "Formato dati non valido: dati degli edifici mancanti"
-  },
   "error.retry": {
     "de": "Erneut versuchen",
     "en": "Retry",
@@ -477,25 +471,19 @@
     "de": "Gebäude durchsuchen...",
     "en": "Search buildings...",
     "fr": "Rechercher des bâtiments...",
-    "it": "Cercare edifici..."
+    "it": "Cerca edifici..."
   },
   "table.search.parcels": {
     "de": "Grundstücke durchsuchen...",
     "en": "Search parcels...",
     "fr": "Rechercher des parcelles...",
-    "it": "Cercare parcelle..."
+    "it": "Cerca particelle..."
   },
   "table.search": {
     "de": "Tabelle durchsuchen...",
     "en": "Search table...",
     "fr": "Rechercher dans le tableau...",
     "it": "Cercare nella tabella..."
-  },
-  "export.button": {
-    "de": "Export",
-    "en": "Export",
-    "fr": "Exporter",
-    "it": "Esportare"
   },
   "export.all": {
     "de": "Alle exportieren",
@@ -507,13 +495,13 @@
     "de": "Gefiltert exportieren",
     "en": "Export filtered",
     "fr": "Exporter filtré",
-    "it": "Esportare filtrato"
+    "it": "Esporta filtrati"
   },
   "export.filtered.count": {
     "de": "Gefiltert exportieren ({count})",
     "en": "Export filtered ({count})",
     "fr": "Exporter filtré ({count})",
-    "it": "Esportare filtrato ({count})"
+    "it": "Esporta filtrati ({count})"
   },
   "export.format.csv": {
     "de": "CSV (.csv)",
@@ -533,12 +521,6 @@
     "fr": "GeoJSON (.geojson)",
     "it": "GeoJSON (.geojson)"
   },
-  "export.format.kml": {
-    "de": "KML (.kml)",
-    "en": "KML (.kml)",
-    "fr": "KML (.kml)",
-    "it": "KML (.kml)"
-  },
   "export.exporting": {
     "de": "Exportiere...",
     "en": "Exporting...",
@@ -550,18 +532,6 @@
     "en": "{count} object{plural} will be exported",
     "fr": "{count} objet{plural} seront exportés",
     "it": "{count} oggett{plural} saranno esportati"
-  },
-  "export.shapefile.info": {
-    "de": "GeoJSON wird erstellt. Konvertieren Sie mit QGIS oder ogr2ogr zu Shapefile.",
-    "en": "GeoJSON is being created. Convert to Shapefile using QGIS or ogr2ogr.",
-    "fr": "Un GeoJSON est créé. Convertissez-le en Shapefile avec QGIS ou ogr2ogr.",
-    "it": "Un GeoJSON viene creato. Convertirlo in Shapefile con QGIS o ogr2ogr."
-  },
-  "columns.button": {
-    "de": "Spalten",
-    "en": "Columns",
-    "fr": "Colonnes",
-    "it": "Colonne"
   },
   "columns.header": {
     "de": "Spalten anzeigen",
@@ -1157,29 +1127,11 @@
     "fr": "Réinitialiser",
     "it": "Reimpostare"
   },
-  "filter.close": {
-    "de": "Filter schliessen",
-    "en": "Close filters",
-    "fr": "Fermer les filtres",
-    "it": "Chiudere i filtri"
-  },
   "filter.search": {
     "de": "Filter suchen...",
     "en": "Search filters...",
     "fr": "Rechercher un filtre...",
     "it": "Cercare filtro..."
-  },
-  "filter.remove": {
-    "de": "Filter entfernen",
-    "en": "Remove filter",
-    "fr": "Supprimer le filtre",
-    "it": "Rimuovere il filtro"
-  },
-  "filter.reset.all": {
-    "de": "Alle Filter zurücksetzen",
-    "en": "Reset all filters",
-    "fr": "Réinitialiser tous les filtres",
-    "it": "Reimpostare tutti i filtri"
   },
   "filter.section.status": {
     "de": "Status (bbl_stat)",
@@ -1259,12 +1211,6 @@
     "fr": "Partager",
     "it": "Condividere"
   },
-  "accordion.share.label": {
-    "de": "Link zum Teilen:",
-    "en": "Share link:",
-    "fr": "Lien de partage :",
-    "it": "Link di condivisione:"
-  },
   "accordion.share.copy": {
     "de": "Link kopieren",
     "en": "Copy link",
@@ -1331,12 +1277,6 @@
     "fr": "Créer un PDF",
     "it": "Creare PDF"
   },
-  "accordion.print.creating": {
-    "de": "Wird erstellt...",
-    "en": "Creating...",
-    "fr": "Création en cours...",
-    "it": "Creazione in corso..."
-  },
   "accordion.catalog": {
     "de": "Geokatalog",
     "en": "Geo catalogue",
@@ -1360,6 +1300,12 @@
     "en": "Internal maps",
     "fr": "Cartes internes",
     "it": "Carte interne"
+  },
+  "accordion.layers.external.empty": {
+    "de": "Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.",
+    "en": "No external maps active. Search for maps via the search field.",
+    "fr": "Aucune carte externe active. Recherchez des cartes via le champ de recherche.",
+    "it": "Nessuna carta esterna attiva. Cercate carte tramite il campo di ricerca."
   },
   "accordion.layers.external": {
     "de": "Externe Karten",
@@ -1407,13 +1353,13 @@
     "de": "Menü schliessen",
     "en": "Close menu",
     "fr": "Fermer le menu",
-    "it": "Chiudere il menu"
+    "it": "Chiudi menu"
   },
   "menu.open": {
     "de": "Menü öffnen",
     "en": "Open menu",
     "fr": "Ouvrir le menu",
-    "it": "Aprire il menu"
+    "it": "Apri menu"
   },
   "tools.label": {
     "de": "Werkzeuge",
@@ -1432,12 +1378,6 @@
     "en": "Places",
     "fr": "Lieux",
     "it": "Luoghi"
-  },
-  "search.section.layers": {
-    "de": "Karten hinzufügen...",
-    "en": "Add maps...",
-    "fr": "Ajouter des cartes...",
-    "it": "Aggiungere carte..."
   },
   "search.empty": {
     "de": "Keine Resultate gefunden",
@@ -1565,101 +1505,11 @@
     "fr": "Mesures",
     "it": "Misurazioni"
   },
-  "detail.tab.documents": {
-    "de": "Dokumente",
-    "en": "Documents",
-    "fr": "Documents",
-    "it": "Documenti"
-  },
-  "detail.tab.contacts": {
-    "de": "Kontakte",
-    "en": "Contacts",
-    "fr": "Contacts",
-    "it": "Contatti"
-  },
-  "detail.tab.costs": {
-    "de": "Kosten",
-    "en": "Costs",
-    "fr": "Coûts",
-    "it": "Costi"
-  },
-  "detail.tab.contracts": {
-    "de": "Verträge",
-    "en": "Contracts",
-    "fr": "Contrats",
-    "it": "Contratti"
-  },
-  "detail.tab.assets": {
-    "de": "Ausstattung",
-    "en": "Equipment",
-    "fr": "Équipement",
-    "it": "Attrezzatura"
-  },
   "detail.empty": {
     "de": "Keine Einträge vorhanden",
     "en": "No entries available",
     "fr": "Aucune entrée disponible",
     "it": "Nessuna voce disponibile"
-  },
-  "detail.add.measurement": {
-    "de": "Bemessung hinzufügen - kommt bald...",
-    "en": "Add measurement - coming soon...",
-    "fr": "Ajouter une mesure - bientôt disponible...",
-    "it": "Aggiungere misurazione - presto disponibile..."
-  },
-  "detail.add.document": {
-    "de": "Dokument hinzufügen - kommt bald...",
-    "en": "Add document - coming soon...",
-    "fr": "Ajouter un document - bientôt disponible...",
-    "it": "Aggiungere documento - presto disponibile..."
-  },
-  "detail.add.contact": {
-    "de": "Kontakt hinzufügen - kommt bald...",
-    "en": "Add contact - coming soon...",
-    "fr": "Ajouter un contact - bientôt disponible...",
-    "it": "Aggiungere contatto - presto disponibile..."
-  },
-  "detail.add.cost": {
-    "de": "Kosten hinzufügen - kommt bald...",
-    "en": "Add cost - coming soon...",
-    "fr": "Ajouter un coût - bientôt disponible...",
-    "it": "Aggiungere costo - presto disponibile..."
-  },
-  "detail.add.contract": {
-    "de": "Vertrag hinzufügen - kommt bald...",
-    "en": "Add contract - coming soon...",
-    "fr": "Ajouter un contrat - bientôt disponible...",
-    "it": "Aggiungere contratto - presto disponibile..."
-  },
-  "detail.add.asset": {
-    "de": "Ausstattung hinzufügen - kommt bald...",
-    "en": "Add equipment - coming soon...",
-    "fr": "Ajouter un équipement - bientôt disponible...",
-    "it": "Aggiungere attrezzatura - presto disponibile..."
-  },
-  "status.active": {
-    "de": "Aktiv",
-    "en": "Active",
-    "fr": "Actif",
-    "it": "Attivo"
-  },
-  "status.renovation": {
-    "de": "In Renovation",
-    "en": "In renovation",
-    "fr": "En rénovation",
-    "it": "In ristrutturazione"
-  },
-  "status.planning": {
-    "de": "In Planung",
-    "en": "In planning",
-    "fr": "En planification",
-    "it": "In pianificazione"
-  },
-  "status.sold": {
-    "de": "Verkauft",
-    "en": "Sold",
-    "fr": "Vendu",
-    "it": "Venduto"
   },
   "format.a4_landscape": {
     "de": "A4 Querformat",
@@ -1967,65 +1817,11 @@
     "fr": "Inventaire PBC",
     "it": "Inventario PBC"
   },
-  "search.section.objects": {
-    "de": "Objekte",
-    "en": "Objects",
-    "fr": "Objets",
-    "it": "Oggetti"
-  },
-  "search.section.places": {
-    "de": "Orte",
-    "en": "Places",
-    "fr": "Lieux",
-    "it": "Luoghi"
-  },
   "search.section.maps": {
     "de": "Karten hinzufügen...",
     "en": "Add maps...",
     "fr": "Ajouter des cartes...",
     "it": "Aggiungere carte..."
-  },
-  "search.empty": {
-    "de": "Keine Resultate gefunden",
-    "en": "No results found",
-    "fr": "Aucun résultat trouvé",
-    "it": "Nessun risultato trovato"
-  },
-  "menu.close": {
-    "de": "Menü schliessen",
-    "en": "Close menu",
-    "fr": "Fermer le menu",
-    "it": "Chiudi menu"
-  },
-  "menu.open": {
-    "de": "Menü öffnen",
-    "en": "Open menu",
-    "fr": "Ouvrir le menu",
-    "it": "Apri menu"
-  },
-  "export.filtered": {
-    "de": "Gefiltert exportieren",
-    "en": "Export filtered",
-    "fr": "Exporter filtré",
-    "it": "Esporta filtrati"
-  },
-  "export.filtered.count": {
-    "de": "Gefiltert exportieren ({count})",
-    "en": "Export filtered ({count})",
-    "fr": "Exporter filtré ({count})",
-    "it": "Esporta filtrati ({count})"
-  },
-  "table.search.buildings": {
-    "de": "Gebäude durchsuchen...",
-    "en": "Search buildings...",
-    "fr": "Rechercher des bâtiments...",
-    "it": "Cerca edifici..."
-  },
-  "table.search.parcels": {
-    "de": "Grundstücke durchsuchen...",
-    "en": "Search parcels...",
-    "fr": "Rechercher des parcelles...",
-    "it": "Cerca particelle..."
   },
   "print.generating": {
     "de": "Wird erstellt...",
@@ -2142,10 +1938,10 @@
     "it": "Cerca copertura del suolo..."
   },
   "pagination.landcovers.info": {
-    "de": "{start}\u2013{end} von {total} Bodenabdeckungen",
-    "en": "{start}\u2013{end} of {total} land covers",
-    "fr": "{start}\u2013{end} de {total} couvertures",
-    "it": "{start}\u2013{end} di {total} coperture"
+    "de": "{start}–{end} von {total} Bodenabdeckungen",
+    "en": "{start}–{end} of {total} land covers",
+    "fr": "{start}–{end} de {total} couvertures",
+    "it": "{start}–{end} di {total} coperture"
   },
   "pagination.landcovers.empty": {
     "de": "Keine Bodenabdeckungen",
@@ -2218,6 +2014,42 @@
     "en": "FID Source",
     "fr": "Source FID",
     "it": "Fonte FID"
+  },
+  "columns.group.master2": {
+    "de": "Stammdaten 2",
+    "en": "Master Data 2",
+    "fr": "Données de base 2",
+    "it": "Dati di base 2"
+  },
+  "col.egm_elev": {
+    "de": "Höhe",
+    "en": "Elevation",
+    "fr": "Altitude",
+    "it": "Altitudine"
+  },
+  "col.garea_acu": {
+    "de": "GF Genauigkeit",
+    "en": "GF Accuracy",
+    "fr": "Précision SP",
+    "it": "Precisione SP"
+  },
+  "col.gvol_acu": {
+    "de": "GV Genauigkeit",
+    "en": "GV Accuracy",
+    "fr": "Précision VB",
+    "it": "Precisione VE"
+  },
+  "col.gastw_acu": {
+    "de": "Gesch. Genauigkeit",
+    "en": "Floor Accuracy",
+    "fr": "Précision étages",
+    "it": "Precisione piani"
+  },
+  "col.larea_acu": {
+    "de": "GSF Genauigkeit",
+    "en": "GSF Accuracy",
+    "fr": "Précision ST",
+    "it": "Precisione ST"
   },
   "accordion.layers.landcovers": {
     "de": "Bodenabdeckung",
