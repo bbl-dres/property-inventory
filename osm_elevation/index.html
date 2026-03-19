@@ -622,7 +622,19 @@ document.getElementById('btn-upload').onclick = async function() {
         }
     } catch (e) { addLog('error', 'OAuth: ' + e.message); }
 
-    // Restore workflow state
+    // Restore map position (always, even without results)
+    function restoreMapPosition() {
+        var savedMap = sessionStorage.getItem('osm_elevation_map');
+        if (!savedMap) return false;
+        sessionStorage.removeItem('osm_elevation_map');
+        try {
+            var mv = JSON.parse(savedMap);
+            map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
+            return true;
+        } catch (e) { return false; }
+    }
+
+    // Restore workflow state (results, bbox, steps)
     var saved = sessionStorage.getItem('osm_elevation_result');
     var savedBbox = sessionStorage.getItem('osm_elevation_bbox');
     if (saved) {
@@ -651,20 +663,16 @@ document.getElementById('btn-upload').onclick = async function() {
                 if (bboxStr) { var p = bboxStr.split(',').map(Number); updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] }); }
                 map.getSource('result-buildings').setData(resultGeoJSON);
                 map.setLayoutProperty('result-fill', 'visibility', 'visible');
-                // Restore saved map position
-                var savedMap = sessionStorage.getItem('osm_elevation_map');
-                if (savedMap) {
-                    sessionStorage.removeItem('osm_elevation_map');
-                    try {
-                        var mv = JSON.parse(savedMap);
-                        map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
-                    } catch (e) {}
-                } else {
+                if (!restoreMapPosition()) {
                     map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
                 }
             }
             if (map.loaded()) restoreMap(); else map.once('load', restoreMap);
         } catch (e) { console.error('Restore failed:', e); }
+    } else {
+        // No results to restore, but still restore map position if saved
+        function restoreMapOnly() { restoreMapPosition(); }
+        if (map.loaded()) restoreMapOnly(); else map.once('load', restoreMapOnly);
     }
 })();
 </script>

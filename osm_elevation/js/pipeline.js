@@ -345,7 +345,7 @@ async function runPipeline(bbox, callbacks) {
         var props = feature.properties;
 
         // Skip filters
-        if (props.height) { alreadyHad++; continue; }
+        if (props.height) { props['_skip_reason'] = 'has_height'; alreadyHad++; continue; }
 
         // Only skip buildings with geometric roof definitions (shape, height)
         // roof:levels, roof:colour, roof:material are informational — safe to enrich

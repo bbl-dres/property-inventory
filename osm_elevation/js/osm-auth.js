@@ -135,6 +135,10 @@ async function uploadToOSM(features, onProgress, onLog) {
         return h >= 2 && h <= 60;
     });
 
+    var totalFeatures = features.length;
+    var preFiltered = totalFeatures - toUpload.length;
+    onLog('info', 'Pre-filtered: ' + toUpload.length + ' to upload, ' + preFiltered + ' skipped (had height, roof tags, complex, or not a way)');
+
     if (toUpload.length === 0) throw new Error('No buildings to upload');
 
     var updated = 0, errors = 0, changesetId = null;
@@ -158,35 +162,49 @@ async function uploadToOSM(features, onProgress, onLog) {
         }
         changesetId = (await csResp.text()).trim();
         onLog('step', 'Created changeset ' + changesetId);
+        onLog('info', 'Uploading ' + toUpload.length + ' buildings (~' + toUpload.length + ' seconds)...');
 
-        // Process in parallel batches of 6
-        var BATCH_SIZE = 6;
-        var completed = 0;
+        // Process sequentially — OSM API rate limit is ~1 write/sec
+        var skippedAtUpload = 0;
 
-        async function uploadOne(feature) {
-            var props = feature.properties;
+        for (var i = 0; i < toUpload.length; i++) {
+            if (errors >= 10) { onLog('error', 'Too many errors — stopping upload.'); break; }
+
+            var props = toUpload[i].properties;
             var osmId = props.osm_id;
 
             try {
+                // Fetch current way from OSM
                 var wayResp = await fetch(OSM_API + '/way/' + osmId, { headers: { 'Authorization': auth } });
-                if (!wayResp.ok) { errors++; return; }
+                if (!wayResp.ok) {
+                    onLog('error', 'way/' + osmId + ': failed to fetch (' + wayResp.status + ')');
+                    errors++;
+                    onProgress(i + 1, toUpload.length);
+                    continue;
+                }
 
                 var parser = new DOMParser();
                 var doc = parser.parseFromString(await wayResp.text(), 'text/xml');
                 var way = doc.querySelector('way');
-                if (!way) { errors++; return; }
+                if (!way) {
+                    onLog('error', 'way/' + osmId + ': invalid XML response');
+                    errors++;
+                    onProgress(i + 1, toUpload.length);
+                    continue;
+                }
 
-                // Safety re-check
+                // Safety re-check: skip if tags were added since extraction
                 var existingTags = {};
                 way.querySelectorAll('tag').forEach(function(t) {
                     existingTags[t.getAttribute('k')] = t.getAttribute('v');
                 });
-                if (existingTags['height']) { onLog('info', 'way/' + osmId + ': already has height'); return; }
-                if (existingTags['roof:shape'] || existingTags['roof:height']) {
-                    onLog('info', 'way/' + osmId + ': has geometric roof tags'); return;
+                if (existingTags['height'] || existingTags['roof:shape'] || existingTags['roof:height']) {
+                    skippedAtUpload++;
+                    onProgress(i + 1, toUpload.length);
+                    continue;
                 }
 
-                // Add tags
+                // Add height + source:height tags
                 var heightTag = doc.createElement('tag');
                 heightTag.setAttribute('k', 'height');
                 heightTag.setAttribute('v', props.height);
@@ -199,6 +217,7 @@ async function uploadToOSM(features, onProgress, onLog) {
 
                 way.setAttribute('changeset', changesetId);
 
+                // Upload
                 var updateResp = await fetch(OSM_API + '/way/' + osmId, {
                     method: 'PUT',
                     headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
@@ -208,25 +227,26 @@ async function uploadToOSM(features, onProgress, onLog) {
                 if (updateResp.ok) {
                     updated++;
                 } else {
-                    onLog('error', 'way/' + osmId + ': ' + await updateResp.text());
+                    var errText = await updateResp.text();
+                    onLog('error', 'way/' + osmId + ': upload failed (' + updateResp.status + ') ' + errText);
                     errors++;
                 }
             } catch (e) {
                 onLog('error', 'way/' + osmId + ': ' + e.message);
                 errors++;
             }
-            completed++;
-            onProgress(completed, toUpload.length);
+
+            onProgress(i + 1, toUpload.length);
+
+            // 1 second delay to respect OSM API rate limits
+            await new Promise(function(r) { setTimeout(r, 1000); });
         }
 
-        // Process batches
-        for (var i = 0; i < toUpload.length; i += BATCH_SIZE) {
-            if (errors >= 10) { onLog('error', 'Too many errors, stopping'); break; }
-            var batch = toUpload.slice(i, i + BATCH_SIZE);
-            await Promise.all(batch.map(uploadOne));
-        }
-
-        onLog('step', 'Upload complete: ' + updated + ' updated, ' + errors + ' errors');
+        // Summary
+        onLog('step', 'Upload complete.');
+        onLog('info', 'Updated: ' + updated + ' buildings');
+        if (skippedAtUpload > 0) onLog('info', 'Skipped at upload (edited since extraction): ' + skippedAtUpload);
+        if (errors > 0) onLog('error', 'Errors: ' + errors);
         if (changesetId) {
             onLog('info', 'Changeset: https://www.openstreetmap.org/changeset/' + changesetId);
         }
