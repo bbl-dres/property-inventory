@@ -30,7 +30,7 @@ log = logging.getLogger(__name__)
 CHANGESET_TAGS = {
     "comment": "Add building heights computed from swisstopo DSM/DTM elevation models",
     "source": "swisstopo/swissALTI3D;swissSURFACE3D",
-    "created_by": "osm_elevation (property-inventory)",
+    "created_by": "osm-height (bbl-dres/property-inventory)",
     "import": "yes",
     "import:page": "https://wiki.openstreetmap.org/wiki/Switzerland/swisstopo_height_import",
 }

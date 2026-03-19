@@ -22,7 +22,6 @@ const SURFACE3D_URL = 'https://data.geo.admin.ch/ch.swisstopo.swisssurface3d-ras
 const YEARS = [2025, 2024, 2023, 2022, 2021, 2020, 2019, 2018, 2017];
 
 // Caches
-const tileImageCache = new Map();   // datasetKey:tileId -> GeoTIFF image
 const tileDataCache = new Map();    // datasetKey:tileId -> { data: Float32Array, width, height, ox, oy, rx, ry }
 const yearHints = { dtm: {}, dsm: {} };
 const failedTiles = new Set();
@@ -354,22 +353,39 @@ async function runPipeline(bbox, callbacks) {
 
         var fcoords = feature.geometry.coordinates;
         // Skip multipolygons (holes — grid might sample open courtyard)
-        // Single rings of any vertex count are fine
-        if (fcoords.length > 1) { skipped++; continue; }
+        if (fcoords.length > 1) { props['_skip_reason'] = 'complex'; skipped++; continue; }
+        // Skip invalid geometry (too few vertices)
+        if (!fcoords[0] || fcoords[0].length < 4) { props['_skip_reason'] = 'complex'; skipped++; continue; }
 
         var result = computeBuildingHeightSync(feature);
-        if (result && result.height_max >= 2 && result.height_max <= 60) {
-            props.height = String(result.height_max);
-            props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
-            enriched++;
-        } else {
-            skipped++;
+        if (!result) {
+            props['_skip_reason'] = 'no_data'; skipped++; continue;
         }
+        if (result.height_max < 2 || result.height_max > 60) {
+            props['_skip_reason'] = 'out_of_range'; skipped++; continue;
+        }
+        props.height = String(result.height_max);
+        props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
+        enriched++;
     }
 
-    // Report
+    // Report with detailed skip reasons
     var elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
-    onLog('Done in ' + elapsed + 's — Enriched: ' + enriched + ', Already had: ' + alreadyHad + ', Skipped: ' + skipped);
+    onLog('Done in ' + elapsed + 's');
+    onLog('Enriched: ' + enriched + ', Already had height: ' + alreadyHad + ', Skipped: ' + skipped);
+    if (skipped > 0) {
+        var skipReasons = {};
+        geojson.features.forEach(function(f) {
+            var reason = f.properties['_skip_reason'];
+            if (reason) skipReasons[reason] = (skipReasons[reason] || 0) + 1;
+        });
+        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height' };
+        for (var reason in skipReasons) {
+            if (reason !== 'has_height') { // already counted in alreadyHad
+                onLog('  Skipped (' + (reasonLabels[reason] || reason) + '): ' + skipReasons[reason]);
+            }
+        }
+    }
 
     var heights = geojson.features
         .filter(function(f) { return f.properties['source:height']; })

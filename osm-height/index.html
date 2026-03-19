@@ -230,7 +230,7 @@
                                 <li>Name: anything (e.g. "Building Heights")</li>
                                 <li>Redirect URI: <code id="redirect-uri-hint"></code></li>
                                 <li><strong>Uncheck</strong> "Confidential application"</li>
-                                <li>Check only <strong>"Modify the map"</strong></li>
+                                <li>Check <strong>"Read user preferences"</strong> and <strong>"Modify the map"</strong></li>
                                 <li>Click Register, copy the Client ID</li>
                             </ol>
                         </details>
@@ -331,14 +331,16 @@ function setProgress(pct) { document.getElementById('progress-fill').style.width
 function clearLog() { document.getElementById('log-area').innerHTML = ''; }
 function addLog(type, text) { var el = document.getElementById('log-area'); var line = document.createElement('div'); line.className = 'log-' + type; line.textContent = text; el.appendChild(line); el.scrollTop = el.scrollHeight; }
 
+function renderStats(total, enriched, alreadyHad, skipped) {
+    return '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">Total</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + enriched + '</div><div class="stat-label">Enriched</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + alreadyHad + '</div><div class="stat-label">Had Height</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + skipped + '</div><div class="stat-label">Skipped</div></div>';
+}
+
 function showResults(stats) {
-    document.getElementById('stats').innerHTML =
-        '<div class="stat-card"><div class="stat-value">' + stats.total + '</div><div class="stat-label">Total</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + stats.enriched + '</div><div class="stat-label">Enriched</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + stats.alreadyHad + '</div><div class="stat-label">Had Height</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + stats.skipped + '</div><div class="stat-label">Skipped</div></div>';
+    document.getElementById('stats').innerHTML = renderStats(stats.total, stats.enriched, stats.alreadyHad, stats.skipped);
     document.getElementById('btn-download').disabled = false;
-    // Enable step 4 login
     document.getElementById('btn-osm-login').disabled = false;
     document.getElementById('btn-upload').disabled = false;
 }
@@ -425,11 +427,7 @@ document.getElementById('btn-clear').onclick = function() {
     document.getElementById('btn-upload').disabled = true;
     document.getElementById('btn-osm-login').disabled = true;
     if (buildingPopup) buildingPopup.remove();
-    document.getElementById('stats').innerHTML =
-        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Total</div></div>' +
-        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Enriched</div></div>' +
-        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Had Height</div></div>' +
-        '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Skipped</div></div>';
+    document.getElementById('stats').innerHTML = renderStats('—', '—', '—', '—');
     // Reset all steps
     setStepState(1, 'active');
     document.getElementById('step-1').classList.remove('collapsed', 'locked');
@@ -553,7 +551,16 @@ map.on('mouseleave', 'result-fill', function() { if (!buildingPopup.isOpen()) ma
 // Download
 document.getElementById('btn-download').onclick = function() {
     if (!resultGeoJSON) return;
-    var blob = new Blob([JSON.stringify(resultGeoJSON)], { type: 'application/json' });
+    // Strip internal properties (underscore-prefixed) from download
+    var cleanFeatures = resultGeoJSON.features.map(function(f) {
+        var cleanProps = {};
+        for (var k in f.properties) {
+            if (k.charAt(0) !== '_') cleanProps[k] = f.properties[k];
+        }
+        return { type: 'Feature', geometry: f.geometry, properties: cleanProps };
+    });
+    var cleanGeoJSON = { type: 'FeatureCollection', features: cleanFeatures };
+    var blob = new Blob([JSON.stringify(cleanGeoJSON)], { type: 'application/json' });
     var url = URL.createObjectURL(blob);
     var a = document.createElement('a'); a.href = url; a.download = 'osm_buildings_enriched.geojson'; a.click(); URL.revokeObjectURL(url);
 };
