@@ -105,6 +105,19 @@
 
         /* Misc */
         code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 11px; }
+        .maplibregl-popup { max-width: 320px !important; }
+        .maplibregl-popup-content { padding: 0 !important; border-radius: 8px !important; overflow: hidden; }
+        .popup-header { padding: 8px 12px; background: #f5f5f5; border-bottom: 1px solid #eee; display: flex; align-items: center; justify-content: space-between; }
+        .popup-header a { font-size: 12px; font-weight: 600; color: #1976D2; text-decoration: none; }
+        .popup-header a:hover { text-decoration: underline; }
+        .popup-body { padding: 8px 12px; }
+        .popup-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .popup-body td { padding: 3px 6px; border-bottom: 1px solid #f5f5f5; }
+        .popup-body td:first-child { color: #888; font-weight: 500; white-space: nowrap; width: 40%; }
+        .popup-body .new-tag { background: #e8f5e9; }
+        .popup-body .new-tag td { color: #2e7d32; }
+        .popup-body .roof-tag { background: #fff3e0; }
+        .popup-body .roof-tag td { color: #e65100; }
         .draw-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
         .draw-hint.hidden { opacity: 0; }
     </style>
@@ -185,12 +198,12 @@
                     <div class="legend" style="margin-top:10px;">
                         <div class="legend-item"><div class="legend-dot" style="background:#4CAF50;"></div> Enriched — new <code>height</code> tag</div>
                         <div class="legend-item"><div class="legend-dot" style="background:#2196F3;"></div> Already had height — untouched</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped — complex or no data</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#FF9800;"></div> Has roof tags — not modified</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped — complex or no data</div>
                     </div>
                     <div class="btn-group" style="margin-top:10px;">
                         <button class="btn btn-secondary" id="btn-download" disabled>Download GeoJSON</button>
                     </div>
-                    <div id="building-info" style="margin-top:12px;"></div>
                 </div>
             </div>
 
@@ -343,10 +356,22 @@ map.on('load', function() {
     map.addLayer({
         id: 'result-fill', type: 'fill-extrusion', source: 'result-buildings',
         paint: {
-            'fill-extrusion-color': ['case', ['has', 'source:height'], '#4CAF50', ['has', 'height'], '#2196F3', '#9E9E9E'],
+            'fill-extrusion-color': ['case',
+                ['has', 'source:height'], '#4CAF50',
+                ['==', ['get', '_skip_reason'], 'roof'], '#FF9800',
+                ['has', 'height'], '#2196F3',
+                '#9E9E9E'
+            ],
             'fill-extrusion-height': ['case', ['has', 'height'], ['to-number', ['get', 'height'], 5], 5],
             'fill-extrusion-base': 0, 'fill-extrusion-opacity': 0.85,
         },
+        layout: { visibility: 'none' },
+    });
+    // Selection highlight layer
+    map.addLayer({
+        id: 'result-selected', type: 'line', source: 'result-buildings',
+        paint: { 'line-color': '#fff', 'line-width': 3 },
+        filter: ['==', ['get', 'osm_id'], ''],
         layout: { visibility: 'none' },
     });
 });
@@ -396,7 +421,7 @@ document.getElementById('btn-clear').onclick = function() {
     document.getElementById('btn-download').disabled = true;
     document.getElementById('btn-upload').disabled = true;
     document.getElementById('btn-osm-login').disabled = true;
-    document.getElementById('building-info').innerHTML = '';
+    if (buildingPopup) buildingPopup.remove();
     document.getElementById('stats').innerHTML =
         '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Total</div></div>' +
         '<div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Enriched</div></div>' +
@@ -438,7 +463,6 @@ document.getElementById('btn-run').onclick = async function() {
 
     // Step 1 done → Step 2 running
     setStepState(1, 'done');
-    collapseStep(1);
     setStepState(2, 'running');
     unlockAndExpandStep(2);
     clearLog();
@@ -455,7 +479,6 @@ document.getElementById('btn-run').onclick = async function() {
 
             // Step 2 done → unlock Steps 3 & 4
             setStepState(2, 'done');
-            collapseStep(2);
             setProgress(100);
             showResults(stats);
             unlockAndExpandStep(3);
@@ -472,27 +495,52 @@ document.getElementById('btn-run').onclick = async function() {
     document.getElementById('btn-clear').disabled = false;
 };
 
-// Building inspector
+// Building inspector — popup on map
+var buildingPopup = new maplibregl.Popup({ closeButton: true, closeOnClick: true, maxWidth: '320px' });
+
 map.on('click', 'result-fill', function(e) {
     if (!e.features || !e.features.length) return;
-    var props = e.features[0].properties;
+    var feature = e.features[0];
+    var props = feature.properties;
     var isEnriched = !!props['source:height'];
-    var html = '<div class="building-props"><table>';
-    html += '<tr><td>OSM</td><td><a class="osm-link" href="https://www.openstreetmap.org/way/' + escHtml(props.osm_id) + '" target="_blank" rel="noopener">way/' + escHtml(props.osm_id) + '</a></td></tr>';
-    var skipKeys = { osm_id: 1, osm_type: 1 };
+    var isRoof = props['_skip_reason'] === 'roof';
+    var osmId = props.osm_id;
+
+    // Selection highlight
+    map.setFilter('result-selected', ['==', ['get', 'osm_id'], osmId]);
+    map.setLayoutProperty('result-selected', 'visibility', 'visible');
+
+    // Build popup HTML
+    var html = '<div class="popup-header"><a href="https://www.openstreetmap.org/way/' + escHtml(osmId) + '" target="_blank" rel="noopener">way/' + escHtml(osmId) + ' ↗</a></div>';
+    html += '<div class="popup-body"><table>';
+
+    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1 };
     var newKeys = { height: 1, 'source:height': 1 };
     for (var k in props) {
         if (skipKeys[k] || props[k] == null) continue;
         var isNew = isEnriched && newKeys[k];
-        html += '<tr class="' + (isNew ? 'new-tag' : '') + '"><td>' + escHtml(k) + '</td><td>' + escHtml(String(props[k])) + (isNew ? ' &#10003;' : '') + '</td></tr>';
+        var isRoofTag = k.indexOf('roof:') === 0;
+        var rowClass = isNew ? 'new-tag' : isRoofTag ? 'roof-tag' : '';
+        html += '<tr class="' + rowClass + '"><td>' + escHtml(k) + '</td><td>' + escHtml(String(props[k]));
+        if (isNew) html += ' &#10003;';
+        if (isRoofTag) html += ' &#128274;'; // lock icon for roof tags
+        html += '</td></tr>';
+    }
+    if (isRoof) {
+        html += '<tr class="roof-tag"><td colspan="2" style="text-align:center; font-size:11px; padding:6px;">Skipped — has roof tags</td></tr>';
     }
     html += '</table></div>';
-    document.getElementById('building-info').innerHTML = html;
-    // Make sure step 3 is visible
-    document.getElementById('step-3').classList.remove('collapsed');
+
+    buildingPopup.setLngLat(e.lngLat).setHTML(html).addTo(map);
 });
+
+buildingPopup.on('close', function() {
+    map.setFilter('result-selected', ['==', ['get', 'osm_id'], '']);
+    map.setLayoutProperty('result-selected', 'visibility', 'none');
+});
+
 map.on('mouseenter', 'result-fill', function() { map.getCanvas().style.cursor = 'pointer'; });
-map.on('mouseleave', 'result-fill', function() { map.getCanvas().style.cursor = ''; });
+map.on('mouseleave', 'result-fill', function() { if (!buildingPopup.isOpen()) map.getCanvas().style.cursor = ''; });
 
 // Download
 document.getElementById('btn-download').onclick = function() {
@@ -512,6 +560,14 @@ if (savedClientId) document.getElementById('osm-client-id').value = savedClientI
 document.getElementById('btn-osm-login').onclick = async function() {
     var clientId = document.getElementById('osm-client-id').value.trim() || sessionStorage.getItem('osm_client_id');
     if (!clientId) { alert('Please enter your OAuth2 Client ID.'); return; }
+    // Save map position before OAuth redirect
+    var mc = map.getCenter();
+    sessionStorage.setItem('osm_elevation_map', JSON.stringify({
+        lng: mc.lng, lat: mc.lat,
+        zoom: map.getZoom(),
+        pitch: map.getPitch(),
+        bearing: map.getBearing(),
+    }));
     try { await startOAuthLogin(clientId, resultGeoJSON, bboxStr); } catch (e) { addLog('error', e.message); }
 };
 
@@ -583,8 +639,8 @@ document.getElementById('btn-upload').onclick = async function() {
             var total = resultGeoJSON.features.length;
             var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height']; }).length;
             var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height']; }).length;
-            setStepState(1, 'done'); collapseStep(1);
-            setStepState(2, 'done'); collapseStep(2);
+            setStepState(1, 'done');
+            setStepState(2, 'done');
             unlockAndExpandStep(3);
             unlockAndExpandStep(4);
             setProgress(100);
@@ -595,7 +651,17 @@ document.getElementById('btn-upload').onclick = async function() {
                 if (bboxStr) { var p = bboxStr.split(',').map(Number); updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] }); }
                 map.getSource('result-buildings').setData(resultGeoJSON);
                 map.setLayoutProperty('result-fill', 'visibility', 'visible');
-                map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+                // Restore saved map position
+                var savedMap = sessionStorage.getItem('osm_elevation_map');
+                if (savedMap) {
+                    sessionStorage.removeItem('osm_elevation_map');
+                    try {
+                        var mv = JSON.parse(savedMap);
+                        map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
+                    } catch (e) {}
+                } else {
+                    map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+                }
             }
             if (map.loaded()) restoreMap(); else map.once('load', restoreMap);
         } catch (e) { console.error('Restore failed:', e); }

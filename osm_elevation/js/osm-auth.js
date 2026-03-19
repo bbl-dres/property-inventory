@@ -130,6 +130,7 @@ async function uploadToOSM(features, onProgress, onLog) {
     var toUpload = features.filter(function(f) {
         var p = f.properties;
         if (!p['source:height'] || p.osm_type !== 'way') return false;
+        if (p['_skip_reason']) return false; // roof tags, etc.
         var h = parseFloat(p.height);
         return h >= 2 && h <= 60;
     });
@@ -158,28 +159,32 @@ async function uploadToOSM(features, onProgress, onLog) {
         changesetId = (await csResp.text()).trim();
         onLog('step', 'Created changeset ' + changesetId);
 
-        for (var i = 0; i < toUpload.length; i++) {
-            var props = toUpload[i].properties;
+        // Process in parallel batches of 6
+        var BATCH_SIZE = 6;
+        var completed = 0;
+
+        async function uploadOne(feature) {
+            var props = feature.properties;
             var osmId = props.osm_id;
-            onProgress(i + 1, toUpload.length);
 
             try {
                 var wayResp = await fetch(OSM_API + '/way/' + osmId, { headers: { 'Authorization': auth } });
-                if (!wayResp.ok) { errors++; continue; }
+                if (!wayResp.ok) { errors++; return; }
 
                 var parser = new DOMParser();
                 var doc = parser.parseFromString(await wayResp.text(), 'text/xml');
                 var way = doc.querySelector('way');
-                if (!way) { errors++; continue; }
+                if (!way) { errors++; return; }
 
                 // Safety re-check
                 var existingTags = {};
                 way.querySelectorAll('tag').forEach(function(t) {
                     existingTags[t.getAttribute('k')] = t.getAttribute('v');
                 });
-                if (existingTags['height']) { onLog('info', 'way/' + osmId + ': already has height, skipping'); continue; }
-                var hasRoof = Object.keys(existingTags).some(function(k) { return k.indexOf('roof:') === 0; });
-                if (hasRoof) { onLog('info', 'way/' + osmId + ': has roof tags, skipping'); continue; }
+                if (existingTags['height']) { onLog('info', 'way/' + osmId + ': already has height'); return; }
+                if (existingTags['roof:shape'] || existingTags['roof:height']) {
+                    onLog('info', 'way/' + osmId + ': has geometric roof tags'); return;
+                }
 
                 // Add tags
                 var heightTag = doc.createElement('tag');
@@ -206,13 +211,19 @@ async function uploadToOSM(features, onProgress, onLog) {
                     onLog('error', 'way/' + osmId + ': ' + await updateResp.text());
                     errors++;
                 }
-
-                await new Promise(function(r) { setTimeout(r, 100); }); // rate limit
             } catch (e) {
                 onLog('error', 'way/' + osmId + ': ' + e.message);
                 errors++;
-                if (errors >= 10) { onLog('error', 'Too many errors, stopping'); break; }
             }
+            completed++;
+            onProgress(completed, toUpload.length);
+        }
+
+        // Process batches
+        for (var i = 0; i < toUpload.length; i += BATCH_SIZE) {
+            if (errors >= 10) { onLog('error', 'Too many errors, stopping'); break; }
+            var batch = toUpload.slice(i, i + BATCH_SIZE);
+            await Promise.all(batch.map(uploadOne));
         }
 
         onLog('step', 'Upload complete: ' + updated + ' updated, ' + errors + ' errors');

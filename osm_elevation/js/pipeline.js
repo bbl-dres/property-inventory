@@ -252,7 +252,7 @@ async function extractBuildings(bbox, onLog) {
     }
 
     var features = [];
-    var tagsToCopy = ['height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'name', 'addr:street', 'addr:housenumber'];
+    var tagsToCopy = ['height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'roof:levels', 'roof:colour', 'roof:material', 'name', 'addr:street', 'addr:housenumber'];
 
     for (var j = 0; j < data.elements.length; j++) {
         var el2 = data.elements[j];
@@ -347,9 +347,14 @@ async function runPipeline(bbox, callbacks) {
         // Skip filters
         if (props.height) { alreadyHad++; continue; }
 
-        var hasRoof = false;
-        for (var k in props) { if (k.indexOf('roof:') === 0) { hasRoof = true; break; } }
-        if (hasRoof) { skipped++; continue; }
+        // Only skip buildings with geometric roof definitions (shape, height)
+        // roof:levels, roof:colour, roof:material are informational — safe to enrich
+        var ROOF_SKIP_TAGS = ['roof:shape', 'roof:height'];
+        var hasGeometricRoof = false;
+        for (var ri = 0; ri < ROOF_SKIP_TAGS.length; ri++) {
+            if (props[ROOF_SKIP_TAGS[ri]]) { hasGeometricRoof = true; break; }
+        }
+        if (hasGeometricRoof) { props['_skip_reason'] = 'roof'; skipped++; continue; }
 
         var fcoords = feature.geometry.coordinates;
         if (fcoords.length > 1 || fcoords[0].length > 30) { skipped++; continue; }

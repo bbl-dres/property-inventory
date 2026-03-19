@@ -38,7 +38,8 @@
       "WebFetch(domain:taginfo.openstreetmap.ch)",
       "Read(//c/Users/DavidRasner/Documents/GitHub/area-estimator/**)",
       "Bash(rm -f 01_extract_osm_buildings.py 02_compute_heights.py 03_validate.py 04_upload.py app.py main.py requirements.txt)",
-      "Bash(rm -rf templates __pycache__)"
+      "Bash(rm -rf templates __pycache__)",
+      "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d[''''elements''''][0].get\\(''''tags'''',{}\\), indent=2\\)\\)\")"
     ]
   }
 }
