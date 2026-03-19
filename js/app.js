@@ -26,7 +26,7 @@ import { initContextMenu } from './context-menu.js';
 import { initMeasure } from './measure.js';
 import { initUI, updateMenuTogglePositionDebounced } from './ui.js';
 import { initPrintWidget } from './print.js';
-import { initI18n } from './i18n.js';
+import { initI18n, t } from './i18n.js';
 
 // Make updateMenuTogglePositionDebounced available globally for geokatalog
 window.updateMenuTogglePositionDebounced = updateMenuTogglePositionDebounced;
@@ -210,8 +210,8 @@ function loadAllData() {
       hideLoadingOverlay();
 
       showError(
-        'Fehler beim Laden der Daten',
-        'Die Portfoliodaten konnten nicht geladen werden. Bitte \u00FCberpr\u00FCfen Sie Ihre Internetverbindung.',
+        t('error.data.title'),
+        t('error.data.message'),
         function() {
           loadAllData();
         }

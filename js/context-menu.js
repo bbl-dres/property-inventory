@@ -2,6 +2,7 @@ import { state } from './state.js';
 import { showToast } from './toast.js';
 import { startMeasurement, clearMeasurement } from './measure.js';
 import { getShareUrl } from './share.js';
+import { t } from './i18n.js';
 
 // ===== MAP CONTEXT MENU =====
 
@@ -39,9 +40,9 @@ function initContextMenu() {
 
     // Toggle measure menu text based on state
     if (state.measureState.active) {
-      contextMenuMeasureText.textContent = 'Messung löschen';
+      contextMenuMeasureText.textContent = t('map.context.measure.delete');
     } else {
-      contextMenuMeasureText.textContent = 'Distanz messen';
+      contextMenuMeasureText.textContent = t('map.context.measure');
     }
 
     // Get map container dimensions
@@ -92,7 +93,7 @@ function initContextMenu() {
       contextMenuCoords.classList.add('copied');
       showToast({
         type: 'success',
-        title: 'Koordinaten kopiert',
+        title: t('success.copy.title'),
         message: coordsText,
         duration: 2000
       });
@@ -100,8 +101,8 @@ function initContextMenu() {
     }).catch(function(err) {
       showToast({
         type: 'error',
-        title: 'Fehler beim Kopieren',
-        message: 'Koordinaten konnten nicht kopiert werden',
+        title: t('error.copy.title'),
+        message: t('error.copy.message'),
         duration: 3000
       });
     });
@@ -123,8 +124,8 @@ function initContextMenu() {
     // Use native Web Share API
     if (navigator.share) {
       navigator.share({
-        title: 'GIS Immobilienportfolio - Standort',
-        text: 'Schauen Sie sich diesen Standort an:',
+        title: t('share.title'),
+        text: t('share.email.body'),
         url: shareUrl
       }).catch(function(err) {
         // User cancelled or share failed - copy to clipboard as fallback
@@ -144,8 +145,8 @@ function initContextMenu() {
       navigator.clipboard.writeText(shareUrl).then(function() {
         showToast({
           type: 'success',
-          title: 'Link kopiert',
-          message: 'Link wurde in die Zwischenablage kopiert',
+          title: t('success.copy.title'),
+          message: t('success.copy.message'),
           duration: 2000
         });
       });

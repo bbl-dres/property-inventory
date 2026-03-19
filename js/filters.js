@@ -280,6 +280,23 @@ export function navigateWithRegionFilter() {
   switchView('map');
 }
 
+export function navigateWithOrtFilter() {
+  if (!state.currentDetailBuilding) return;
+  var ort = state.currentDetailBuilding.properties.adr_ort;
+  if (!ort) return;
+
+  // Reset all filters and set only ort filter
+  resetFilters();
+  state.activeFilters.ort = [ort];
+
+  // Update checkbox state
+  var checkbox = document.querySelector('#filter-panel input[data-filter="ort"][data-value="' + ort + '"]');
+  if (checkbox) checkbox.checked = true;
+
+  applyFilters();
+  switchView('map');
+}
+
 export function updateFilterButtonState() {
   var drawerBtn = document.getElementById('filter-panel-btn');
   if (!drawerBtn) return;
@@ -549,3 +566,4 @@ window.resetAllFilters = resetFilters;
 window.navigateToAllObjects = navigateToAllObjects;
 window.navigateWithLandFilter = navigateWithLandFilter;
 window.navigateWithRegionFilter = navigateWithRegionFilter;
+window.navigateWithOrtFilter = navigateWithOrtFilter;

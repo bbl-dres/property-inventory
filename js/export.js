@@ -3,6 +3,7 @@
 import { state } from './state.js';
 import { escapeXml, downloadBlob } from './utils.js';
 import { showToast } from './toast.js';
+import { t } from './i18n.js';
 
 export function initExportPanel() {
   // Format card selection
@@ -48,7 +49,7 @@ export function updateExportCount() {
     count = state.selectedBuildingId ? 1 : 0;
   }
 
-  countEl.textContent = count + ' Objekt' + (count !== 1 ? 'e' : '') + ' werden exportiert';
+  countEl.textContent = t('export.count', {count: count, plural: count !== 1 ? 'e' : ''});
 }
 
 export function getExportData() {
@@ -71,13 +72,13 @@ export function getExportData() {
 export function performExport() {
   var data = getExportData();
   if (data.length === 0) {
-    showToast({ type: 'error', message: 'Keine Daten zum Exportieren vorhanden' });
+    showToast({ type: 'error', message: t('error.export.nodata') });
     return;
   }
 
   var btn = document.getElementById('export-btn');
   var originalHTML = btn.innerHTML;
-  btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span><span>Exportiere...</span>';
+  btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span><span>' + t('export.exporting') + '</span>';
   btn.disabled = true;
 
   setTimeout(function() {
@@ -96,10 +97,10 @@ export function performExport() {
           exportShapefile(data);
           break;
       }
-      showToast({ type: 'success', message: 'Export erfolgreich abgeschlossen' });
+      showToast({ type: 'success', message: t('success.export.done') });
     } catch (e) {
       console.error('Export error:', e);
-      showToast({ type: 'error', message: 'Fehler beim Export: ' + e.message });
+      showToast({ type: 'error', message: t('error.export', {message: e.message}) });
     }
 
     btn.innerHTML = originalHTML;

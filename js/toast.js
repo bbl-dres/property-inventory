@@ -1,6 +1,7 @@
 // Toast notification system
 
 import { escapeHtml } from './utils.js';
+import { t } from './i18n.js';
 
 var toastIcons = {
   error: 'error',
@@ -38,7 +39,7 @@ export function showToast(options) {
     html += '</div>';
   }
   html += '</div>';
-  html += '<button class="toast-close" aria-label="Schliessen"><span class="material-symbols-outlined">close</span></button>';
+  html += '<button class="toast-close" aria-label="' + t('modal.close') + '"><span class="material-symbols-outlined">close</span></button>';
 
   toast.innerHTML = html;
   container.appendChild(toast);
@@ -81,7 +82,7 @@ export function showError(title, message, retryCallback) {
   var actions = [];
   if (retryCallback) {
     actions.push({
-      label: 'Erneut versuchen',
+      label: t('error.retry'),
       primary: true,
       onClick: retryCallback
     });

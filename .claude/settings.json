@@ -12,7 +12,14 @@
       "Bash(ls -lh \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/js/\"*.js)",
       "Read(//c/Users/DavidRasner/Documents/GitHub/property-inventory/**)",
       "Read(//c/Users/DavidRasner/.claude/projects/c--Users-DavidRasner-Documents-GitHub-property-inventory/8ee226a5-14d7-4b64-9cb2-3271a62788a8/tool-results/**)",
-      "Bash(node -e \":*)"
+      "Bash(node -e \":*)",
+      "Bash(grep -n \"Zur Startansicht\\\\|2D / 3D\\\\|Schliessen\\\\|Erneut versuchen\\\\|Kopiert\\\\|Link kopieren\\\\|Messung\\\\|Distanz messen\\\\|WGS 84\\\\|Seite.*von\\\\|Objekt.*werden\\\\|Grundstücke gefunden\\\\|Keine Objekte\" js/*.js)",
+      "Bash(grep -o \"t\\(''''[^'''']*''''\" js/*.js)",
+      "Bash(grep -oh \"t\\(''''[^'''']*''''\" js/*.js)",
+      "Bash(grep -oE \"t\\\\\\([''''\"\"][^''''\"\"]+[''''\"\"]\" js/*.js)",
+      "Bash(grep -oE 't\\\\\\(['\"''''\"'\"\"\"\"][^'\"''''\"'\"\"\"\"]+['\"''''\"'\"\"\"\"]' js/*.js)",
+      "Bash(grep -n \"t\\(''''info\\\\|t\\(''''col\\\\|t\\(''''empty\\\\|t\\(''''pagination\\\\|t\\(''''status\" js/*.js)",
+      "Read(//tmp/**)"
     ]
   }
 }

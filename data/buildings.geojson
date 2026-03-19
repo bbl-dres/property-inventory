@@ -71,7 +71,12 @@
         "larea_uf": 1900.0,
         "larea_acu": "AV",
         "objectid": 1,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -150,7 +155,12 @@
         "larea_uf": 400.0,
         "larea_acu": "Geschätzt",
         "objectid": 2,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -229,7 +239,12 @@
         "larea_uf": 6000.0,
         "larea_acu": "AV",
         "objectid": 3,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -308,7 +323,12 @@
         "larea_uf": null,
         "larea_acu": null,
         "objectid": 4,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1555952494-efd681c7e3f9?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -387,7 +407,12 @@
         "larea_uf": 2300.0,
         "larea_acu": "AV",
         "objectid": 5,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -466,7 +491,12 @@
         "larea_uf": 900.0,
         "larea_acu": "Geschätzt",
         "objectid": 6,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -545,7 +575,12 @@
         "larea_uf": 140.0,
         "larea_acu": "AV",
         "objectid": 7,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -624,7 +659,12 @@
         "larea_uf": null,
         "larea_acu": null,
         "objectid": 8,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -703,7 +743,12 @@
         "larea_uf": 1700.0,
         "larea_acu": "AV",
         "objectid": 9,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1553877522-43269d4ea984?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1504307651254-35680f356dfd?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -782,7 +827,12 @@
         "larea_uf": null,
         "larea_acu": null,
         "objectid": 10,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1562774053-701939374585?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",
@@ -861,7 +911,12 @@
         "larea_uf": 350.0,
         "larea_acu": "AV",
         "objectid": 11,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-03-18T06:00:00Z",
+        "img_url": [
+          "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop",
+          "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop"
+        ]
       },
       "geometry": {
         "type": "Point",

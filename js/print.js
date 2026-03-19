@@ -3,6 +3,7 @@
 import { state } from './state.js';
 import { statusColors, paperSizes } from './config.js';
 import { formatNum } from './utils.js';
+import { t, getLocale } from './i18n.js';
 
 export function getPrintDimensions(orientation) {
   var parts = orientation.split('-');  // e.g., 'landscape-a4'
@@ -130,7 +131,7 @@ export function updatePrintPreview() {
   var labelEl = state.printPreviewOverlay.querySelector('.print-preview-label');
   if (labelEl) {
     var formatLabel = orientation.includes('a3') ? 'A3' : 'A4';
-    var orientLabel = orientation.includes('landscape') ? 'Querformat' : 'Hochformat';
+    var orientLabel = orientation.includes('landscape') ? t('print.landscape') : t('print.portrait');
     var formattedScale = formatNum(printScale, 0);
     labelEl.textContent = formatLabel + ' ' + orientLabel + ' — 1:' + formattedScale;
   }
@@ -158,7 +159,7 @@ export function generatePrintPDF() {
   // Create header
   var header = document.createElement('div');
   header.style.cssText = 'display: flex; justify-content: space-between; align-items: center; margin-bottom: 5mm; padding-bottom: 3mm; border-bottom: 1px solid #ccc;';
-  header.innerHTML = '<div style="font-size: 14pt; font-weight: bold;">BBL Immobilienportfolio</div><div style="font-size: 10pt; color: #666;">' + new Date().toLocaleDateString('de-CH') + '</div>';
+  header.innerHTML = '<div style="font-size: 14pt; font-weight: bold;">' + t('share.title') + '</div><div style="font-size: 10pt; color: #666;">' + new Date().toLocaleDateString(getLocale()) + '</div>';
   printContainer.appendChild(header);
 
   // Create map container
@@ -190,7 +191,7 @@ export function generatePrintPDF() {
     var scaleBar = document.createElement('div');
     scaleBar.style.cssText = 'position: absolute; bottom: 5mm; left: 5mm; background: rgba(255,255,255,0.9); padding: 2mm 3mm; border-radius: 2px; font-size: 8pt;';
     var currentScale = scale === 'auto' ? Math.round(getMapScale()) : parseInt(scale);
-    scaleBar.textContent = 'Massstab 1:' + currentScale.toLocaleString('de-CH');
+    scaleBar.textContent = t('print.scale', {scale: currentScale.toLocaleString(getLocale())});
     mapContainer.appendChild(scaleBar);
 
     // Add north arrow
@@ -205,12 +206,12 @@ export function generatePrintPDF() {
   if (includeLegend) {
     var legend = document.createElement('div');
     legend.style.cssText = 'margin-top: 5mm; padding: 3mm; border: 1px solid #ccc; font-size: 9pt;';
-    legend.innerHTML = '<div style="font-weight: bold; margin-bottom: 2mm;">Legende</div>' +
+    legend.innerHTML = '<div style="font-weight: bold; margin-bottom: 2mm;">' + t('print.legend') + '</div>' +
       '<div style="display: flex; gap: 10mm; flex-wrap: wrap;">' +
-      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Aktiv'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Betrieb</span>' +
-      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Renovation'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Renovation</span>' +
-      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Planung'] + '; border-radius: 50%; margin-right: 2mm;"></span>In Planung</span>' +
-      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Verkauft'] + '; border-radius: 50%; margin-right: 2mm;"></span>Ausser Betrieb</span>' +
+      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Aktiv'] + '; border-radius: 50%; margin-right: 2mm;"></span>' + t('print.legend.active') + '</span>' +
+      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Renovation'] + '; border-radius: 50%; margin-right: 2mm;"></span>' + t('print.legend.renovation') + '</span>' +
+      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['In Planung'] + '; border-radius: 50%; margin-right: 2mm;"></span>' + t('print.legend.planning') + '</span>' +
+      '<span><span style="display: inline-block; width: 10px; height: 10px; background: ' + statusColors['Verkauft'] + '; border-radius: 50%; margin-right: 2mm;"></span>' + t('print.legend.inactive') + '</span>' +
       '</div>';
     printContainer.appendChild(legend);
   }
@@ -218,7 +219,7 @@ export function generatePrintPDF() {
   // Add footer
   var footer = document.createElement('div');
   footer.style.cssText = 'margin-top: 3mm; padding-top: 3mm; border-top: 1px solid #ccc; font-size: 8pt; color: #666; display: flex; justify-content: space-between;';
-  footer.innerHTML = '<span>Quelle: BBL Immobilienportfolio</span><span>\u00A9 ' + new Date().getFullYear() + ' Bundesamt f\u00FCr Bauten und Logistik</span>';
+  footer.innerHTML = '<span>' + t('print.source') + '</span><span>' + t('print.copyright', {year: new Date().getFullYear()}) + '</span>';
   printContainer.appendChild(footer);
 
   document.body.appendChild(printContainer);
@@ -322,7 +323,7 @@ export function initPrintWidget() {
           if (includeTitle) {
             pdf.setFontSize(14);
             pdf.setFont('helvetica', 'bold');
-            pdf.text('BBL Immobilienportfolio', m, y + 5);
+            pdf.text(t('share.title'), m, y + 5);
             pdf.setFontSize(8);
             pdf.setFont('helvetica', 'normal');
             pdf.setTextColor(100);
@@ -349,7 +350,7 @@ export function initPrintWidget() {
           pdf.rect(m, y, mapAreaW, mapAreaH);
 
           // Scale bar (bottom-left inside map)
-          var scaleText = 'Massstab 1:' + formatNum(printScale, 0);
+          var scaleText = t('print.scale', {scale: formatNum(printScale, 0)});
           pdf.setFillColor(255, 255, 255);
           pdf.setFontSize(7);
           var stw = pdf.getTextWidth(scaleText);
@@ -376,10 +377,10 @@ export function initPrintWidget() {
             pdf.setFontSize(7);
             pdf.setFont('helvetica', 'normal');
             var legItems = [
-              { r: 46, g: 125, b: 50, label: 'Aktiv' },
-              { r: 0, g: 152, b: 255, label: 'In Renovation' },
-              { r: 243, g: 150, b: 33, label: 'In Planung' },
-              { r: 158, g: 158, b: 158, label: 'Verkauft' }
+              { r: 46, g: 125, b: 50, label: t('print.legend.active') },
+              { r: 0, g: 152, b: 255, label: t('print.legend.renovation') },
+              { r: 243, g: 150, b: 33, label: t('print.legend.planning') },
+              { r: 158, g: 158, b: 158, label: t('print.legend.inactive') }
             ];
             var lx = m;
             legItems.forEach(function(item) {
@@ -399,8 +400,8 @@ export function initPrintWidget() {
           pdf.setFontSize(6);
           pdf.setFont('helvetica', 'normal');
           pdf.setTextColor(150);
-          pdf.text('Quelle: BBL Immobilienportfolio \u2014 Bundesamt f\u00FCr Bauten und Logistik', m, ph - m);
-          pdf.text('\u00A9 ' + new Date().getFullYear() + ' Schweizerische Eidgenossenschaft', pw - m, ph - m, { align: 'right' });
+          pdf.text(t('print.source'), m, ph - m);
+          pdf.text(t('print.copyright', {year: new Date().getFullYear()}), pw - m, ph - m, { align: 'right' });
 
           // Download
           var filename = 'BBL-Karte-' + sizeLabel + '-' + new Date().toISOString().slice(0, 10) + '.pdf';
@@ -408,7 +409,7 @@ export function initPrintWidget() {
 
         } catch (e) {
           console.error('PDF error:', e);
-          alert('Fehler beim Erstellen der PDF: ' + e.message);
+          alert(t('error.pdf', {message: e.message}));
         }
 
         btn.innerHTML = originalHTML;

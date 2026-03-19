@@ -3,6 +3,7 @@
 import { state } from './state.js';
 import { escapeHtml, escapeForJs } from './utils.js';
 import { showToast } from './toast.js';
+import { t } from './i18n.js';
 import { statusColors } from './config.js';
 import { updateGeokatalogCheckboxes } from './geokatalog.js';
 
@@ -10,7 +11,7 @@ import { updateGeokatalogCheckboxes } from './geokatalog.js';
 
 export function addSwisstopoLayer(layerId, title, silent) {
   if (!layerId) {
-    if (!silent) showToast({ type: 'error', title: 'Fehler', message: 'Keine Layer-ID vorhanden.' });
+    if (!silent) showToast({ type: 'error', title: t('error.copy.title'), message: 'No layer ID' });
     return;
   }
 
@@ -583,32 +584,32 @@ var internalLayerMeta = {
 
 export function buildLegendHTML(layerKey) {
   if (layerKey === 'buildings') {
-    return '<div class="legend-footer"><span>Legende</span></div>' +
+    return '<div class="legend-footer"><span>' + t('print.legend') + '</span></div>' +
       '<div class="internal-legend">' +
       '<div class="internal-legend-item">' +
         '<span class="internal-legend-circle" style="background: ' + statusColors['Aktiv'] + ';"></span>' +
-        '<span>In Betrieb</span>' +
+        '<span>' + t('print.legend.active') + '</span>' +
       '</div>' +
       '<div class="internal-legend-item">' +
         '<span class="internal-legend-circle" style="background: ' + statusColors['In Renovation'] + ';"></span>' +
-        '<span>In Renovation</span>' +
+        '<span>' + t('print.legend.renovation') + '</span>' +
       '</div>' +
       '<div class="internal-legend-item">' +
         '<span class="internal-legend-circle" style="background: ' + statusColors['In Planung'] + ';"></span>' +
-        '<span>In Planung</span>' +
+        '<span>' + t('print.legend.planning') + '</span>' +
       '</div>' +
       '<div class="internal-legend-item">' +
         '<span class="internal-legend-circle" style="background: ' + statusColors['Verkauft'] + ';"></span>' +
-        '<span>Ausser Betrieb</span>' +
+        '<span>' + t('print.legend.inactive') + '</span>' +
       '</div>' +
       '</div>';
   }
   // Parcels: single color
-  return '<div class="legend-footer"><span>Legende</span></div>' +
+  return '<div class="legend-footer"><span>' + t('print.legend') + '</span></div>' +
     '<div class="internal-legend">' +
     '<div class="internal-legend-item">' +
       '<span class="internal-legend-rect" style="background: rgba(25, 118, 210, 0.15); border: 2px solid #1976d2;"></span>' +
-      '<span>Parzelle</span>' +
+      '<span>' + t('info.title.parcel') + '</span>' +
     '</div>' +
     '</div>';
 }

@@ -58,7 +58,7 @@ function initMap() {
     var button = document.createElement('button');
     button.className = 'map-home-btn';
     button.type = 'button';
-    button.title = 'Zur Startansicht';
+    button.title = t('map.home');
     button.innerHTML = '<span class="material-symbols-outlined">home</span>';
     button.onclick = function() {
       map.flyTo({
@@ -88,7 +88,7 @@ function initMap() {
     var button = document.createElement('button');
     button.className = 'map-3d-btn';
     button.type = 'button';
-    button.title = '2D / 3D Ansicht wechseln';
+    button.title = t('map.toggle3d');
     button.textContent = '3D';
     button.onclick = function() {
       state.is3D = !state.is3D;
@@ -136,7 +136,7 @@ function initMap() {
       var lng = e.lngLat.lng;
       var lat = e.lngLat.lat;
       pendingCoordUpdate = requestAnimationFrame(function() {
-        coordsEl.textContent = 'WGS 84 | Koordinaten: ' + lng.toFixed(5) + ', ' + lat.toFixed(5);
+        coordsEl.textContent = t('map.coordinates', {lat: lat.toFixed(5), lon: lng.toFixed(5)});
         pendingCoordUpdate = null;
       });
     }
@@ -482,11 +482,9 @@ function selectBuilding(buildingId, flyToBuilding) {
   // Show preview image for buildings
   document.getElementById('info-preview-image').style.display = 'block';
 
-  // Find building index for placeholder image
-  var buildingIndex = state.portfolioData.features.findIndex(function(f) {
-    return f.properties.bbl_id === buildingId;
-  });
-  var imageUrl = placeholderImages[buildingIndex % placeholderImages.length];
+  // Use first image from building data, fall back to placeholder
+  var images = props.img_url || [];
+  var imageUrl = images[0] || placeholderImages[0];
 
   // Set preview image
   document.getElementById('info-preview-image').style.backgroundImage = 'url(' + imageUrl + ')';

@@ -187,9 +187,9 @@ export function renderListView() {
     if (!existingEmpty) {
       var emptyHtml = '<div class="empty-state">' +
         '<span class="material-symbols-outlined">search_off</span>' +
-        '<div class="empty-state-title">Keine Objekte gefunden</div>' +
-        '<div class="empty-state-description">Die aktuellen Filter ergeben keine Treffer. Passen Sie die Filterkriterien an oder setzen Sie die Filter zur\u00FCck.</div>' +
-        '<div class="empty-state-action"><button class="btn-secondary" onclick="resetAllFilters()">Filter zur\u00FCcksetzen</button></div>' +
+        '<div class="empty-state-title">' + t('empty.title') + '</div>' +
+        '<div class="empty-state-description">' + t('empty.description') + '</div>' +
+        '<div class="empty-state-action"><button class="btn-secondary" onclick="resetAllFilters()">' + t('empty.reset') + '</button></div>' +
       '</div>';
       tableWrapper.insertAdjacentHTML('afterend', emptyHtml);
     }
@@ -251,11 +251,11 @@ function updateListPaginationInfo(currentPage, totalPages, totalItems) {
 
   if (infoEl) {
     if (totalItems === 0) {
-      infoEl.textContent = 'Keine Objekte';
+      infoEl.textContent = t('pagination.empty');
     } else {
       var startIndex = (currentPage - 1) * state.listRowsPerPage + 1;
       var endIndex = Math.min(currentPage * state.listRowsPerPage, totalItems);
-      infoEl.textContent = startIndex + '\u2013' + endIndex + ' von ' + totalItems + ' Objekte';
+      infoEl.textContent = t('pagination.info', {start: startIndex, end: endIndex, total: totalItems});
     }
   }
 
@@ -263,7 +263,7 @@ function updateListPaginationInfo(currentPage, totalPages, totalItems) {
     if (totalItems === 0) {
       pageInfoEl.textContent = '';
     } else {
-      pageInfoEl.textContent = 'Seite ' + currentPage + ' von ' + totalPages;
+      pageInfoEl.textContent = t('pagination.page', {current: currentPage, total: totalPages});
     }
   }
 
@@ -446,7 +446,7 @@ function handleQuickExport(format, scope) {
   }
 
   if (data.length === 0) {
-    showToast({ type: 'error', message: 'Keine Daten zum Exportieren vorhanden' });
+    showToast({ type: 'error', message: t('error.export.nodata') });
     return;
   }
 
@@ -456,10 +456,10 @@ function handleQuickExport(format, scope) {
     } else if (format === 'geojson') {
       quickExportGeoJSON(data);
     }
-    showToast({ type: 'success', message: data.length + ' Objekte exportiert' });
+    showToast({ type: 'success', message: t('success.export', {count: data.length}) });
   } catch (e) {
     console.error('Export error:', e);
-    showToast({ type: 'error', message: 'Fehler beim Export: ' + e.message });
+    showToast({ type: 'error', message: t('error.export', {message: e.message}) });
   }
 
   // Close dropdown

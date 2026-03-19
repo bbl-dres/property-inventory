@@ -1541,6 +1541,12 @@
     "fr": "Consultez cette vue carte :",
     "it": "Consultate questa vista carta:"
   },
+  "detail.all_objects": {
+    "de": "Alle Objekte",
+    "en": "All objects",
+    "fr": "Tous les objets",
+    "it": "Tutti gli oggetti"
+  },
   "detail.back": {
     "de": "Zurück",
     "en": "Back",
@@ -1744,5 +1750,215 @@
     "en": "Contact",
     "fr": "Contact",
     "it": "Contatto"
+  },
+  "detail.section.contacts": {
+    "de": "Kontakte",
+    "en": "Contacts",
+    "fr": "Contacts",
+    "it": "Contatti"
+  },
+  "detail.section.areas_sia416": {
+    "de": "Flächen (SIA 416)",
+    "en": "Areas (SIA 416)",
+    "fr": "Surfaces (SIA 416)",
+    "it": "Superfici (SIA 416)"
+  },
+  "detail.section.ebf_sia380": {
+    "de": "Energiebezugsfläche (SIA 380)",
+    "en": "Energy reference area (SIA 380)",
+    "fr": "Surface de référence énergétique (SIA 380)",
+    "it": "Superficie di riferimento energetico (SIA 380)"
+  },
+  "detail.section.volumes_sia416": {
+    "de": "Volumen (SIA 416)",
+    "en": "Volume (SIA 416)",
+    "fr": "Volumes (SIA 416)",
+    "it": "Volumi (SIA 416)"
+  },
+  "detail.section.floors": {
+    "de": "Geschosse",
+    "en": "Floors",
+    "fr": "Étages",
+    "it": "Piani"
+  },
+  "detail.section.land_sia416": {
+    "de": "Grundstück (SIA 416)",
+    "en": "Land parcel (SIA 416)",
+    "fr": "Bien-fonds (SIA 416)",
+    "it": "Fondo (SIA 416)"
+  },
+  "detail.label.wgs84": {
+    "de": "WGS84",
+    "en": "WGS84",
+    "fr": "WGS84",
+    "it": "WGS84"
+  },
+  "detail.label.lv95": {
+    "de": "LV95",
+    "en": "LV95",
+    "fr": "MN95",
+    "it": "MN95"
+  },
+  "detail.label.egm_elev": {
+    "de": "EGM Höhe",
+    "en": "EGM Elevation",
+    "fr": "Altitude EGM",
+    "it": "Altitudine EGM"
+  },
+  "detail.label.accuracy": {
+    "de": "Genauigkeit",
+    "en": "Accuracy",
+    "fr": "Précision",
+    "it": "Precisione"
+  },
+  "detail.label.garea_gf": {
+    "de": "Geschossfläche GF",
+    "en": "Gross floor area GF",
+    "fr": "Surface de plancher SP",
+    "it": "Superficie di piano SP"
+  },
+  "detail.label.garea_gfo": {
+    "de": "GF Oberirdisch",
+    "en": "GF above ground",
+    "fr": "SP hors sol",
+    "it": "SP fuori terra"
+  },
+  "detail.label.garea_gfu": {
+    "de": "GF Unterirdisch",
+    "en": "GF below ground",
+    "fr": "SP sous sol",
+    "it": "SP sotto terra"
+  },
+  "detail.label.garea_ngf": {
+    "de": "Netto-Geschossfl. NGF",
+    "en": "Net floor area NGF",
+    "fr": "Surface utile principale SUP",
+    "it": "Superficie utile netta SU"
+  },
+  "detail.label.garea_nf": {
+    "de": "Nutzfläche NF",
+    "en": "Usable area NF",
+    "fr": "Surface utile SU",
+    "it": "Superficie utile SU"
+  },
+  "detail.label.garea_hnf": {
+    "de": "Hauptnutzfläche HNF",
+    "en": "Primary usable area HNF",
+    "fr": "Surface utile principale SUP",
+    "it": "Superficie utile principale SUP"
+  },
+  "detail.label.garea_nnf": {
+    "de": "Nebennutzfläche NNF",
+    "en": "Secondary usable area NNF",
+    "fr": "Surface utile secondaire SUS",
+    "it": "Superficie utile secondaria SUS"
+  },
+  "detail.label.garea_ff": {
+    "de": "Funktionsfläche FF",
+    "en": "Services area FF",
+    "fr": "Surface d'installations SIF",
+    "it": "Superficie impianti SIF"
+  },
+  "detail.label.garea_vf": {
+    "de": "Verkehrsfläche VF",
+    "en": "Circulation area VF",
+    "fr": "Surface de circulation SC",
+    "it": "Superficie di circolazione SC"
+  },
+  "detail.label.garea_vmf": {
+    "de": "Vermietbare Fl. VMF",
+    "en": "Lettable area VMF",
+    "fr": "Surface locative SLoc",
+    "it": "Superficie locativa SLoc"
+  },
+  "detail.label.garea_ebf": {
+    "de": "Energiebezugsfl. EBF",
+    "en": "Energy reference area EBF",
+    "fr": "Surface de réf. énergétique SRE",
+    "it": "Superficie rif. energetico SRE"
+  },
+  "detail.label.gvol_gv": {
+    "de": "Gebäudevolumen GV",
+    "en": "Building volume GV",
+    "fr": "Volume du bâtiment VB",
+    "it": "Volume dell'edificio VE"
+  },
+  "detail.label.gvol_gvo": {
+    "de": "GV Oberirdisch",
+    "en": "GV above ground",
+    "fr": "VB hors sol",
+    "it": "VE fuori terra"
+  },
+  "detail.label.gvol_gvu": {
+    "de": "GV Unterirdisch",
+    "en": "GV below ground",
+    "fr": "VB sous sol",
+    "it": "VE sotto terra"
+  },
+  "detail.label.gastw": {
+    "de": "Anzahl Total",
+    "en": "Total count",
+    "fr": "Nombre total",
+    "it": "Numero totale"
+  },
+  "detail.label.gastw_og": {
+    "de": "Oberirdisch",
+    "en": "Above ground",
+    "fr": "Hors sol",
+    "it": "Fuori terra"
+  },
+  "detail.label.gastw_ug": {
+    "de": "Unterirdisch",
+    "en": "Below ground",
+    "fr": "Sous sol",
+    "it": "Sotto terra"
+  },
+  "detail.label.larea_ggf": {
+    "de": "Gebäudegrundfläche GGF",
+    "en": "Building footprint GGF",
+    "fr": "Surface bâtie au sol SBP",
+    "it": "Superficie edificata al suolo SBP"
+  },
+  "detail.label.larea_gsf": {
+    "de": "Grundstücksfläche GSF",
+    "en": "Plot area GSF",
+    "fr": "Surface du terrain ST",
+    "it": "Superficie del terreno ST"
+  },
+  "detail.label.larea_uf": {
+    "de": "Umgebungsfläche UF",
+    "en": "Surrounding area UF",
+    "fr": "Surface environnante SE",
+    "it": "Superficie circostante SS"
+  },
+  "detail.link.external_map": {
+    "de": "Auf externer Karte anzeigen",
+    "en": "Show on external map",
+    "fr": "Afficher sur une carte externe",
+    "it": "Mostrare su carta esterna"
+  },
+  "detail.link.gwr": {
+    "de": "BFS Gebäude und Wohnregister GWR",
+    "en": "FSO Buildings and Dwellings Register BDR",
+    "fr": "OFS Registre des bâtiments et des logements RegBL",
+    "it": "UST Registro degli edifici e delle abitazioni REA"
+  },
+  "detail.link.oereb": {
+    "de": "Kataster der öffentlich-rechtlichen Eigentumsbeschränkungen ÖREB",
+    "en": "Cadastre of public-law restrictions on landownership PLR",
+    "fr": "Cadastre des restrictions de droit public à la propriété foncière RDPPF",
+    "it": "Catasto delle restrizioni di diritto pubblico della proprietà RDPP"
+  },
+  "detail.link.bauzonen": {
+    "de": "Bauzonen Schweiz",
+    "en": "Building zones Switzerland",
+    "fr": "Zones à bâtir Suisse",
+    "it": "Zone edificabili Svizzera"
+  },
+  "detail.link.kgs": {
+    "de": "KGS Inventar",
+    "en": "KGS Inventory",
+    "fr": "Inventaire PBC",
+    "it": "Inventario PBC"
   }
 }

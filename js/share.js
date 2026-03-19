@@ -1,6 +1,7 @@
 // Share link and social sharing functions
 
 import { state } from './state.js';
+import { t } from './i18n.js';
 
 export function getShareUrl() {
   var baseUrl = window.location.origin + window.location.pathname;
@@ -39,8 +40,8 @@ export function updateShareLink() {
 
 export function shareViaEmail() {
   var url = getShareUrl();
-  var subject = encodeURIComponent('BBL Immobilienportfolio - Kartenansicht');
-  var body = encodeURIComponent('Schauen Sie sich diese Kartenansicht an:\n\n' + url);
+  var subject = encodeURIComponent(t('share.email.subject'));
+  var body = encodeURIComponent(t('share.email.body') + '\n\n' + url);
   window.open('mailto:?subject=' + subject + '&body=' + body, '_self');
 }
 
@@ -56,7 +57,7 @@ export function shareViaLinkedIn() {
 
 export function shareViaX() {
   var url = encodeURIComponent(getShareUrl());
-  var text = encodeURIComponent('BBL Immobilienportfolio - Kartenansicht');
+  var text = encodeURIComponent(t('share.email.subject'));
   window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank', 'width=600,height=400');
 }
 
@@ -66,10 +67,10 @@ export function copyShareLink() {
 
   if (input && navigator.clipboard) {
     navigator.clipboard.writeText(input.value).then(function() {
-      button.textContent = 'Kopiert!';
+      button.textContent = t('accordion.share.copied');
       button.classList.add('copied');
       setTimeout(function() {
-        button.textContent = 'Link kopieren';
+        button.textContent = t('accordion.share.copy');
         button.classList.remove('copied');
       }, 2000);
     });
@@ -77,10 +78,10 @@ export function copyShareLink() {
     // Fallback for older browsers
     input.select();
     document.execCommand('copy');
-    button.textContent = 'Kopiert!';
+    button.textContent = t('accordion.share.copied');
     button.classList.add('copied');
     setTimeout(function() {
-      button.textContent = 'Link kopieren';
+      button.textContent = t('accordion.share.copy');
       button.classList.remove('copied');
     }, 2000);
   }

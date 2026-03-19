@@ -1,6 +1,6 @@
 import { state } from './state.js';
 import { showToast } from './toast.js';
-import { setLang, getLang } from './i18n.js';
+import { setLang, getLang, t } from './i18n.js';
 import { switchView, showDetailView, getBuildingIdFromURL, getTabFromURL, setTabInURL } from './views.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
 import { updateShareLink } from './share.js';
@@ -153,24 +153,18 @@ function initAccordion() {
         this.classList.add('active');
         content.classList.add('show');
 
-        // TODO: BUG FIX #23 - Replace text-content matching with data-accordion
-        // attributes once the HTML is updated. For now, matching by span text.
-        var headerSpans = this.querySelectorAll(':scope > span');
-        var lastSpan = headerSpans[headerSpans.length - 1];
+        // Match accordion by data-i18n key instead of text content
+        var headerSpans = this.querySelectorAll(':scope > span[data-i18n]');
+        var i18nKey = headerSpans.length > 0 ? headerSpans[headerSpans.length - 1].getAttribute('data-i18n') : '';
 
-        // Update share link when Teilen accordion is opened
-        if (lastSpan && lastSpan.textContent.trim() === 'Teilen') {
+        // Update share link when Share accordion is opened
+        if (i18nKey === 'accordion.share') {
           updateShareLink();
         }
 
-        // Show print preview when Karte drucken accordion is opened
-        if (lastSpan && lastSpan.textContent.trim() === 'Karte drucken') {
+        // Show print preview when Print accordion is opened
+        if (i18nKey === 'accordion.print') {
           showPrintPreview();
-        }
-
-        // Update export count when Export accordion is opened
-        if (lastSpan && lastSpan.textContent.trim() === 'Export') {
-          updateExportCount();
         }
 
         // Expand Geokatalog to full height
@@ -277,12 +271,12 @@ function initInfoPanel() {
   // BUG FIX #21b: Fixed clipboard fallback to use correct showToast object format
   document.getElementById('info-share').addEventListener('click', function() {
     var url = getShareUrl();
-    var title = 'BBL Immobilienportfolio';
+    var title = t('share.title');
     var text = state.selectedBuildingId
-      ? 'Gebäude: ' + state.selectedBuildingId
+      ? t('share.building', {id: state.selectedBuildingId})
       : state.selectedParcelId
-        ? 'Parzelle: ' + state.selectedParcelId
-        : 'Kartenansicht';
+        ? t('share.parcel', {id: state.selectedParcelId})
+        : t('share.map');
 
     // Use Web Share API if available
     if (navigator.share) {
@@ -300,15 +294,15 @@ function initInfoPanel() {
         navigator.clipboard.writeText(url).then(function() {
           showToast({
             type: 'success',
-            title: 'Kopiert',
-            message: 'Link in Zwischenablage kopiert',
+            title: t('success.copy.title'),
+            message: t('success.copy.message'),
             duration: 2000
           });
         }).catch(function() {
           showToast({
             type: 'error',
-            title: 'Fehler',
-            message: 'Kopieren fehlgeschlagen',
+            title: t('error.copy.title'),
+            message: t('error.copy.message'),
             duration: 3000
           });
         });

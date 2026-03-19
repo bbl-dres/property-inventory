@@ -2,6 +2,7 @@
 
 import { state } from './state.js';
 import { placeholderImages } from './config.js';
+import { t } from './i18n.js';
 import {
   formatNum,
   formatArea,
@@ -25,10 +26,11 @@ function populateDetailView(building) {
     if (el) el.textContent = (value !== undefined && value !== null && value !== '') ? value : '\u2013';
   }
 
-  // Breadcrumb (using BBL GIS IMMO flat field names)
-  setText('breadcrumb-name', props.bbl_bez);
+  // Breadcrumb: adr_land > adr_ort > bbl_we > bbl_tobj
   setText('breadcrumb-country', props.adr_land);
-  setText('breadcrumb-region', props.adr_reg);
+  setText('breadcrumb-city', props.adr_ort);
+  setText('breadcrumb-we', props.bbl_we);
+  setText('breadcrumb-tobj', props.bbl_tobj);
 
   // --- Tab: \u00dcbersicht ---
 
@@ -287,14 +289,21 @@ function initInfoIcons() {
 
 // ===== CAROUSEL =====
 
+function getCarouselImages() {
+  var props = state.currentDetailBuilding ? state.currentDetailBuilding.properties : {};
+  var images = props.img_url;
+  return (images && images.length > 0) ? images : placeholderImages;
+}
+
 function initCarousel() {
   state.currentCarouselIndex = 0;
+  var images = getCarouselImages();
   updateCarouselImage();
 
   // Create dots
   var dotsContainer = document.getElementById('carousel-dots');
   dotsContainer.innerHTML = '';
-  placeholderImages.forEach(function(_, index) {
+  images.forEach(function(_, index) {
     var dot = document.createElement('div');
     dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
     dot.onclick = function() {
@@ -306,8 +315,9 @@ function initCarousel() {
 }
 
 function updateCarouselImage() {
+  var images = getCarouselImages();
   var imageEl = document.getElementById('carousel-image');
-  imageEl.style.backgroundImage = 'url(' + placeholderImages[state.currentCarouselIndex] + ')';
+  imageEl.style.backgroundImage = 'url(' + images[state.currentCarouselIndex] + ')';
 
   // Update dots
   document.querySelectorAll('.carousel-dot').forEach(function(dot, index) {
@@ -316,12 +326,14 @@ function updateCarouselImage() {
 }
 
 function carouselPrev() {
-  state.currentCarouselIndex = (state.currentCarouselIndex - 1 + placeholderImages.length) % placeholderImages.length;
+  var images = getCarouselImages();
+  state.currentCarouselIndex = (state.currentCarouselIndex - 1 + images.length) % images.length;
   updateCarouselImage();
 }
 
 function carouselNext() {
-  state.currentCarouselIndex = (state.currentCarouselIndex + 1) % placeholderImages.length;
+  var images = getCarouselImages();
+  state.currentCarouselIndex = (state.currentCarouselIndex + 1) % images.length;
   updateCarouselImage();
 }
 
@@ -540,8 +552,8 @@ function createEntityTable(config) {
     if (table.filteredData.length === 0) {
       var colCount = config.columns.length + 1; // +1 for checkbox column
       var emptyMessage = table.data.length === 0
-        ? 'Keine Eintr\u00e4ge vorhanden'
-        : 'Keine Treffer f\u00fcr die Suche';
+        ? t('detail.empty')
+        : t('empty.search');
       var emptyIcon = table.data.length === 0 ? 'inbox' : 'search_off';
 
       tbody.innerHTML = '<tr class="empty-row"><td colspan="' + colCount + '">' +
@@ -604,9 +616,9 @@ function createEntityTable(config) {
 
     if (infoEl) {
       if (totalPages === 0) {
-        infoEl.textContent = 'Keine Eintr\u00e4ge';
+        infoEl.textContent = t('pagination.entries.empty');
       } else {
-        infoEl.textContent = 'Seite ' + currentPage + ' von ' + totalPages;
+        infoEl.textContent = t('pagination.entries.page', {current: currentPage, total: totalPages});
       }
     }
 

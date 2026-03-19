@@ -1,6 +1,7 @@
 // Parcels table: rendering, pagination, initialization
 
 import { state } from './state.js';
+import { t } from './i18n.js';
 
 // ===== RENDER PARCELS VIEW =====
 export function renderParcelsView() {
@@ -32,7 +33,7 @@ export function renderParcelsView() {
 
   // Handle empty state
   if (dataToRender.features.length === 0) {
-    parcelsBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--grey-500);">Keine Grundst\u00FCcke gefunden</td></tr>';
+    parcelsBody.innerHTML = '<tr><td colspan="8" style="text-align:center; padding:24px; color:var(--grey-500);">' + t('empty.parcels') + '</td></tr>';
     updateParcelsPaginationInfo(1, 1, 0);
     return;
   }
@@ -87,16 +88,16 @@ export function updateParcelsPaginationInfo(currentPage, totalPages, totalItems)
 
   if (infoEl) {
     if (totalItems === 0) {
-      infoEl.textContent = 'Keine Grundst\u00FCcke';
+      infoEl.textContent = t('pagination.parcels.empty');
     } else {
       var startIndex = (currentPage - 1) * state.parcelRowsPerPage + 1;
       var endIndex = Math.min(currentPage * state.parcelRowsPerPage, totalItems);
-      infoEl.textContent = startIndex + '\u2013' + endIndex + ' von ' + totalItems + ' Grundst\u00FCcke';
+      infoEl.textContent = t('pagination.parcels.info', {start: startIndex, end: endIndex, total: totalItems});
     }
   }
 
   if (pageInfoEl) {
-    pageInfoEl.textContent = totalItems === 0 ? '' : 'Seite ' + currentPage + ' von ' + totalPages;
+    pageInfoEl.textContent = totalItems === 0 ? '' : t('pagination.page', {current: currentPage, total: totalPages});
   }
 
   if (prevBtn) prevBtn.disabled = currentPage <= 1;
