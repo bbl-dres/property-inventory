@@ -256,9 +256,11 @@ async function uploadToOSM(features, onProgress, onLog) {
         }
 
         // Step 3: Upload OsmChange in small batches with rate-limit handling
-        var BATCH_SIZE = 100; // small batches to avoid 429
-        var BATCH_DELAY_MS = 1500; // pause between batches
-        var MAX_RETRIES = 5;
+        // OSM rate limit is ~10K elements/hour. With 50/batch + 3s delay:
+        // ~1000 elements/min, well within limits.
+        var BATCH_SIZE = 50;
+        var BATCH_DELAY_MS = 3000; // 3s between batches
+        var MAX_RETRIES = 8;
         var MAX_PER_CHANGESET = 9000; // OSM limit is 10K, leave margin
         var elementsInChangeset = 0;
         var batches = [];
@@ -319,11 +321,14 @@ async function uploadToOSM(features, onProgress, onLog) {
                 var errText = await uploadResp.text();
 
                 if (errStatus === 429) {
-                    // Rate limited — exponential backoff
+                    // Rate limited — gentle backoff: 5s, 10s, 15s, 20s, 30s, 45s, 60s, 90s
                     var retryAfter = parseInt(uploadResp.headers.get('Retry-After') || '0');
-                    var waitSec = retryAfter || Math.min(10 * Math.pow(2, attempt), 120); // 10s, 20s, 40s, 80s, 120s
+                    var backoffTable = [5, 10, 15, 20, 30, 45, 60, 90];
+                    var waitSec = retryAfter || backoffTable[Math.min(attempt, backoffTable.length - 1)];
                     onLog('info', 'Rate limited — waiting ' + waitSec + 's before retry (' + (attempt + 1) + '/' + MAX_RETRIES + ')...');
                     await new Promise(function(r) { setTimeout(r, waitSec * 1000); });
+                    // After rate limit, increase delay between future batches
+                    BATCH_DELAY_MS = Math.min(BATCH_DELAY_MS + 2000, 10000);
                     continue;
                 }
 
