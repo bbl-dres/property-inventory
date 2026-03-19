@@ -10,119 +10,139 @@
     <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.1/dist/proj4.js"></script>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #f5f5f5; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 14px; line-height: 1.5; }
         .layout { display: flex; height: 100vh; }
         #map { flex: 1; }
 
         /* Sidebar */
-        .sidebar { width: 400px; background: #fff; border-left: 1px solid #e0e0e0; display: flex; flex-direction: column; overflow: hidden; }
-        .sidebar-header { padding: 16px 20px; border-bottom: 1px solid #e0e0e0; background: #fafafa; }
-        .sidebar-header h1 { font-size: 16px; font-weight: 600; margin-bottom: 4px; }
-        .sidebar-header p { font-size: 12px; color: #666; }
+        .sidebar { width: 420px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; overflow: hidden; }
+        .sidebar-header { padding: 20px 24px 16px; border-bottom: 1px solid #d0d0d0; background: #1a1a1a; color: #fff; }
+        .sidebar-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.2px; }
+        .sidebar-header p { font-size: 13px; color: #aaa; line-height: 1.5; }
         .sidebar-content { flex: 1; overflow-y: auto; }
-        .sidebar-footer { padding: 10px 20px; border-top: 1px solid #e0e0e0; background: #fafafa; font-size: 11px; color: #888; display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-footer a { color: #666; text-decoration: none; }
-        .sidebar-footer a:hover { color: #333; text-decoration: underline; }
+        .sidebar-footer { padding: 12px 24px; border-top: 1px solid #d0d0d0; background: #fafafa; font-size: 12px; color: #666; display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-footer a { color: #555; text-decoration: none; }
+        .sidebar-footer a:hover { color: #1a1a1a; text-decoration: underline; }
 
         /* Step wizard bar */
-        .wizard-bar { display: flex; padding: 12px 20px; border-bottom: 1px solid #e0e0e0; background: #fff; gap: 4px; align-items: center; }
-        .wizard-step { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; color: #ccc; transition: color 0.2s; }
-        .wizard-step.active { color: #c00; }
-        .wizard-step.done { color: #4CAF50; }
-        .wizard-dot { width: 22px; height: 22px; border-radius: 50%; border: 2px solid #ddd; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: #ccc; transition: all 0.2s; }
-        .wizard-step.active .wizard-dot { border-color: #c00; color: #c00; background: #fff5f5; }
-        .wizard-step.done .wizard-dot { border-color: #4CAF50; color: #fff; background: #4CAF50; }
-        .wizard-connector { flex: 1; height: 2px; background: #eee; min-width: 8px; }
-        .wizard-connector.done { background: #4CAF50; }
+        .wizard-bar { display: flex; padding: 14px 24px; border-bottom: 1px solid #d0d0d0; background: #fafafa; gap: 4px; align-items: center; }
+        .wizard-step { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #bbb; transition: color 0.2s; }
+        .wizard-step.active { color: #b71c1c; }
+        .wizard-step.done { color: #2e7d32; }
+        .wizard-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d0d0d0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #bbb; transition: all 0.2s; }
+        .wizard-step.active .wizard-dot { border-color: #b71c1c; color: #b71c1c; background: #fce4ec; }
+        .wizard-step.done .wizard-dot { border-color: #2e7d32; color: #fff; background: #2e7d32; }
+        .wizard-connector { flex: 1; height: 2px; background: #e0e0e0; min-width: 10px; }
+        .wizard-connector.done { background: #2e7d32; }
 
         /* Step sections */
-        .step { border-bottom: 1px solid #eee; }
-        .step-header { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; user-select: none; transition: background 0.1s; background: #f5f5f5; }
-        .step-header:hover { background: #eee; }
-        .step.locked .step-header { cursor: default; opacity: 0.5; }
-        .step.locked .step-header:hover { background: #f5f5f5; }
-        .step-indicator { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; flex-shrink: 0; margin-right: 10px; }
-        .indicator-waiting { background: #e0e0e0; color: #999; }
-        .indicator-active { background: #c00; color: #fff; }
-        .indicator-running { background: #e65100; color: #fff; }
-        .indicator-done { background: #4CAF50; color: #fff; }
+        .step { border-bottom: 1px solid #e0e0e0; }
+        .step-header { display: flex; align-items: center; padding: 12px 24px; cursor: pointer; user-select: none; transition: background 0.15s; background: #f0f0f0; border-bottom: 1px solid #e0e0e0; }
+        .step-header:hover { background: #e8e8e8; }
+        .step.locked .step-header { cursor: default; opacity: 0.45; }
+        .step.locked .step-header:hover { background: #f0f0f0; }
+        .step-indicator { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-right: 12px; }
+        .indicator-waiting { background: #e0e0e0; color: #888; }
+        .indicator-active { background: #b71c1c; color: #fff; }
+        .indicator-running { background: #e65100; color: #fff; animation: pulse-indicator 1.2s ease-in-out infinite; }
+        @keyframes pulse-indicator { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .indicator-done { background: #2e7d32; color: #fff; }
         .indicator-error { background: #c62828; color: #fff; }
-        .step-title { font-size: 13px; font-weight: 600; color: #333; flex: 1; }
+        .step-title { font-size: 14px; font-weight: 600; color: #1a1a1a; flex: 1; }
         .step.locked .step-title { color: #999; }
         .step-lock { font-size: 14px; color: #bbb; margin-right: 8px; }
-        .step-chevron { font-size: 16px; color: #999; transition: transform 0.2s; }
+        .step-chevron { font-size: 18px; color: #888; transition: transform 0.2s; }
         .step.collapsed .step-chevron { transform: rotate(-90deg); }
-        .step-body { padding: 0 20px 16px 20px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s, padding 0.3s; }
+        .step-body { padding: 4px 24px 20px 24px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s, padding 0.3s; }
         .step.collapsed .step-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
-        .step-hint { font-size: 12px; color: #666; margin-bottom: 10px; line-height: 1.5; }
+        .step-hint { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.6; }
 
         /* Buttons */
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; }
-        .btn-primary { background: #c00; color: #fff; }
-        .btn-primary:hover { background: #a00; }
-        .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
-        .btn-secondary { background: #f0f0f0; color: #333; }
-        .btn-secondary:hover { background: #e0e0e0; }
-        .btn-secondary:disabled { background: #f5f5f5; color: #aaa; cursor: not-allowed; }
-        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; min-height: 42px; }
+        .btn-primary { background: #b71c1c; color: #fff; }
+        .btn-primary:hover { background: #8e0000; }
+        .btn-primary:disabled { background: #d0d0d0; color: #888; cursor: not-allowed; }
+        .btn-secondary { background: #e8e8e8; color: #333; border: 1px solid #d0d0d0; }
+        .btn-secondary:hover { background: #ddd; }
+        .btn-secondary:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
+        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
         .btn-group .btn { flex: 1; }
 
+        /* Focus styles for accessibility */
+        .btn:focus-visible, .form-input:focus-visible { outline: 2px solid #1976D2; outline-offset: 2px; }
+
         /* Inputs */
-        .bbox-display { font-family: monospace; font-size: 12px; background: #f5f5f5; padding: 8px 12px; border-radius: 6px; color: #333; min-height: 36px; display: flex; align-items: center; }
-        .bbox-display.empty { color: #aaa; }
-        .form-input { padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 13px; outline: none; transition: border-color 0.15s; width: 100%; }
-        .form-input:focus { border-color: #999; }
+        .bbox-display { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 12px; background: #f5f5f5; padding: 10px 14px; border-radius: 6px; color: #333; min-height: 40px; display: flex; align-items: center; border: 1px solid #e0e0e0; }
+        .bbox-display.empty { color: #999; }
+        .form-input { padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.15s; width: 100%; min-height: 42px; }
+        .form-input:focus { border-color: #666; box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
+        .form-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
 
         /* Progress + Log */
-        .progress-bar { height: 4px; background: #e0e0e0; border-radius: 2px; margin-bottom: 8px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #c00; border-radius: 2px; transition: width 0.3s; width: 0%; }
-        .log-area { font-family: monospace; font-size: 11px; background: #1a1a1a; color: #ccc; padding: 10px; border-radius: 6px; max-height: 200px; overflow-y: auto; line-height: 1.6; }
-        .log-step { color: #4CAF50; font-weight: 600; }
-        .log-error { color: #f44336; }
-        .log-info { color: #aaa; }
+        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #b71c1c; border-radius: 3px; transition: width 0.3s; width: 0%; }
+        .log-area { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 12px; background: #111; color: #bbb; padding: 12px 14px; border-radius: 6px; max-height: 200px; overflow-y: auto; line-height: 1.7; border: 1px solid #333; }
+        .log-step { color: #66bb6a; font-weight: 600; }
+        .log-error { color: #ef5350; }
+        .log-info { color: #888; }
 
         /* Stats */
-        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
-        .stat-card { background: #f5f5f5; padding: 10px 6px; border-radius: 6px; text-align: center; }
-        .stat-value { font-size: 20px; font-weight: 700; color: #333; }
-        .stat-label { font-size: 10px; color: #888; margin-top: 2px; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
+        .stat-card { background: #f5f5f5; padding: 12px 8px; border-radius: 8px; text-align: center; border: 1px solid #e8e8e8; }
+        .stat-value { font-size: 22px; font-weight: 800; color: #1a1a1a; }
+        .stat-label { font-size: 11px; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
 
         /* Legend */
-        .legend { font-size: 11px; color: #666; margin-top: 10px; }
-        .legend-item { display: flex; align-items: center; gap: 6px; margin: 3px 0; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 2px; }
+        .legend { font-size: 12px; color: #555; margin-top: 12px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
 
         /* Building inspector */
-        .building-props { font-size: 12px; }
+        .building-props { font-size: 13px; }
         .building-props table { width: 100%; border-collapse: collapse; }
-        .building-props td { padding: 4px 8px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-        .building-props td:first-child { color: #888; font-weight: 500; width: 40%; white-space: nowrap; }
-        .building-props td:last-child { color: #333; word-break: break-all; }
+        .building-props td { padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
+        .building-props td:first-child { color: #666; font-weight: 600; width: 40%; white-space: nowrap; }
+        .building-props td:last-child { color: #1a1a1a; word-break: break-all; }
         .building-props .new-tag { background: #e8f5e9; }
-        .building-props .new-tag td { color: #2e7d32; }
-        .building-props .osm-link { color: #1976D2; text-decoration: none; }
+        .building-props .new-tag td { color: #1b5e20; }
+        .building-props .osm-link { color: #1565C0; text-decoration: none; font-weight: 600; }
         .building-props .osm-link:hover { text-decoration: underline; }
 
-        /* Misc */
-        code { background: #f0f0f0; padding: 1px 4px; border-radius: 3px; font-size: 11px; }
-        .maplibregl-popup { max-width: 320px !important; }
-        .maplibregl-popup-content { padding: 0 !important; border-radius: 8px !important; overflow: hidden; box-shadow: 0 4px 16px rgba(0,0,0,0.15); }
-        .maplibregl-popup-close-button { font-size: 16px; width: 28px; height: 28px; line-height: 28px; text-align: center; padding: 0; color: #999; border-radius: 50%; top: 4px; right: 4px; }
-        .maplibregl-popup-close-button:hover { color: #333; background: #eee; }
-        .popup-header { padding: 10px 14px; background: #f5f5f5; border-bottom: 1px solid #eee; }
-        .popup-header a { font-size: 13px; font-weight: 600; color: #1976D2; text-decoration: none; }
+        /* Popup */
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 12px; font-family: 'SF Mono', 'Consolas', monospace; }
+        .maplibregl-popup { max-width: 340px !important; }
+        .maplibregl-popup-content { padding: 0 !important; border-radius: 10px !important; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
+        .maplibregl-popup-close-button { font-size: 18px; width: 30px; height: 30px; line-height: 30px; text-align: center; padding: 0; color: #888; border-radius: 50%; top: 4px; right: 4px; }
+        .maplibregl-popup-close-button:hover { color: #1a1a1a; background: #e8e8e8; }
+        .popup-header { padding: 12px 16px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
+        .popup-header a { font-size: 14px; font-weight: 700; color: #1565C0; text-decoration: none; }
         .popup-header a:hover { text-decoration: underline; }
-        .popup-body { padding: 6px 0; }
-        .popup-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .popup-body td { padding: 5px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .popup-body { padding: 4px 0; }
+        .popup-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .popup-body td { padding: 6px 16px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
         .popup-body tr:last-child td { border-bottom: none; }
-        .popup-body td:first-child { color: #888; font-weight: 500; white-space: nowrap; padding-right: 12px; }
-        .popup-body td:last-child { color: #333; word-break: break-word; }
-        .popup-body .new-tag td { background: #e8f5e9; color: #2e7d32; }
-        .popup-body .roof-tag td { background: #fff3e0; color: #e65100; }
-        .popup-footer { padding: 6px 14px 10px; font-size: 11px; color: #aaa; text-align: center; border-top: 1px solid #f0f0f0; }
-        .draw-hint { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.8); color: #fff; padding: 8px 16px; border-radius: 20px; font-size: 13px; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
+        .popup-body td:first-child { color: #666; font-weight: 600; white-space: nowrap; padding-right: 14px; }
+        .popup-body td:last-child { color: #1a1a1a; word-break: break-word; }
+        .popup-body .new-tag td { background: #e8f5e9; color: #1b5e20; font-weight: 600; }
+        .popup-body .roof-tag td { background: #fff3e0; color: #bf360c; }
+        .popup-footer { padding: 8px 16px 10px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; }
+        .draw-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 10; pointer-events: none; transition: opacity 0.3s; letter-spacing: 0.1px; }
         .draw-hint.hidden { opacity: 0; }
+
+        /* Upload section */
+        .upload-progress { display: none; margin-top: 10px; }
+        .upload-log { display: none; margin-top: 8px; }
+
+        /* Collapsible help */
+        .help-toggle { font-size: 13px; color: #1565C0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-weight: 500; }
+        .help-toggle:hover { color: #0d47a1; }
+        .help-content { display: none; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.7; background: #f9f9f9; padding: 12px 14px; border-radius: 6px; border: 1px solid #e8e8e8; }
+        .help-content.visible { display: block; }
+        .help-content ol { margin: 0; padding-left: 18px; }
+        .help-content li { margin-bottom: 4px; }
+
+        /* Logged in state */
+        .logged-in-badge { display: inline-flex; align-items: center; gap: 6px; background: #e8f5e9; color: #1b5e20; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; border: 1px solid #c8e6c9; }
     </style>
 </head>
 <body>
@@ -627,6 +647,7 @@ document.getElementById('btn-upload').onclick = async function() {
 
 // Handle OAuth callback + restore state
 (async function() {
+    // 1. Handle OAuth callback first (token exchange)
     try {
         var auth = await handleOAuthCallback();
         if (auth) {
@@ -637,58 +658,89 @@ document.getElementById('btn-upload').onclick = async function() {
         }
     } catch (e) { addLog('error', 'OAuth: ' + e.message); }
 
-    // Restore map position (always, even without results)
-    function restoreMapPosition() {
-        var savedMap = sessionStorage.getItem('osm_elevation_map');
-        if (!savedMap) return false;
+    // 2. Restore map position immediately (before map renders first frame)
+    var savedMap = sessionStorage.getItem('osm_elevation_map');
+    var mapRestored = false;
+    if (savedMap) {
         sessionStorage.removeItem('osm_elevation_map');
         try {
             var mv = JSON.parse(savedMap);
-            map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
-            return true;
-        } catch (e) { return false; }
+            // jumpTo is synchronous — sets position before first render
+            function applyMapPosition() {
+                map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
+            }
+            if (map.loaded()) applyMapPosition(); else map.once('load', applyMapPosition);
+            mapRestored = true;
+        } catch (e) { /* ignore */ }
     }
 
-    // Restore workflow state (results, bbox, steps)
+    // 3. Restore workflow state (results, bbox, steps, 3D preview)
     var saved = sessionStorage.getItem('osm_elevation_result');
     var savedBbox = sessionStorage.getItem('osm_elevation_bbox');
-    if (saved) {
-        sessionStorage.removeItem('osm_elevation_result');
-        sessionStorage.removeItem('osm_elevation_bbox');
-        try {
-            resultGeoJSON = JSON.parse(saved);
-            bboxStr = savedBbox || null;
-            if (bboxStr) {
-                document.getElementById('bbox-display').textContent = bboxStr;
-                document.getElementById('bbox-display').classList.remove('empty');
-                document.getElementById('btn-clear').disabled = false;
-            }
-            var total = resultGeoJSON.features.length;
-            var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height']; }).length;
-            var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height']; }).length;
-            setStepState(1, 'done');
-            setStepState(2, 'done');
-            unlockAndExpandStep(3);
-            unlockAndExpandStep(4);
-            setProgress(100);
-            addLog('step', 'Restored ' + enriched + ' enriched buildings');
-            showResults({ total: total, enriched: enriched, alreadyHad: alreadyHad, skipped: total - enriched - alreadyHad });
+    if (!saved) return;
 
-            function restoreMap() {
-                if (bboxStr) { var p = bboxStr.split(',').map(Number); updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] }); }
-                map.getSource('result-buildings').setData(resultGeoJSON);
-                map.setLayoutProperty('result-fill', 'visibility', 'visible');
-                if (!restoreMapPosition()) {
-                    map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
-                }
+    sessionStorage.removeItem('osm_elevation_result');
+    sessionStorage.removeItem('osm_elevation_bbox');
+    try {
+        resultGeoJSON = JSON.parse(saved);
+        bboxStr = savedBbox || null;
+
+        // Restore UI state
+        if (bboxStr) {
+            document.getElementById('bbox-display').textContent = bboxStr;
+            document.getElementById('bbox-display').classList.remove('empty');
+            document.getElementById('btn-clear').disabled = false;
+        }
+        var total = resultGeoJSON.features.length;
+        var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height']; }).length;
+        var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height']; }).length;
+        setStepState(1, 'done');
+        setStepState(2, 'done');
+        unlockAndExpandStep(3);
+        unlockAndExpandStep(4);
+        setProgress(100);
+        addLog('step', 'Restored ' + enriched + ' enriched buildings from previous session');
+        showResults({ total: total, enriched: enriched, alreadyHad: alreadyHad, skipped: total - enriched - alreadyHad });
+
+        // Restore 3D preview — wait for source to exist
+        function restorePreview() {
+            var src = map.getSource('result-buildings');
+            if (!src) return; // safety check
+            src.setData(resultGeoJSON);
+            map.setLayoutProperty('result-fill', 'visibility', 'visible');
+            if (bboxStr) {
+                var p = bboxStr.split(',').map(Number);
+                updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] });
             }
-            if (map.loaded()) restoreMap(); else map.once('load', restoreMap);
-        } catch (e) { console.error('Restore failed:', e); }
-    } else {
-        // No results to restore, but still restore map position if saved
-        function restoreMapOnly() { restoreMapPosition(); }
-        if (map.loaded()) restoreMapOnly(); else map.once('load', restoreMapOnly);
-    }
+            if (!mapRestored) {
+                map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+            }
+        }
+
+        // Source is added in map.on('load') — wait for it with a polling fallback
+        if (map.getSource('result-buildings')) {
+            restorePreview();
+        } else {
+            // Try on idle first, with a polling fallback for race conditions
+            var restored = false;
+            map.once('idle', function() {
+                if (restored) return;
+                restored = true;
+                restorePreview();
+            });
+            // Fallback: poll every 100ms for up to 3 seconds
+            var attempts = 0;
+            var pollInterval = setInterval(function() {
+                if (restored || attempts > 30) { clearInterval(pollInterval); return; }
+                attempts++;
+                if (map.getSource('result-buildings')) {
+                    restored = true;
+                    clearInterval(pollInterval);
+                    restorePreview();
+                }
+            }, 100);
+        }
+    } catch (e) { console.error('Restore failed:', e); }
 })();
 </script>
 </body>

@@ -248,11 +248,13 @@ async function uploadToOSM(features, onProgress, onLog) {
             return { updated: 0, errors: 0, changesetId: changesetId };
         }
 
-        // Step 3: Upload OsmChange in batches (max 10,000 per changeset)
-        var MAX_CHANGESET_SIZE = 9000; // leave margin below OSM's 10,000 limit
+        // Step 3: Upload OsmChange in small batches with rate-limit handling
+        var BATCH_SIZE = 100; // small batches to avoid 429
+        var BATCH_DELAY_MS = 1500; // pause between batches
+        var MAX_RETRIES = 5;
         var batches = [];
-        for (var bi = 0; bi < osmChangeWays.length; bi += MAX_CHANGESET_SIZE) {
-            batches.push(osmChangeWays.slice(bi, bi + MAX_CHANGESET_SIZE));
+        for (var bi = 0; bi < osmChangeWays.length; bi += BATCH_SIZE) {
+            batches.push(osmChangeWays.slice(bi, bi + BATCH_SIZE));
         }
 
         onLog('step', 'Uploading ' + osmChangeWays.length + ' buildings in ' + batches.length + ' batch(es)...');
@@ -260,55 +262,65 @@ async function uploadToOSM(features, onProgress, onLog) {
         for (var batchIdx = 0; batchIdx < batches.length; batchIdx++) {
             var batch = batches[batchIdx];
 
-            // For subsequent batches, create a new changeset
-            if (batchIdx > 0) {
-                // Close previous changeset
-                await fetch(OSM_API + '/changeset/' + changesetId + '/close', {
-                    method: 'PUT', headers: { 'Authorization': auth },
-                });
-                var newCsResp = await fetch(OSM_API + '/changeset/create', {
-                    method: 'PUT',
-                    headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
-                    body: csBody,
-                });
-                if (!newCsResp.ok) throw new Error('Failed to create new changeset');
-                changesetId = (await newCsResp.text()).trim();
-                // Update changeset ID in batch XML
-                batch = batch.map(function(xml) {
-                    return xml.replace(/changeset="[^"]*"/, 'changeset="' + changesetId + '"');
-                });
-                onLog('info', 'Created new changeset ' + changesetId + ' for batch ' + (batchIdx + 1));
-            }
-
             var osmChangeXml = '<osmChange version="0.6">\n<modify>\n' +
                 batch.join('\n') +
                 '\n</modify>\n</osmChange>';
 
-            var uploadResp = await fetch(OSM_API + '/changeset/' + changesetId + '/upload', {
-                method: 'POST',
-                headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
-                body: osmChangeXml,
-            });
+            // Retry loop for 429 rate limiting
+            var success = false;
+            for (var attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                var uploadResp = await fetch(OSM_API + '/changeset/' + changesetId + '/upload', {
+                    method: 'POST',
+                    headers: { 'Authorization': auth, 'Content-Type': 'text/xml' },
+                    body: osmChangeXml,
+                });
 
-            if (uploadResp.ok) {
-                updated += batch.length;
-                onLog('info', 'Batch ' + (batchIdx + 1) + '/' + batches.length + ': ' + batch.length + ' buildings uploaded');
-            } else {
+                if (uploadResp.ok) {
+                    updated += batch.length;
+                    onLog('info', 'Batch ' + (batchIdx + 1) + '/' + batches.length + ': ' + batch.length + ' buildings uploaded');
+                    success = true;
+                    break;
+                }
+
                 var errStatus = uploadResp.status;
                 var errText = await uploadResp.text();
 
-                if (errStatus === 409) {
-                    // Version conflict — identify and log conflicting element
-                    onLog('error', 'Version conflict: ' + errText.substring(0, 200));
-                    onLog('info', 'Some buildings were edited since extraction. ' + batch.length + ' buildings in this batch were not uploaded.');
-                    errors += batch.length;
-                } else {
-                    onLog('error', 'Upload failed (' + errStatus + '): ' + errText.substring(0, 200));
-                    errors += batch.length;
+                if (errStatus === 429) {
+                    // Rate limited — exponential backoff
+                    var retryAfter = parseInt(uploadResp.headers.get('Retry-After') || '0');
+                    var waitSec = retryAfter || Math.min(10 * Math.pow(2, attempt), 120); // 10s, 20s, 40s, 80s, 120s
+                    onLog('info', 'Rate limited — waiting ' + waitSec + 's before retry (' + (attempt + 1) + '/' + MAX_RETRIES + ')...');
+                    await new Promise(function(r) { setTimeout(r, waitSec * 1000); });
+                    continue;
                 }
+
+                if (errStatus === 409) {
+                    onLog('error', 'Version conflict: ' + errText.substring(0, 200));
+                    onLog('info', batch.length + ' buildings skipped (edited since extraction)');
+                    errors += batch.length;
+                    success = true; // don't retry conflicts
+                    break;
+                }
+
+                // Other errors — don't retry
+                onLog('error', 'Upload failed (' + errStatus + '): ' + errText.substring(0, 200));
+                errors += batch.length;
+                success = true; // mark as handled
+                break;
+            }
+
+            if (!success) {
+                onLog('error', 'Batch ' + (batchIdx + 1) + ' failed after ' + MAX_RETRIES + ' retries — skipping remaining batches');
+                errors += osmChangeWays.slice((batchIdx) * BATCH_SIZE).length;
+                break;
             }
 
             onProgress(batchIdx + 1, batches.length);
+
+            // Pause between batches to stay under rate limits
+            if (batchIdx < batches.length - 1) {
+                await new Promise(function(r) { setTimeout(r, BATCH_DELAY_MS); });
+            }
         }
 
         if (skippedAtUpload > 0) onLog('info', 'Skipped at upload (edited since extraction): ' + skippedAtUpload);
