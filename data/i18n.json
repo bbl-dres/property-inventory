@@ -1960,5 +1960,161 @@
     "en": "KGS Inventory",
     "fr": "Inventaire PBC",
     "it": "Inventario PBC"
+  },
+  "search.section.objects": {
+    "de": "Objekte",
+    "en": "Objects",
+    "fr": "Objets",
+    "it": "Oggetti"
+  },
+  "search.section.places": {
+    "de": "Orte",
+    "en": "Places",
+    "fr": "Lieux",
+    "it": "Luoghi"
+  },
+  "search.section.maps": {
+    "de": "Karten hinzufügen...",
+    "en": "Add maps...",
+    "fr": "Ajouter des cartes...",
+    "it": "Aggiungere carte..."
+  },
+  "search.empty": {
+    "de": "Keine Resultate gefunden",
+    "en": "No results found",
+    "fr": "Aucun résultat trouvé",
+    "it": "Nessun risultato trovato"
+  },
+  "menu.close": {
+    "de": "Menü schliessen",
+    "en": "Close menu",
+    "fr": "Fermer le menu",
+    "it": "Chiudi menu"
+  },
+  "menu.open": {
+    "de": "Menü öffnen",
+    "en": "Open menu",
+    "fr": "Ouvrir le menu",
+    "it": "Apri menu"
+  },
+  "export.filtered": {
+    "de": "Gefiltert exportieren",
+    "en": "Export filtered",
+    "fr": "Exporter filtré",
+    "it": "Esporta filtrati"
+  },
+  "export.filtered.count": {
+    "de": "Gefiltert exportieren ({count})",
+    "en": "Export filtered ({count})",
+    "fr": "Exporter filtré ({count})",
+    "it": "Esporta filtrati ({count})"
+  },
+  "table.search.buildings": {
+    "de": "Gebäude durchsuchen...",
+    "en": "Search buildings...",
+    "fr": "Rechercher des bâtiments...",
+    "it": "Cerca edifici..."
+  },
+  "table.search.parcels": {
+    "de": "Grundstücke durchsuchen...",
+    "en": "Search parcels...",
+    "fr": "Rechercher des parcelles...",
+    "it": "Cerca particelle..."
+  },
+  "print.generating": {
+    "de": "Wird erstellt...",
+    "en": "Generating...",
+    "fr": "Création en cours...",
+    "it": "Creazione in corso..."
+  },
+  "swisstopo.error": {
+    "de": "Fehler",
+    "en": "Error",
+    "fr": "Erreur",
+    "it": "Errore"
+  },
+  "swisstopo.error.invalidId": {
+    "de": "Ungültige Layer-ID.",
+    "en": "Invalid layer ID.",
+    "fr": "ID de couche invalide.",
+    "it": "ID layer non valido."
+  },
+  "swisstopo.notice": {
+    "de": "Hinweis",
+    "en": "Notice",
+    "fr": "Remarque",
+    "it": "Avviso"
+  },
+  "swisstopo.layer.alreadyActive": {
+    "de": "Layer \"{title}\" ist bereits aktiv.",
+    "en": "Layer \"{title}\" is already active.",
+    "fr": "La couche \"{title}\" est déjà active.",
+    "it": "Il layer \"{title}\" è già attivo."
+  },
+  "swisstopo.loading": {
+    "de": "Lade Layer...",
+    "en": "Loading layer...",
+    "fr": "Chargement de la couche...",
+    "it": "Caricamento layer..."
+  },
+  "swisstopo.loading.metadata": {
+    "de": "Metadaten werden abgerufen.",
+    "en": "Fetching metadata.",
+    "fr": "Récupération des métadonnées.",
+    "it": "Recupero dei metadati."
+  },
+  "swisstopo.layer.addFailed": {
+    "de": "Layer \"{title}\" konnte nicht zur Karte hinzugefügt werden.",
+    "en": "Layer \"{title}\" could not be added to the map.",
+    "fr": "La couche \"{title}\" n'a pas pu être ajoutée à la carte.",
+    "it": "Il layer \"{title}\" non è stato aggiunto alla mappa."
+  },
+  "swisstopo.layer.added": {
+    "de": "Layer hinzugefügt",
+    "en": "Layer added",
+    "fr": "Couche ajoutée",
+    "it": "Layer aggiunto"
+  },
+  "swisstopo.layer.addedMessage": {
+    "de": "\"{title}\" wurde zur Karte hinzugefügt.",
+    "en": "\"{title}\" has been added to the map.",
+    "fr": "\"{title}\" a été ajoutée à la carte.",
+    "it": "\"{title}\" è stato aggiunto alla mappa."
+  },
+  "swisstopo.layer.loadFailed": {
+    "de": "Layer \"{title}\" konnte nicht geladen werden.",
+    "en": "Layer \"{title}\" could not be loaded.",
+    "fr": "La couche \"{title}\" n'a pas pu être chargée.",
+    "it": "Il layer \"{title}\" non è stato caricato."
+  },
+  "swisstopo.layer.removed": {
+    "de": "Layer entfernt",
+    "en": "Layer removed",
+    "fr": "Couche supprimée",
+    "it": "Layer rimosso"
+  },
+  "swisstopo.layer.removedMessage": {
+    "de": "\"{title}\" wurde entfernt.",
+    "en": "\"{title}\" has been removed.",
+    "fr": "\"{title}\" a été supprimée.",
+    "it": "\"{title}\" è stato rimosso."
+  },
+  "swisstopo.noActiveLayers": {
+    "de": "Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.",
+    "en": "No external maps active. Search for maps using the search field.",
+    "fr": "Aucune carte externe active. Recherchez des cartes via le champ de recherche.",
+    "it": "Nessuna carta esterna attiva. Cercare carte tramite il campo di ricerca."
+  },
+  "swisstopo.loadingInfo": {
+    "de": "Lade Informationen...",
+    "en": "Loading information...",
+    "fr": "Chargement des informations...",
+    "it": "Caricamento informazioni..."
+  },
+  "swisstopo.loadInfoFailed": {
+    "de": "Informationen konnten nicht geladen werden.",
+    "en": "Information could not be loaded.",
+    "fr": "Les informations n'ont pas pu être chargées.",
+    "it": "Le informazioni non sono state caricate."
   }
 }

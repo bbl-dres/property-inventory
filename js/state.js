@@ -3,16 +3,16 @@
 import { filterConfig, mapStyles } from './config.js';
 
 // Initialize activeFilters from filterConfig keys
-var activeFilters = {};
+const activeFilters = {};
 Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
 // Load saved map style from localStorage
-var savedMapStyle = localStorage.getItem('mapStyle') || 'positron';
+let savedMapStyle = localStorage.getItem('mapStyle') || 'positron';
 if (!mapStyles[savedMapStyle]) savedMapStyle = 'positron';
 
-export var state = {
+export const state = {
   // Data
-  portfolioData: null,
+  buildingsData: null,
   parcelData: null,
   filteredData: null,
 

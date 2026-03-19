@@ -178,7 +178,7 @@
                                 <span class="share-link-label" data-i18n="accordion.share.label">Link zum Teilen:</span>
                                 <div class="share-link-row">
                                     <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
-                                    <button class="share-copy-btn" onclick="copyShareLink()" aria-label="Link in die Zwischenablage kopieren" data-i18n="accordion.share.copy">Link kopieren</button>
+                                    <button class="share-copy-btn" data-action="copyShareLink" aria-label="Link in die Zwischenablage kopieren" data-i18n="accordion.share.copy">Link kopieren</button>
                                 </div>
                             </div>
                         </div>
@@ -271,14 +271,14 @@
                                 <div class="active-layer-item" data-internal-layer="buildings">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
-                                    <button class="active-layer-info" onclick="showInternalLayerInfo('buildings')" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
-                                    <button class="active-layer-info" onclick="showInternalLayerInfo('parcels')" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
@@ -715,11 +715,11 @@ Content-Type: application/geo+json
                     <div class="detail-header-inner">
                         <div class="breadcrumb" id="detail-breadcrumb">
                             <span class="material-symbols-outlined">public</span>
-                            <a href="#" onclick="navigateToAllObjects(); return false;" data-i18n="detail.all_objects">Alle Objekte</a>
+                            <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
                             <span>></span>
-                            <a href="#" id="breadcrumb-country-link" onclick="navigateWithLandFilter(); return false;"><span id="breadcrumb-country">–</span></a>
+                            <a href="#" id="breadcrumb-country-link" data-action="navigateWithLandFilter"><span id="breadcrumb-country">–</span></a>
                             <span>></span>
-                            <a href="#" id="breadcrumb-city-link" onclick="navigateWithOrtFilter(); return false;"><span id="breadcrumb-city">–</span></a>
+                            <a href="#" id="breadcrumb-city-link" data-action="navigateWithOrtFilter"><span id="breadcrumb-city">–</span></a>
                             <span>></span>
                             <span id="breadcrumb-we">–</span>
                             <span>></span>
@@ -737,8 +737,8 @@ Content-Type: application/geo+json
                 <!-- Foto Gallery (always visible, above tabs) -->
                 <div class="carousel" id="detail-carousel" role="region" aria-roledescription="Bildkarussell" aria-label="Gebäudebilder">
                     <div class="carousel-image" id="carousel-image"></div>
-                    <button class="carousel-btn prev" onclick="carouselPrev()" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <button class="carousel-btn next" onclick="carouselNext()" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
+                    <button class="carousel-btn prev" data-action="carouselPrev" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
+                    <button class="carousel-btn next" data-action="carouselNext" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
                     <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Bild auswählen"></div>
                 </div>
 

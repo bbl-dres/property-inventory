@@ -1,8 +1,8 @@
-// Export panel and data export functions
+// Export panel, data export, share link, and social sharing functions
 
 import { state } from './state.js';
 import { escapeXml, downloadBlob } from './utils.js';
-import { showToast } from './toast.js';
+import { showToast } from './ui.js';
 import { t } from './i18n.js';
 
 export function initExportPanel() {
@@ -18,13 +18,13 @@ export function initExportPanel() {
   });
 
   // Data selection change
-  var dataSelection = document.getElementById('export-data-selection');
+  const dataSelection = document.getElementById('export-data-selection');
   if (dataSelection) {
     dataSelection.addEventListener('change', updateExportCount);
   }
 
   // Export button
-  var exportBtn = document.getElementById('export-btn');
+  const exportBtn = document.getElementById('export-btn');
   if (exportBtn) {
     exportBtn.addEventListener('click', performExport);
   }
@@ -34,17 +34,17 @@ export function initExportPanel() {
 }
 
 export function updateExportCount() {
-  var countEl = document.getElementById('export-count');
-  var dataSelection = document.getElementById('export-data-selection');
+  const countEl = document.getElementById('export-count');
+  const dataSelection = document.getElementById('export-data-selection');
   if (!countEl || !dataSelection) return;
 
-  var count = 0;
-  var selection = dataSelection.value;
+  let count = 0;
+  const selection = dataSelection.value;
 
   if (selection === 'filtered') {
     count = state.filteredData ? state.filteredData.features.length : 0;
   } else if (selection === 'all') {
-    count = state.portfolioData ? state.portfolioData.features.length : 0;
+    count = state.buildingsData ? state.buildingsData.features.length : 0;
   } else if (selection === 'selected') {
     count = state.selectedBuildingId ? 1 : 0;
   }
@@ -53,15 +53,15 @@ export function updateExportCount() {
 }
 
 export function getExportData() {
-  var dataSelection = document.getElementById('export-data-selection');
-  var selection = dataSelection ? dataSelection.value : 'filtered';
+  const dataSelection = document.getElementById('export-data-selection');
+  const selection = dataSelection ? dataSelection.value : 'filtered';
 
   if (selection === 'filtered') {
     return state.filteredData ? state.filteredData.features : [];
   } else if (selection === 'all') {
-    return state.portfolioData ? state.portfolioData.features : [];
+    return state.buildingsData ? state.buildingsData.features : [];
   } else if (selection === 'selected' && state.selectedBuildingId) {
-    var building = state.portfolioData.features.find(function(b) {
+    const building = state.buildingsData.features.find(function(b) {
       return b.properties.bbl_id === state.selectedBuildingId;
     });
     return building ? [building] : [];
@@ -70,14 +70,14 @@ export function getExportData() {
 }
 
 export function performExport() {
-  var data = getExportData();
+  const data = getExportData();
   if (data.length === 0) {
     showToast({ type: 'error', message: t('error.export.nodata') });
     return;
   }
 
-  var btn = document.getElementById('export-btn');
-  var originalHTML = btn.innerHTML;
+  const btn = document.getElementById('export-btn');
+  const originalHTML = btn.innerHTML;
   btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span><span>' + t('export.exporting') + '</span>';
   btn.disabled = true;
 
@@ -109,13 +109,13 @@ export function performExport() {
 }
 
 export function exportGeoJSON(data) {
-  var includeCoords = document.getElementById('export-coords').checked;
-  var includeParcels = document.getElementById('export-parcels').checked;
+  const includeCoords = document.getElementById('export-coords').checked;
+  const includeParcels = document.getElementById('export-parcels').checked;
 
-  var featureCollection = {
+  const featureCollection = {
     type: 'FeatureCollection',
     features: data.map(function(feature) {
-      var exportFeature = JSON.parse(JSON.stringify(feature));
+      const exportFeature = JSON.parse(JSON.stringify(feature));
       if (!includeCoords) {
         delete exportFeature.geometry;
       }
@@ -132,17 +132,17 @@ export function exportGeoJSON(data) {
     );
   }
 
-  var blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
+  const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
   downloadBlob(blob, 'bbl-portfolio-export.geojson');
 }
 
 export function exportCSV(data) {
-  var allFields = document.getElementById('export-all-fields').checked;
-  var visibleOnly = document.getElementById('export-visible-only').checked;
-  var includeCoords = document.getElementById('export-coords').checked;
+  const allFields = document.getElementById('export-all-fields').checked;
+  const visibleOnly = document.getElementById('export-visible-only').checked;
+  const includeCoords = document.getElementById('export-coords').checked;
 
   // Define columns
-  var columns = ['bbl_id', 'bbl_bez', 'adr_conct', 'adr_ort', 'adr_land', 'bbl_stat', 'garea_ngf'];
+  let columns = ['bbl_id', 'bbl_bez', 'adr_conct', 'adr_ort', 'adr_land', 'bbl_stat', 'garea_ngf'];
 
   if (allFields && !visibleOnly) {
     columns = ['bbl_id', 'bbl_bez', 'bbl_stat', 'bbl_eigen', 'bbl_gbda1', 'bbl_gbda2',
@@ -157,21 +157,21 @@ export function exportCSV(data) {
   }
 
   // Build CSV content
-  var csvContent = columns.join(';') + '\n';
+  let csvContent = columns.join(';') + '\n';
 
   data.forEach(function(feature) {
-    var props = feature.properties || {};
-    var row = columns.map(function(col) {
+    const props = feature.properties || {};
+    const row = columns.map(function(col) {
       if (col === 'longitude' && feature.geometry && feature.geometry.coordinates) {
         return feature.geometry.coordinates[0];
       }
       if (col === 'latitude' && feature.geometry && feature.geometry.coordinates) {
         return feature.geometry.coordinates[1];
       }
-      var value = props[col];
+      const value = props[col];
       if (value === null || value === undefined) return '';
       // Escape quotes and wrap in quotes if contains separator
-      var strValue = String(value);
+      let strValue = String(value);
       if (strValue.includes(';') || strValue.includes('"') || strValue.includes('\n')) {
         strValue = '"' + strValue.replace(/"/g, '""') + '"';
       }
@@ -180,21 +180,21 @@ export function exportCSV(data) {
     csvContent += row.join(';') + '\n';
   });
 
-  var blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' }); // BOM for Excel
+  const blob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8' }); // BOM for Excel
   downloadBlob(blob, 'bbl-portfolio-export.csv');
 }
 
 export function exportKML(data) {
-  var includeCoords = document.getElementById('export-coords').checked;
+  const includeCoords = document.getElementById('export-coords').checked;
 
-  var kmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  let kmlContent = '<?xml version="1.0" encoding="UTF-8"?>\n';
   kmlContent += '<kml xmlns="http://www.opengis.net/kml/2.2">\n';
   kmlContent += '  <Document>\n';
   kmlContent += '    <name>BBL Immobilienportfolio</name>\n';
   kmlContent += '    <description>Export vom ' + new Date().toLocaleDateString('de-CH') + '</description>\n';
 
   // Define styles for different statuses
-  var statusStyles = {
+  const statusStyles = {
     'Aktiv': { color: 'ff50af4c', icon: 'grn-circle' },
     'In Renovation': { color: 'ff0098ff', icon: 'orange-circle' },
     'In Planung': { color: 'fff39621', icon: 'blu-circle' },
@@ -202,7 +202,7 @@ export function exportKML(data) {
   };
 
   Object.keys(statusStyles).forEach(function(status) {
-    var style = statusStyles[status];
+    const style = statusStyles[status];
     kmlContent += '    <Style id="style-' + status.replace(/\s/g, '-') + '">\n';
     kmlContent += '      <IconStyle>\n';
     kmlContent += '        <color>' + style.color + '</color>\n';
@@ -213,9 +213,9 @@ export function exportKML(data) {
   });
 
   data.forEach(function(feature) {
-    var props = feature.properties || {};
-    var coords = feature.geometry && feature.geometry.coordinates ? feature.geometry.coordinates : [0, 0];
-    var status = props.bbl_stat || 'Aktiv';
+    const props = feature.properties || {};
+    const coords = feature.geometry && feature.geometry.coordinates ? feature.geometry.coordinates : [0, 0];
+    const status = props.bbl_stat || 'Aktiv';
 
     kmlContent += '    <Placemark>\n';
     kmlContent += '      <name>' + escapeXml(props.bbl_bez || 'Unbekannt') + '</name>\n';
@@ -239,7 +239,7 @@ export function exportKML(data) {
   kmlContent += '  </Document>\n';
   kmlContent += '</kml>';
 
-  var blob = new Blob([kmlContent], { type: 'application/vnd.google-earth.kml+xml' });
+  const blob = new Blob([kmlContent], { type: 'application/vnd.google-earth.kml+xml' });
   downloadBlob(blob, 'bbl-portfolio-export.kml');
 }
 
@@ -248,17 +248,17 @@ export function exportShapefile(data) {
   // For now, we'll export as GeoJSON with a note about conversion
   showToast({ type: 'info', title: 'Shapefile-Export', message: 'GeoJSON wird erstellt. Konvertieren Sie mit QGIS oder ogr2ogr zu Shapefile.' });
 
-  var includeCoords = document.getElementById('export-coords').checked;
+  const includeCoords = document.getElementById('export-coords').checked;
 
-  var featureCollection = {
+  const featureCollection = {
     type: 'FeatureCollection',
     name: 'bbl_portfolio',
     crs: { type: 'name', properties: { name: 'urn:ogc:def:crs:OGC:1.3:CRS84' } },
     features: data.map(function(feature) {
-      var exportFeature = JSON.parse(JSON.stringify(feature));
+      const exportFeature = JSON.parse(JSON.stringify(feature));
       // Flatten properties for shapefile compatibility (10 char field names)
       if (exportFeature.properties) {
-        var props = exportFeature.properties;
+        const props = exportFeature.properties;
         exportFeature.properties = {
           bbl_id: props.bbl_id,
           bbl_bez: (props.bbl_bez || '').substring(0, 254),
@@ -278,6 +278,92 @@ export function exportShapefile(data) {
     })
   };
 
-  var blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
+  const blob = new Blob([JSON.stringify(featureCollection, null, 2)], { type: 'application/geo+json' });
   downloadBlob(blob, 'bbl-portfolio-for-shapefile.geojson');
+}
+
+// ===== SHARE LINK AND SOCIAL SHARING =====
+
+export function getShareUrl() {
+  const baseUrl = window.location.origin + window.location.pathname;
+  const params = new URLSearchParams(window.location.search);
+
+  // Add current map position if map exists
+  if (state.map) {
+    const center = state.map.getCenter();
+    const zoom = state.map.getZoom();
+    params.set('lng', center.lng.toFixed(5));
+    params.set('lat', center.lat.toFixed(5));
+    params.set('zoom', zoom.toFixed(2));
+  }
+
+  // Add selected building or parcel if one is selected
+  if (state.selectedBuildingId) {
+    params.set('id', state.selectedBuildingId);
+    params.delete('parcelId');
+  } else if (state.selectedParcelId) {
+    params.set('parcelId', state.selectedParcelId);
+    params.delete('id');
+  } else {
+    params.delete('id');
+    params.delete('parcelId');
+  }
+
+  return baseUrl + '?' + params.toString();
+}
+
+export function updateShareLink() {
+  const input = document.getElementById('share-link-input');
+  if (input) {
+    input.value = getShareUrl();
+  }
+}
+
+export function shareViaEmail() {
+  const url = getShareUrl();
+  const subject = encodeURIComponent(t('share.email.subject'));
+  const body = encodeURIComponent(t('share.email.body') + '\n\n' + url);
+  window.open('mailto:?subject=' + subject + '&body=' + body, '_self');
+}
+
+export function shareViaFacebook() {
+  const url = encodeURIComponent(getShareUrl());
+  window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank', 'width=600,height=400');
+}
+
+export function shareViaLinkedIn() {
+  const url = encodeURIComponent(getShareUrl());
+  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url, '_blank', 'width=600,height=400');
+}
+
+export function shareViaX() {
+  const url = encodeURIComponent(getShareUrl());
+  const text = encodeURIComponent(t('share.email.subject'));
+  window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank', 'width=600,height=400');
+}
+
+export function copyShareLink() {
+  const input = document.getElementById('share-link-input');
+  const button = document.querySelector('.share-copy-btn');
+
+  if (input && navigator.clipboard) {
+    navigator.clipboard.writeText(input.value).then(function() {
+      button.textContent = t('accordion.share.copied');
+      button.classList.add('copied');
+      setTimeout(function() {
+        button.textContent = t('accordion.share.copy');
+        button.classList.remove('copied');
+      }, 2000);
+    });
+  } else if (input) {
+    // Fallback for older browsers
+    input.select();
+    document.execCommand('copy');
+    button.textContent = t('accordion.share.copied');
+    button.classList.add('copied');
+    setTimeout(function() {
+      button.textContent = t('accordion.share.copy');
+      button.classList.remove('copied');
+    }, 2000);
+  }
 }

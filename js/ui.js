@@ -1,21 +1,307 @@
+// UI module: view management, toast notifications, menu, accordion, tabs, and panels
+
 import { state } from './state.js';
-import { showToast } from './toast.js';
+import { escapeHtml } from './utils.js';
 import { setLang, getLang, t } from './i18n.js';
-import { switchView, showDetailView, getBuildingIdFromURL, getTabFromURL, setTabInURL } from './views.js';
+import { renderListView, renderGalleryView, renderParcelsView } from './list.js';
+import { populateDetailView, renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
+import { updateMapFilter } from './filters.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
-import { updateShareLink } from './share.js';
-import { updateExportCount } from './export.js';
-import { loadGeokatalog } from './geokatalog.js';
+import { updateShareLink, getShareUrl, updateExportCount } from './export.js';
+import { loadGeokatalog } from './swisstopo.js';
 import { selectBuilding, selectParcel, updateSelectedBuilding, updateSelectedParcel, updateUrlWithSelection, getPolygonCentroid } from './map.js';
-import { getShareUrl } from './share.js';
-import { renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
+
+// ===== TOAST NOTIFICATION SYSTEM =====
+
+const toastIcons = {
+  error: 'error',
+  warning: 'warning',
+  success: 'check_circle',
+  info: 'info'
+};
+
+export function showToast(options) {
+  const container = document.getElementById('toast-container');
+  if (!container) return;
+
+  const type = options.type || 'info';
+  const title = options.title || '';
+  const message = options.message || '';
+  const duration = options.duration !== undefined ? options.duration : 5000;
+  const actions = options.actions || [];
+
+  const toast = document.createElement('div');
+  toast.className = 'toast toast-' + type;
+
+  let html = '<div class="toast-icon"><span class="material-symbols-outlined">' + toastIcons[type] + '</span></div>';
+  html += '<div class="toast-content">';
+  if (title) {
+    html += '<div class="toast-title">' + escapeHtml(title) + '</div>';
+  }
+  if (message) {
+    html += '<div class="toast-message">' + escapeHtml(message) + '</div>';
+  }
+  if (actions.length > 0) {
+    html += '<div class="toast-actions">';
+    actions.forEach(function(action, index) {
+      html += '<button class="toast-action-btn ' + (action.primary ? 'primary' : 'secondary') + '" data-action="' + index + '">' + escapeHtml(action.label) + '</button>';
+    });
+    html += '</div>';
+  }
+  html += '</div>';
+  html += '<button class="toast-close" aria-label="' + t('modal.close') + '"><span class="material-symbols-outlined">close</span></button>';
+
+  toast.innerHTML = html;
+  container.appendChild(toast);
+
+  const closeBtn = toast.querySelector('.toast-close');
+  closeBtn.addEventListener('click', function() {
+    hideToast(toast);
+  });
+
+  actions.forEach(function(action, index) {
+    const btn = toast.querySelector('[data-action="' + index + '"]');
+    if (btn && action.onClick) {
+      btn.addEventListener('click', function() {
+        action.onClick();
+        hideToast(toast);
+      });
+    }
+  });
+
+  if (duration > 0) {
+    setTimeout(function() {
+      hideToast(toast);
+    }, duration);
+  }
+
+  return toast;
+}
+
+export function hideToast(toast) {
+  if (!toast || !toast.parentNode) return;
+  toast.classList.add('hiding');
+  setTimeout(function() {
+    if (toast.parentNode) {
+      toast.parentNode.removeChild(toast);
+    }
+  }, 300);
+}
+
+export function showError(title, message, retryCallback) {
+  const actions = [];
+  if (retryCallback) {
+    actions.push({
+      label: t('error.retry'),
+      primary: true,
+      onClick: retryCallback
+    });
+  }
+  return showToast({
+    type: 'error',
+    title: title,
+    message: message,
+    duration: retryCallback ? 0 : 8000,
+    actions: actions
+  });
+}
+
+export function showWarning(title, message) {
+  return showToast({ type: 'warning', title: title, message: message, duration: 6000 });
+}
+
+export function showSuccess(title, message) {
+  return showToast({ type: 'success', title: title, message: message, duration: 4000 });
+}
+
+export function showInfo(title, message) {
+  return showToast({ type: 'info', title: title, message: message, duration: 5000 });
+}
+
+// ===== URL HELPERS =====
+export function getViewFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('view') || 'map';
+}
+
+export function getBuildingIdFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('id');
+}
+
+export function getTabFromURL() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get('tab') || 'overview';
+}
+
+export function setViewInURL(view, buildingId, tab) {
+  const url = new URL(window.location);
+  url.searchParams.set('view', view);
+  if (buildingId) {
+    url.searchParams.set('id', buildingId);
+  } else {
+    url.searchParams.delete('id');
+  }
+  if (view === 'detail' && tab && tab !== 'overview') {
+    url.searchParams.set('tab', tab);
+  } else {
+    url.searchParams.delete('tab');
+  }
+  window.history.pushState({}, '', url);
+}
+
+export function setTabInURL(tab) {
+  const url = new URL(window.location);
+  if (tab && tab !== 'overview') {
+    url.searchParams.set('tab', tab);
+  } else {
+    url.searchParams.delete('tab');
+  }
+  window.history.replaceState({}, '', url);
+}
+
+// ===== VIEW SWITCHING =====
+export function switchView(view) {
+  if (view !== 'detail') {
+    state.previousView = state.currentView !== 'detail' ? state.currentView : state.previousView;
+  }
+  state.currentView = view;
+  setViewInURL(view);
+
+  // Update toggle buttons and ARIA attributes
+  document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+    btn.setAttribute('aria-selected', 'false');
+    if (btn.dataset.view === view) {
+      btn.classList.add('active');
+      btn.setAttribute('aria-selected', 'true');
+    }
+  });
+
+  // Show/hide views
+  document.getElementById('map-view').classList.remove('active');
+  document.getElementById('gallery-view').classList.remove('active');
+  document.getElementById('detail-view').classList.remove('active');
+  document.getElementById('api-docs-view').classList.remove('active');
+
+  // Disable page scrolling mode when leaving detail view
+  document.body.classList.remove('detail-active');
+
+  const viewElement = document.getElementById(view + '-view');
+  if (viewElement) {
+    viewElement.classList.add('active');
+  }
+
+  // Show/hide style switcher based on view (only visible in map view)
+  const styleSwitcher = document.getElementById('style-switcher');
+  if (styleSwitcher) {
+    styleSwitcher.classList.toggle('visible', view === 'map');
+  }
+
+  // Resize map if switching to map view
+  if (view === 'map' && state.map) {
+    setTimeout(function() {
+      state.map.resize();
+      if (state.map.getLayer('buildings-points')) {
+        updateMapFilter();
+      }
+    }, 100);
+  }
+
+  // Re-render gallery view if dirty
+  if (view === 'gallery' && state.galleryViewDirty) {
+    renderGalleryView();
+    state.galleryViewDirty = false;
+  }
+
+  // Re-render list/parcels views if dirty when switching to map
+  if (view === 'map' && state.listViewDirty && state.tableOpen) {
+    renderListView();
+    renderParcelsView();
+    state.listViewDirty = false;
+  }
+}
+
+// ===== DETAIL VIEW =====
+export function showDetailView(buildingId, tab) {
+  if (!state.buildingsData) return;
+
+  // Default tab to overview if not specified
+  if (!tab) tab = 'overview';
+
+  // Find building by ID
+  const building = state.buildingsData.features.find(function(f) {
+    return f.properties.bbl_id === buildingId;
+  });
+
+  if (!building) {
+    console.error('Building not found:', buildingId);
+    return;
+  }
+
+  state.currentDetailBuilding = building;
+  state.previousView = state.currentView !== 'detail' ? state.currentView : state.previousView;
+  state.currentView = 'detail';
+
+  // Update URL with building ID and tab
+  setViewInURL('detail', buildingId, tab);
+
+  // Deactivate toggle buttons
+  document.querySelectorAll('.view-toggle-btn').forEach(function(btn) {
+    btn.classList.remove('active');
+  });
+
+  // Hide map and gallery, show detail
+  document.getElementById('map-view').classList.remove('active');
+  document.getElementById('gallery-view').classList.remove('active');
+  document.getElementById('detail-view').classList.add('active');
+
+  // Enable page scrolling mode for detail view
+  document.body.classList.add('detail-active');
+  window.scrollTo(0, 0);
+
+  // Hide style switcher in detail view
+  const detailStyleSwitcher = document.getElementById('style-switcher');
+  if (detailStyleSwitcher) {
+    detailStyleSwitcher.classList.remove('visible');
+  }
+
+  // Populate detail view
+  populateDetailView(building);
+
+  // Activate the specified tab
+  activateTab(tab);
+}
+
+// ===== TAB ACTIVATION =====
+export function activateTab(tab) {
+  // Update active tab styling
+  document.querySelectorAll('.detail-tab').forEach(function(t) {
+    t.classList.remove('active');
+    if (t.dataset.tab === tab) {
+      t.classList.add('active');
+    }
+  });
+
+  // Switch content visibility
+  document.querySelectorAll('.tab-content').forEach(function(content) {
+    content.classList.remove('active');
+  });
+  const targetContent = document.querySelector('.tab-content[data-content="' + tab + '"]');
+  if (targetContent) {
+    targetContent.classList.add('active');
+  }
+
+  // Render tab-specific content (simplified: only overview + measurements)
+  // Measurements tab is now static HTML, no table rendering needed
+}
 
 // ===== MENU TOGGLE =====
-var menuToggle = null;
-var accordionPanel = null;
-var menuToggleText = null;
-var menuToggleIcon = null;
-var menuOpen = true;
+let menuToggle = null;
+let accordionPanel = null;
+let menuToggleText = null;
+let menuToggleIcon = null;
+let menuOpen = true;
 
 function updateMenuTogglePosition() {
   // On mobile (≤767px), CSS handles positioning via position: fixed; bottom: 10px
@@ -24,11 +310,11 @@ function updateMenuTogglePosition() {
     return;
   }
 
-  var mainRect = document.getElementById('map-view').getBoundingClientRect();
+  const mainRect = document.getElementById('map-view').getBoundingClientRect();
 
   if (menuOpen) {
-    var panelRect = accordionPanel.getBoundingClientRect();
-    var calculatedTop = panelRect.bottom - mainRect.top;
+    const panelRect = accordionPanel.getBoundingClientRect();
+    const calculatedTop = panelRect.bottom - mainRect.top;
     // Ensure button stays below the panel - if panel hasn't rendered yet, retry
     if (panelRect.height < 50) {
       setTimeout(updateMenuTogglePosition, 50);
@@ -42,7 +328,7 @@ function updateMenuTogglePosition() {
 
 // BUG FIX #22: Debounced more aggressively (50ms instead of 10ms) to reduce
 // excessive MutationObserver-triggered layout recalculations
-var menuToggleDebounceTimer = null;
+let menuToggleDebounceTimer = null;
 function updateMenuTogglePositionDebounced() {
   if (menuToggleDebounceTimer) {
     clearTimeout(menuToggleDebounceTimer);
@@ -66,7 +352,7 @@ function initUI() {
 
 // ===== BACK BUTTON =====
 function initBackButton() {
-  var btn = document.getElementById('btn-back');
+  const btn = document.getElementById('btn-back');
   if (btn) {
     btn.addEventListener('click', function() {
       switchView(state.previousView || 'map');
@@ -76,7 +362,7 @@ function initBackButton() {
 
 // ===== FOOTER API LINK =====
 function initFooterApiLink() {
-  var apiLink = document.getElementById('footer-api-link');
+  const apiLink = document.getElementById('footer-api-link');
   if (apiLink) {
     apiLink.addEventListener('click', function(e) {
       e.preventDefault();
@@ -93,29 +379,29 @@ function initFooterApiLink() {
 
 // ===== LANGUAGE SELECTOR =====
 function initLanguageSelector() {
-  var langBtn = document.getElementById('lang-btn');
-  var langDropdown = document.getElementById('lang-dropdown');
-  var langCurrent = document.getElementById('lang-current');
+  const langBtn = document.getElementById('lang-btn');
+  const langDropdown = document.getElementById('lang-dropdown');
+  const langCurrent = document.getElementById('lang-current');
   if (!langBtn || !langDropdown) return;
 
   langBtn.addEventListener('click', function(e) {
     e.stopPropagation();
-    var isOpen = langDropdown.classList.contains('open');
+    const isOpen = langDropdown.classList.contains('open');
     langDropdown.classList.toggle('open', !isOpen);
     langBtn.setAttribute('aria-expanded', !isOpen);
   });
 
   // Set initial active state from current language
-  var currentLang = getLang();
+  const currentLang = getLang();
   langCurrent.textContent = currentLang.toUpperCase();
   langDropdown.querySelectorAll('.lang-option').forEach(function(o) {
     o.classList.toggle('active', o.dataset.lang === currentLang);
   });
 
   langDropdown.addEventListener('click', function(e) {
-    var option = e.target.closest('.lang-option');
+    const option = e.target.closest('.lang-option');
     if (!option) return;
-    var lang = option.dataset.lang;
+    const lang = option.dataset.lang;
     langDropdown.querySelectorAll('.lang-option').forEach(function(o) { o.classList.remove('active'); });
     option.classList.add('active');
     langCurrent.textContent = option.textContent;
@@ -134,13 +420,13 @@ function initLanguageSelector() {
 
 // ===== ACCORDION =====
 function initAccordion() {
-  var geokatalogAccordion = document.getElementById('geokatalog-accordion');
+  const geokatalogAccordion = document.getElementById('geokatalog-accordion');
 
   document.querySelectorAll('.accordion-header').forEach(function(header) {
     header.addEventListener('click', function() {
-      var content = this.nextElementSibling;
-      var isActive = this.classList.contains('active');
-      var isGeokatalog = this.parentElement.id === 'geokatalog-accordion';
+      const content = this.nextElementSibling;
+      const isActive = this.classList.contains('active');
+      const isGeokatalog = this.parentElement.id === 'geokatalog-accordion';
 
       document.querySelectorAll('.accordion-header').forEach(function(h) { h.classList.remove('active'); });
       document.querySelectorAll('.accordion-content').forEach(function(c) { c.classList.remove('show'); });
@@ -154,8 +440,8 @@ function initAccordion() {
         content.classList.add('show');
 
         // Match accordion by data-i18n key instead of text content
-        var headerSpans = this.querySelectorAll(':scope > span[data-i18n]');
-        var i18nKey = headerSpans.length > 0 ? headerSpans[headerSpans.length - 1].getAttribute('data-i18n') : '';
+        const headerSpans = this.querySelectorAll(':scope > span[data-i18n]');
+        const i18nKey = headerSpans.length > 0 ? headerSpans[headerSpans.length - 1].getAttribute('data-i18n') : '';
 
         // Update share link when Share accordion is opened
         if (i18nKey === 'accordion.share') {
@@ -181,14 +467,14 @@ function initAccordion() {
 
 // ===== PRINT ORIENTATION / WINDOW RESIZE =====
 function initPrintListeners() {
-  var printOrientationSelect = document.getElementById('print-orientation');
+  const printOrientationSelect = document.getElementById('print-orientation');
   if (printOrientationSelect) {
     printOrientationSelect.addEventListener('change', updatePrintPreview);
   }
 
   // Update print preview on window resize
   window.addEventListener('resize', function() {
-    var printPreviewOverlay = document.querySelector('.print-preview-overlay');
+    const printPreviewOverlay = document.querySelector('.print-preview-overlay');
     if (printPreviewOverlay && printPreviewOverlay.classList.contains('active')) {
       updatePrintPreview();
     }
@@ -210,11 +496,11 @@ function initMenuToggle() {
 
     if (menuOpen) {
       accordionPanel.classList.remove('collapsed');
-      menuToggleText.textContent = 'Menü schliessen';
+      menuToggleText.textContent = t('menu.close');
       menuToggleIcon.textContent = 'expand_less';
     } else {
       accordionPanel.classList.add('collapsed');
-      menuToggleText.textContent = 'Menü öffnen';
+      menuToggleText.textContent = t('menu.open');
       menuToggleIcon.textContent = 'expand_more';
     }
 
@@ -224,7 +510,7 @@ function initMenuToggle() {
   // BUG FIX #22: The MutationObserver fires on every attribute/child/subtree
   // change in the accordion panel, which can be very frequent. Using a more
   // aggressive debounce (50ms) to batch rapid mutations into a single layout pass.
-  var observer = new MutationObserver(function() {
+  const observer = new MutationObserver(function() {
     updateMenuTogglePositionDebounced();
   });
   observer.observe(accordionPanel, { attributes: true, childList: true, subtree: true });
@@ -232,7 +518,7 @@ function initMenuToggle() {
 
 // ===== INFO PANEL CLOSE / ZOOM / SHARE =====
 function initInfoPanel() {
-  var map = state.map;
+  const map = state.map;
 
   // Info panel close
   document.getElementById('info-close').addEventListener('click', function() {
@@ -247,7 +533,7 @@ function initInfoPanel() {
   // Info panel zoom to
   document.getElementById('info-zoom-to').addEventListener('click', function() {
     if (state.selectedBuildingId && map) {
-      var building = state.portfolioData.features.find(function(f) {
+      const building = state.buildingsData.features.find(function(f) {
         return f.properties.bbl_id === state.selectedBuildingId;
       });
       if (building && building.geometry) {
@@ -257,11 +543,11 @@ function initInfoPanel() {
         });
       }
     } else if (state.selectedParcelId && map) {
-      var parcel = state.parcelData.features.find(function(f) {
+      const parcel = state.parcelData.features.find(function(f) {
         return f.properties.bbl_id === state.selectedParcelId;
       });
       if (parcel && parcel.geometry && parcel.geometry.coordinates) {
-        var center = getPolygonCentroid(parcel.geometry.coordinates);
+        const center = getPolygonCentroid(parcel.geometry.coordinates);
         map.flyTo({
           center: center,
           zoom: 16
@@ -273,9 +559,9 @@ function initInfoPanel() {
   // Info panel share
   // BUG FIX #21b: Fixed clipboard fallback to use correct showToast object format
   document.getElementById('info-share').addEventListener('click', function() {
-    var url = getShareUrl();
-    var title = t('share.title');
-    var text = state.selectedBuildingId
+    const url = getShareUrl();
+    const title = t('share.title');
+    const text = state.selectedBuildingId
       ? t('share.building', {id: state.selectedBuildingId})
       : state.selectedParcelId
         ? t('share.parcel', {id: state.selectedParcelId})
@@ -321,7 +607,7 @@ function initDetailTabs() {
       if (this.classList.contains('disabled')) {
         return;
       }
-      var targetTab = this.dataset.tab;
+      const targetTab = this.dataset.tab;
 
       // Update active tab
       document.querySelectorAll('.detail-tab').forEach(function(t) {
@@ -333,7 +619,7 @@ function initDetailTabs() {
       document.querySelectorAll('.tab-content').forEach(function(content) {
         content.classList.remove('active');
       });
-      var targetContent = document.querySelector('.tab-content[data-content="' + targetTab + '"]');
+      const targetContent = document.querySelector('.tab-content[data-content="' + targetTab + '"]');
       if (targetContent) {
         targetContent.classList.add('active');
       }
@@ -386,8 +672,8 @@ function initViewToggle() {
 // ===== BROWSER BACK/FORWARD =====
 function initPopstate() {
   window.addEventListener('popstate', function() {
-    var buildingId = getBuildingIdFromURL();
-    var tab = getTabFromURL();
+    const buildingId = getBuildingIdFromURL();
+    const tab = getTabFromURL();
     if (buildingId) {
       showDetailView(buildingId, tab);
     } else if (state.currentView === 'detail') {

@@ -3,40 +3,38 @@
 
 import { state } from './state.js';
 import { fetchWithErrorHandling } from './utils.js';
-import { showError } from './toast.js';
+import {
+  showError, getViewFromURL, getBuildingIdFromURL, getTabFromURL,
+  switchView, showDetailView, initUI
+} from './ui.js';
 import {
   getFiltersFromURL, applyFilters, initFilterOptions,
-  initFilterPane, initDrawerResize
+  initFilterPane, initDrawerResize,
+  resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithOrtFilter
 } from './filters.js';
-import { initExportPanel } from './export.js';
-import {
-  getViewFromURL, getBuildingIdFromURL, getTabFromURL,
-  switchView, showDetailView
-} from './views.js';
+import { initExportPanel, copyShareLink } from './export.js';
 import {
   initBuildingTableHeaders, renderListView, initListPagination,
-  initDelegatedListeners, initListToolbar, initTableTabs
+  initDelegatedListeners, initListToolbar, initTableTabs,
+  renderGalleryView, renderParcelsView, initParcelsTable
 } from './list.js';
-import { renderGalleryView } from './gallery.js';
-import { renderParcelsView, initParcelsTable } from './parcels.js';
-import { initAllEntityTables } from './detail.js';
-import { initMap, addMapLayers, initStyleSwitcher } from './map.js';
-import { initSearch } from './search.js';
-import { initContextMenu } from './context-menu.js';
+import { initAllEntityTables, carouselPrev, carouselNext } from './detail.js';
+import { initMap, addMapLayers, initStyleSwitcher, initContextMenu } from './map.js';
+import { initSearch, handleSearchClick } from './search.js';
 import { initMeasure } from './measure.js';
-import { initUI, updateMenuTogglePositionDebounced } from './ui.js';
 import { initPrintWidget } from './print.js';
 import { initI18n, t } from './i18n.js';
-
-// Make updateMenuTogglePositionDebounced available globally for geokatalog
-window.updateMenuTogglePositionDebounced = updateMenuTogglePositionDebounced;
+import {
+  removeSwisstopoLayer, toggleSwisstopoLayerVisibility,
+  showLayerInfo, showInternalLayerInfo
+} from './swisstopo.js';
 
 // ===== LOADING OVERLAY =====
 
 function showLoadingOverlay(text) {
-  var overlay = document.getElementById('loading-overlay');
+  const overlay = document.getElementById('loading-overlay');
   if (overlay) {
-    var textEl = overlay.querySelector('.loading-text');
+    const textEl = overlay.querySelector('.loading-text');
     if (textEl && text) {
       textEl.textContent = text;
     }
@@ -45,7 +43,7 @@ function showLoadingOverlay(text) {
 }
 
 function hideLoadingOverlay() {
-  var overlay = document.getElementById('loading-overlay');
+  const overlay = document.getElementById('loading-overlay');
   if (overlay) {
     overlay.classList.add('hidden');
   }
@@ -54,9 +52,9 @@ function hideLoadingOverlay() {
 // ===== TABLE PANEL TOGGLE & RESIZE =====
 
 function initTablePanel() {
-  var toggleBtn = document.getElementById('tbl-toggle');
-  var panel = document.getElementById('table-panel');
-  var handle = document.getElementById('tbl-resize-handle');
+  const toggleBtn = document.getElementById('tbl-toggle');
+  const panel = document.getElementById('table-panel');
+  const handle = document.getElementById('tbl-resize-handle');
 
   toggleBtn.addEventListener('click', function() {
     state.tableOpen = !state.tableOpen;
@@ -74,9 +72,9 @@ function initTablePanel() {
   });
 
   if (!handle) return;
-  var MIN_H = 120;
-  var MAX_FRAC = 0.75;
-  var startY, startH;
+  const MIN_H = 120;
+  const MAX_FRAC = 0.75;
+  let startY, startH;
 
   handle.addEventListener('pointerdown', function(e) {
     e.preventDefault();
@@ -87,8 +85,8 @@ function initTablePanel() {
     startH = panel.getBoundingClientRect().height;
 
     function onMove(ev) {
-      var delta = startY - ev.clientY;
-      var maxH = window.innerHeight * MAX_FRAC;
+      const delta = startY - ev.clientY;
+      const maxH = window.innerHeight * MAX_FRAC;
       panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + delta)) + 'px';
       if (state.map) state.map.resize();
     }
@@ -111,13 +109,13 @@ function initTablePanel() {
 // ===== INTERNAL LAYER TOGGLES =====
 
 function initInternalLayerToggles() {
-  var buildingsToggle = document.getElementById('layer-toggle-buildings');
-  var parcelsToggle = document.getElementById('layer-toggle-parcels');
+  const buildingsToggle = document.getElementById('layer-toggle-buildings');
+  const parcelsToggle = document.getElementById('layer-toggle-parcels');
 
   if (buildingsToggle) {
     buildingsToggle.addEventListener('change', function() {
-      var vis = this.checked ? 'visible' : 'none';
-      ['portfolio-points', 'portfolio-selected', 'portfolio-selected-pulse', 'portfolio-labels'].forEach(function(id) {
+      const vis = this.checked ? 'visible' : 'none';
+      ['buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels'].forEach(function(id) {
         if (state.map.getLayer(id)) state.map.setLayoutProperty(id, 'visibility', vis);
       });
     });
@@ -125,7 +123,7 @@ function initInternalLayerToggles() {
 
   if (parcelsToggle) {
     parcelsToggle.addEventListener('change', function() {
-      var vis = this.checked ? 'visible' : 'none';
+      const vis = this.checked ? 'visible' : 'none';
       ['parcels-fill', 'parcels-outline', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline'].forEach(function(id) {
         if (state.map.getLayer(id)) state.map.setLayoutProperty(id, 'visibility', vis);
       });
@@ -143,11 +141,11 @@ function loadAllData() {
     fetchWithErrorHandling('data/parcels.geojson')
   ])
     .then(function(results) {
-      state.portfolioData = results[0];
+      state.buildingsData = results[0];
       state.parcelData = results[1];
 
-      // Validate portfolio data
-      if (!state.portfolioData || !state.portfolioData.features) {
+      // Validate buildings data
+      if (!state.buildingsData || !state.buildingsData.features) {
         throw new Error('Ung\u00FCltiges Datenformat: Geb\u00E4udedaten fehlen');
       }
 
@@ -183,16 +181,16 @@ function loadAllData() {
       }
 
       // Restore view from URL
-      var buildingId = getBuildingIdFromURL();
-      var initialTab = getTabFromURL();
-      var initialView = getViewFromURL();
+      const buildingId = getBuildingIdFromURL();
+      const initialTab = getTabFromURL();
+      const initialView = getViewFromURL();
       if (buildingId) {
         showDetailView(buildingId, initialTab);
       } else if (initialView === 'gallery') {
         switchView('gallery');
         renderGalleryView();
       } else {
-        var styleSwitcher = document.getElementById('style-switcher');
+        const styleSwitcher = document.getElementById('style-switcher');
         if (styleSwitcher) {
           styleSwitcher.classList.add('visible');
         }
@@ -228,4 +226,41 @@ initI18n().then(function() {
 
   // ===== START DATA LOAD =====
   loadAllData();
+
+  // ===== GLOBAL ACTION DELEGATION =====
+  // Replaces all window.* globals and onclick/onchange attributes
+  var actions = {
+    showDetailView: function(el) { showDetailView(el.dataset.id); },
+    resetAllFilters: function() { resetFilters(); },
+    carouselPrev: function() { carouselPrev(); },
+    carouselNext: function() { carouselNext(); },
+    copyShareLink: function() { copyShareLink(); },
+    showInternalLayerInfo: function(el) { showInternalLayerInfo(el.dataset.layerKey); },
+    navigateToAllObjects: function() { navigateToAllObjects(); },
+    navigateWithLandFilter: function() { navigateWithLandFilter(); },
+    navigateWithOrtFilter: function() { navigateWithOrtFilter(); },
+    removeSwisstopoLayer: function(el) { removeSwisstopoLayer(el.dataset.layerId); },
+    showLayerInfo: function(el) { showLayerInfo(el.dataset.layerId); },
+    searchLocal: function(el) { handleSearchClick('local', el.dataset.id); },
+    searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), parseFloat(el.dataset.zoom)); },
+    searchLayer: function(el) { handleSearchClick('layer', el.dataset.layerId, null, null, null, el.dataset.title); }
+  };
+
+  document.addEventListener('click', function(e) {
+    var target = e.target.closest('[data-action]');
+    if (!target) return;
+    var handler = actions[target.dataset.action];
+    if (handler) {
+      if (target.tagName === 'A') e.preventDefault();
+      handler(target);
+    }
+  });
+
+  document.addEventListener('change', function(e) {
+    var target = e.target.closest('[data-action]');
+    if (!target) return;
+    if (target.dataset.action === 'toggleLayerVisibility') {
+      toggleSwisstopoLayerVisibility(target.dataset.layerId);
+    }
+  });
 });

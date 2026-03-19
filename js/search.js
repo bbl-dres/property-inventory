@@ -1,10 +1,11 @@
 // Search functionality
 
 import { state } from './state.js';
-import { escapeHtml, escapeForJs } from './utils.js';
-import { selectBuilding } from './map.js';
+import { escapeHtml } from './utils.js';
+import { selectBuilding, updateSelectedBuilding, updateUrlWithSelection } from './map.js';
 import { addSwisstopoLayer } from './swisstopo.js';
-import { switchView } from './views.js';
+import { switchView } from './ui.js';
+import { t } from './i18n.js';
 
 // Strip HTML tags from API results (e.g., Swisstopo returns <b>, <i> markup)
 function stripHtml(str) {
@@ -12,18 +13,84 @@ function stripHtml(str) {
   return str.replace(/<[^>]*>/g, '');
 }
 
+// Module-level references set during initSearch
+let _searchInput = null;
+let _searchResults = null;
+let _searchClearBtn = null;
+
+export function handleSearchClick(type, id, lat, lon, zoom, title) {
+  _searchResults.classList.remove('active');
+
+  // Close detail view if open
+  if (state.currentView === 'detail') {
+    switchView('map');
+  }
+
+  if (type === 'local') {
+    // Pass true to fly to the building when searching
+    selectBuilding(id, true);
+
+    // Remove generic search marker if we select a specific building
+    if (state.searchMarker) {
+      state.searchMarker.remove();
+      state.searchMarker = null;
+    }
+
+    // BUG FIX #11: use bbl_bez instead of non-existent name property
+    // BUG FIX #12: use function expression instead of arrow function
+    const b = state.buildingsData.features.find(function(f) { return f.properties.bbl_id === id; });
+    if (b) {
+      _searchInput.value = b.properties.bbl_bez;
+      _searchClearBtn.classList.add('visible');
+    }
+
+  } else if (type === 'location') {
+    // 1. Remove existing marker
+    if (state.searchMarker) {
+      state.searchMarker.remove();
+    }
+
+    // 2. Fly to location
+    state.map.flyTo({
+      center: [lon, lat],
+      zoom: zoom
+    });
+
+    // 3. Add Red Marker
+    state.searchMarker = new maplibregl.Marker({ color: '#c00' })
+      .setLngLat([lon, lat])
+      .addTo(state.map);
+
+    // Clear selected building info panel
+    state.selectedBuildingId = null;
+    updateSelectedBuilding();
+    updateUrlWithSelection();
+    document.getElementById('info-panel').classList.remove('show');
+
+    _searchClearBtn.classList.add('visible');
+
+  } else if (type === 'layer') {
+    addSwisstopoLayer(id, title);
+  }
+}
+
 export function initSearch() {
-  var searchInput = document.getElementById('search-input');
-  var searchResults = document.getElementById('search-results');
-  var searchSpinner = document.getElementById('search-spinner');
-  var searchClearBtn = document.getElementById('search-clear-btn');
-  var searchDebounceTimer;
-  var searchAbortController = null;
+  const searchInput = document.getElementById('search-input');
+  const searchResults = document.getElementById('search-results');
+  const searchSpinner = document.getElementById('search-spinner');
+  const searchClearBtn = document.getElementById('search-clear-btn');
+  let searchDebounceTimer;
+  let searchAbortController = null;
+
+  // Set module-level references for handleSearchClick
+  _searchInput = searchInput;
+  _searchResults = searchResults;
+  _searchClearBtn = searchClearBtn;
 
   // Listen for input
   searchInput.addEventListener('input', function(e) {
     clearTimeout(searchDebounceTimer);
-    var val = e.target.value.trim();
+    const val = e.target.value.trim();
 
     // Toggle clear button visibility
     if (val.length > 0) {
@@ -79,17 +146,17 @@ export function initSearch() {
       searchAbortController.abort();
     }
     searchAbortController = new AbortController();
-    var signal = searchAbortController.signal;
+    const signal = searchAbortController.signal;
 
-    var promises = [];
+    const promises = [];
 
     // 1. Local Search
     promises.push(new Promise(function(resolve) {
-      var matches = [];
-      if (state.portfolioData) {
-        var lowerTerm = term.toLowerCase();
-        matches = state.portfolioData.features.filter(function(f) {
-          var p = f.properties;
+      let matches = [];
+      if (state.buildingsData) {
+        const lowerTerm = term.toLowerCase();
+        matches = state.buildingsData.features.filter(function(f) {
+          const p = f.properties;
           return (p.bbl_bez && p.bbl_bez.toLowerCase().includes(lowerTerm)) ||
                  (p.adr_conct && p.adr_conct.toLowerCase().includes(lowerTerm)) ||
                  (p.adr_ort && p.adr_ort.toLowerCase().includes(lowerTerm));
@@ -118,7 +185,7 @@ export function initSearch() {
 
     Promise.all(promises).then(function(results) {
       // Don't render if request was aborted (newer search in progress)
-      var wasAborted = results.some(function(r) { return r.aborted; });
+      const wasAborted = results.some(function(r) { return r.aborted; });
       if (wasAborted) return;
 
       renderSearchResults(results);
@@ -127,19 +194,19 @@ export function initSearch() {
   }
 
   function renderSearchResults(results) {
-    var localResults = results.find(function(r) { return r.type === 'local'; }).data;
-    var locResults = results.find(function(r) { return r.type === 'locations'; }).data;
-    var layerResults = results.find(function(r) { return r.type === 'layers'; }).data;
+    const localResults = results.find(function(r) { return r.type === 'local'; }).data;
+    const locResults = results.find(function(r) { return r.type === 'locations'; }).data;
+    const layerResults = results.find(function(r) { return r.type === 'layers'; }).data;
 
-    var html = '';
+    let html = '';
 
     // Section: Objekte (Local)
-    // BUG FIX #2 (XSS): escape all property values with escapeHtml/escapeForJs
+    // BUG FIX #2 (XSS): escape all property values with escapeHtml
     // BUG FIX #10: use adr_conct instead of non-existent streetName/city
     if (localResults.length > 0) {
-      html += '<div class="search-section-header">Objekte</div>';
+      html += '<div class="search-section-header">' + t('search.section.objects') + '</div>';
       localResults.forEach(function(f) {
-        html += '<div class="search-item" onclick="handleSearchClick(\'local\', \'' + escapeForJs(f.properties.bbl_id) + '\')">' +
+        html += '<div class="search-item" data-action="searchLocal" data-id="' + escapeHtml(f.properties.bbl_id) + '">' +
                 '<div class="search-item-title">' + escapeHtml(f.properties.bbl_bez) + '</div>' +
                 '<div class="search-item-subtitle">' + escapeHtml(f.properties.adr_conct || '') + '</div>' +
                 '</div>';
@@ -149,94 +216,35 @@ export function initSearch() {
     // Section: Orte (API)
     // BUG FIX #2 (XSS): escape API result labels
     if (locResults.length > 0) {
-      html += '<div class="search-section-header">Orte</div>';
+      html += '<div class="search-section-header">' + t('search.section.places') + '</div>';
       locResults.forEach(function(r, index) {
-        var lat = r.attrs.lat;
-        var lon = r.attrs.lon;
-        var zoom = r.attrs.zoomlevel || 14;
-        html += '<div class="search-item" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
+        const lat = r.attrs.lat;
+        const lon = r.attrs.lon;
+        const zoom = r.attrs.zoomlevel || 14;
+        html += '<div class="search-item" data-action="searchLocation" data-lat="' + lat + '" data-lng="' + lon + '" data-zoom="' + zoom + '">' +
                 '<div class="search-item-title">' + escapeHtml(stripHtml(r.attrs.label)) + '</div>' +
                 '</div>';
       });
     }
 
     // Section: Karten (API)
-    // BUG FIX #2 (XSS): escape layer labels and use escapeForJs in onclick
+    // BUG FIX #2 (XSS): escape layer labels
     if (layerResults.length > 0) {
-      html += '<div class="search-section-header">Karten hinzuf\u00FCgen...</div>';
+      html += '<div class="search-section-header">' + t('search.section.maps') + '</div>';
       layerResults.forEach(function(r) {
-        var layerId = r.attrs.layer || '';
-        var layerTitle = stripHtml(r.attrs.title || r.attrs.label || layerId);
-        html += '<div class="search-item" onclick="handleSearchClick(\'layer\', \'' + escapeForJs(layerId) + '\', null, null, null, \'' + escapeForJs(layerTitle) + '\')">' +
+        const layerId = r.attrs.layer || '';
+        const layerTitle = stripHtml(r.attrs.title || r.attrs.label || layerId);
+        html += '<div class="search-item" data-action="searchLayer" data-layer-id="' + escapeHtml(layerId) + '" data-title="' + escapeHtml(layerTitle) + '">' +
                 '<div class="search-item-title">' + escapeHtml(stripHtml(r.attrs.label)) + '</div>' +
                 '</div>';
       });
     }
 
     if (html === '') {
-      html = '<div class="search-item" style="cursor:default;"><div class="search-item-subtitle">Keine Resultate gefunden</div></div>';
+      html = '<div class="search-item" style="cursor:default;"><div class="search-item-subtitle">' + t('search.empty') + '</div></div>';
     }
 
     searchResults.innerHTML = html;
     searchResults.classList.add('active');
   }
-
-  // Make this function global so onclick in HTML string works
-  window.handleSearchClick = function(type, id, lat, lon, zoom, title) {
-    searchResults.classList.remove('active');
-
-    // Close detail view if open
-    if (state.currentView === 'detail') {
-      switchView('map');
-    }
-
-    if (type === 'local') {
-      // Pass true to fly to the building when searching
-      selectBuilding(id, true);
-
-      // Remove generic search marker if we select a specific building
-      if (state.searchMarker) {
-        state.searchMarker.remove();
-        state.searchMarker = null;
-      }
-
-      // BUG FIX #11: use bbl_bez instead of non-existent name property
-      // BUG FIX #12: use function expression instead of arrow function
-      var b = state.portfolioData.features.find(function(f) { return f.properties.bbl_id === id; });
-      if (b) {
-        searchInput.value = b.properties.bbl_bez;
-        searchClearBtn.classList.add('visible');
-      }
-
-    } else if (type === 'location') {
-      // 1. Remove existing marker
-      if (state.searchMarker) {
-        state.searchMarker.remove();
-      }
-
-      // 2. Fly to location
-      state.map.flyTo({
-        center: [lon, lat],
-        zoom: zoom
-      });
-
-      // 3. Add Red Marker
-      state.searchMarker = new maplibregl.Marker({ color: '#c00' })
-        .setLngLat([lon, lat])
-        .addTo(state.map);
-
-      // Clear selected building info panel
-      state.selectedBuildingId = null;
-      // Note: updateSelectedBuilding and updateUrlWithSelection are in the main app
-      // and will be called via the state change
-      if (typeof window.updateSelectedBuilding === 'function') window.updateSelectedBuilding();
-      if (typeof window.updateUrlWithSelection === 'function') window.updateUrlWithSelection();
-      document.getElementById('info-panel').classList.remove('show');
-
-      searchClearBtn.classList.add('visible');
-
-    } else if (type === 'layer') {
-      addSwisstopoLayer(id, title);
-    }
-  };
 }

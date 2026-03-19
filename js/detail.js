@@ -17,12 +17,12 @@ import {
 // ===== POPULATE DETAIL VIEW =====
 
 function populateDetailView(building) {
-  var props = building.properties;
-  var coords = building.geometry.coordinates;
+  const props = building.properties;
+  const coords = building.geometry.coordinates;
 
   // Helper to set text by id (silently skip missing elements)
   function setText(id, value) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (el) el.textContent = (value !== undefined && value !== null && value !== '') ? value : '\u2013';
   }
 
@@ -69,14 +69,14 @@ function populateDetailView(building) {
   setText('detail-elev', formatNum(props.egm_elev, 1));
 
   // Link helper and shared variables (used by multiple sections below)
-  var lat = props.wgs84_lat;
-  var lon = props.wgs84_lon;
-  var lv95e = props.lv95_e;
-  var lv95n = props.lv95_n;
-  var linkText = 'Auf externer Karte anzeigen';
+  const lat = props.wgs84_lat;
+  const lon = props.wgs84_lon;
+  const lv95e = props.lv95_e;
+  const lv95n = props.lv95_n;
+  const linkText = 'Auf externer Karte anzeigen';
 
   function setLink(id, href, label) {
-    var el = document.getElementById(id);
+    const el = document.getElementById(id);
     if (!el) return;
     if (href) {
       el.href = href;
@@ -171,7 +171,7 @@ function populateDetailView(building) {
 
 // ===== INFO TOOLTIPS FOR DETAIL LABELS =====
 
-var labelDescriptions = {
+const labelDescriptions = {
   // Stammdaten
   'Status': 'Aktueller Status des Objekts im SAP-System (bbl_stat)',
   'Bezeichnung': 'Offizielle Objektbezeichnung gem\u00e4ss SAP (bbl_bez)',
@@ -234,20 +234,20 @@ var labelDescriptions = {
 };
 
 // Inject info icons as 3rd column and make rows clickable (run once)
-var infoIconsInitialized = false;
+let infoIconsInitialized = false;
 
 function initInfoIcons() {
   if (infoIconsInitialized) return;
   infoIconsInitialized = true;
 
   document.querySelectorAll('#detail-view .detail-grid-row').forEach(function(row) {
-    var label = row.querySelector('.detail-label');
+    const label = row.querySelector('.detail-label');
     if (!label) return;
-    var desc = labelDescriptions[label.textContent.trim()];
+    const desc = labelDescriptions[label.textContent.trim()];
     if (desc) {
       // Add data-desc to row and append icon as 3rd grid cell
       row.setAttribute('data-desc', desc);
-      var icon = document.createElement('span');
+      const icon = document.createElement('span');
       icon.className = 'info-icon';
       icon.textContent = 'info';
       icon.title = desc;
@@ -257,11 +257,11 @@ function initInfoIcons() {
 
   // Event delegation -- clicking anywhere on a row with data-desc toggles popover
   document.getElementById('detail-view').addEventListener('click', function(e) {
-    var row = e.target.closest('.detail-grid-row[data-desc]');
+    const row = e.target.closest('.detail-grid-row[data-desc]');
 
     // Click outside any desc row -- close open popover
     if (!row) {
-      var open = document.querySelector('.info-popover.active');
+      const open = document.querySelector('.info-popover.active');
       if (open) open.remove();
       return;
     }
@@ -269,18 +269,18 @@ function initInfoIcons() {
     // Don't toggle when clicking links
     if (e.target.closest('a')) return;
 
-    var desc = row.getAttribute('data-desc');
+    const desc = row.getAttribute('data-desc');
 
     // Close any existing popover
-    var existing = document.querySelector('.info-popover.active');
+    const existing = document.querySelector('.info-popover.active');
     if (existing) {
-      var wasOnSame = existing.parentElement === row;
+      const wasOnSame = existing.parentElement === row;
       existing.remove();
       if (wasOnSame) return; // toggle off
     }
 
     // Create popover inside the row (spans all 3 columns)
-    var popover = document.createElement('div');
+    const popover = document.createElement('div');
     popover.className = 'info-popover active';
     popover.textContent = desc;
     row.appendChild(popover);
@@ -290,21 +290,21 @@ function initInfoIcons() {
 // ===== CAROUSEL =====
 
 function getCarouselImages() {
-  var props = state.currentDetailBuilding ? state.currentDetailBuilding.properties : {};
-  var images = props.img_url;
+  const props = state.currentDetailBuilding ? state.currentDetailBuilding.properties : {};
+  const images = props.img_url;
   return (images && images.length > 0) ? images : placeholderImages;
 }
 
 function initCarousel() {
   state.currentCarouselIndex = 0;
-  var images = getCarouselImages();
+  const images = getCarouselImages();
   updateCarouselImage();
 
   // Create dots
-  var dotsContainer = document.getElementById('carousel-dots');
+  const dotsContainer = document.getElementById('carousel-dots');
   dotsContainer.innerHTML = '';
   images.forEach(function(_, index) {
-    var dot = document.createElement('div');
+    const dot = document.createElement('div');
     dot.className = 'carousel-dot' + (index === 0 ? ' active' : '');
     dot.onclick = function() {
       state.currentCarouselIndex = index;
@@ -315,9 +315,9 @@ function initCarousel() {
 }
 
 function updateCarouselImage() {
-  var images = getCarouselImages();
-  var imageEl = document.getElementById('carousel-image');
-  var imgUrl = images[state.currentCarouselIndex];
+  const images = getCarouselImages();
+  const imageEl = document.getElementById('carousel-image');
+  const imgUrl = images[state.currentCarouselIndex];
   imageEl.style.backgroundImage = "url('" + imgUrl.replace(/'/g, "\\'").replace(/\)/g, '\\)') + "')";
 
   // Update dots
@@ -327,20 +327,17 @@ function updateCarouselImage() {
 }
 
 function carouselPrev() {
-  var images = getCarouselImages();
+  const images = getCarouselImages();
   state.currentCarouselIndex = (state.currentCarouselIndex - 1 + images.length) % images.length;
   updateCarouselImage();
 }
 
 function carouselNext() {
-  var images = getCarouselImages();
+  const images = getCarouselImages();
   state.currentCarouselIndex = (state.currentCarouselIndex + 1) % images.length;
   updateCarouselImage();
 }
 
-// Make carousel navigation available on window for onclick handlers
-window.carouselPrev = carouselPrev;
-window.carouselNext = carouselNext;
 
 // ===== MINI MAP =====
 
@@ -364,9 +361,9 @@ function initMiniMap(coords) {
   // Add 3D buildings layer and marker
   state.miniMap.on('load', function() {
     // Find the vector tile source (CARTO uses 'carto')
-    var sources = state.miniMap.getStyle().sources;
-    var vectorSourceId = null;
-    for (var key in sources) {
+    const sources = state.miniMap.getStyle().sources;
+    let vectorSourceId = null;
+    for (const key in sources) {
       if (sources[key].type === 'vector') {
         vectorSourceId = key;
         break;
@@ -375,9 +372,9 @@ function initMiniMap(coords) {
 
     if (vectorSourceId) {
       // Find first label layer to insert 3D buildings below
-      var layers = state.miniMap.getStyle().layers;
-      var labelLayerId;
-      for (var i = 0; i < layers.length; i++) {
+      const layers = state.miniMap.getStyle().layers;
+      let labelLayerId;
+      for (let i = 0; i < layers.length; i++) {
         if (layers[i].type === 'symbol' && layers[i].layout && layers[i].layout['text-field']) {
           labelLayerId = layers[i].id;
           break;
@@ -426,8 +423,8 @@ function initMiniMap(coords) {
 // Generic sort function for table data
 function sortTableData(data, column, direction) {
   return data.sort(function(a, b) {
-    var valA = a[column];
-    var valB = b[column];
+    let valA = a[column];
+    let valB = b[column];
     if (typeof valA === 'string') {
       valA = valA.toLowerCase();
       valB = valB.toLowerCase();
@@ -440,9 +437,9 @@ function sortTableData(data, column, direction) {
 
 // Generic selection update for detail tables
 function updateTableSelection(config) {
-  var checkboxes = document.querySelectorAll('.' + config.checkboxClass);
-  var checkedCount = document.querySelectorAll('.' + config.checkboxClass + ':checked').length;
-  var selectAll = document.getElementById(config.selectAllId);
+  const checkboxes = document.querySelectorAll('.' + config.checkboxClass);
+  const checkedCount = document.querySelectorAll('.' + config.checkboxClass + ':checked').length;
+  const selectAll = document.getElementById(config.selectAllId);
 
   if (selectAll) {
     selectAll.checked = checkedCount === checkboxes.length && checkboxes.length > 0;
@@ -450,7 +447,7 @@ function updateTableSelection(config) {
   }
 
   document.querySelectorAll('#' + config.tableId + ' tbody tr').forEach(function(row) {
-    var cb = row.querySelector('.' + config.checkboxClass);
+    const cb = row.querySelector('.' + config.checkboxClass);
     row.classList.toggle('selected', cb && cb.checked);
   });
 
@@ -463,7 +460,7 @@ function updateTableSelection(config) {
 function initTableSorting(config) {
   document.querySelectorAll('#' + config.tableId + ' th.sortable').forEach(function(th) {
     th.addEventListener('click', function() {
-      var column = this.dataset.sort;
+      const column = this.dataset.sort;
 
       if (column === config.state.column) {
         config.state.direction = config.state.direction === 'asc' ? 'desc' : 'asc';
@@ -474,12 +471,12 @@ function initTableSorting(config) {
 
       document.querySelectorAll('#' + config.tableId + ' th.sortable').forEach(function(header) {
         header.classList.remove('sort-asc', 'sort-desc');
-        var icon = header.querySelector('.sort-icon');
+        const icon = header.querySelector('.sort-icon');
         if (icon) icon.textContent = 'unfold_more';
       });
 
       this.classList.add('sort-' + config.state.direction);
-      var sortIcon = this.querySelector('.sort-icon');
+      const sortIcon = this.querySelector('.sort-icon');
       if (sortIcon) {
         sortIcon.textContent = config.state.direction === 'asc' ? 'arrow_upward' : 'arrow_downward';
       }
@@ -491,10 +488,10 @@ function initTableSorting(config) {
 
 // Generic select-all checkbox setup
 function initSelectAll(config) {
-  var selectAll = document.getElementById(config.selectAllId);
+  const selectAll = document.getElementById(config.selectAllId);
   if (selectAll) {
     selectAll.addEventListener('change', function() {
-      var isChecked = this.checked;
+      const isChecked = this.checked;
       document.querySelectorAll('.' + config.checkboxClass).forEach(function(cb) {
         cb.checked = isChecked;
       });
@@ -507,9 +504,9 @@ function initSelectAll(config) {
 
 function createEntityTable(config) {
   // Extract table name from tableId (e.g., 'measurements-table' -> 'measurements')
-  var tableName = config.tableId.replace('-table', '');
+  const tableName = config.tableId.replace('-table', '');
 
-  var table = {
+  const table = {
     data: [],
     filteredData: [],
     sort: { column: config.defaultSort || 'id', direction: 'asc' },
@@ -541,7 +538,7 @@ function createEntityTable(config) {
   // Load data for a building
   table.load = function(building) {
     if (building && building.properties) {
-      var buildingId = building.properties.bbl_id;
+      const buildingId = building.properties.bbl_id;
       table.data = config.dataSource()
         .filter(function(item) {
           return item.buildingIds && item.buildingIds.includes(buildingId);
@@ -557,16 +554,16 @@ function createEntityTable(config) {
 
   // Render table rows with empty state and pagination support
   table.render = function() {
-    var tbody = document.getElementById(config.tbodyId);
+    const tbody = document.getElementById(config.tbodyId);
     if (!tbody) return;
 
     // Check for empty state
     if (table.filteredData.length === 0) {
-      var colCount = config.columns.length + 1; // +1 for checkbox column
-      var emptyMessage = table.data.length === 0
+      const colCount = config.columns.length + 1; // +1 for checkbox column
+      const emptyMessage = table.data.length === 0
         ? t('detail.empty')
         : t('empty.search');
-      var emptyIcon = table.data.length === 0 ? 'inbox' : 'search_off';
+      const emptyIcon = table.data.length === 0 ? 'inbox' : 'search_off';
 
       tbody.innerHTML = '<tr class="empty-row"><td colspan="' + colCount + '">' +
         '<div class="table-empty-state">' +
@@ -578,8 +575,8 @@ function createEntityTable(config) {
     }
 
     // Pagination calculations
-    var totalItems = table.filteredData.length;
-    var totalPages = Math.ceil(totalItems / table.pagination.rowsPerPage);
+    const totalItems = table.filteredData.length;
+    const totalPages = Math.ceil(totalItems / table.pagination.rowsPerPage);
 
     // Ensure current page is valid
     if (table.pagination.currentPage > totalPages) {
@@ -589,18 +586,18 @@ function createEntityTable(config) {
       table.pagination.currentPage = 1;
     }
 
-    var startIndex = (table.pagination.currentPage - 1) * table.pagination.rowsPerPage;
-    var endIndex = Math.min(startIndex + table.pagination.rowsPerPage, totalItems);
+    const startIndex = (table.pagination.currentPage - 1) * table.pagination.rowsPerPage;
+    const endIndex = Math.min(startIndex + table.pagination.rowsPerPage, totalItems);
 
     // Get paginated slice of data
-    var paginatedData = table.filteredData.slice(startIndex, endIndex);
+    const paginatedData = table.filteredData.slice(startIndex, endIndex);
 
-    var html = '';
+    let html = '';
     paginatedData.forEach(function(item) {
       html += '<tr data-id="' + item.id + '">';
       html += '<td class="col-checkbox"><input type="checkbox" class="' + config.checkboxClass + '"></td>';
       config.columns.forEach(function(col) {
-        var value = col.render ? col.render(item) : (item[col.key] || '\u2014');
+        const value = col.render ? col.render(item) : (item[col.key] || '\u2014');
         html += '<td class="' + col.className + '">' + value + '</td>';
       });
       html += '</tr>';
@@ -619,12 +616,12 @@ function createEntityTable(config) {
 
   // Update pagination UI
   table.updatePagination = function(currentPage, totalPages) {
-    var paginationFooter = document.getElementById(tableName + '-pagination');
+    const paginationFooter = document.getElementById(tableName + '-pagination');
     if (!paginationFooter) return;
 
-    var infoEl = paginationFooter.querySelector('.pagination-info');
-    var prevBtn = paginationFooter.querySelector('.pagination-prev');
-    var nextBtn = paginationFooter.querySelector('.pagination-next');
+    const infoEl = paginationFooter.querySelector('.pagination-info');
+    const prevBtn = paginationFooter.querySelector('.pagination-prev');
+    const nextBtn = paginationFooter.querySelector('.pagination-next');
 
     if (infoEl) {
       if (totalPages === 0) {
@@ -651,7 +648,7 @@ function createEntityTable(config) {
     } else {
       table.filteredData = table.data.filter(function(item) {
         return config.searchFields.some(function(field) {
-          var val = item[field];
+          const val = item[field];
           if (val == null) return false;
           return String(val).toLowerCase().includes(term);
         });
@@ -668,14 +665,14 @@ function createEntityTable(config) {
     initTableSorting(table.tableConfig);
     initSelectAll(table.tableConfig);
 
-    var filterInput = document.getElementById(config.filterId);
+    const filterInput = document.getElementById(config.filterId);
     if (filterInput) {
       filterInput.addEventListener('input', function() {
         table.filter(this.value);
       });
     }
 
-    var addBtn = document.getElementById(config.addBtnId);
+    const addBtn = document.getElementById(config.addBtnId);
     if (addBtn) {
       addBtn.addEventListener('click', function() {
         alert(config.addBtnMessage);
@@ -683,11 +680,11 @@ function createEntityTable(config) {
     }
 
     // Initialize pagination event listeners
-    var paginationFooter = document.getElementById(tableName + '-pagination');
+    const paginationFooter = document.getElementById(tableName + '-pagination');
     if (paginationFooter) {
-      var rowsSelect = paginationFooter.querySelector('.pagination-rows-select');
-      var prevBtn = paginationFooter.querySelector('.pagination-prev');
-      var nextBtn = paginationFooter.querySelector('.pagination-next');
+      const rowsSelect = paginationFooter.querySelector('.pagination-rows-select');
+      const prevBtn = paginationFooter.querySelector('.pagination-prev');
+      const nextBtn = paginationFooter.querySelector('.pagination-next');
 
       if (rowsSelect) {
         rowsSelect.addEventListener('change', function() {
@@ -708,7 +705,7 @@ function createEntityTable(config) {
 
       if (nextBtn) {
         nextBtn.addEventListener('click', function() {
-          var totalPages = Math.ceil(table.filteredData.length / table.pagination.rowsPerPage);
+          const totalPages = Math.ceil(table.filteredData.length / table.pagination.rowsPerPage);
           if (table.pagination.currentPage < totalPages) {
             table.pagination.currentPage++;
             table.render();
@@ -723,7 +720,7 @@ function createEntityTable(config) {
 
 // ===== ENTITY TABLE DEFINITIONS =====
 
-var measurementsTable = createEntityTable({
+const measurementsTable = createEntityTable({
   tableId: 'measurements-table',
   tbodyId: 'measurements-tbody',
   checkboxClass: 'measurement-checkbox',
@@ -762,7 +759,7 @@ var measurementsTable = createEntityTable({
   searchFields: ['id', 'areaType', 'accuracy', 'standard', 'unit', 'value']
 });
 
-var documentsTable = createEntityTable({
+const documentsTable = createEntityTable({
   tableId: 'documents-table',
   tbodyId: 'documents-tbody',
   checkboxClass: 'document-checkbox',
@@ -795,7 +792,7 @@ var documentsTable = createEntityTable({
   searchFields: ['id', 'titel', 'dokumentTyp', 'dateiformat', 'datum', 'dateigroesse']
 });
 
-var contactsTable = createEntityTable({
+const contactsTable = createEntityTable({
   tableId: 'contacts-table',
   tbodyId: 'contacts-tbody',
   checkboxClass: 'contact-checkbox',
@@ -831,7 +828,7 @@ var contactsTable = createEntityTable({
   searchFields: ['id', 'name', 'rolle', 'organisation', 'telefon', 'email']
 });
 
-var costsTable = createEntityTable({
+const costsTable = createEntityTable({
   tableId: 'costs-table',
   tbodyId: 'costs-tbody',
   checkboxClass: 'cost-checkbox',
@@ -869,7 +866,7 @@ var costsTable = createEntityTable({
   searchFields: ['id', 'kostengruppe', 'kostenart', 'betrag', 'einheit', 'stichtag']
 });
 
-var contractsTable = createEntityTable({
+const contractsTable = createEntityTable({
   tableId: 'contracts-table',
   tbodyId: 'contracts-tbody',
   checkboxClass: 'contract-checkbox',
@@ -911,7 +908,7 @@ var contractsTable = createEntityTable({
   searchFields: ['id', 'vertragsart', 'vertragspartner', 'vertragsbeginn', 'vertragsende', 'betrag', 'status']
 });
 
-var assetsTable = createEntityTable({
+const assetsTable = createEntityTable({
   tableId: 'assets-table',
   tbodyId: 'assets-tbody',
   checkboxClass: 'asset-checkbox',

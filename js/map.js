@@ -1,9 +1,9 @@
-// Map initialization, layers, selection, and style switching
+// Map initialization, layers, selection, style switching, and context menu
 
 import { state } from './state.js';
 import { statusColors, mapStyles, placeholderImages } from './config.js';
-import { escapeHtml, escapeForJs } from './utils.js';
-import { showToast } from './toast.js';
+import { escapeHtml, getStatusClassName } from './utils.js';
+import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
 import {
   identifySwisstopoFeatures,
@@ -13,21 +13,22 @@ import {
   readdSwisstopoLayers
 } from './swisstopo.js';
 import { syncTableToBuilding, syncTableToParcel } from './list.js';
-import { showDetailView } from './views.js';
 import { getActiveFilterCount, updateMapFilter, applyFilters } from './filters.js';
+import { startMeasurement, clearMeasurement } from './measure.js';
+import { getShareUrl } from './export.js';
 
 // ===== MAP INITIALIZATION =====
 
 function initMap() {
   // Parse URL parameters for map state
-  var urlParams = new URLSearchParams(window.location.search);
-  var initialLat = parseFloat(urlParams.get('lat'));
-  var initialLng = parseFloat(urlParams.get('lng'));
-  var initialZoom = parseFloat(urlParams.get('zoom'));
+  const urlParams = new URLSearchParams(window.location.search);
+  const initialLat = parseFloat(urlParams.get('lat'));
+  const initialLng = parseFloat(urlParams.get('lng'));
+  const initialZoom = parseFloat(urlParams.get('zoom'));
 
   // Defaults (Switzerland)
-  var startCenter = [8.2275, 46.8182];
-  var startZoom = 2;
+  let startCenter = [8.2275, 46.8182];
+  let startZoom = 2;
 
   // Override defaults if URL params exist
   if (!isNaN(initialLat) && !isNaN(initialLng) && !isNaN(initialZoom)) {
@@ -35,7 +36,7 @@ function initMap() {
     startZoom = initialZoom;
   }
 
-  var map = new maplibregl.Map({
+  const map = new maplibregl.Map({
     container: 'map',
     style: mapStyles[state.currentMapStyle].url,
     center: startCenter,
@@ -49,13 +50,13 @@ function initMap() {
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
 
   // Home button control
-  var HomeControl = function() {};
+  const HomeControl = function() {};
   HomeControl.prototype.onAdd = function(mapInstance) {
     this._map = mapInstance;
     this._container = document.createElement('div');
     this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
-    var button = document.createElement('button');
+    const button = document.createElement('button');
     button.className = 'map-home-btn';
     button.type = 'button';
     button.title = t('map.home');
@@ -79,13 +80,13 @@ function initMap() {
   map.addControl(new HomeControl(), 'top-right');
 
   // 2D/3D toggle control
-  var Toggle3DControl = function() {};
+  const Toggle3DControl = function() {};
   Toggle3DControl.prototype.onAdd = function(mapInstance) {
     this._map = mapInstance;
     this._container = document.createElement('div');
     this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
-    var button = document.createElement('button');
+    const button = document.createElement('button');
     button.className = 'map-3d-btn';
     button.type = 'button';
     button.title = t('map.toggle3d');
@@ -117,10 +118,10 @@ function initMap() {
   map.on('moveend', function() {
     if (state.currentView === 'detail') return;
 
-    var center = map.getCenter();
-    var zoom = map.getZoom();
+    const center = map.getCenter();
+    const zoom = map.getZoom();
 
-    var url = new URL(window.location);
+    const url = new URL(window.location);
     url.searchParams.set('lng', center.lng.toFixed(5));
     url.searchParams.set('lat', center.lat.toFixed(5));
     url.searchParams.set('zoom', zoom.toFixed(2));
@@ -129,12 +130,12 @@ function initMap() {
   });
 
   // Coordinate display on mousemove
-  var pendingCoordUpdate = null;
-  var coordsEl = document.getElementById('coordinates');
+  let pendingCoordUpdate = null;
+  const coordsEl = document.getElementById('coordinates');
   map.on('mousemove', function(e) {
     if (!pendingCoordUpdate) {
-      var lng = e.lngLat.lng;
-      var lat = e.lngLat.lat;
+      const lng = e.lngLat.lng;
+      const lat = e.lngLat.lat;
       pendingCoordUpdate = requestAnimationFrame(function() {
         coordsEl.textContent = t('map.coordinates', {lat: lat.toFixed(5), lon: lng.toFixed(5)});
         pendingCoordUpdate = null;
@@ -145,19 +146,69 @@ function initMap() {
   return map;
 }
 
+// ===== PULSE ANIMATION (module-level) =====
+
+let pulseRadius = 24;
+let pulseOpacity = 0.4;
+let pulseDirection = 1;
+let pulseAnimationId = null;
+let pulseFrameCount = 0;
+
+function animatePulse() {
+  if (!state.selectedBuildingId) {
+    pulseAnimationId = null;
+    return;
+  }
+
+  pulseFrameCount++;
+  if (pulseFrameCount % 3 === 0) {
+    pulseRadius += 0.9 * pulseDirection;
+    pulseOpacity -= 0.03 * pulseDirection;
+
+    if (pulseRadius >= 32) {
+      pulseDirection = -1;
+    } else if (pulseRadius <= 24) {
+      pulseDirection = 1;
+    }
+
+    if (state.map && state.map.getLayer('buildings-selected-pulse')) {
+      state.map.setPaintProperty('buildings-selected-pulse', 'circle-radius', pulseRadius);
+      state.map.setPaintProperty('buildings-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+    }
+  }
+
+  pulseAnimationId = requestAnimationFrame(animatePulse);
+}
+
+function startPulseAnimation() {
+  if (pulseAnimationId === null) {
+    pulseRadius = 24;
+    pulseOpacity = 0.4;
+    pulseDirection = 1;
+    animatePulse();
+  }
+}
+
+function stopPulseAnimation() {
+  if (pulseAnimationId !== null) {
+    cancelAnimationFrame(pulseAnimationId);
+    pulseAnimationId = null;
+  }
+}
+
 // ===== MAP LAYERS =====
 
 function addMapLayers() {
-  if (!state.portfolioData) return;
+  if (!state.buildingsData) return;
 
-  var map = state.map;
+  const map = state.map;
 
   // Prevent duplicate source errors if called multiple times
-  if (map.getSource('portfolio')) return;
+  if (map.getSource('buildings')) return;
 
-  map.addSource('portfolio', {
+  map.addSource('buildings', {
     type: 'geojson',
-    data: state.portfolioData
+    data: state.buildingsData
   });
 
   // Add parcels source and layers
@@ -230,9 +281,9 @@ function addMapLayers() {
 
   // Main points layer
   map.addLayer({
-    id: 'portfolio-points',
+    id: 'buildings-points',
     type: 'circle',
-    source: 'portfolio',
+    source: 'buildings',
     paint: {
       'circle-radius': 10,
       'circle-color': [
@@ -251,9 +302,9 @@ function addMapLayers() {
 
   // Selected point highlight layer - outer ring
   map.addLayer({
-    id: 'portfolio-selected',
+    id: 'buildings-selected',
     type: 'circle',
-    source: 'portfolio',
+    source: 'buildings',
     filter: ['==', ['get', 'bbl_id'], ''],
     paint: {
       'circle-radius': 18,
@@ -266,9 +317,9 @@ function addMapLayers() {
 
   // Selected point pulse animation layer
   map.addLayer({
-    id: 'portfolio-selected-pulse',
+    id: 'buildings-selected-pulse',
     type: 'circle',
-    source: 'portfolio',
+    source: 'buildings',
     filter: ['==', ['get', 'bbl_id'], ''],
     paint: {
       'circle-radius': 24,
@@ -281,9 +332,9 @@ function addMapLayers() {
 
   // Building ID labels (visible at zoom >= 16)
   map.addLayer({
-    id: 'portfolio-labels',
+    id: 'buildings-labels',
     type: 'symbol',
-    source: 'portfolio',
+    source: 'buildings',
     minzoom: 16,
     layout: {
       'text-field': ['get', 'bbl_id'],
@@ -300,67 +351,17 @@ function addMapLayers() {
     }
   });
 
-  // Animate the pulse layer (throttled to every 3rd frame for performance)
-  var pulseRadius = 24;
-  var pulseOpacity = 0.4;
-  var pulseDirection = 1;
-  var pulseAnimationId = null;
-  var pulseFrameCount = 0;
-
-  function animatePulse() {
-    if (!state.selectedBuildingId) {
-      pulseAnimationId = null;
-      return;
-    }
-
-    pulseFrameCount++;
-    if (pulseFrameCount % 3 === 0) {
-      pulseRadius += 0.9 * pulseDirection;
-      pulseOpacity -= 0.03 * pulseDirection;
-
-      if (pulseRadius >= 32) {
-        pulseDirection = -1;
-      } else if (pulseRadius <= 24) {
-        pulseDirection = 1;
-      }
-
-      if (map.getLayer('portfolio-selected-pulse')) {
-        map.setPaintProperty('portfolio-selected-pulse', 'circle-radius', pulseRadius);
-        map.setPaintProperty('portfolio-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
-      }
-    }
-
-    pulseAnimationId = requestAnimationFrame(animatePulse);
-  }
-
-  // Start/stop pulse animation based on selection (exposed globally)
-  window.startPulseAnimation = function() {
-    if (pulseAnimationId === null) {
-      pulseRadius = 24;
-      pulseOpacity = 0.4;
-      pulseDirection = 1;
-      animatePulse();
-    }
-  };
-
-  window.stopPulseAnimation = function() {
-    if (pulseAnimationId !== null) {
-      cancelAnimationFrame(pulseAnimationId);
-      pulseAnimationId = null;
-    }
-  };
-
-  map.on('mouseenter', 'portfolio-points', function() {
+  map.on('mouseenter', 'buildings-points', function() {
     map.getCanvas().style.cursor = 'pointer';
   });
 
-  map.on('mouseleave', 'portfolio-points', function() {
+  map.on('mouseleave', 'buildings-points', function() {
     map.getCanvas().style.cursor = '';
   });
 
   // CLICK HANDLER
-  map.on('click', 'portfolio-points', function(e) {
-    var props = e.features[0].properties;
+  map.on('click', 'buildings-points', function(e) {
+    const props = e.features[0].properties;
     selectBuilding(props.bbl_id, false);
   });
 
@@ -369,7 +370,7 @@ function addMapLayers() {
     map.on('mouseenter', 'parcels-fill', function(e) {
       map.getCanvas().style.cursor = 'pointer';
       if (e.features.length > 0) {
-        var parcelId = e.features[0].properties.bbl_id;
+        const parcelId = e.features[0].properties.bbl_id;
         map.setFilter('parcels-highlight', ['==', ['get', 'bbl_id'], parcelId]);
       }
     });
@@ -380,23 +381,23 @@ function addMapLayers() {
     });
 
     map.on('click', 'parcels-fill', function(e) {
-      var bbox = [
+      const bbox = [
         [e.point.x - 15, e.point.y - 15],
         [e.point.x + 15, e.point.y + 15]
       ];
-      var buildingFeatures = map.queryRenderedFeatures(bbox, { layers: ['portfolio-points'] });
+      const buildingFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-points'] });
       if (buildingFeatures.length > 0) {
         return; // Let the building click handler handle it
       }
-      var props = e.features[0].properties;
+      const props = e.features[0].properties;
       selectParcel(props.bbl_id);
     });
   }
 
   // Click on map (not on a point or parcel) to deselect or identify Swisstopo features
   map.on('click', function(e) {
-    var pointFeatures = map.queryRenderedFeatures(e.point, { layers: ['portfolio-points'] });
-    var parcelFeatures = state.parcelData && state.parcelData.features
+    const pointFeatures = map.queryRenderedFeatures(e.point, { layers: ['buildings-points'] });
+    const parcelFeatures = state.parcelData && state.parcelData.features
       ? map.queryRenderedFeatures(e.point, { layers: ['parcels-fill'] })
       : [];
     if (pointFeatures.length === 0 && parcelFeatures.length === 0) {
@@ -423,18 +424,18 @@ function addMapLayers() {
   }
 
   // Select building or parcel from URL parameter if present
-  var urlParams = new URLSearchParams(window.location.search);
-  var urlBuildingId = urlParams.get('id');
-  var urlParcelId = urlParams.get('parcelId');
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlBuildingId = urlParams.get('id');
+  const urlParcelId = urlParams.get('parcelId');
   if (urlBuildingId) {
-    var building = state.portfolioData.features.find(function(f) {
+    const building = state.buildingsData.features.find(function(f) {
       return f.properties.bbl_id === urlBuildingId;
     });
     if (building) {
       selectBuilding(urlBuildingId, true);
     }
   } else if (urlParcelId && state.parcelData && state.parcelData.features) {
-    var parcel = state.parcelData.features.find(function(f) {
+    const parcel = state.parcelData.features.find(function(f) {
       return f.properties.bbl_id === urlParcelId;
     });
     if (parcel) {
@@ -451,21 +452,19 @@ function addMapLayers() {
 
 // ===== BUILDING SELECTION =====
 
-// BUG FIX #5 (XSS): All property values are escaped with escapeHtml/escapeForJs
+// BUG FIX #5 (XSS): All property values are escaped with escapeHtml
 function selectBuilding(buildingId, flyToBuilding) {
   if (flyToBuilding === undefined) flyToBuilding = false;
 
-  var building = state.portfolioData.features.find(function(f) {
+  const building = state.buildingsData.features.find(function(f) {
     return f.properties.bbl_id === buildingId;
   });
   if (!building) return;
 
-  var props = building.properties;
-  var flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
-  var baujahr = props.bbl_bjahr || '\u2014';
-  var statusClass = props.bbl_stat === 'Aktiv' ? 'status-active' :
-    props.bbl_stat === 'In Renovation' ? 'status-renovation' :
-    props.bbl_stat === 'In Planung' ? 'status-planning' : 'status-inactive';
+  const props = building.properties;
+  const flaeche = Number(props.garea_ngf || 0).toLocaleString('de-CH');
+  const baujahr = props.bbl_bjahr || '\u2014';
+  const statusClass = getStatusClassName(props.bbl_stat);
 
   // Update selected IDs (clear parcel selection)
   state.selectedBuildingId = buildingId;
@@ -481,13 +480,13 @@ function selectBuilding(buildingId, flyToBuilding) {
   document.getElementById('info-preview-image').style.display = 'block';
 
   // Use first image from building data, fall back to placeholder
-  var images = props.img_url || [];
-  var imageUrl = images[0] || placeholderImages[0];
+  const images = props.img_url || [];
+  const imageUrl = images[0] || placeholderImages[0];
 
   // Set preview image (quote URL to prevent CSS injection)
   document.getElementById('info-preview-image').style.backgroundImage = "url('" + imageUrl.replace(/'/g, "\\'").replace(/\)/g, '\\)') + "')";
 
-  var infoHtml =
+  const infoHtml =
     '<div class="info-row"><span class="info-label">' + t('info.label.id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id) + '</span></div>' +
     '<div class="info-row"><span class="info-label">' + t('info.label.name') + '</span><span class="info-value">' + escapeHtml(props.bbl_bez) + '</span></div>' +
     '<div class="info-row"><span class="info-label">' + t('info.label.location') + '</span><span class="info-value">' + escapeHtml(props.adr_ort) + ', ' + escapeHtml(props.adr_land) + '</span></div>' +
@@ -497,7 +496,7 @@ function selectBuilding(buildingId, flyToBuilding) {
     '<div class="info-row info-row-secondary"><span class="info-label">' + t('info.label.responsible') + '</span><span class="info-value">' + escapeHtml(props.bbl_ovtw || '\u2014') + '</span></div>' +
     '<div class="info-row"><span class="info-label">' + t('info.label.status') + '</span><span class="info-value"><span class="badge status-badge ' + statusClass + '">' + escapeHtml(props.bbl_stat) + '</span></span></div>' +
     '<div class="info-footer">' +
-      '<button class="info-detail-link" onclick="showDetailView(\'' + escapeForJs(props.bbl_id) + '\')">' +
+      '<button class="info-detail-link" data-action="showDetailView" data-id="' + escapeHtml(props.bbl_id) + '">' +
         '<span class="material-symbols-outlined">open_in_new</span>' +
         t('info.details') +
       '</button>' +
@@ -519,25 +518,25 @@ function selectBuilding(buildingId, flyToBuilding) {
 }
 
 function updateSelectedBuilding() {
-  var map = state.map;
-  if (map && map.getLayer('portfolio-selected')) {
-    map.setFilter('portfolio-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
+  const map = state.map;
+  if (map && map.getLayer('buildings-selected')) {
+    map.setFilter('buildings-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
   }
-  if (map && map.getLayer('portfolio-selected-pulse')) {
-    map.setFilter('portfolio-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
+  if (map && map.getLayer('buildings-selected-pulse')) {
+    map.setFilter('buildings-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId || '']);
   }
   // Start or stop pulse animation based on selection
-  if (state.selectedBuildingId && typeof window.startPulseAnimation === 'function') {
-    window.startPulseAnimation();
-  } else if (typeof window.stopPulseAnimation === 'function') {
-    window.stopPulseAnimation();
+  if (state.selectedBuildingId) {
+    startPulseAnimation();
+  } else {
+    stopPulseAnimation();
   }
 }
 
 // ===== URL STATE HELPERS =====
 
 function updateUrlWithSelection() {
-  var url = new URL(window.location);
+  const url = new URL(window.location);
   if (state.selectedBuildingId) {
     url.searchParams.set('id', state.selectedBuildingId);
   } else {
@@ -554,9 +553,10 @@ function updateUrlWithSelection() {
 // ===== PARCEL SELECTION =====
 
 function getPolygonCentroid(coordinates) {
-  var ring = coordinates[0]; // outer ring
-  var x = 0, y = 0, n = ring.length - 1; // exclude closing point
-  for (var i = 0; i < n; i++) {
+  const ring = coordinates[0]; // outer ring
+  let x = 0, y = 0;
+  const n = ring.length - 1; // exclude closing point
+  for (let i = 0; i < n; i++) {
     x += ring[i][0];
     y += ring[i][1];
   }
@@ -566,15 +566,15 @@ function getPolygonCentroid(coordinates) {
 function selectParcel(parcelId, flyToParcel) {
   if (flyToParcel === undefined) flyToParcel = false;
 
-  var parcel = state.parcelData.features.find(function(f) {
+  const parcel = state.parcelData.features.find(function(f) {
     return f.properties.bbl_id === parcelId;
   });
   if (!parcel) return;
 
-  var props = parcel.properties;
+  const props = parcel.properties;
 
   // Format area with thousand separators
-  var formattedArea = Number(props.larea_gsf || 0).toLocaleString('de-CH');
+  const formattedArea = Number(props.larea_gsf || 0).toLocaleString('de-CH');
 
   // Update selected IDs (clear building selection)
   state.selectedParcelId = parcelId;
@@ -590,7 +590,7 @@ function selectParcel(parcelId, flyToParcel) {
   document.getElementById('info-preview-image').style.display = 'none';
 
   // Build info panel HTML content
-  var infoHtml =
+  const infoHtml =
     '<div class="info-row"><span class="info-label">' + t('info.label.id') + '</span><span class="info-value">' + escapeHtml(props.bbl_id || '\u2014') + '</span></div>' +
     '<div class="info-row"><span class="info-label">' + t('info.label.name') + '</span><span class="info-value">' + escapeHtml(props.bbl_bez || '\u2014') + '</span></div>' +
     '<div class="info-row"><span class="info-label">' + t('info.label.location') + '</span><span class="info-value">' + escapeHtml(props.bfs_gem || props.adr_ort || '\u2014') + ', ' + escapeHtml(props.adr_reg || '\u2014') + '</span></div>' +
@@ -607,7 +607,7 @@ function selectParcel(parcelId, flyToParcel) {
 
   // Fly to parcel if requested
   if (state.map && flyToParcel && parcel.geometry && parcel.geometry.coordinates) {
-    var center = getPolygonCentroid(parcel.geometry.coordinates);
+    const center = getPolygonCentroid(parcel.geometry.coordinates);
     state.map.flyTo({
       center: center,
       zoom: 16
@@ -616,7 +616,7 @@ function selectParcel(parcelId, flyToParcel) {
 }
 
 function updateSelectedParcel() {
-  var map = state.map;
+  const map = state.map;
   if (map && map.getLayer('parcels-selected')) {
     map.setFilter('parcels-selected', ['==', ['get', 'bbl_id'], state.selectedParcelId || '']);
   }
@@ -629,19 +629,19 @@ function updateSelectedParcel() {
 
 // Get thumbnail URL from config (static tile images, no API key needed)
 function getStyleThumbnail(styleId) {
-  var style = mapStyles[styleId];
+  const style = mapStyles[styleId];
   return style && style.thumbnail ? style.thumbnail : '';
 }
 
 // FIX #24: Lazy thumbnail initialization — only called when style panel is first opened
-var thumbnailsInitialized = false;
+let thumbnailsInitialized = false;
 
 function initStyleThumbnails() {
   if (thumbnailsInitialized) return;
   thumbnailsInitialized = true;
 
   Object.keys(mapStyles).forEach(function(styleId) {
-    var thumbEl = document.getElementById('thumb-' + styleId);
+    const thumbEl = document.getElementById('thumb-' + styleId);
     if (thumbEl) {
       thumbEl.src = getStyleThumbnail(styleId);
     }
@@ -664,7 +664,7 @@ function updateActiveStyleButton() {
 // Toggle style panel
 function toggleStylePanel() {
   state.stylePanelOpen = !state.stylePanelOpen;
-  var stylePanel = document.getElementById('style-panel');
+  const stylePanel = document.getElementById('style-panel');
   if (state.stylePanelOpen) {
     // FIX #24: Lazy-load thumbnails on first open
     initStyleThumbnails();
@@ -675,8 +675,8 @@ function toggleStylePanel() {
 }
 
 function initStyleSwitcher() {
-  var styleSwitcherBtn = document.getElementById('style-switcher-btn');
-  var stylePanel = document.getElementById('style-panel');
+  const styleSwitcherBtn = document.getElementById('style-switcher-btn');
+  const stylePanel = document.getElementById('style-panel');
 
   // Close panel when clicking outside
   document.addEventListener('click', function(e) {
@@ -694,7 +694,7 @@ function initStyleSwitcher() {
 
   // Restore all custom layers after a style change
   function restoreLayersAfterStyleChange() {
-    if (state.portfolioData) {
+    if (state.buildingsData) {
       addMapLayers();
 
       // Restore active filters without triggering zoom
@@ -703,10 +703,10 @@ function initStyleSwitcher() {
       state.skipFilterZoom = false;
 
       // Restore selected building highlight
-      if (state.selectedBuildingId && state.map.getLayer('portfolio-selected')) {
-        state.map.setFilter('portfolio-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
-        state.map.setFilter('portfolio-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
-        if (window.startPulseAnimation) window.startPulseAnimation();
+      if (state.selectedBuildingId && state.map.getLayer('buildings-selected')) {
+        state.map.setFilter('buildings-selected', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
+        state.map.setFilter('buildings-selected-pulse', ['==', ['get', 'bbl_id'], state.selectedBuildingId]);
+        startPulseAnimation();
       }
 
       // Restore selected parcel highlight
@@ -724,7 +724,7 @@ function initStyleSwitcher() {
   document.querySelectorAll('.style-option').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      var styleId = this.dataset.style;
+      const styleId = this.dataset.style;
       if (styleId === state.currentMapStyle) {
         toggleStylePanel();
         return;
@@ -749,9 +749,172 @@ function initStyleSwitcher() {
   updateActiveStyleButton();
 }
 
-// Make selectBuilding and showDetailView available on window for onclick handlers in generated HTML
-window.selectBuilding = selectBuilding;
-window.showDetailView = showDetailView;
+// ===== MAP CONTEXT MENU =====
+
+// Hide context menu
+function hideContextMenu() {
+  const contextMenu = document.getElementById('map-context-menu');
+  if (contextMenu) {
+    contextMenu.classList.remove('show');
+  }
+}
+
+// Initialize context menu: set up all event handlers
+function initContextMenu() {
+  const map = state.map;
+  const contextMenu = document.getElementById('map-context-menu');
+  const contextMenuCoords = document.getElementById('context-menu-coords');
+  const contextMenuCoordsText = document.getElementById('context-menu-coords-text');
+  const contextMenuShare = document.getElementById('context-menu-share');
+  const contextMenuMeasureText = document.getElementById('context-menu-measure-text');
+  const contextMenuPrint = document.getElementById('context-menu-print');
+  const contextMenuReport = document.getElementById('context-menu-report');
+
+  // Show context menu on right-click
+  map.on('contextmenu', function(e) {
+    e.preventDefault();
+
+    // Store clicked coordinates
+    state.contextMenuLngLat = e.lngLat;
+
+    // Update coordinates display (lat, lon with 5 decimals)
+    const lat = state.contextMenuLngLat.lat.toFixed(5);
+    const lon = state.contextMenuLngLat.lng.toFixed(5);
+    contextMenuCoordsText.textContent = lat + ', ' + lon;
+    contextMenuCoords.classList.remove('copied');
+
+    // Toggle measure menu text based on state
+    if (state.measureState.active) {
+      contextMenuMeasureText.textContent = t('map.context.measure.delete');
+    } else {
+      contextMenuMeasureText.textContent = t('map.context.measure');
+    }
+
+    // Get map container dimensions
+    const mapContainer = document.getElementById('map');
+    const mapRect = mapContainer.getBoundingClientRect();
+
+    // Calculate menu position relative to map container
+    const menuWidth = 200;
+    const menuHeight = 180;
+    const clickX = e.point.x;
+    const clickY = e.point.y;
+
+    // Edge detection
+    const flipHorizontal = (clickX + menuWidth) > mapRect.width;
+    const flipVertical = (clickY + menuHeight) > mapRect.height;
+
+    // Position the menu
+    contextMenu.style.left = clickX + 'px';
+    contextMenu.style.top = clickY + 'px';
+
+    // Apply flip classes
+    contextMenu.classList.toggle('flip-horizontal', flipHorizontal);
+    contextMenu.classList.toggle('flip-vertical', flipVertical);
+
+    // Show menu
+    contextMenu.classList.add('show');
+  });
+
+  // Close menu on Escape key + clear measurement
+  document.addEventListener('keydown', function(e) {
+    if (e.key !== 'Escape') return;
+    const contextMenuEl = document.getElementById('map-context-menu');
+    if (contextMenuEl && contextMenuEl.classList.contains('show')) {
+      e.stopImmediatePropagation();
+      hideContextMenu();
+      return;
+    }
+    if (state.measureState.active) {
+      e.stopImmediatePropagation();
+      clearMeasurement();
+    }
+  });
+
+  // Copy coordinates to clipboard
+  contextMenuCoords.addEventListener('click', function() {
+    const coordsText = contextMenuCoordsText.textContent;
+    navigator.clipboard.writeText(coordsText).then(function() {
+      contextMenuCoords.classList.add('copied');
+      showToast({
+        type: 'success',
+        title: t('success.copy.title'),
+        message: coordsText,
+        duration: 2000
+      });
+      setTimeout(hideContextMenu, 300);
+    }).catch(function(err) {
+      showToast({
+        type: 'error',
+        title: t('error.copy.title'),
+        message: t('error.copy.message'),
+        duration: 3000
+      });
+    });
+  });
+
+  // Share - use native system share
+  // BUG FIX #21: Fixed fallback showToast calls to use correct object format
+  contextMenuShare.addEventListener('click', function(e) {
+    e.stopPropagation();
+    if (!state.contextMenuLngLat) return;
+
+    // Generate share URL with coordinates
+    const lat = state.contextMenuLngLat.lat.toFixed(5);
+    const lon = state.contextMenuLngLat.lng.toFixed(5);
+    const shareUrl = window.location.origin + window.location.pathname + '?center=' + lon + ',' + lat + '&zoom=' + Math.round(map.getZoom());
+
+    hideContextMenu();
+
+    // Use native Web Share API
+    if (navigator.share) {
+      navigator.share({
+        title: t('share.title'),
+        text: t('share.email.body'),
+        url: shareUrl
+      }).catch(function(err) {
+        // User cancelled or share failed - copy to clipboard as fallback
+        if (err.name !== 'AbortError') {
+          navigator.clipboard.writeText(shareUrl).then(function() {
+            showToast({
+              type: 'success',
+              title: 'Link kopiert',
+              message: 'Link wurde in die Zwischenablage kopiert',
+              duration: 2000
+            });
+          });
+        }
+      });
+    } else {
+      // Fallback for browsers without Web Share API - copy to clipboard
+      navigator.clipboard.writeText(shareUrl).then(function() {
+        showToast({
+          type: 'success',
+          title: t('success.copy.title'),
+          message: t('success.copy.message'),
+          duration: 2000
+        });
+      });
+    }
+  });
+
+  // Print map
+  contextMenuPrint.addEventListener('click', function() {
+    hideContextMenu();
+    window.print();
+  });
+
+  // Report problem
+  contextMenuReport.addEventListener('click', function() {
+    hideContextMenu();
+    if (!state.contextMenuLngLat) return;
+    const lat = state.contextMenuLngLat.lat.toFixed(5);
+    const lon = state.contextMenuLngLat.lng.toFixed(5);
+    const subject = encodeURIComponent('Problem melden - GIS Immobilienportfolio');
+    const body = encodeURIComponent('Problembeschreibung:\n\n\n\n---\nKoordinaten: ' + lat + ', ' + lon + '\nURL: ' + window.location.href);
+    window.location.href = 'mailto:info@gis-immo.ch?subject=' + subject + '&body=' + body;
+  });
+}
 
 // ===== EXPORTS =====
 
@@ -764,5 +927,7 @@ export {
   updateSelectedParcel,
   updateUrlWithSelection,
   getPolygonCentroid,
-  initStyleSwitcher
+  initStyleSwitcher,
+  initContextMenu,
+  hideContextMenu
 };

@@ -3,21 +3,19 @@
 import { state } from './state.js';
 import { filterConfig } from './config.js';
 import { escapeHtml, getNestedProperty } from './utils.js';
-import { renderListView, updateFilteredExportHeader } from './list.js';
-import { renderGalleryView } from './gallery.js';
-import { renderParcelsView } from './parcels.js';
-import { switchView } from './views.js';
+import { renderListView, updateFilteredExportHeader, renderGalleryView, renderParcelsView } from './list.js';
+import { switchView } from './ui.js';
 import { updateExportCount } from './export.js';
 
 export function getFiltersFromURL() {
-  var params = new URLSearchParams(window.location.search);
-  var filters = {};
+  const params = new URLSearchParams(window.location.search);
+  const filters = {};
   Object.keys(filterConfig).forEach(function(key) {
     filters[key] = [];
   });
 
   Object.keys(filters).forEach(function(key) {
-    var value = params.get('filter_' + key);
+    const value = params.get('filter_' + key);
     if (value) {
       filters[key] = value.split(',').map(function(v) {
         return decodeURIComponent(v);
@@ -29,7 +27,7 @@ export function getFiltersFromURL() {
 }
 
 export function setFiltersInURL(filters) {
-  var url = new URL(window.location);
+  const url = new URL(window.location);
 
   // Remove all filter params first
   Object.keys(filters).forEach(function(key) {
@@ -39,7 +37,7 @@ export function setFiltersInURL(filters) {
   // Add active filters
   Object.keys(filters).forEach(function(key) {
     if (filters[key].length > 0) {
-      var encoded = filters[key].map(function(v) {
+      const encoded = filters[key].map(function(v) {
         return encodeURIComponent(v);
       }).join(',');
       url.searchParams.set('filter_' + key, encoded);
@@ -50,7 +48,7 @@ export function setFiltersInURL(filters) {
 }
 
 export function getActiveFilterCount() {
-  var count = 0;
+  let count = 0;
   Object.keys(state.activeFilters).forEach(function(key) {
     count += state.activeFilters[key].length;
   });
@@ -58,28 +56,28 @@ export function getActiveFilterCount() {
 }
 
 export function applyFilters() {
-  if (!state.portfolioData) return;
+  if (!state.buildingsData) return;
 
   // Reset list pagination to page 1 when filters change
   state.listCurrentPage = 1;
 
   // Filter the data
   state.filteredData = {
-    type: state.portfolioData.type,
-    name: state.portfolioData.name,
-    features: state.portfolioData.features.filter(function(feature) {
-      var props = feature.properties;
+    type: state.buildingsData.type,
+    name: state.buildingsData.name,
+    features: state.buildingsData.features.filter(function(feature) {
+      const props = feature.properties;
 
       // Check each filter category (AND between categories)
-      for (var filterKey in state.activeFilters) {
-        var filterValues = state.activeFilters[filterKey];
+      for (const filterKey in state.activeFilters) {
+        const filterValues = state.activeFilters[filterKey];
         if (filterValues.length === 0) continue;
 
-        var propKey = filterConfig[filterKey].property;
-        var propValue = getNestedProperty(props, propKey);
+        const propKey = filterConfig[filterKey].property;
+        const propValue = getNestedProperty(props, propKey);
 
         // OR within category - at least one must match
-        var matches = filterValues.some(function(filterValue) {
+        const matches = filterValues.some(function(filterValue) {
           return propValue === filterValue;
         });
 
@@ -107,33 +105,33 @@ export function applyFilters() {
   renderCurrentView();
 
   // Update map layer filter
-  if (state.map && state.map.getLayer('portfolio-points')) {
+  if (state.map && state.map.getLayer('buildings-points')) {
     updateMapFilter();
   }
 }
 
 export function updateMapFilter() {
-  if (!state.map || !state.map.getLayer('portfolio-points')) return;
+  if (!state.map || !state.map.getLayer('buildings-points')) return;
 
   // If no active filters, show all buildings
   if (getActiveFilterCount() === 0) {
-    state.map.setFilter('portfolio-points', null);
-    if (state.map.getLayer('portfolio-labels')) {
-      state.map.setFilter('portfolio-labels', null);
+    state.map.setFilter('buildings-points', null);
+    if (state.map.getLayer('buildings-labels')) {
+      state.map.setFilter('buildings-labels', null);
     }
     return;
   }
 
-  var filteredIds = state.filteredData.features.map(function(f) {
+  const filteredIds = state.filteredData.features.map(function(f) {
     return f.properties.bbl_id;
   });
 
   // Apply filter to show only filtered buildings
-  state.map.setFilter('portfolio-points', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
+  state.map.setFilter('buildings-points', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
 
   // Also filter labels layer if it exists
-  if (state.map.getLayer('portfolio-labels')) {
-    state.map.setFilter('portfolio-labels', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
+  if (state.map.getLayer('buildings-labels')) {
+    state.map.setFilter('buildings-labels', ['in', ['get', 'bbl_id'], ['literal', filteredIds]]);
   }
 
   // Zoom to fit filtered points (skip during style change restore)
@@ -143,17 +141,17 @@ export function updateMapFilter() {
 }
 
 export function renderFilterPills() {
-  var container = document.getElementById('filter-pills');
+  const container = document.getElementById('filter-pills');
   if (!container) return;
 
-  var html = '';
-  var hasAny = false;
+  let html = '';
+  let hasAny = false;
 
-  for (var filterKey in state.activeFilters) {
-    var values = state.activeFilters[filterKey];
+  for (const filterKey in state.activeFilters) {
+    const values = state.activeFilters[filterKey];
     if (!values || values.length === 0) continue;
     hasAny = true;
-    var label = filterConfig[filterKey] ? filterConfig[filterKey].label : filterKey;
+    const label = filterConfig[filterKey] ? filterConfig[filterKey].label : filterKey;
     values.forEach(function(val) {
       html += '<span class="filter-pill">' +
         '<span class="filter-pill-label">' + label + ':</span>' +
@@ -164,7 +162,7 @@ export function renderFilterPills() {
   }
 
   if (hasAny) {
-    html += '<button class="filter-pills-reset" id="filter-pills-reset">Alle Filter zurücksetzen</button>';
+    html += '<button class="filter-pills-reset" id="filter-pills-reset">Alle Filter zur\u00FCcksetzen</button>';
   }
 
   container.innerHTML = html;
@@ -173,12 +171,12 @@ export function renderFilterPills() {
   container.querySelectorAll('.filter-pill-remove').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
       e.stopPropagation();
-      var key = this.dataset.filterKey;
-      var val = this.dataset.filterValue;
+      const key = this.dataset.filterKey;
+      const val = this.dataset.filterValue;
       if (state.activeFilters[key]) {
         state.activeFilters[key] = state.activeFilters[key].filter(function(v) { return v !== val; });
         // Also uncheck the corresponding checkbox in the drawer
-        var cb = document.querySelector('#filter-pane input[data-filter="' + key + '"][data-value="' + val + '"]');
+        const cb = document.querySelector('#filter-pane input[data-filter="' + key + '"][data-value="' + val + '"]');
         if (cb) cb.checked = false;
         applyFilters();
       }
@@ -186,11 +184,11 @@ export function renderFilterPills() {
   });
 
   // Reset all filters
-  var resetBtn = document.getElementById('filter-pills-reset');
+  const resetBtn = document.getElementById('filter-pills-reset');
   if (resetBtn) {
     resetBtn.addEventListener('click', function(e) {
       e.stopPropagation();
-      for (var key in state.activeFilters) {
+      for (const key in state.activeFilters) {
         state.activeFilters[key] = [];
       }
       // Uncheck all filter checkboxes in the drawer
@@ -205,11 +203,11 @@ export function renderFilterPills() {
 export function zoomToFilteredPoints() {
   if (!state.filteredData || state.filteredData.features.length === 0) return;
 
-  var features = state.filteredData.features;
+  const features = state.filteredData.features;
 
   if (features.length === 1) {
     // Single point - fly to it with a reasonable zoom level
-    var coords = features[0].geometry.coordinates;
+    const coords = features[0].geometry.coordinates;
     state.map.flyTo({
       center: coords,
       zoom: 14,
@@ -217,7 +215,7 @@ export function zoomToFilteredPoints() {
     });
   } else {
     // Multiple points - fit bounds
-    var bounds = new maplibregl.LngLatBounds();
+    const bounds = new maplibregl.LngLatBounds();
     features.forEach(function(feature) {
       bounds.extend(feature.geometry.coordinates);
     });
@@ -248,7 +246,7 @@ export function navigateToAllObjects() {
 
 export function navigateWithLandFilter() {
   if (!state.currentDetailBuilding) return;
-  var land = state.currentDetailBuilding.properties.adr_land;
+  const land = state.currentDetailBuilding.properties.adr_land;
   if (!land) return;
 
   // Reset all filters and set only land filter
@@ -256,7 +254,7 @@ export function navigateWithLandFilter() {
   state.activeFilters.land = [land];
 
   // Update checkbox state
-  var checkbox = document.querySelector('#filter-panel input[data-filter="land"][data-value="' + land + '"]');
+  const checkbox = document.querySelector('#filter-panel input[data-filter="land"][data-value="' + land + '"]');
   if (checkbox) checkbox.checked = true;
 
   applyFilters();
@@ -265,7 +263,7 @@ export function navigateWithLandFilter() {
 
 export function navigateWithRegionFilter() {
   if (!state.currentDetailBuilding) return;
-  var region = state.currentDetailBuilding.properties.adr_reg;
+  const region = state.currentDetailBuilding.properties.adr_reg;
   if (!region) return;
 
   // Reset all filters and set only region filter
@@ -273,7 +271,7 @@ export function navigateWithRegionFilter() {
   state.activeFilters.region = [region];
 
   // Update checkbox state
-  var checkbox = document.querySelector('#filter-panel input[data-filter="region"][data-value="' + region + '"]');
+  const checkbox = document.querySelector('#filter-panel input[data-filter="region"][data-value="' + region + '"]');
   if (checkbox) checkbox.checked = true;
 
   applyFilters();
@@ -282,7 +280,7 @@ export function navigateWithRegionFilter() {
 
 export function navigateWithOrtFilter() {
   if (!state.currentDetailBuilding) return;
-  var ort = state.currentDetailBuilding.properties.adr_ort;
+  const ort = state.currentDetailBuilding.properties.adr_ort;
   if (!ort) return;
 
   // Reset all filters and set only ort filter
@@ -290,7 +288,7 @@ export function navigateWithOrtFilter() {
   state.activeFilters.ort = [ort];
 
   // Update checkbox state
-  var checkbox = document.querySelector('#filter-panel input[data-filter="ort"][data-value="' + ort + '"]');
+  const checkbox = document.querySelector('#filter-panel input[data-filter="ort"][data-value="' + ort + '"]');
   if (checkbox) checkbox.checked = true;
 
   applyFilters();
@@ -298,16 +296,16 @@ export function navigateWithOrtFilter() {
 }
 
 export function updateFilterButtonState() {
-  var drawerBtn = document.getElementById('filter-panel-btn');
+  const drawerBtn = document.getElementById('filter-panel-btn');
   if (!drawerBtn) return;
 
-  var count = getActiveFilterCount();
+  const count = getActiveFilterCount();
 
   if (count > 0) {
     // Add active filters highlight
     drawerBtn.classList.add('has-active-filters');
     // Add or update count badge
-    var badge = drawerBtn.querySelector('.filter-count');
+    let badge = drawerBtn.querySelector('.filter-count');
     if (!badge) {
       badge = document.createElement('span');
       badge.className = 'filter-count';
@@ -318,7 +316,7 @@ export function updateFilterButtonState() {
     // Remove active filters highlight
     drawerBtn.classList.remove('has-active-filters');
     // Remove count badge
-    var badge = drawerBtn.querySelector('.filter-count');
+    const badge = drawerBtn.querySelector('.filter-count');
     if (badge) {
       badge.remove();
     }
@@ -343,8 +341,8 @@ export function renderCurrentView() {
 
 // ===== SMART DRAWER =====
 export function toggleSmartDrawer(open) {
-  var drawer = document.getElementById('filter-panel');
-  var drawerBtn = document.getElementById('filter-panel-btn');
+  const drawer = document.getElementById('filter-panel');
+  const drawerBtn = document.getElementById('filter-panel-btn');
 
   if (open === undefined) {
     open = !drawer.classList.contains('open');
@@ -372,20 +370,20 @@ export function toggleSmartDrawer(open) {
 
 // ===== DRAWER RESIZE =====
 export function initDrawerResize() {
-  var drawer = document.getElementById('filter-panel');
-  var handle = drawer.querySelector('.filter-panel-resize-handle');
+  const drawer = document.getElementById('filter-panel');
+  const handle = drawer.querySelector('.filter-panel-resize-handle');
   if (!handle) return;
 
-  var isResizing = false;
-  var startX, startWidth;
+  let isResizing = false;
+  let startX, startWidth;
 
   // Get min/max from CSS variables
-  var styles = getComputedStyle(document.documentElement);
-  var minWidth = parseInt(styles.getPropertyValue('--drawer-min-width')) || 300;
-  var maxWidth = parseInt(styles.getPropertyValue('--drawer-max-width')) || 800;
+  const styles = getComputedStyle(document.documentElement);
+  const minWidth = parseInt(styles.getPropertyValue('--drawer-min-width')) || 300;
+  const maxWidth = parseInt(styles.getPropertyValue('--drawer-max-width')) || 800;
 
   // Load saved width from localStorage
-  var savedWidth = localStorage.getItem('drawerWidth');
+  const savedWidth = localStorage.getItem('drawerWidth');
   if (savedWidth) {
     document.documentElement.style.setProperty('--drawer-width', savedWidth + 'px');
   }
@@ -405,8 +403,8 @@ export function initDrawerResize() {
     if (!isResizing) return;
 
     // Calculate new width (dragging left = wider, right = narrower)
-    var delta = startX - e.clientX;
-    var newWidth = Math.min(maxWidth, Math.max(minWidth, startWidth + delta));
+    const delta = startX - e.clientX;
+    const newWidth = Math.min(maxWidth, Math.max(minWidth, startWidth + delta));
 
     document.documentElement.style.setProperty('--drawer-width', newWidth + 'px');
   });
@@ -421,7 +419,7 @@ export function initDrawerResize() {
     document.body.style.userSelect = '';
 
     // Save width to localStorage
-    var currentWidth = drawer.offsetWidth;
+    const currentWidth = drawer.offsetWidth;
     localStorage.setItem('drawerWidth', currentWidth);
 
     // Resize map
@@ -432,10 +430,10 @@ export function initDrawerResize() {
 }
 
 export function initFilterOptions() {
-  if (!state.portfolioData) return;
+  if (!state.buildingsData) return;
 
   // Collect unique values for each filter category
-  var uniqueValues = {
+  const uniqueValues = {
     status: new Set(),
     eigentum: new Set(),
     strategie: new Set(),
@@ -450,8 +448,8 @@ export function initFilterOptions() {
     kgskat: new Set()
   };
 
-  state.portfolioData.features.forEach(function(feature) {
-    var props = feature.properties;
+  state.buildingsData.features.forEach(function(feature) {
+    const props = feature.properties;
     if (props.bbl_stat) uniqueValues.status.add(props.bbl_stat);
     if (props.bbl_eigen) uniqueValues.eigentum.add(props.bbl_eigen);
     if (props.bbl_ostr) uniqueValues.strategie.add(props.bbl_ostr);
@@ -468,15 +466,15 @@ export function initFilterOptions() {
 
   // Render options for each filter
   Object.keys(uniqueValues).forEach(function(filterKey) {
-    var container = document.getElementById('filter-' + filterKey + '-options');
+    const container = document.getElementById('filter-' + filterKey + '-options');
     if (!container) return;
 
-    var values = Array.from(uniqueValues[filterKey]).sort();
-    var html = '';
+    const values = Array.from(uniqueValues[filterKey]).sort();
+    let html = '';
 
     values.forEach(function(value) {
-      var id = 'filter-' + filterKey + '-' + value.replace(/[^a-zA-Z0-9]/g, '_');
-      var checked = state.activeFilters[filterKey].includes(value) ? 'checked' : '';
+      const id = 'filter-' + filterKey + '-' + value.replace(/[^a-zA-Z0-9]/g, '_');
+      const checked = state.activeFilters[filterKey].includes(value) ? 'checked' : '';
 
       html += '<div class="filter-option">' +
         '<input type="checkbox" id="' + id + '" data-filter="' + escapeHtml(filterKey) + '" data-value="' + escapeHtml(value) + '" ' + checked + '>' +
@@ -489,8 +487,8 @@ export function initFilterOptions() {
     // Add event listeners to checkboxes
     container.querySelectorAll('input[type="checkbox"]').forEach(function(checkbox) {
       checkbox.addEventListener('change', function() {
-        var filterKey = this.dataset.filter;
-        var value = this.dataset.value;
+        const filterKey = this.dataset.filter;
+        const value = this.dataset.value;
 
         if (this.checked) {
           if (!state.activeFilters[filterKey].includes(value)) {
@@ -527,7 +525,7 @@ export function initFilterPane() {
   // Filter section accordion toggle
   document.querySelectorAll('.filter-section-header').forEach(function(header) {
     header.addEventListener('click', function() {
-      var section = this.parentElement;
+      const section = this.parentElement;
       section.classList.toggle('open');
     });
   });
@@ -535,7 +533,7 @@ export function initFilterPane() {
   // Close on Escape key (only if drawer is open)
   document.addEventListener('keydown', function(e) {
     if (e.key !== 'Escape') return;
-    var drawer = document.getElementById('filter-panel');
+    const drawer = document.getElementById('filter-panel');
     if (drawer && drawer.classList.contains('open')) {
       e.stopImmediatePropagation();
       toggleSmartDrawer(false);
@@ -548,15 +546,15 @@ export function initFilterPane() {
   });
 
   // Filter search input with clear button
-  var filterSearchInput = document.getElementById('filter-search-input');
-  var filterSearchClear = document.getElementById('filter-search-clear');
+  const filterSearchInput = document.getElementById('filter-search-input');
+  const filterSearchClear = document.getElementById('filter-search-clear');
 
   function filterSections() {
-    var term = filterSearchInput.value.toLowerCase().trim();
+    const term = filterSearchInput.value.toLowerCase().trim();
     if (filterSearchClear) filterSearchClear.hidden = !term;
     document.querySelectorAll('.filter-section').forEach(function(section) {
-      var title = section.querySelector('.filter-section-title');
-      var text = title ? title.textContent.toLowerCase() : '';
+      const title = section.querySelector('.filter-section-title');
+      const text = title ? title.textContent.toLowerCase() : '';
       section.style.display = (!term || text.includes(term)) ? '' : 'none';
     });
   }
@@ -574,9 +572,3 @@ export function initFilterPane() {
   }
 }
 
-// Global alias for empty state buttons
-window.resetAllFilters = resetFilters;
-window.navigateToAllObjects = navigateToAllObjects;
-window.navigateWithLandFilter = navigateWithLandFilter;
-window.navigateWithRegionFilter = navigateWithRegionFilter;
-window.navigateWithOrtFilter = navigateWithOrtFilter;

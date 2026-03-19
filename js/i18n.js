@@ -1,12 +1,12 @@
 // i18n — lightweight internationalisation runtime
 // Loads a single data/i18n.json with all languages, exposes t() for keyed lookups.
 
-var allTranslations = null; // cached: { de: { key: value }, en: { key: value }, ... }
-var translations = {};
-var currentLang = 'de';
-var supportedLangs = ['de', 'fr', 'it', 'en'];
-var fallbackLang = 'de';
-var onLangChangeCallbacks = [];
+let allTranslations = null; // cached: { de: { key: value }, en: { key: value }, ... }
+let translations = {};
+let currentLang = 'de';
+const supportedLangs = ['de', 'fr', 'it', 'en'];
+const fallbackLang = 'de';
+const onLangChangeCallbacks = [];
 
 // ===== PUBLIC API =====
 
@@ -14,7 +14,7 @@ var onLangChangeCallbacks = [];
 //   t('pagination.info', { start: 1, end: 50, total: 200 })
 //   → "1–50 von 200 Objekte"
 export function t(key, params) {
-  var value = translations[key];
+  let value = translations[key];
   if (value === undefined) {
     console.warn('[i18n] missing key: ' + key + ' (' + currentLang + ')');
     return key;
@@ -62,7 +62,7 @@ export function setLang(lang) {
 
 // Initialise: detect language, load the single i18n file, activate.
 export function initI18n() {
-  var lang = detectLang();
+  const lang = detectLang();
   currentLang = lang;
   return loadAllTranslations().then(function() {
     translations = (allTranslations && allTranslations[lang]) || {};
@@ -75,25 +75,25 @@ export function initI18n() {
 
 function detectLang() {
   // 1. URL parameter
-  var params = new URLSearchParams(window.location.search);
-  var urlLang = params.get('lang');
+  const params = new URLSearchParams(window.location.search);
+  const urlLang = params.get('lang');
   if (urlLang && supportedLangs.indexOf(urlLang) !== -1) return urlLang;
 
   // 2. localStorage
   try {
-    var stored = localStorage.getItem('bbl-lang');
+    const stored = localStorage.getItem('bbl-lang');
     if (stored && supportedLangs.indexOf(stored) !== -1) return stored;
   } catch (e) { /* ignore */ }
 
   // 3. Browser language
-  var browserLang = (navigator.language || '').substring(0, 2).toLowerCase();
+  const browserLang = (navigator.language || '').substring(0, 2).toLowerCase();
   if (supportedLangs.indexOf(browserLang) !== -1) return browserLang;
 
   return fallbackLang;
 }
 
 function persistLang(lang) {
-  var url = new URL(window.location);
+  const url = new URL(window.location);
   url.searchParams.set('lang', lang);
   window.history.replaceState({}, '', url);
   try {
@@ -114,7 +114,7 @@ function loadAllTranslations() {
       allTranslations = {};
       supportedLangs.forEach(function(lang) { allTranslations[lang] = {}; });
       Object.keys(data).forEach(function(key) {
-        var entry = data[key];
+        const entry = data[key];
         supportedLangs.forEach(function(lang) {
           if (entry[lang] !== undefined) {
             allTranslations[lang][key] = entry[lang];
@@ -137,23 +137,23 @@ function loadAllTranslations() {
 //   data-i18n-alt="key"            → sets alt
 function applyTranslationsToDOM() {
   document.querySelectorAll('[data-i18n]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n');
+    const key = el.getAttribute('data-i18n');
     if (key) el.textContent = t(key);
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-placeholder');
+    const key = el.getAttribute('data-i18n-placeholder');
     if (key) el.placeholder = t(key);
   });
   document.querySelectorAll('[data-i18n-title]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-title');
+    const key = el.getAttribute('data-i18n-title');
     if (key) el.title = t(key);
   });
   document.querySelectorAll('[data-i18n-aria-label]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-aria-label');
+    const key = el.getAttribute('data-i18n-aria-label');
     if (key) el.setAttribute('aria-label', t(key));
   });
   document.querySelectorAll('[data-i18n-alt]').forEach(function(el) {
-    var key = el.getAttribute('data-i18n-alt');
+    const key = el.getAttribute('data-i18n-alt');
     if (key) el.alt = t(key);
   });
 }

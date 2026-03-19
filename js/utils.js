@@ -28,9 +28,9 @@ export function escapeXml(str) {
 }
 
 export function getNestedProperty(obj, path) {
-  var parts = path.split('.');
-  var current = obj;
-  for (var i = 0; i < parts.length; i++) {
+  const parts = path.split('.');
+  let current = obj;
+  for (let i = 0; i < parts.length; i++) {
     if (current == null) return undefined;
     current = current[parts[i]];
   }
@@ -40,9 +40,9 @@ export function getNestedProperty(obj, path) {
 // Format number with Swiss thousand separator (1'000)
 export function formatNum(value, decimals) {
   if (value === undefined || value === null || value === '') return null;
-  var num = Number(value);
-  var fixed = decimals != null ? num.toFixed(decimals) : String(num);
-  var parts = fixed.split('.');
+  const num = Number(value);
+  const fixed = decimals != null ? num.toFixed(decimals) : String(num);
+  const parts = fixed.split('.');
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, "'");
   return parts.join('.');
 }
@@ -64,7 +64,7 @@ export function formatCHF(value) {
 
 export function formatDate(isoDate) {
   if (!isoDate) return null;
-  var match = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
+  const match = isoDate.match(/^(\d{4})-(\d{2})-(\d{2})/);
   return match ? match[3] + '.' + match[2] + '.' + match[1] : null;
 }
 
@@ -80,9 +80,9 @@ export function formatCurrency(amount) {
 
 export function formatCurrencyWithUnit(amount, einheit) {
   if (amount == null) return '\u2014';
-  var currency = 'CHF';
+  let currency = 'CHF';
   if (einheit) {
-    var parts = einheit.split('/');
+    const parts = einheit.split('/');
     if (parts.length > 0) currency = parts[0].trim();
   }
   try {
@@ -98,9 +98,20 @@ export function formatCurrencyWithUnit(amount, einheit) {
   }
 }
 
+export function getStatusClassName(status) {
+  if (!status) return 'status-inactive';
+  switch (status) {
+    case 'Aktiv': return 'status-active';
+    case 'In Renovation': return 'status-renovation';
+    case 'In Planung': return 'status-planning';
+    case 'Verkauft': return 'status-inactive';
+    default: return 'status-inactive';
+  }
+}
+
 export function getContractStatusClassName(status) {
   if (!status) return '';
-  var s = status.toLowerCase();
+  const s = status.toLowerCase();
   if (s === 'aktiv') return 'status-active';
   if (s === 'gek\u00FCndigt') return 'status-terminated';
   if (s === 'ausgelaufen') return 'status-expired';
@@ -108,8 +119,8 @@ export function getContractStatusClassName(status) {
 }
 
 export function downloadBlob(blob, filename) {
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
   a.href = url;
   a.download = filename;
   document.body.appendChild(a);

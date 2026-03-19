@@ -1,11 +1,11 @@
-// Swisstopo layer management and feature identification
+// Swisstopo layer management, feature identification, and Geokatalog
 
 import { state } from './state.js';
-import { escapeHtml, escapeForJs } from './utils.js';
-import { showToast } from './toast.js';
+import { escapeHtml } from './utils.js';
+import { showToast } from './ui.js';
+import { updateMenuTogglePositionDebounced } from './ui.js';
 import { t } from './i18n.js';
 import { statusColors } from './config.js';
-import { updateGeokatalogCheckboxes } from './geokatalog.js';
 
 // ===== SWISSTOPO LAYER MANAGEMENT =====
 
@@ -17,14 +17,14 @@ export function addSwisstopoLayer(layerId, title, silent) {
 
   // Validate layer ID format (alphanumeric, dots, hyphens, underscores only)
   if (!/^[a-zA-Z0-9._-]+$/.test(layerId)) {
-    if (!silent) showToast({ type: 'error', title: 'Fehler', message: 'Ungültige Layer-ID.' });
+    if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.error.invalidId') });
     return;
   }
 
   // Check if layer already added
-  var existing = state.activeSwisstopoLayers.find(function(l) { return l.id === layerId; });
+  const existing = state.activeSwisstopoLayers.find(function(l) { return l.id === layerId; });
   if (existing) {
-    if (!silent) showToast({ type: 'info', title: 'Hinweis', message: 'Layer "' + title + '" ist bereits aktiv.' });
+    if (!silent) showToast({ type: 'info', title: t('swisstopo.notice'), message: t('swisstopo.layer.alreadyActive', {title: title}) });
     return;
   }
 
@@ -35,11 +35,11 @@ export function addSwisstopoLayer(layerId, title, silent) {
   }
 
   // Create AbortController for this fetch
-  var abortController = new AbortController();
+  const abortController = new AbortController();
   state.pendingLayerFetches[layerId] = abortController;
 
   // Show loading toast
-  if (!silent) showToast({ type: 'info', title: 'Lade Layer...', message: 'Metadaten werden abgerufen.', duration: 2000 });
+  if (!silent) showToast({ type: 'info', title: t('swisstopo.loading'), message: t('swisstopo.loading.metadata'), duration: 2000 });
 
   // Fetch layer metadata to get correct format and timestamp
   fetch('https://api3.geo.admin.ch/rest/services/api/MapServer/' + layerId + '?lang=de', { signal: abortController.signal })
@@ -56,16 +56,16 @@ export function addSwisstopoLayer(layerId, title, silent) {
         return; // Layer was removed during fetch
       }
 
-      var sourceId = 'swisstopo-' + layerId;
-      var mapLayerId = 'swisstopo-layer-' + layerId;
-      var tileUrl;
-      var maxZoom = 18;
+      const sourceId = 'swisstopo-' + layerId;
+      const mapLayerId = 'swisstopo-layer-' + layerId;
+      let tileUrl;
+      let maxZoom = 18;
 
       // Check if layer supports WMTS (has format specified)
       if (metadata.format) {
         // Use WMTS (faster, pre-rendered tiles)
-        var tileFormat = metadata.format.replace('image/', '');
-        var timestamp = 'current';
+        const tileFormat = metadata.format.replace('image/', '');
+        let timestamp = 'current';
         if (metadata.timestamps && metadata.timestamps.length > 0) {
           timestamp = metadata.timestamps[0];
         }
@@ -98,13 +98,13 @@ export function addSwisstopoLayer(layerId, title, silent) {
         });
 
         // Find the layer to insert before (below highlight layer, parcels, and points)
-        var beforeLayer = null;
+        let beforeLayer = null;
         if (state.map.getLayer(identifyHighlightLayerId)) {
           beforeLayer = identifyHighlightLayerId;
         } else if (state.map.getLayer('parcels-fill')) {
           beforeLayer = 'parcels-fill';
-        } else if (state.map.getLayer('portfolio-points')) {
-          beforeLayer = 'portfolio-points';
+        } else if (state.map.getLayer('buildings-points')) {
+          beforeLayer = 'buildings-points';
         }
 
         // Add raster layer
@@ -118,7 +118,7 @@ export function addSwisstopoLayer(layerId, title, silent) {
         }, beforeLayer);
       } catch (e) {
         console.error('Fehler beim Hinzufügen des Layers zur Karte:', e);
-        if (!silent) showToast({ type: 'error', title: 'Fehler', message: 'Layer "' + (title || layerId) + '" konnte nicht zur Karte hinzugefügt werden.' });
+        if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.layer.addFailed', {title: title || layerId}) });
         return;
       }
 
@@ -137,7 +137,7 @@ export function addSwisstopoLayer(layerId, title, silent) {
       renderActiveLayersList();
       updateUrlWithLayers();
 
-      if (!silent) showToast({ type: 'success', title: 'Layer hinzugefügt', message: '"' + (title || layerId) + '" wurde zur Karte hinzugefügt.' });
+      if (!silent) showToast({ type: 'success', title: t('swisstopo.layer.added'), message: t('swisstopo.layer.addedMessage', {title: title || layerId}) });
     })
     .catch(function(e) {
       // Clean up pending fetch reference
@@ -147,7 +147,7 @@ export function addSwisstopoLayer(layerId, title, silent) {
       if (e.name === 'AbortError') return;
 
       console.error('Fehler beim Hinzufügen des Layers:', e);
-      if (!silent) showToast({ type: 'error', title: 'Fehler', message: 'Layer "' + (title || layerId) + '" konnte nicht geladen werden.' });
+      if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.layer.loadFailed', {title: title || layerId}) });
     });
 }
 
@@ -158,10 +158,10 @@ export function removeSwisstopoLayer(layerId) {
     delete state.pendingLayerFetches[layerId];
   }
 
-  var layerIndex = state.activeSwisstopoLayers.findIndex(function(l) { return l.id === layerId; });
+  const layerIndex = state.activeSwisstopoLayers.findIndex(function(l) { return l.id === layerId; });
   if (layerIndex === -1) return;
 
-  var layer = state.activeSwisstopoLayers[layerIndex];
+  const layer = state.activeSwisstopoLayers[layerIndex];
 
   try {
     if (state.map.getLayer(layer.mapLayerId)) {
@@ -178,11 +178,11 @@ export function removeSwisstopoLayer(layerId) {
   renderActiveLayersList();
   updateUrlWithLayers();
 
-  showToast({ type: 'info', title: 'Layer entfernt', message: '"' + layer.title + '" wurde entfernt.' });
+  showToast({ type: 'info', title: t('swisstopo.layer.removed'), message: t('swisstopo.layer.removedMessage', {title: layer.title}) });
 }
 
 export function toggleSwisstopoLayerVisibility(layerId) {
-  var layer = state.activeSwisstopoLayers.find(function(l) { return l.id === layerId; });
+  const layer = state.activeSwisstopoLayers.find(function(l) { return l.id === layerId; });
   if (!layer) return;
 
   // Check if map layer exists
@@ -191,8 +191,8 @@ export function toggleSwisstopoLayerVisibility(layerId) {
     return;
   }
 
-  var visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
-  var newVisibility = visibility === 'none' ? 'visible' : 'none';
+  const visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
+  const newVisibility = visibility === 'none' ? 'visible' : 'none';
   state.map.setLayoutProperty(layer.mapLayerId, 'visibility', newVisibility);
 
   // Track visibility state for style change restoration
@@ -202,34 +202,33 @@ export function toggleSwisstopoLayerVisibility(layerId) {
 }
 
 export function renderActiveLayersList() {
-  var container = document.getElementById('external-layers-list');
+  const container = document.getElementById('external-layers-list');
   if (!container) return;
 
   if (state.activeSwisstopoLayers.length === 0) {
-    container.innerHTML = '<div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>';
+    container.innerHTML = '<div class="active-layers-empty">' + t('swisstopo.noActiveLayers') + '</div>';
     return;
   }
 
-  var html = '';
+  let html = '';
   state.activeSwisstopoLayers.forEach(function(layer) {
     // Check if map layer exists, fall back to tracked visibility state
-    var isVisible;
+    let isVisible;
     if (state.map.getLayer(layer.mapLayerId)) {
-      var visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
+      const visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
       isVisible = visibility !== 'none';
     } else {
       isVisible = layer.visible !== false;
     }
-    var checkedAttr = isVisible ? 'checked' : '';
-    var escapedId = escapeForJs(layer.id);
+    const checkedAttr = isVisible ? 'checked' : '';
 
     html += '<div class="active-layer-item">' +
-      '<button class="active-layer-remove" onclick="removeSwisstopoLayer(\'' + escapedId + '\')" title="Entfernen">' +
+      '<button class="active-layer-remove" data-action="removeSwisstopoLayer" data-layer-id="' + escapeHtml(layer.id) + '" title="Entfernen">' +
         '<span class="material-symbols-outlined">close</span>' +
       '</button>' +
-      '<input type="checkbox" class="active-layer-checkbox" ' + checkedAttr + ' onchange="toggleSwisstopoLayerVisibility(\'' + escapedId + '\')" title="' + (isVisible ? 'Ausblenden' : 'Einblenden') + '">' +
+      '<input type="checkbox" class="active-layer-checkbox" ' + checkedAttr + ' data-action="toggleLayerVisibility" data-layer-id="' + escapeHtml(layer.id) + '" title="' + (isVisible ? 'Ausblenden' : 'Einblenden') + '">' +
       '<span class="active-layer-title">' + escapeHtml(layer.title) + '</span>' +
-      '<button class="active-layer-info" onclick="showLayerInfo(\'' + escapedId + '\')" title="Layer-Informationen">' +
+      '<button class="active-layer-info" data-action="showLayerInfo" data-layer-id="' + escapeHtml(layer.id) + '" title="Layer-Informationen">' +
         '<span class="material-symbols-outlined">info</span>' +
       '</button>' +
     '</div>';
@@ -260,13 +259,13 @@ export function readdSwisstopoLayers() {
       });
 
       // Find the layer to insert before
-      var beforeLayer = null;
+      let beforeLayer = null;
       if (state.map.getLayer(identifyHighlightLayerId)) {
         beforeLayer = identifyHighlightLayerId;
       } else if (state.map.getLayer('parcels-fill')) {
         beforeLayer = 'parcels-fill';
-      } else if (state.map.getLayer('portfolio-points')) {
-        beforeLayer = 'portfolio-points';
+      } else if (state.map.getLayer('buildings-points')) {
+        beforeLayer = 'buildings-points';
       }
 
       // Re-add raster layer with preserved visibility state
@@ -291,9 +290,9 @@ export function readdSwisstopoLayers() {
 }
 
 export function updateUrlWithLayers() {
-  var url = new URL(window.location);
+  const url = new URL(window.location);
   if (state.activeSwisstopoLayers.length > 0) {
-    var layerIds = state.activeSwisstopoLayers.map(function(l) { return l.id; });
+    const layerIds = state.activeSwisstopoLayers.map(function(l) { return l.id; });
     url.searchParams.set('bgLayers', layerIds.join(','));
   } else {
     url.searchParams.delete('bgLayers');
@@ -302,14 +301,14 @@ export function updateUrlWithLayers() {
 }
 
 export function loadLayersFromUrl() {
-  var urlParams = new URLSearchParams(window.location.search);
-  var bgLayers = urlParams.get('bgLayers');
+  const urlParams = new URLSearchParams(window.location.search);
+  const bgLayers = urlParams.get('bgLayers');
   if (bgLayers) {
-    var layerIds = bgLayers.split(',');
+    const layerIds = bgLayers.split(',');
     // Limit to max 10 layers from URL to prevent abuse
-    var maxLayers = Math.min(layerIds.length, 10);
-    for (var i = 0; i < maxLayers; i++) {
-      var layerId = layerIds[i].trim();
+    const maxLayers = Math.min(layerIds.length, 10);
+    for (let i = 0; i < maxLayers; i++) {
+      const layerId = layerIds[i].trim();
       if (layerId) {
         // Pass silent=true to suppress toasts when loading from URL
         // Layer ID validation happens inside addSwisstopoLayer
@@ -321,9 +320,9 @@ export function loadLayersFromUrl() {
 
 // ===== SWISSTOPO FEATURE IDENTIFICATION =====
 
-export var identifyHighlightSourceId = 'swisstopo-identify-highlight';
-export var identifyHighlightLayerId = 'swisstopo-identify-highlight-layer';
-export var identifyHighlightOutlineLayerId = 'swisstopo-identify-highlight-outline';
+export const identifyHighlightSourceId = 'swisstopo-identify-highlight';
+export const identifyHighlightLayerId = 'swisstopo-identify-highlight-layer';
+export const identifyHighlightOutlineLayerId = 'swisstopo-identify-highlight-outline';
 
 export function initIdentifyHighlightLayer() {
   // Add empty source for highlighting identified features
@@ -334,11 +333,11 @@ export function initIdentifyHighlightLayer() {
     });
 
     // Find the layer to insert before (should be above Swisstopo layers, below parcels/points)
-    var beforeLayer = null;
+    let beforeLayer = null;
     if (state.map.getLayer('parcels-fill')) {
       beforeLayer = 'parcels-fill';
-    } else if (state.map.getLayer('portfolio-points')) {
-      beforeLayer = 'portfolio-points';
+    } else if (state.map.getLayer('buildings-points')) {
+      beforeLayer = 'buildings-points';
     }
 
     // Add fill layer for polygons
@@ -376,7 +375,7 @@ export function clearIdentifyHighlight() {
   if (state.identifiedFeaturePopup) {
     // Store reference and null it BEFORE removing to prevent infinite loop
     // (popup.remove() fires 'close' event which would call this function again)
-    var popup = state.identifiedFeaturePopup;
+    const popup = state.identifiedFeaturePopup;
     state.identifiedFeaturePopup = null;
     popup.remove();
   }
@@ -387,8 +386,8 @@ export function identifySwisstopoFeatures(lngLat) {
   if (state.activeSwisstopoLayers.length === 0) return;
 
   // Get visible layer IDs
-  var visibleLayers = state.activeSwisstopoLayers.filter(function(layer) {
-    var visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
+  const visibleLayers = state.activeSwisstopoLayers.filter(function(layer) {
+    const visibility = state.map.getLayoutProperty(layer.mapLayerId, 'visibility');
     return visibility !== 'none';
   }).map(function(layer) {
     return layer.id;
@@ -399,7 +398,7 @@ export function identifySwisstopoFeatures(lngLat) {
   // Build the identify URL
   // Use tolerance=0 for exact point-in-polygon intersection
   // Per API docs: tolerance=0 with mapExtent=0,0,0,0 and imageDisplay=0,0,0 does exact intersection
-  var url = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?' +
+  const url = 'https://api3.geo.admin.ch/rest/services/all/MapServer/identify?' +
     'geometry=' + lngLat.lng + ',' + lngLat.lat +
     '&geometryType=esriGeometryPoint' +
     '&geometryFormat=geojson' +
@@ -433,14 +432,14 @@ export function showIdentifiedFeature(result, lngLat) {
   // Remove existing popup FIRST (before setting new geometry)
   // This prevents the old popup's close event from clearing our new geometry
   if (state.identifiedFeaturePopup) {
-    var oldPopup = state.identifiedFeaturePopup;
+    const oldPopup = state.identifiedFeaturePopup;
     state.identifiedFeaturePopup = null;
     oldPopup.remove();
   }
 
   // Now highlight the geometry (after old popup is gone)
   if (result.geometry) {
-    var feature = {
+    const feature = {
       type: 'Feature',
       geometry: result.geometry,
       properties: result.properties || {}
@@ -455,25 +454,25 @@ export function showIdentifiedFeature(result, lngLat) {
   }
 
   // Build popup content
-  var props = result.properties || result.attributes || {};
-  var layerName = result.layerName || result.layerBodId || 'Feature';
+  const props = result.properties || result.attributes || {};
+  const layerName = result.layerName || result.layerBodId || 'Feature';
 
-  var html = '<div class="identify-popup">';
+  let html = '<div class="identify-popup">';
   html += '<div class="identify-popup-header">' + escapeHtml(layerName) + '</div>';
   html += '<div class="identify-popup-content">';
 
   // Display properties (limit to first 8 for readability)
-  var propCount = 0;
-  for (var key in props) {
+  let propCount = 0;
+  for (const key in props) {
     if (props.hasOwnProperty(key) && propCount < 8) {
-      var value = props[key];
+      const value = props[key];
       // Skip internal/technical fields
       if (key.startsWith('_') || key === 'id' || key === 'featureId') continue;
       // Skip null/undefined values
       if (value === null || value === undefined || value === '') continue;
 
       // Format the key (remove underscores, capitalize)
-      var displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
+      const displayKey = key.replace(/_/g, ' ').replace(/\b\w/g, function(l) { return l.toUpperCase(); });
 
       html += '<div class="identify-prop">';
       html += '<span class="identify-prop-key">' + escapeHtml(displayKey) + ':</span> ';
@@ -506,15 +505,15 @@ export function showIdentifiedFeature(result, lngLat) {
 
 // ===== LAYER INFO MODAL =====
 
-var layerInfoModal = document.getElementById('layer-info-modal');
-var layerInfoContent = document.getElementById('layer-info-content');
-var layerInfoCloseBtn = layerInfoModal ? layerInfoModal.querySelector('.layer-info-modal-close') : null;
+const layerInfoModal = document.getElementById('layer-info-modal');
+const layerInfoContent = document.getElementById('layer-info-content');
+const layerInfoCloseBtn = layerInfoModal ? layerInfoModal.querySelector('.layer-info-modal-close') : null;
 
 export function showLayerInfo(layerId) {
   if (!layerInfoModal || !layerInfoContent || !layerId) return;
 
   // Show modal with loading state
-  layerInfoContent.innerHTML = '<div class="layer-info-loading">Lade Informationen...</div>';
+  layerInfoContent.innerHTML = '<div class="layer-info-loading">' + t('swisstopo.loadingInfo') + '</div>';
   layerInfoModal.classList.add('show');
 
   // Fetch layer legend/info
@@ -525,7 +524,7 @@ export function showLayerInfo(layerId) {
     })
     .then(function(html) {
       // Sanitize API HTML: parse in a detached document, strip scripts and event handlers
-      var doc = new DOMParser().parseFromString(html, 'text/html');
+      const doc = new DOMParser().parseFromString(html, 'text/html');
       doc.querySelectorAll('script, iframe, object, embed, form').forEach(function(el) { el.remove(); });
       doc.querySelectorAll('*').forEach(function(el) {
         Array.from(el.attributes).forEach(function(attr) {
@@ -534,12 +533,12 @@ export function showLayerInfo(layerId) {
           }
         });
       });
-      var sanitized = doc.body ? doc.body.innerHTML : '';
+      const sanitized = doc.body ? doc.body.innerHTML : '';
       layerInfoContent.innerHTML = '<div class="layer-info-api-content">' + sanitized + '</div>';
     })
     .catch(function(error) {
       console.error('Fehler beim Laden der Layer-Informationen:', error);
-      layerInfoContent.innerHTML = '<div class="layer-info-loading">Informationen konnten nicht geladen werden.</div>';
+      layerInfoContent.innerHTML = '<div class="layer-info-loading">' + t('swisstopo.loadInfoFailed') + '</div>';
     });
 }
 
@@ -572,14 +571,14 @@ document.addEventListener('keydown', function(e) {
 });
 
 // Internal layer metadata
-var internalLayerMeta = {
+const internalLayerMeta = {
   buildings: {
     title: 'Gebäude (Bundesamt für Bauten und Logistik BBL)',
     description: 'Interner Datensatz des BBL-Immobilienportfolios. Enthält sämtliche Gebäude mit Standort, Nutzungstyp, Eigentumsverhältnissen, Baujahr und weiteren Attributen.',
     source: 'BBL Immobilienportfolio',
     geometryType: 'Point',
     format: 'GeoJSON',
-    dataKey: 'portfolioData'
+    dataKey: 'buildingsData'
   },
   parcels: {
     title: 'Grundstücke (Bundesamt für Bauten und Logistik BBL)',
@@ -626,13 +625,13 @@ export function buildLegendHTML(layerKey) {
 export function showInternalLayerInfo(layerKey) {
   if (!layerInfoModal || !layerInfoContent) return;
 
-  var meta = internalLayerMeta[layerKey];
+  const meta = internalLayerMeta[layerKey];
   if (!meta) return;
 
-  var today = new Date();
-  var datenstand = today.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const today = new Date();
+  const datenstand = today.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
 
-  var html = '<div class="legend-container">' +
+  const html = '<div class="legend-container">' +
     '<div class="bod-title">' + escapeHtml(meta.title) + '</div>' +
     '<div class="legend-abstract">' + escapeHtml(meta.description) + '</div>' +
     buildLegendHTML(layerKey) +
@@ -652,8 +651,138 @@ export function showInternalLayerInfo(layerKey) {
   layerInfoModal.classList.add('show');
 }
 
-// Global bindings for onclick handlers in HTML strings
-window.removeSwisstopoLayer = removeSwisstopoLayer;
-window.toggleSwisstopoLayerVisibility = toggleSwisstopoLayerVisibility;
-window.showLayerInfo = showLayerInfo;
-window.showInternalLayerInfo = showInternalLayerInfo;
+// ===== GEOKATALOG =====
+
+// Sync Geokatalog checkboxes with active layers
+export function updateGeokatalogCheckboxes() {
+  const checkboxes = document.querySelectorAll('.node-checkbox[data-layer-id]');
+  checkboxes.forEach(function(checkbox) {
+    const layerId = checkbox.getAttribute('data-layer-id');
+    const isActive = state.activeSwisstopoLayers.some(function(l) { return l.id === layerId; });
+    checkbox.checked = isActive;
+  });
+}
+
+export function loadGeokatalog() {
+  if (state.geokatalogLoaded) return;
+
+  const treeContainer = document.getElementById('geokatalog-tree');
+
+  fetch('https://api3.geo.admin.ch/rest/services/ech/CatalogServer?lang=de')
+    .then(function(response) {
+      if (!response.ok) throw new Error('API nicht erreichbar');
+      return response.json();
+    })
+    .then(function(data) {
+      state.geokatalogLoaded = true;
+      treeContainer.innerHTML = '';
+
+      if (data.results && data.results.root && data.results.root.children) {
+        renderCatalogTree(data.results.root.children, treeContainer);
+      } else {
+        treeContainer.innerHTML = '<div class="geokatalog-error">Keine Daten verfügbar</div>';
+      }
+
+      updateMenuTogglePositionDebounced();
+    })
+    .catch(function(error) {
+      console.error('Geokatalog Fehler:', error);
+      treeContainer.innerHTML = '<div class="geokatalog-error">Fehler beim Laden des Katalogs</div>';
+    });
+}
+
+export function renderCatalogTree(items, container) {
+  items.forEach(function(item) {
+    const itemEl = document.createElement('div');
+    itemEl.className = 'catalog-item';
+
+    const hasChildren = item.children && item.children.length > 0;
+
+    const nodeEl = document.createElement('div');
+    nodeEl.className = 'catalog-node' + (hasChildren ? '' : ' leaf');
+
+    if (hasChildren) {
+      // Category node with arrow
+      const arrowEl = document.createElement('span');
+      arrowEl.className = 'node-arrow';
+      arrowEl.innerHTML = '<span class="material-symbols-outlined">chevron_right</span>';
+      nodeEl.appendChild(arrowEl);
+    } else {
+      // Leaf node with checkbox (native input for reliable checked state)
+      const checkboxEl = document.createElement('input');
+      checkboxEl.type = 'checkbox';
+      checkboxEl.className = 'node-checkbox';
+      // Store layer ID for later reference
+      if (item.layerBodId) {
+        checkboxEl.setAttribute('data-layer-id', item.layerBodId);
+        // Check if layer is already active
+        const isActive = state.activeSwisstopoLayers.some(function(l) { return l.id === item.layerBodId; });
+        if (isActive) {
+          checkboxEl.checked = true;
+        }
+      }
+      nodeEl.appendChild(checkboxEl);
+    }
+
+    const labelEl = document.createElement('span');
+    labelEl.className = 'node-label';
+    labelEl.textContent = item.label || item.category || 'Unbekannt';
+    nodeEl.appendChild(labelEl);
+
+    // Add info icon to leaf nodes
+    if (!hasChildren && item.layerBodId) {
+      const infoEl = document.createElement('span');
+      infoEl.className = 'node-info';
+      infoEl.innerHTML = '<span class="material-symbols-outlined">info</span>';
+      infoEl.setAttribute('data-layer-id', item.layerBodId);
+      nodeEl.appendChild(infoEl);
+
+      // Click on info icon shows layer info modal
+      infoEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const lid = this.getAttribute('data-layer-id');
+        if (lid) showLayerInfo(lid);
+      });
+    }
+
+    itemEl.appendChild(nodeEl);
+
+    if (hasChildren) {
+      const childrenEl = document.createElement('div');
+      childrenEl.className = 'catalog-children';
+      renderCatalogTree(item.children, childrenEl);
+      itemEl.appendChild(childrenEl);
+
+      nodeEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        itemEl.classList.toggle('expanded');
+        nodeEl.classList.toggle('expanded');
+        updateMenuTogglePositionDebounced();
+      });
+    } else {
+      // Click on leaf node toggles layer
+      const layerId = item.layerBodId;
+      const layerTitle = item.label || item.category || layerId;
+
+      nodeEl.addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Don't toggle if clicking on info icon
+        if (e.target.closest('.node-info')) return;
+        if (!layerId) return;
+
+        const checkboxEl = nodeEl.querySelector('.node-checkbox');
+        const isActive = state.activeSwisstopoLayers.some(function(l) { return l.id === layerId; });
+
+        if (isActive) {
+          removeSwisstopoLayer(layerId);
+          if (checkboxEl) checkboxEl.checked = false;
+        } else {
+          addSwisstopoLayer(layerId, layerTitle, false);
+          if (checkboxEl) checkboxEl.checked = true;
+        }
+      });
+    }
+
+    container.appendChild(itemEl);
+  });
+}

@@ -1,17 +1,17 @@
 import { state } from './state.js';
-import { showToast } from './toast.js';
+import { showToast } from './ui.js';
 
 // ===== MEASURE DISTANCE FEATURE (Google Maps Style) =====
 
 // Haversine formula to calculate distance between two points
 function haversineDistance(lat1, lon1, lat2, lon2) {
-  var R = 6371000; // Earth's radius in meters
-  var dLat = (lat2 - lat1) * Math.PI / 180;
-  var dLon = (lon2 - lon1) * Math.PI / 180;
-  var a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+  const R = 6371000; // Earth's radius in meters
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
           Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
           Math.sin(dLon / 2) * Math.sin(dLon / 2);
-  var c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   return R * c;
 }
 
@@ -19,20 +19,20 @@ function haversineDistance(lat1, lon1, lat2, lon2) {
 function calculatePolygonArea(points) {
   if (points.length < 3) return 0;
 
-  var n = points.length;
-  var area = 0;
+  const n = points.length;
+  let area = 0;
 
   // Convert to approximate meters (at the centroid latitude)
-  var avgLat = points.reduce(function(sum, p) { return sum + p[1]; }, 0) / n;
-  var latScale = 111320; // meters per degree latitude
-  var lonScale = 111320 * Math.cos(avgLat * Math.PI / 180); // meters per degree longitude
+  const avgLat = points.reduce(function(sum, p) { return sum + p[1]; }, 0) / n;
+  const latScale = 111320; // meters per degree latitude
+  const lonScale = 111320 * Math.cos(avgLat * Math.PI / 180); // meters per degree longitude
 
-  for (var i = 0; i < n; i++) {
-    var j = (i + 1) % n;
-    var xi = points[i][0] * lonScale;
-    var yi = points[i][1] * latScale;
-    var xj = points[j][0] * lonScale;
-    var yj = points[j][1] * latScale;
+  for (let i = 0; i < n; i++) {
+    const j = (i + 1) % n;
+    const xi = points[i][0] * lonScale;
+    const yi = points[i][1] * latScale;
+    const xj = points[j][0] * lonScale;
+    const yj = points[j][1] * latScale;
     area += xi * yj;
     area -= xj * yi;
   }
@@ -51,23 +51,23 @@ function formatDistance(meters) {
 // Format area for map measurement tool display
 function formatMeasureArea(sqMeters) {
   if (sqMeters >= 1000000) {
-    return (sqMeters / 1000000).toFixed(2) + ' km²';
+    return (sqMeters / 1000000).toFixed(2) + ' km\u00B2';
   } else if (sqMeters >= 10000) {
     return (sqMeters / 10000).toFixed(2) + ' ha';
   }
-  return Math.round(sqMeters) + ' m²';
+  return Math.round(sqMeters) + ' m\u00B2';
 }
 
 // Create a marker element for measurement points
 function createMeasureMarkerElement() {
-  var el = document.createElement('div');
+  const el = document.createElement('div');
   el.className = 'measure-marker';
   return el;
 }
 
 // Create a label element for distance display on segments
 function createDistanceLabel(distance) {
-  var el = document.createElement('div');
+  const el = document.createElement('div');
   el.className = 'measure-label';
   el.textContent = formatDistance(distance);
   return el;
@@ -75,9 +75,9 @@ function createDistanceLabel(distance) {
 
 // Add a point to the measurement polyline
 function addMeasurePoint(lngLat, index) {
-  var measureState = state.measureState;
-  var map = state.map;
-  var point = [lngLat.lng, lngLat.lat];
+  const measureState = state.measureState;
+  const map = state.map;
+  const point = [lngLat.lng, lngLat.lat];
 
   if (index === undefined) {
     measureState.points.push(point);
@@ -88,8 +88,8 @@ function addMeasurePoint(lngLat, index) {
 
   // Create marker if new point
   if (index >= measureState.markers.length) {
-    var markerEl = createMeasureMarkerElement();
-    var marker = new maplibregl.Marker({
+    const markerEl = createMeasureMarkerElement();
+    const marker = new maplibregl.Marker({
       element: markerEl,
       draggable: true,
       anchor: 'center'
@@ -102,7 +102,7 @@ function addMeasurePoint(lngLat, index) {
 
     // Drag event to update point position
     marker.on('drag', function() {
-      var newLngLat = marker.getLngLat();
+      const newLngLat = marker.getLngLat();
       measureState.points[marker._measureIndex] = [newLngLat.lng, newLngLat.lat];
       updateMeasureLine();
       updateMeasureLabels();
@@ -112,7 +112,7 @@ function addMeasurePoint(lngLat, index) {
     // Click on marker: close polygon if first point, delete otherwise
     markerEl.addEventListener('click', function(e) {
       e.stopPropagation();
-      var clickedIndex = marker._measureIndex;
+      const clickedIndex = marker._measureIndex;
 
       // If clicking on first point with 3+ points, close polygon
       if (clickedIndex === 0 && measureState.points.length >= 3 && !measureState.isClosed) {
@@ -139,7 +139,7 @@ function addMeasurePoint(lngLat, index) {
 
 // Remove a point from the measurement polyline
 function removeMeasurePoint(index) {
-  var measureState = state.measureState;
+  const measureState = state.measureState;
 
   if (measureState.points.length <= 1) {
     clearMeasurement();
@@ -170,16 +170,16 @@ function removeMeasurePoint(index) {
 
 // Update the measurement line on the map
 function updateMeasureLine() {
-  var measureState = state.measureState;
-  var map = state.map;
-  var coordinates = measureState.points.slice();
+  const measureState = state.measureState;
+  const map = state.map;
+  const coordinates = measureState.points.slice();
 
   // Close polygon if needed
   if (measureState.isClosed && coordinates.length >= 3) {
     coordinates.push(coordinates[0]);
   }
 
-  var geojsonData = {
+  const geojsonData = {
     type: 'Feature',
     geometry: {
       type: 'LineString',
@@ -187,7 +187,7 @@ function updateMeasureLine() {
     }
   };
 
-  var source = map.getSource(measureState.lineSourceId);
+  const source = map.getSource(measureState.lineSourceId);
   if (source) {
     // Update data in-place — much cheaper than remove/add
     if (coordinates.length < 2) {
@@ -220,28 +220,28 @@ function updateMeasureLine() {
 
 // Update distance labels on segments
 function updateMeasureLabels() {
-  var measureState = state.measureState;
-  var map = state.map;
+  const measureState = state.measureState;
+  const map = state.map;
 
   // Remove existing labels
   measureState.labelMarkers.forEach(function(m) { m.remove(); });
   measureState.labelMarkers = [];
 
-  var points = measureState.points;
+  const points = measureState.points;
   if (points.length < 2) return;
 
   // Add label for each segment
-  for (var i = 0; i < points.length - 1; i++) {
-    var p1 = points[i];
-    var p2 = points[i + 1];
-    var distance = haversineDistance(p1[1], p1[0], p2[1], p2[0]);
+  for (let i = 0; i < points.length - 1; i++) {
+    const p1 = points[i];
+    const p2 = points[i + 1];
+    const distance = haversineDistance(p1[1], p1[0], p2[1], p2[0]);
 
     // Midpoint of segment
-    var midLng = (p1[0] + p2[0]) / 2;
-    var midLat = (p1[1] + p2[1]) / 2;
+    const midLng = (p1[0] + p2[0]) / 2;
+    const midLat = (p1[1] + p2[1]) / 2;
 
-    var labelEl = createDistanceLabel(distance);
-    var labelMarker = new maplibregl.Marker({
+    const labelEl = createDistanceLabel(distance);
+    const labelMarker = new maplibregl.Marker({
       element: labelEl,
       anchor: 'center'
     })
@@ -253,15 +253,15 @@ function updateMeasureLabels() {
 
   // Add label for closing segment if polygon
   if (measureState.isClosed && points.length >= 3) {
-    var pLast = points[points.length - 1];
-    var pFirst = points[0];
-    var closingDistance = haversineDistance(pLast[1], pLast[0], pFirst[1], pFirst[0]);
+    const pLast = points[points.length - 1];
+    const pFirst = points[0];
+    const closingDistance = haversineDistance(pLast[1], pLast[0], pFirst[1], pFirst[0]);
 
-    var closingMidLng = (pLast[0] + pFirst[0]) / 2;
-    var closingMidLat = (pLast[1] + pFirst[1]) / 2;
+    const closingMidLng = (pLast[0] + pFirst[0]) / 2;
+    const closingMidLat = (pLast[1] + pFirst[1]) / 2;
 
-    var closingLabelEl = createDistanceLabel(closingDistance);
-    var closingLabelMarker = new maplibregl.Marker({
+    const closingLabelEl = createDistanceLabel(closingDistance);
+    const closingLabelMarker = new maplibregl.Marker({
       element: closingLabelEl,
       anchor: 'center'
     })
@@ -274,15 +274,15 @@ function updateMeasureLabels() {
 
 // Update the measurement display panel
 function updateMeasureDisplay() {
-  var measureState = state.measureState;
-  var measureTotalDistance = document.getElementById('measure-total-distance');
-  var measureTotalArea = document.getElementById('measure-total-area');
-  var measureAreaRow = document.getElementById('measure-area-row');
-  var points = measureState.points;
-  var totalDistance = 0;
+  const measureState = state.measureState;
+  const measureTotalDistance = document.getElementById('measure-total-distance');
+  const measureTotalArea = document.getElementById('measure-total-area');
+  const measureAreaRow = document.getElementById('measure-area-row');
+  const points = measureState.points;
+  let totalDistance = 0;
 
   // Calculate total distance
-  for (var i = 0; i < points.length - 1; i++) {
+  for (let i = 0; i < points.length - 1; i++) {
     totalDistance += haversineDistance(
       points[i][1], points[i][0],
       points[i + 1][1], points[i + 1][0]
@@ -301,7 +301,7 @@ function updateMeasureDisplay() {
 
   // Calculate and show area if polygon
   if (measureState.isClosed && points.length >= 3) {
-    var area = calculatePolygonArea(points);
+    const area = calculatePolygonArea(points);
     measureTotalArea.textContent = formatMeasureArea(area);
     measureAreaRow.style.display = 'flex';
   } else {
@@ -311,27 +311,27 @@ function updateMeasureDisplay() {
 
 // Check if a click is near the first point (to close polygon)
 function isNearFirstPoint(lngLat) {
-  var measureState = state.measureState;
-  var map = state.map;
+  const measureState = state.measureState;
+  const map = state.map;
 
   if (measureState.points.length < 3) return false;
 
-  var firstPoint = measureState.points[0];
-  var distance = haversineDistance(lngLat.lat, lngLat.lng, firstPoint[1], firstPoint[0]);
+  const firstPoint = measureState.points[0];
+  const distance = haversineDistance(lngLat.lat, lngLat.lng, firstPoint[1], firstPoint[0]);
 
   // Within visible pixel distance
-  var pixelDistance = map.project(lngLat).dist(map.project({ lng: firstPoint[0], lat: firstPoint[1] }));
+  const pixelDistance = map.project(lngLat).dist(map.project({ lng: firstPoint[0], lat: firstPoint[1] }));
 
   return pixelDistance < 15;
 }
 
 // Start measurement mode
 function startMeasurement() {
-  var measureState = state.measureState;
-  var map = state.map;
-  var measureDistanceDisplay = document.getElementById('measure-distance-display');
-  var measureTotalDistance = document.getElementById('measure-total-distance');
-  var measureAreaRow = document.getElementById('measure-area-row');
+  const measureState = state.measureState;
+  const map = state.map;
+  const measureDistanceDisplay = document.getElementById('measure-distance-display');
+  const measureTotalDistance = document.getElementById('measure-total-distance');
+  const measureAreaRow = document.getElementById('measure-area-row');
 
   measureState.active = true;
   measureState.points = [];
@@ -348,9 +348,9 @@ function startMeasurement() {
 
 // Clear all measurement
 function clearMeasurement() {
-  var measureState = state.measureState;
-  var map = state.map;
-  var measureDistanceDisplay = document.getElementById('measure-distance-display');
+  const measureState = state.measureState;
+  const map = state.map;
+  const measureDistanceDisplay = document.getElementById('measure-distance-display');
 
   measureState.active = false;
   measureState.isClosed = false;
@@ -380,14 +380,14 @@ function clearMeasurement() {
 
 // Initialize measurement: set up map click handler and UI bindings
 function initMeasure() {
-  var map = state.map;
-  var measureDistanceClose = document.getElementById('measure-distance-close');
-  var contextMenuMeasure = document.getElementById('context-menu-measure');
+  const map = state.map;
+  const measureDistanceClose = document.getElementById('measure-distance-close');
+  const contextMenuMeasure = document.getElementById('context-menu-measure');
 
   // Context menu - toggle measurement (start or clear)
   contextMenuMeasure.addEventListener('click', function() {
     // Hide context menu via DOM directly (avoids circular import)
-    var contextMenu = document.getElementById('map-context-menu');
+    const contextMenu = document.getElementById('map-context-menu');
     if (contextMenu) contextMenu.classList.remove('show');
 
     if (state.measureState.active) {
@@ -405,7 +405,7 @@ function initMeasure() {
   // Map click handler for measurement mode
   map.on('click', function(e) {
     // Hide context menu via DOM directly
-    var contextMenu = document.getElementById('map-context-menu');
+    const contextMenu = document.getElementById('map-context-menu');
     if (contextMenu) contextMenu.classList.remove('show');
 
     if (!state.measureState.active) return;
