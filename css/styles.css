@@ -2893,7 +2893,6 @@ body.detail-active #detail-view {
 /* ===== FOOTER ===== */
 #footer {
   background: var(--grey-100);
-  border-top: 1px solid var(--grey-300);
   padding: var(--space-1) var(--space-4);
   font-size: var(--text-xs);
   color: var(--grey-600);
