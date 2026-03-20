@@ -34,21 +34,18 @@
         .table-container { display: none; flex-direction: column; min-height: 0; background: #fff; border-top: 1px solid #d0d0d0; overflow: hidden; }
         .table-container.visible { display: flex; }
 
-        /* Table toggle tab (shown when table is hidden) */
-        .table-toggle-tab { display: none; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #d0d0d0; border-bottom: none; border-radius: 6px 6px 0 0; padding: 4px 16px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; z-index: 5; }
-        .table-toggle-tab:hover { background: #f0f0f0; color: #1a1a1a; }
+        /* Table toggle bar (bottom of map container) */
+        .table-toggle-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); padding: 4px 20px; background: #fff; border: 1px solid #d0d0d0; border-radius: 16px; cursor: pointer; font-size: 12px; font-weight: 600; color: #555; user-select: none; transition: all 0.15s; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+        .table-toggle-bar:hover { background: #f0f0f0; color: #1a1a1a; }
 
-        /* Table toolbar (two rows) */
-        .table-toolbar { display: flex; flex-direction: column; gap: 5px; padding: 8px 12px; background: #fafafa; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
-        .table-toolbar-row { display: flex; align-items: center; gap: 8px; }
+        /* Table toolbar */
+        .table-toolbar { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
         .table-toolbar label { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; white-space: nowrap; }
         .table-toolbar input[type="checkbox"] { accent-color: #b71c1c; }
         .table-search { padding: 5px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; outline: none; width: 160px; }
         .table-search:focus { border-color: #666; }
         .table-toolbar .spacer { flex: 1; }
         .table-selection-count { font-size: 12px; color: #888; white-space: nowrap; font-variant-numeric: tabular-nums; }
-        .table-toolbar .btn-collapse { background: none; border: 1px solid #ccc; color: #666; padding: 4px 8px; font-size: 14px; min-height: 0; width: auto; cursor: pointer; border-radius: 4px; line-height: 1; }
-        .table-toolbar .btn-collapse:hover { background: #e8e8e8; }
 
         /* Filter pills */
         .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
@@ -68,20 +65,16 @@
 
         /* Table */
         .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; }
-        .review-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+        .review-table { width: 100%; border-collapse: collapse; font-size: 12px; }
         .review-table thead { position: sticky; top: 0; z-index: 1; }
-        .review-table th { background: #f0f0f0; padding: 7px 8px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: #555; border-bottom: 2px solid #d0d0d0; cursor: pointer; user-select: none; white-space: nowrap; }
+        .review-table th { background: #f0f0f0; padding: 7px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: #555; border-bottom: 2px solid #d0d0d0; cursor: pointer; user-select: none; white-space: nowrap; }
         .review-table th:hover { background: #e4e4e4; }
         .review-table th.sort-asc::after { content: ' \25B2'; font-size: 9px; }
         .review-table th.sort-desc::after { content: ' \25BC'; font-size: 9px; }
-        .review-table th.col-check { width: 36px; cursor: default; }
-        .review-table th.col-status { width: 90px; }
-        .review-table th.col-type { width: 80px; }
-        .review-table th.col-id { width: 110px; }
-        .review-table th.col-height { width: 70px; }
-        .review-table th.col-prev { width: 60px; }
-        .review-table th.col-delta { width: 60px; }
-        .review-table td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .review-table th.col-check { cursor: default; }
+        .table-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 13px; padding: 24px; }
+        .table-empty.hidden { display: none; }
+        .review-table td { padding: 5px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
         .review-table tbody tr { cursor: pointer; transition: background 0.1s; }
         .review-table tbody tr:hover { background: #f5f9ff; }
         .review-table tbody tr.row-highlighted { background: #e3f2fd; }
@@ -238,60 +231,57 @@
                         <div class="map-status-count" id="map-status-count"></div>
                     </div>
                 </div>
-                <div class="table-toggle-tab" id="table-toggle-tab" onclick="showTable()">&#9650; Show Review Table</div>
+                <div class="table-toggle-bar" id="table-toggle-bar" onclick="toggleTable()">&#9650; Show Table</div>
             </div>
             <div class="resize-handle" id="resize-handle"></div>
             <div class="table-container" id="table-container">
                 <div class="table-toolbar">
-                    <div class="table-toolbar-row">
-                        <div class="filter-pills" id="filter-pills">
-                            <span class="filter-pill active" data-filter="all">All <span class="pill-count" id="pill-all">0</span></span>
-                            <span class="filter-pill" data-filter="new">New <span class="pill-count" id="pill-new">0</span></span>
-                            <span class="filter-pill" data-filter="improved">Improved <span class="pill-count" id="pill-improved">0</span></span>
-                            <span class="filter-pill" data-filter="attention">Attention <span class="pill-count" id="pill-attention">0</span></span>
-                        </div>
-                        <span class="spacer"></span>
-                        <label><input type="checkbox" id="table-select-recommended" checked> Recommended</label>
-                        <label><input type="checkbox" id="table-select-all"> All</label>
+                    <input type="text" class="table-search" id="table-search" placeholder="Search...">
+                    <div class="filter-pills" id="filter-pills">
+                        <span class="filter-pill active" data-filter="all">All <span class="pill-count" id="pill-all">0</span></span>
+                        <span class="filter-pill" data-filter="new">New <span class="pill-count" id="pill-new">0</span></span>
+                        <span class="filter-pill" data-filter="improved">Improved <span class="pill-count" id="pill-improved">0</span></span>
+                        <span class="filter-pill" data-filter="attention">Attention <span class="pill-count" id="pill-attention">0</span></span>
                     </div>
-                    <div class="table-toolbar-row">
-                        <input type="text" class="table-search" id="table-search" placeholder="Search ID, name...">
-                        <span class="spacer"></span>
-                        <span class="table-selection-count" id="table-selection-count">0 selected</span>
-                        <div class="dl-dropdown" id="dl-dropdown">
-                            <button class="dl-dropdown-btn" id="btn-dl-toggle">Download &#9662;</button>
-                            <div class="dl-dropdown-menu" id="dl-dropdown-menu">
-                                <button id="btn-dl-geojson">GeoJSON</button>
-                                <button id="btn-dl-csv">CSV</button>
-                            </div>
+                    <span class="spacer"></span>
+                    <span class="table-selection-count" id="table-selection-count">0 selected</span>
+                    <div class="dl-dropdown" id="dl-dropdown">
+                        <button class="dl-dropdown-btn" id="btn-dl-toggle">Download &#9662;</button>
+                        <div class="dl-dropdown-menu" id="dl-dropdown-menu">
+                            <button id="btn-dl-geojson">GeoJSON</button>
+                            <button id="btn-dl-csv">CSV</button>
                         </div>
-                        <button class="btn-collapse" id="btn-table-collapse" title="Hide table">&#9660;</button>
                     </div>
                 </div>
+                <div class="table-empty" id="table-empty">Select an area and compute heights to see results here.</div>
                 <div class="table-scroll" id="table-scroll">
                     <table class="review-table" id="review-table">
                         <thead>
                             <tr>
                                 <th class="col-check"><input type="checkbox" id="th-check-all" title="Toggle page"></th>
-                                <th class="col-status" data-col="status">Status</th>
-                                <th class="col-type" data-col="type">Type</th>
-                                <th class="col-id" data-col="osm_id">OSM ID</th>
-                                <th class="col-height" data-col="height">Height</th>
-                                <th class="col-prev" data-col="prev">Prev</th>
-                                <th class="col-delta" data-col="delta">Delta</th>
+                                <th data-col="status">Status</th>
+                                <th data-col="type">Type</th>
+                                <th data-col="osm_id">OSM ID</th>
+                                <th data-col="height">Height</th>
+                                <th data-col="prev">Prev</th>
+                                <th data-col="delta">Delta</th>
+                                <th data-col="levels">Levels</th>
                                 <th data-col="name">Name</th>
+                                <th data-col="address">Address</th>
+                                <th data-col="roof">Roof</th>
                             </tr>
                         </thead>
                         <tbody id="table-body"></tbody>
                     </table>
                 </div>
                 <div class="table-pagination">
-                    <select id="page-size"><option value="50">50</option><option value="100">100</option><option value="200">200</option></select>
-                    <span>per page</span>
-                    <span class="spacer"></span>
                     <span id="page-info">0 of 0</span>
-                    <button id="page-prev" disabled>&laquo; Prev</button>
-                    <button id="page-next" disabled>Next &raquo;</button>
+                    <span class="spacer"></span>
+                    <button id="page-prev" disabled>&laquo;</button>
+                    <span id="page-number">1</span>
+                    <button id="page-next" disabled>&raquo;</button>
+                    <span class="spacer"></span>
+                    <select id="page-size"><option value="50">50</option><option value="100">100</option><option value="200">200</option></select>
                 </div>
             </div>
         </div>
@@ -556,17 +546,21 @@ function buildTableData(geojson) {
         var delta = (h !== null && prev !== null) ? h - prev : null;
         var rec = isRecommended(p);
         var att = rec && isAttention(h, delta);
+        var addr = [p['addr:street'], p['addr:housenumber']].filter(Boolean).join(' ');
         var row = {
             osm_id: p.osm_id,
             osm_type: p.osm_type,
             status: st.label,
             statusColor: st.color,
             statusOrder: st.order,
-            type: p['_is_part'] ? 'bldg:part' : (p.osm_type === 'relation' ? 'relation' : 'way'),
+            type: p['_is_part'] ? 'bp' : (p.osm_type === 'relation' ? 'rel' : 'way'),
             height: h,
             prev: prev,
             delta: delta,
-            name: p.name || p['addr:street'] || '',
+            levels: p['building:levels'] || '',
+            name: p.name || '',
+            address: addr,
+            roof: p['roof:shape'] || '',
             recommended: rec,
             attention: att,
             feature: f,
@@ -600,7 +594,7 @@ function getFilteredRows() {
     var q = tableSearchQ.toLowerCase();
     if (q) {
         rows = rows.filter(function(r) {
-            return String(r.osm_id).indexOf(q) !== -1 || r.name.toLowerCase().indexOf(q) !== -1 || r.status.toLowerCase().indexOf(q) !== -1;
+            return String(r.osm_id).indexOf(q) !== -1 || r.name.toLowerCase().indexOf(q) !== -1 || r.address.toLowerCase().indexOf(q) !== -1 || r.status.toLowerCase().indexOf(q) !== -1;
         });
     }
     // Sort
@@ -614,7 +608,10 @@ function getFilteredRows() {
         else if (col === 'prev') { va = a.prev || 0; vb = b.prev || 0; }
         else if (col === 'delta') { va = a.delta || 0; vb = b.delta || 0; }
         else if (col === 'type') { va = a.type; vb = b.type; }
+        else if (col === 'levels') { va = parseInt(a.levels) || 0; vb = parseInt(b.levels) || 0; }
         else if (col === 'name') { va = a.name; vb = b.name; }
+        else if (col === 'address') { va = a.address; vb = b.address; }
+        else if (col === 'roof') { va = a.roof; vb = b.roof; }
         else { va = a.statusOrder; vb = b.statusOrder; }
         if (va < vb) return -dir;
         if (va > vb) return dir;
@@ -649,13 +646,17 @@ function renderTable() {
             '<td>' + hStr + '</td>' +
             '<td>' + pStr + '</td>' +
             '<td>' + dStr + '</td>' +
-            '<td title="' + escHtml(r.name) + '">' + escHtml(r.name) + '</td>' +
+            '<td>' + escHtml(r.levels) + '</td>' +
+            '<td>' + escHtml(r.name) + '</td>' +
+            '<td>' + escHtml(r.address) + '</td>' +
+            '<td>' + escHtml(r.roof) + '</td>' +
             '</tr>';
     }
     tbody.innerHTML = html;
 
     // Pagination
     document.getElementById('page-info').textContent = (total > 0 ? (start + 1) + '\u2013' + end : '0') + ' of ' + total;
+    document.getElementById('page-number').textContent = tablePage + ' / ' + maxPage;
     document.getElementById('page-prev').disabled = tablePage <= 1;
     document.getElementById('page-next').disabled = tablePage >= maxPage;
 
@@ -677,14 +678,24 @@ function updateSelectionCount() {
     if (btn) btn.textContent = 'Upload selected (' + count + ')';
 }
 
+var tableVisible = false;
+
 function showTablePanel() {
     var tc = document.getElementById('table-container');
     var rh = document.getElementById('resize-handle');
-    var tab = document.getElementById('table-toggle-tab');
+    var bar = document.getElementById('table-toggle-bar');
+    var empty = document.getElementById('table-empty');
+    var hasData = tableRows.length > 0;
     tc.classList.add('visible');
     rh.style.display = 'block';
-    tab.style.display = 'none';
-    // Set initial 50/50 split
+
+    bar.innerHTML = '&#9660; Hide Table';
+    tableVisible = true;
+    // Toggle empty state vs table content
+    empty.classList.toggle('hidden', hasData);
+    document.getElementById('table-scroll').style.display = hasData ? '' : 'none';
+    document.querySelector('.table-toolbar').style.display = hasData ? '' : 'none';
+    document.querySelector('.table-pagination').style.display = hasData ? '' : 'none';
     var mc = document.getElementById('map-container');
     mc.style.flex = '1';
     tc.style.flex = '1';
@@ -693,22 +704,22 @@ function showTablePanel() {
     setTimeout(function() { map.resize(); }, 50);
 }
 
-function hideTable() {
+function hideTablePanel() {
     var tc = document.getElementById('table-container');
     var rh = document.getElementById('resize-handle');
-    var tab = document.getElementById('table-toggle-tab');
+    var bar = document.getElementById('table-toggle-bar');
     tc.classList.remove('visible');
     rh.style.display = 'none';
-    tab.style.display = 'block';
+    bar.innerHTML = '&#9650; Show Table';
+    tableVisible = false;
     var mc = document.getElementById('map-container');
     mc.style.flex = '1';
     mc.style.height = '';
     setTimeout(function() { map.resize(); }, 50);
 }
 
-function showTable() {
-    showTablePanel();
-    renderTable();
+function toggleTable() {
+    if (tableVisible) { hideTablePanel(); } else { showTablePanel(); renderTable(); }
 }
 
 function resetTable() {
@@ -726,7 +737,10 @@ function resetTable() {
     if (allPill) allPill.classList.add('active');
     document.getElementById('table-container').classList.remove('visible');
     document.getElementById('resize-handle').style.display = 'none';
-    document.getElementById('table-toggle-tab').style.display = 'none';
+    var bar = document.getElementById('table-toggle-bar');
+
+    bar.innerHTML = '&#9650; Show Table';
+    tableVisible = false;
     var mc = document.getElementById('map-container');
     mc.style.flex = '1';
     mc.style.height = '';
@@ -783,25 +797,6 @@ document.getElementById('table-body').onclick = function(e) {
 };
 
 // Select recommended / select all toggles
-document.getElementById('table-select-recommended').onchange = function() {
-    for (var i = 0; i < tableRows.length; i++) {
-        if (tableRows[i].recommended) checkedIds[tableRows[i].osm_id] = this.checked;
-    }
-    if (!this.checked) document.getElementById('table-select-all').checked = false;
-    updateSelectionCount();
-    renderTable();
-};
-document.getElementById('table-select-all').onchange = function() {
-    for (var i = 0; i < tableRows.length; i++) {
-        checkedIds[tableRows[i].osm_id] = this.checked;
-    }
-    if (this.checked) document.getElementById('table-select-recommended').checked = true;
-    updateSelectionCount();
-    renderTable();
-};
-
-document.getElementById('btn-table-collapse').onclick = function() { hideTable(); };
-
 // Page checkbox toggle
 document.getElementById('th-check-all').onchange = function() {
     var rows = getFilteredRows();
@@ -837,7 +832,7 @@ document.addEventListener('click', function() {
 
 function downloadCSV() {
     if (!tableRows.length) return;
-    var header = 'osm_id,osm_type,status,type,height,prev_height,delta,name,selected\n';
+    var header = 'osm_id,osm_type,status,type,height,prev_height,delta,levels,name,address,roof,selected\n';
     var csv = header;
     for (var i = 0; i < tableRows.length; i++) {
         var r = tableRows[i];
@@ -845,7 +840,10 @@ function downloadCSV() {
             (r.height !== null ? r.height : '') + ',' +
             (r.prev !== null ? r.prev : '') + ',' +
             (r.delta !== null ? r.delta : '') + ',' +
+            '"' + r.levels + '",' +
             '"' + r.name.replace(/"/g, '""') + '",' +
+            '"' + r.address.replace(/"/g, '""') + '",' +
+            '"' + r.roof + '",' +
             (checkedIds[r.osm_id] ? 'yes' : 'no') + '\n';
     }
     var blob = new Blob([csv], { type: 'text/csv' });
