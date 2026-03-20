@@ -15,8 +15,8 @@
         #map { flex: 1; }
 
         /* Sidebar */
-        .sidebar { width: 420px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; overflow: hidden; }
-        .sidebar-header { padding: 20px 24px 16px; border-bottom: 1px solid #d0d0d0; background: #1a1a1a; color: #fff; }
+        .sidebar { width: 420px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; }
+        .sidebar-header { padding: 20px 24px 16px; background: #1a1a1a; color: #fff; }
         .sidebar-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.2px; }
         .sidebar-header p { font-size: 13px; color: #aaa; line-height: 1.5; }
         .sidebar-content { flex: 1; overflow-y: auto; }
@@ -151,11 +151,11 @@
         <div class="draw-hint hidden" id="draw-hint">Click and drag to draw a rectangle</div>
     </div>
     <div class="sidebar">
-        <div class="sidebar-header">
-            <h1>OSM Building Height Enrichment</h1>
-            <p>Add accurate heights to OpenStreetMap buildings using swisstopo elevation data. Runs entirely in the browser.</p>
-        </div>
         <div class="sidebar-content">
+            <div class="sidebar-header">
+                <h1>OSM Building Height Enrichment</h1>
+                <p>Add accurate heights to OpenStreetMap buildings using swisstopo elevation data. Runs entirely in the browser.</p>
+            </div>
 
             <!-- Wizard bar -->
             <div class="wizard-bar">
@@ -257,18 +257,18 @@
                         </details>
                         <button class="btn btn-secondary" id="btn-osm-login" disabled>Login with OpenStreetMap</button>
                     </div>
+                    <div style="margin-bottom:10px;">
+                        <label style="font-size:12px; color:#666; display:flex; justify-content:space-between;">
+                            <span>Rate limit</span>
+                            <span id="rate-limit-value">1000 edits/hr</span>
+                        </label>
+                        <input type="range" id="rate-limit-slider" min="100" max="5000" step="100" value="1000" style="width:100%; margin-top:4px;">
+                        <div style="display:flex; justify-content:space-between; font-size:10px; color:#aaa;"><span>100</span><span>5000</span></div>
+                    </div>
                     <div id="osm-logged-in" style="display:none;">
                         <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px 12px; background:#e8f5e9; border-radius:6px; font-size:13px;">
                             <span style="color:#2e7d32;">Logged in as <strong id="osm-display-name"></strong></span>
                             <button style="margin-left:auto; background:none; border:none; color:#888; cursor:pointer; font-size:12px;" id="btn-osm-logout">Logout</button>
-                        </div>
-                        <div style="margin-bottom:10px;">
-                            <label style="font-size:12px; color:#666; display:flex; justify-content:space-between;">
-                                <span>Rate limit</span>
-                                <span id="rate-limit-value">1000 edits/hr</span>
-                            </label>
-                            <input type="range" id="rate-limit-slider" min="100" max="5000" step="100" value="1000" style="width:100%; margin-top:4px;">
-                            <div style="display:flex; justify-content:space-between; font-size:10px; color:#aaa;"><span>100</span><span>5000</span></div>
                         </div>
                         <button class="btn btn-primary" id="btn-upload" disabled>Upload to OSM</button>
                     </div>
