@@ -246,6 +246,21 @@ function computeBuildingHeightSync(feature) {
 }
 
 // =============================================
+// Extraction helpers
+// =============================================
+function ensureRingClosed(coords) {
+    if (coords.length > 0 && (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1])) {
+        coords.push(coords[0]);
+    }
+}
+
+function copyTags(source, target, keys) {
+    for (var i = 0; i < keys.length; i++) {
+        if (source[keys[i]]) target[keys[i]] = source[keys[i]];
+    }
+}
+
+// =============================================
 // Overpass extraction
 // =============================================
 var OVERPASS_URL = 'https://overpass.osm.ch/api/interpreter';
@@ -314,9 +329,7 @@ async function extractBuildings(bbox, onLog) {
             if (node) coords.push(node);
         }
         if (coords.length < 4) continue;
-        if (coords[0][0] !== coords[coords.length - 1][0] || coords[0][1] !== coords[coords.length - 1][1]) {
-            coords.push(coords[0]);
-        }
+        ensureRingClosed(coords);
 
         var isBuildingPart = !el2.tags.building && !!el2.tags['building:part'];
         var props = { osm_id: el2.id, osm_type: 'way', building: el2.tags.building || 'yes' };
@@ -325,9 +338,7 @@ async function extractBuildings(bbox, onLog) {
             props['building:part'] = el2.tags['building:part'];
         }
         if (!isBuildingPart && buildingsWithParts[el2.id]) props['_has_parts'] = true;
-        for (var t = 0; t < tagsToCopy.length; t++) {
-            if (el2.tags[tagsToCopy[t]]) props[tagsToCopy[t]] = el2.tags[tagsToCopy[t]];
-        }
+        copyTags(el2.tags, props, tagsToCopy);
 
         features.push({
             type: 'Feature',
@@ -387,15 +398,11 @@ async function extractBuildings(bbox, onLog) {
             }
         }
         if (outerCoords.length < 4) continue;
-        if (outerCoords[0][0] !== outerCoords[outerCoords.length - 1][0] || outerCoords[0][1] !== outerCoords[outerCoords.length - 1][1]) {
-            outerCoords.push(outerCoords[0]);
-        }
+        ensureRingClosed(outerCoords);
         if (outerCoords.length < 4) continue;
 
         var rprops = { osm_id: rel.id, osm_type: 'relation', building: rel.tags.building || 'yes' };
-        for (var rt = 0; rt < tagsToCopy.length; rt++) {
-            if (rel.tags[tagsToCopy[rt]]) rprops[tagsToCopy[rt]] = rel.tags[tagsToCopy[rt]];
-        }
+        copyTags(rel.tags, rprops, tagsToCopy);
 
         features.push({
             type: 'Feature',
@@ -475,6 +482,13 @@ async function runPipeline(bbox, callbacks) {
         var isPart = !!props['_is_part'];
         var existingHeight = props.height ? parseFloat(props.height) : null;
 
+        // Compute footprint area for all features (used in table + tree canopy filter)
+        var fcoords0 = feature.geometry.coordinates[0];
+        if (fcoords0 && fcoords0.length >= 4) {
+            var areaRing = fcoords0.map(function(c) { return toLV95(c[0], c[1]); });
+            props['_area'] = Math.round(polygonAreaLV95(areaRing));
+        }
+
         // For building:part with existing height — don't skip, we'll compare later.
         // For regular buildings with existing height — skip (don't override).
         if (existingHeight !== null && !isPart) {
@@ -509,9 +523,11 @@ async function runPipeline(bbox, callbacks) {
             continue;
         }
 
-        // Skip small-footprint buildings with disproportionately tall height (likely tree canopy)
-        var footprintArea = polygonAreaLV95(result.lv95Ring);
-        if (footprintArea < 50 && result.height > 15) {
+        // Skip small-footprint buildings with disproportionate height (likely tree canopy)
+        // Uses slenderness ratio: height / sqrt(area). Normal buildings ~0.5–1.2, trees ~1.5+
+        var footprintArea = props['_area'] || 0;
+        var slenderness = footprintArea > 0 ? result.height / Math.sqrt(footprintArea) : 0;
+        if (footprintArea < 100 && slenderness > 1.5) {
             if (existingHeight !== null) { alreadyHad++; } else { props['_skip_reason'] = 'tree_canopy'; skipped++; }
             continue;
         }

@@ -1,0 +1,124 @@
+/* =============================================
+ * Design Tokens — OSM Building Height Enrichment
+ * Single source of truth for colors, spacing,
+ * typography, radii, shadows, and transitions.
+ * ============================================= */
+
+:root {
+    /* ── Colors: Neutral ── */
+    --color-white:          #ffffff;
+    --color-grey-50:        #fafafa;
+    --color-grey-100:       #f5f5f5;
+    --color-grey-150:       #f0f0f0;
+    --color-grey-200:       #e8e8e8;
+    --color-grey-250:       #e0e0e0;
+    --color-grey-300:       #d0d0d0;
+    --color-grey-400:       #bbb;
+    --color-grey-500:       #999;
+    --color-grey-550:       #888;
+    --color-grey-600:       #666;
+    --color-grey-700:       #555;
+    --color-grey-800:       #333;
+    --color-grey-900:       #1a1a1a;
+    --color-black:          #000000;
+
+    /* ── Colors: Brand / Primary ── */
+    --color-primary:        #b71c1c;
+    --color-primary-dark:   #8e0000;
+    --color-primary-light:  #fce4ec;
+
+    /* ── Colors: Semantic ── */
+    --color-success:        #2e7d32;
+    --color-success-light:  #e8f5e9;
+    --color-success-text:   #1b5e20;
+    --color-warning:        #e65100;
+    --color-warning-light:  #fff3e0;
+    --color-warning-text:   #bf360c;
+    --color-error:          #c62828;
+    --color-error-light:    #ef5350;
+    --color-link:           #1565C0;
+    --color-link-hover:     #0d47a1;
+    --color-focus:          #1976D2;
+
+    /* ── Colors: Status (building enrichment) ── */
+    --color-status-enriched:    #4CAF50;
+    --color-status-improved:    #FFC107;
+    --color-status-had-height:  #2196F3;
+    --color-status-roof:        #FF9800;
+    --color-status-trees:       #8D6E63;
+    --color-status-skipped:     #9E9E9E;
+
+    /* ── Colors: Log terminal ── */
+    --color-log-bg:         #111111;
+    --color-log-border:     #333333;
+    --color-log-text:       #bbb;
+    --color-log-step:       #66bb6a;
+    --color-log-error:      #ef5350;
+    --color-log-info:       #888;
+
+    /* ── Typography ── */
+    --font-sans:            -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --font-mono:            'SF Mono', 'Consolas', 'Liberation Mono', monospace;
+
+    --text-xs:              10px;
+    --text-sm:              11px;
+    --text-base:            12px;
+    --text-md:              13px;
+    --text-lg:              14px;
+    --text-xl:              16px;
+    --text-2xl:             18px;
+
+    --weight-normal:        400;
+    --weight-semibold:      600;
+    --weight-bold:          700;
+    --weight-black:         800;
+
+    --leading-tight:        1.3;
+    --leading-normal:       1.5;
+    --leading-relaxed:      1.6;
+    --leading-loose:        1.7;
+
+    /* ── Spacing ── */
+    --space-1:              2px;
+    --space-2:              4px;
+    --space-3:              6px;
+    --space-4:              8px;
+    --space-5:              10px;
+    --space-6:              12px;
+    --space-7:              14px;
+    --space-8:              16px;
+    --space-9:              20px;
+    --space-10:             24px;
+
+    /* ── Borders ── */
+    --border-light:         1px solid var(--color-grey-250);
+    --border-medium:        1px solid var(--color-grey-300);
+    --border-strong:        2px solid var(--color-grey-300);
+
+    /* ── Radii ── */
+    --radius-sm:            3px;
+    --radius-md:            4px;
+    --radius-lg:            6px;
+    --radius-xl:            10px;
+    --radius-pill:          16px;
+    --radius-full:          50%;
+
+    /* ── Shadows ── */
+    --shadow-sm:            0 1px 3px rgba(0, 0, 0, 0.08);
+    --shadow-md:            0 2px 6px rgba(0, 0, 0, 0.10);
+    --shadow-lg:            0 4px 12px rgba(0, 0, 0, 0.12);
+    --shadow-xl:            0 6px 24px rgba(0, 0, 0, 0.18);
+
+    /* ── Transitions ── */
+    --transition-fast:      0.1s ease;
+    --transition-base:      0.15s ease;
+    --transition-slow:      0.3s ease;
+
+    /* ── Layout ── */
+    --header-height:        44px;
+    --sidebar-width:        380px;
+    --wizard-max-width:     420px;
+    --resize-handle-height: 5px;
+    --map-min-height:       200px;
+    --panel-min-height:     150px;
+}

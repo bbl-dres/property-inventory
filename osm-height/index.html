@@ -5,201 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSM Building Height Enrichment</title>
     <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/styles.css">
     <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js" integrity="sha384-pEfbADcwebVj4NNOvWFLUkm+FiGTICE5bChpV647czG7OpSqcHNgxM8QawfAkbRO" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/geotiff@2.1.3/dist-browser/geotiff.js" integrity="sha384-m5adk5PRgt3JjiYbYoG8oXxc3EgRFKc1aCBgKzyxqxnbYpdiAMlHkR0gVDp03Q/H" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/proj4@2.12.1/dist/proj4.js" integrity="sha384-eCfO4pOi+VsP6z/nsQni5JF69AVBgkaI2kwPfFh+J64UMLNVDIBVvowHHM9Q62TF" crossorigin="anonymous"></script>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 14px; line-height: 1.5; }
-
-        /* App grid: header | main | footer */
-        .app-layout { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
-
-        /* Header (includes wizard) */
-        .app-header { padding: 0 24px; background: #fff; color: #1a1a1a; display: flex; align-items: center; height: 44px; border-bottom: 1px solid #e0e0e0; position: relative; }
-        .app-header h1 { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; }
-        .main-area { display: flex; overflow: hidden; }
-        .left-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
-
-        /* Map container */
-        .map-container { flex: 1; position: relative; min-height: 200px; }
-        .map-container #map { width: 100%; height: 100%; }
-
-        /* Resize handle */
-        .resize-handle { height: 5px; background: #d0d0d0; cursor: row-resize; flex-shrink: 0; display: none; position: relative; }
-        .resize-handle:hover, .resize-handle.dragging { background: #b71c1c; }
-        .resize-handle::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 32px; height: 3px; border-top: 1px solid #999; border-bottom: 1px solid #999; }
-
-        /* Table container */
-        .table-container { display: none; flex-direction: column; min-height: 0; background: #fff; border-top: 1px solid #d0d0d0; overflow: hidden; }
-        .table-container.visible { display: flex; }
-
-        /* Table toggle bar (bottom of map container) */
-        .table-toggle-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); padding: 4px 20px; background: #fff; border: 1px solid #d0d0d0; border-radius: 16px; cursor: pointer; font-size: 12px; font-weight: 600; color: #555; user-select: none; transition: all 0.15s; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-        .table-toggle-bar:hover { background: #f0f0f0; color: #1a1a1a; }
-
-        /* Table toolbar */
-        .table-toolbar { display: flex; align-items: center; gap: 10px; padding: 6px 12px; background: #fafafa; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
-        .table-toolbar label { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; white-space: nowrap; }
-        .table-toolbar input[type="checkbox"] { accent-color: #b71c1c; }
-        .table-search { padding: 5px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; outline: none; width: 160px; }
-        .table-search:focus { border-color: #666; }
-        .table-toolbar .spacer { flex: 1; }
-        .table-selection-count { font-size: 12px; color: #888; white-space: nowrap; font-variant-numeric: tabular-nums; }
-
-        /* Filter pills */
-        .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
-        .filter-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid #d0d0d0; background: #fff; color: #555; cursor: pointer; white-space: nowrap; transition: all 0.15s; user-select: none; }
-        .filter-pill:hover { background: #f0f0f0; }
-        .filter-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
-        .filter-pill .pill-count { font-weight: 400; opacity: 0.7; margin-left: 2px; }
-
-        /* Download dropdown */
-        .dl-dropdown { position: relative; }
-        .dl-dropdown-btn { padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
-        .dl-dropdown-btn:hover { background: #f0f0f0; }
-        .dl-dropdown-menu { display: none; position: absolute; bottom: calc(100% + 4px); right: 0; background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 20; min-width: 140px; overflow: hidden; }
-        .dl-dropdown-menu.open { display: block; }
-        .dl-dropdown-menu button { display: block; width: 100%; padding: 8px 14px; text-align: left; font-size: 13px; border: none; background: none; cursor: pointer; color: #333; }
-        .dl-dropdown-menu button:hover { background: #f5f5f5; }
-
-        /* Table */
-        .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; }
-        .review-table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .review-table thead { position: sticky; top: 0; z-index: 1; }
-        .review-table th { background: #f0f0f0; padding: 7px 12px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: #555; border-bottom: 2px solid #d0d0d0; cursor: pointer; user-select: none; white-space: nowrap; }
-        .review-table th:hover { background: #e4e4e4; }
-        .review-table th.sort-asc::after { content: ' \25B2'; font-size: 9px; }
-        .review-table th.sort-desc::after { content: ' \25BC'; font-size: 9px; }
-        .review-table th.col-check { cursor: default; }
-        .table-empty { flex: 1; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 13px; padding: 24px; }
-        .table-empty.hidden { display: none; }
-        .review-table td { padding: 5px 12px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; }
-        .review-table tbody tr { cursor: pointer; transition: background 0.1s; }
-        .review-table tbody tr:hover { background: #f5f9ff; }
-        .review-table tbody tr.row-highlighted { background: #e3f2fd; }
-        .review-table td input[type="checkbox"] { accent-color: #b71c1c; }
-        .review-table .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-        .review-table .osm-link { color: #1565C0; text-decoration: none; font-family: 'SF Mono', 'Consolas', monospace; font-size: 11px; }
-        .review-table .osm-link:hover { text-decoration: underline; }
-
-        /* Pagination */
-        .table-pagination { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fafafa; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; flex-shrink: 0; }
-        .table-pagination .spacer { flex: 1; }
-        .table-pagination button { background: #e8e8e8; border: 1px solid #ccc; border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
-        .table-pagination button:hover { background: #ddd; }
-        .table-pagination button:disabled { opacity: 0.4; cursor: default; }
-        .table-pagination select { padding: 3px 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
-
-        /* Sidebar */
-        .sidebar { width: 380px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; overflow-y: auto; }
-
-        /* Wizard bar (true center in header) */
-        .wizard-bar { display: flex; gap: 4px; align-items: center; max-width: 420px; width: 100%; position: absolute; left: 50%; transform: translateX(-50%); }
-        .wizard-step { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #bbb; transition: color 0.2s; }
-        .wizard-step.active { color: #b71c1c; }
-        .wizard-step.done { color: #2e7d32; }
-        .wizard-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d0d0d0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #bbb; transition: all 0.2s; }
-        .wizard-step.active .wizard-dot { border-color: #b71c1c; color: #b71c1c; background: #fce4ec; }
-        .wizard-step.done .wizard-dot { border-color: #2e7d32; color: #fff; background: #2e7d32; }
-        .wizard-connector { flex: 1; height: 2px; background: #e0e0e0; min-width: 8px; }
-        .wizard-connector.done { background: #2e7d32; }
-
-        /* Step sections */
-        .step { border-bottom: 1px solid #e0e0e0; }
-        .step-header { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; user-select: none; transition: background 0.15s; background: #f0f0f0; border-bottom: 1px solid #e0e0e0; }
-        .step-header:hover { background: #e8e8e8; }
-        .step.locked .step-header { cursor: default; opacity: 0.45; }
-        .step.locked .step-header:hover { background: #f0f0f0; }
-        .step-indicator { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-right: 10px; }
-        .indicator-waiting { background: #e0e0e0; color: #888; }
-        .indicator-active { background: #b71c1c; color: #fff; }
-        .indicator-running { background: #e65100; color: #fff; animation: pulse-indicator 1.2s ease-in-out infinite; }
-        @keyframes pulse-indicator { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
-        .indicator-done { background: #2e7d32; color: #fff; }
-        .indicator-error { background: #c62828; color: #fff; }
-        .step-title { font-size: 13px; font-weight: 600; color: #1a1a1a; flex: 1; }
-        .step.locked .step-title { color: #999; }
-        .step-lock { font-size: 13px; color: #bbb; margin-right: 8px; }
-        .step-chevron { font-size: 16px; color: #888; transition: transform 0.2s; }
-        .step.collapsed .step-chevron { transform: rotate(-90deg); }
-        .step-body { padding: 4px 20px 16px 20px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s, padding 0.3s; }
-        .step.collapsed .step-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
-        .step-hint { font-size: 12px; color: #555; margin-bottom: 10px; line-height: 1.6; }
-
-        /* Buttons */
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; min-height: 38px; }
-        .btn-primary { background: #b71c1c; color: #fff; }
-        .btn-primary:hover { background: #8e0000; }
-        .btn-primary:disabled { background: #d0d0d0; color: #888; cursor: not-allowed; }
-        .btn-secondary { background: #e8e8e8; color: #333; border: 1px solid #d0d0d0; }
-        .btn-secondary:hover { background: #ddd; }
-        .btn-secondary:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
-        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
-        .btn-group .btn { flex: 1; }
-        .btn:focus-visible, .form-input:focus-visible { outline: 2px solid #1976D2; outline-offset: 2px; }
-
-        /* Inputs */
-        .bbox-display { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 11px; background: #f5f5f5; padding: 8px 12px; border-radius: 6px; color: #333; min-height: 36px; display: flex; align-items: center; border: 1px solid #e0e0e0; }
-        .bbox-display.empty { color: #999; }
-        .form-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; outline: none; transition: border-color 0.15s; width: 100%; min-height: 38px; }
-        .form-input:focus { border-color: #666; box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
-
-        /* Progress + Log */
-        .progress-bar { height: 5px; background: #e0e0e0; border-radius: 3px; margin-bottom: 8px; overflow: hidden; }
-        .progress-fill { height: 100%; background: #b71c1c; border-radius: 3px; transition: width 0.3s; width: 0%; }
-        .log-area { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 11px; background: #111; color: #bbb; padding: 10px 12px; border-radius: 6px; max-height: 160px; overflow-y: auto; line-height: 1.7; border: 1px solid #333; }
-        .log-step { color: #66bb6a; font-weight: 600; }
-        .log-error { color: #ef5350; }
-        .log-info { color: #888; }
-
-        /* Stats */
-        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
-        .stat-card { background: #f5f5f5; padding: 10px 6px; border-radius: 6px; text-align: center; border: 1px solid #e8e8e8; }
-        .stat-value { font-size: 18px; font-weight: 800; color: #1a1a1a; }
-        .stat-label { font-size: 10px; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
-
-        /* Legend */
-        .legend { font-size: 11px; color: #555; margin-top: 10px; }
-        .legend-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
-        .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
-
-        /* Popup */
-        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 11px; font-family: 'SF Mono', 'Consolas', monospace; }
-        .maplibregl-popup { max-width: 340px !important; }
-        .maplibregl-popup-content { padding: 0 !important; border-radius: 10px !important; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
-        .maplibregl-popup-close-button { font-size: 18px; width: 30px; height: 30px; line-height: 30px; text-align: center; padding: 0; color: #888; border-radius: 50%; top: 4px; right: 4px; }
-        .maplibregl-popup-close-button:hover { color: #1a1a1a; background: #e8e8e8; }
-        .popup-header { padding: 10px 14px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
-        .popup-header a { font-size: 13px; font-weight: 700; color: #1565C0; text-decoration: none; }
-        .popup-header a:hover { text-decoration: underline; }
-        .popup-body { padding: 4px 0; }
-        .popup-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
-        .popup-body td { padding: 5px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
-        .popup-body tr:last-child td { border-bottom: none; }
-        .popup-body td:first-child { color: #666; font-weight: 600; white-space: nowrap; padding-right: 12px; }
-        .popup-body td:last-child { color: #1a1a1a; word-break: break-word; }
-        .popup-body .new-tag td { background: #e8f5e9; color: #1b5e20; font-weight: 600; }
-        .popup-body .roof-tag td { background: #fff3e0; color: #bf360c; }
-        .popup-footer { padding: 6px 14px 8px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; }
-
-        /* Map overlays */
-        .draw-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
-        .draw-hint.hidden { opacity: 0; }
-        .map-status { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; padding: 10px 20px 10px 14px; border-radius: 24px; z-index: 10; pointer-events: none; display: flex; align-items: center; gap: 10px; transition: opacity 0.35s, transform 0.35s; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
-        .map-status.hidden { opacity: 0; transform: translateX(-50%) translateY(-12px); }
-        .map-status-spinner { width: 20px; height: 20px; flex-shrink: 0; animation: status-spin 1s linear infinite; }
-        .map-status-spinner circle { fill: none; stroke: #fff; stroke-width: 2.5; stroke-dasharray: 42; stroke-dashoffset: 14; stroke-linecap: round; }
-        @keyframes status-spin { to { transform: rotate(360deg); } }
-        .map-status-text { display: flex; flex-direction: column; gap: 1px; }
-        .map-status-step { font-size: 13px; font-weight: 600; white-space: nowrap; }
-        .map-status-count { font-size: 11px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; white-space: nowrap; }
-
-        /* Footer */
-        .app-footer { padding: 4px 24px; background: #fff; font-size: 11px; color: #999; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e0e0e0; }
-        .app-footer a { color: #999; text-decoration: none; }
-        .app-footer a:hover { color: #555; text-decoration: underline; }
-    </style>
 </head>
 <body>
 <div class="app-layout">
@@ -230,6 +40,26 @@
                         <div class="map-status-step" id="map-status-step">Processing...</div>
                         <div class="map-status-count" id="map-status-count"></div>
                     </div>
+                </div>
+                <div class="style-switcher" id="style-switcher">
+                    <div class="style-switcher-panel" id="style-panel">
+                        <button class="style-option active" data-style="light" title="Light">
+                            <img src="assets/thumb-light.png" alt="Light">
+                            <span>Light</span>
+                        </button>
+                        <button class="style-option" data-style="satellite" title="Satellite">
+                            <img src="assets/thumb-satellite.jpg" alt="Satellite">
+                            <span>Satellite</span>
+                        </button>
+                        <button class="style-option" data-style="topo" title="Topo">
+                            <img src="assets/thumb-topo.jpg" alt="Topo">
+                            <span>Topo</span>
+                        </button>
+                    </div>
+                    <button class="style-switcher-btn" id="style-switcher-btn" title="Change basemap">
+                        <img id="current-style-thumb" src="assets/thumb-light.png" alt="Current style">
+                        <span>Basemap</span>
+                    </button>
                 </div>
                 <div class="table-toggle-bar" id="table-toggle-bar" onclick="toggleTable()">&#9650; Show Table</div>
             </div>
@@ -266,6 +96,7 @@
                                 <th data-col="prev">Prev</th>
                                 <th data-col="delta">Delta</th>
                                 <th data-col="levels">Levels</th>
+                                <th data-col="area">Area</th>
                                 <th data-col="name">Name</th>
                                 <th data-col="address">Address</th>
                                 <th data-col="roof">Roof</th>
@@ -338,13 +169,13 @@
                         <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Had Height</div></div>
                         <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Skipped</div></div>
                     </div>
-                    <div class="legend" style="margin-top:8px;">
-                        <div class="legend-item"><div class="legend-dot" style="background:#4CAF50;"></div> Enriched</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#FFC107;"></div> Improved</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#2196F3;"></div> Had height</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#FF9800;"></div> Roof tags</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#8D6E63;"></div> Trees</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped</div>
+                    <div class="legend">
+                        <div class="legend-item"><div class="legend-dot legend-dot--enriched"></div> Enriched</div>
+                        <div class="legend-item"><div class="legend-dot legend-dot--improved"></div> Improved</div>
+                        <div class="legend-item"><div class="legend-dot legend-dot--had-height"></div> Had height</div>
+                        <div class="legend-item"><div class="legend-dot legend-dot--roof"></div> Roof tags</div>
+                        <div class="legend-item"><div class="legend-dot legend-dot--trees"></div> Trees</div>
+                        <div class="legend-item"><div class="legend-dot legend-dot--skipped"></div> Skipped</div>
                     </div>
                 </div>
             </div>
@@ -360,11 +191,11 @@
                 <div class="step-body">
                     <p class="step-hint">Uploads selected buildings with <code>height</code> and <code>source:height</code> tags.</p>
                     <div id="osm-login-area">
-                        <input type="text" id="osm-client-id" placeholder="Your OAuth2 Client ID" class="form-input" style="margin-bottom:4px;">
-                        <details style="font-size:11px; color:#888; margin-bottom:8px;">
-                            <summary style="cursor:pointer; color:#1976D2;">How to get a Client ID</summary>
-                            <ol style="margin:6px 0 0 16px; line-height:1.8;">
-                                <li>Go to <a href="https://www.openstreetmap.org/oauth2/applications" target="_blank" style="color:#1976D2;">OSM OAuth2 Applications</a></li>
+                        <input type="text" id="osm-client-id" placeholder="Your OAuth2 Client ID" class="form-input oauth-input">
+                        <details class="oauth-help">
+                            <summary>How to get a Client ID</summary>
+                            <ol>
+                                <li>Go to <a href="https://www.openstreetmap.org/oauth2/applications" target="_blank">OSM OAuth2 Applications</a></li>
                                 <li>Click "Register new application"</li>
                                 <li>Name: anything (e.g. "Building Heights")</li>
                                 <li>Redirect URI: <code id="redirect-uri-hint"></code></li>
@@ -375,26 +206,26 @@
                         </details>
                         <button class="btn btn-secondary" id="btn-osm-login" disabled>Login with OpenStreetMap</button>
                     </div>
-                    <div style="margin-bottom:8px; margin-top:8px;">
-                        <label style="font-size:12px; color:#666; display:flex; justify-content:space-between;">
+                    <div class="rate-limit-group">
+                        <label class="rate-limit-label">
                             <span>Rate limit</span>
                             <span id="rate-limit-value">1000 edits/hr</span>
                         </label>
-                        <input type="range" id="rate-limit-slider" min="100" max="5000" step="100" value="1000" style="width:100%; margin-top:4px;">
-                        <div style="display:flex; justify-content:space-between; font-size:10px; color:#aaa;"><span>100</span><span>5000</span></div>
+                        <input type="range" id="rate-limit-slider" min="100" max="5000" step="100" value="1000" class="rate-limit-slider">
+                        <div class="rate-limit-range"><span>100</span><span>5000</span></div>
                     </div>
-                    <div id="osm-logged-in" style="display:none;">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:6px 10px; background:#e8f5e9; border-radius:6px; font-size:12px;">
-                            <span style="color:#2e7d32;">Logged in as <strong id="osm-display-name"></strong></span>
-                            <button style="margin-left:auto; background:none; border:none; color:#888; cursor:pointer; font-size:11px;" id="btn-osm-logout">Logout</button>
+                    <div id="osm-logged-in" class="osm-logged-in">
+                        <div class="logged-in-badge">
+                            <span>Logged in as <strong id="osm-display-name"></strong></span>
+                            <button id="btn-osm-logout" class="btn-logout">Logout</button>
                         </div>
                         <button class="btn btn-primary" id="btn-upload" disabled>Upload selected (0)</button>
                     </div>
-                    <div id="upload-progress" style="display:none; margin-top:8px;">
+                    <div id="upload-progress" class="upload-progress">
                         <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill"></div></div>
-                        <div style="font-size:12px; color:#666;" id="upload-status-text"></div>
+                        <div class="upload-status-text" id="upload-status-text"></div>
                     </div>
-                    <div class="log-area" id="upload-log" style="margin-top:8px; display:none;"></div>
+                    <div class="log-area upload-log" id="upload-log"></div>
                 </div>
             </div>
         </div>
@@ -466,10 +297,10 @@ function collapseStep(n) { document.getElementById('step-' + n).classList.add('c
 // =============================================
 // UI helpers
 // =============================================
-function escHtml(str) { var d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+function escHtml(str) { return String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;'); }
 function setProgress(pct) { document.getElementById('progress-fill').style.width = Math.min(100, pct) + '%'; }
 function clearLog() { document.getElementById('log-area').innerHTML = ''; }
-function addLog(type, text) { var el = document.getElementById('log-area'); var line = document.createElement('div'); line.className = 'log-' + type; line.textContent = text; el.appendChild(line); el.scrollTop = el.scrollHeight; }
+function addLog(type, text, targetId) { var el = document.getElementById(targetId || 'log-area'); var line = document.createElement('div'); line.className = 'log-' + type; line.textContent = text; el.appendChild(line); el.scrollTop = el.scrollHeight; }
 
 function showMapStatus(step) {
     document.getElementById('map-status-step').textContent = step;
@@ -504,6 +335,7 @@ function showResults(stats) {
 // =============================================
 var tableRows = [];          // derived row data
 var checkedIds = {};          // osm_id -> true/false
+var featureLookup = {};      // osm_id -> feature (for O(1) flyTo)
 var tablePage = 1;
 var tablePageSize = 50;
 var tableSortCol = 'status';
@@ -524,18 +356,24 @@ function isRecommended(p) {
     return !!p['source:height'] || !!p['_prev_height'];
 }
 
-function isAttention(h, delta) {
+function isAttention(h, delta, area) {
     // Near thresholds (possibly wrong)
     if (h !== null && (h >= 2 && h <= 4)) return true;
     if (h !== null && (h >= 50 && h <= 60)) return true;
     // Large delta on improved parts
     if (delta !== null && Math.abs(delta) > 5) return true;
+    // Borderline tree canopy — passed hard filter but slenderness is elevated
+    if (area !== null && h !== null && area < 150 && area > 0) {
+        var slenderness = h / Math.sqrt(area);
+        if (slenderness > 1.2) return true;
+    }
     return false;
 }
 
 function buildTableData(geojson) {
     tableRows = [];
     checkedIds = {};
+    featureLookup = {};
     var counts = { all: 0, new_: 0, improved: 0, attention: 0 };
     for (var i = 0; i < geojson.features.length; i++) {
         var f = geojson.features[i];
@@ -545,7 +383,8 @@ function buildTableData(geojson) {
         var prev = p['_prev_height'] ? parseFloat(p['_prev_height']) : null;
         var delta = (h !== null && prev !== null) ? h - prev : null;
         var rec = isRecommended(p);
-        var att = rec && isAttention(h, delta);
+        var areaVal = p['_area'] || null;
+        var att = rec && isAttention(h, delta, areaVal);
         var addr = [p['addr:street'], p['addr:housenumber']].filter(Boolean).join(' ');
         var row = {
             osm_id: p.osm_id,
@@ -558,6 +397,7 @@ function buildTableData(geojson) {
             prev: prev,
             delta: delta,
             levels: p['building:levels'] || '',
+            area: p['_area'] || null,
             name: p.name || '',
             address: addr,
             roof: p['roof:shape'] || '',
@@ -567,6 +407,7 @@ function buildTableData(geojson) {
         };
         tableRows.push(row);
         checkedIds[p.osm_id] = rec;
+        featureLookup[p.osm_id] = f;
         counts.all++;
         if (st.label === 'Enriched') counts.new_++;
         if (st.label === 'Improved') counts.improved++;
@@ -609,6 +450,7 @@ function getFilteredRows() {
         else if (col === 'delta') { va = a.delta || 0; vb = b.delta || 0; }
         else if (col === 'type') { va = a.type; vb = b.type; }
         else if (col === 'levels') { va = parseInt(a.levels) || 0; vb = parseInt(b.levels) || 0; }
+        else if (col === 'area') { va = a.area || 0; vb = b.area || 0; }
         else if (col === 'name') { va = a.name; vb = b.name; }
         else if (col === 'address') { va = a.address; vb = b.address; }
         else if (col === 'roof') { va = a.roof; vb = b.roof; }
@@ -647,6 +489,7 @@ function renderTable() {
             '<td>' + pStr + '</td>' +
             '<td>' + dStr + '</td>' +
             '<td>' + escHtml(r.levels) + '</td>' +
+            '<td>' + (r.area !== null ? r.area + ' m\u00B2' : '\u2014') + '</td>' +
             '<td>' + escHtml(r.name) + '</td>' +
             '<td>' + escHtml(r.address) + '</td>' +
             '<td>' + escHtml(r.roof) + '</td>' +
@@ -725,25 +568,17 @@ function toggleTable() {
 function resetTable() {
     tableRows = [];
     checkedIds = {};
+    featureLookup = {};
     tablePage = 1;
     tableSearchQ = '';
     tableFilterMode = 'all';
     document.getElementById('table-search').value = '';
     document.getElementById('table-body').innerHTML = '';
-    // Reset filter pills
     var pills = document.querySelectorAll('.filter-pill');
     for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
     var allPill = document.querySelector('.filter-pill[data-filter="all"]');
     if (allPill) allPill.classList.add('active');
-    document.getElementById('table-container').classList.remove('visible');
-    document.getElementById('resize-handle').style.display = 'none';
-    var bar = document.getElementById('table-toggle-bar');
-
-    bar.innerHTML = '&#9650; Show Table';
-    tableVisible = false;
-    var mc = document.getElementById('map-container');
-    mc.style.flex = '1';
-    mc.style.height = '';
+    hideTablePanel();
     updateSelectionCount();
 }
 
@@ -832,7 +667,7 @@ document.addEventListener('click', function() {
 
 function downloadCSV() {
     if (!tableRows.length) return;
-    var header = 'osm_id,osm_type,status,type,height,prev_height,delta,levels,name,address,roof,selected\n';
+    var header = 'osm_id,osm_type,status,type,height,prev_height,delta,levels,area_m2,name,address,roof,selected\n';
     var csv = header;
     for (var i = 0; i < tableRows.length; i++) {
         var r = tableRows[i];
@@ -841,6 +676,7 @@ function downloadCSV() {
             (r.prev !== null ? r.prev : '') + ',' +
             (r.delta !== null ? r.delta : '') + ',' +
             '"' + r.levels + '",' +
+            (r.area !== null ? r.area : '') + ',' +
             '"' + r.name.replace(/"/g, '""') + '",' +
             '"' + r.address.replace(/"/g, '""') + '",' +
             '"' + r.roof + '",' +
@@ -898,14 +734,7 @@ function highlightTableRow(osmId) {
 }
 
 function flyToFeature(osmId) {
-    if (!resultGeoJSON) return;
-    var feature = null;
-    for (var i = 0; i < resultGeoJSON.features.length; i++) {
-        if (resultGeoJSON.features[i].properties.osm_id === osmId) {
-            feature = resultGeoJSON.features[i];
-            break;
-        }
-    }
+    var feature = featureLookup[osmId];
     if (!feature) return;
 
     // Compute centroid
@@ -939,11 +768,18 @@ function flyToFeature(osmId) {
         function onMove(ev) {
             var delta = ev.clientY - startY;
             var newMapH = Math.max(150, Math.min(totalH - 150, startMapH + delta));
+            // Save camera state before resize
+            var center = map.getCenter();
+            var zoom = map.getZoom();
+            var pitch = map.getPitch();
+            var bearing = map.getBearing();
             mapC.style.flex = 'none';
             mapC.style.height = newMapH + 'px';
             tableC.style.flex = 'none';
             tableC.style.height = (totalH - newMapH) + 'px';
             map.resize();
+            // Restore exact camera — prevents any zoom/center drift
+            map.jumpTo({ center: center, zoom: zoom, pitch: pitch, bearing: bearing });
         }
         function onUp() {
             handle.classList.remove('dragging');
@@ -959,7 +795,205 @@ function flyToFeature(osmId) {
 // Map
 // =============================================
 var map = new maplibregl.Map({ container: 'map', style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json', center: [7.45, 46.95], zoom: 14 });
-map.addControl(new maplibregl.NavigationControl(), 'top-left');
+map.addControl(new maplibregl.NavigationControl(), 'top-right');
+
+// 2D/3D toggle control
+var is3D = false;
+var Toggle3DControl = function() {};
+Toggle3DControl.prototype.onAdd = function(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    this._btn = document.createElement('button');
+    this._btn.type = 'button';
+    this._btn.className = 'maplibregl-ctrl-icon map-ctrl-btn';
+    this._btn.textContent = '3D';
+    this._btn.title = 'Toggle 2D / 3D view';
+    this._btn.onclick = function() {
+        is3D = !is3D;
+        if (is3D) {
+            map.easeTo({ pitch: 60, bearing: -20, duration: 600 });
+        } else {
+            map.easeTo({ pitch: 0, bearing: 0, duration: 600 });
+        }
+        update3DButton();
+    };
+    this._container.appendChild(this._btn);
+    return this._container;
+};
+Toggle3DControl.prototype.onRemove = function() { this._container.remove(); };
+var toggle3DCtrl = new Toggle3DControl();
+map.addControl(toggle3DCtrl, 'top-right');
+
+function update3DButton() {
+    if (toggle3DCtrl._btn) {
+        toggle3DCtrl._btn.textContent = is3D ? '2D' : '3D';
+        toggle3DCtrl._btn.title = is3D ? 'Switch to 2D view' : 'Switch to 3D view';
+    }
+}
+
+// Listen for pitch changes (drag, other controls) to keep button in sync
+map.on('pitchend', function() {
+    var wasPitch = is3D;
+    is3D = map.getPitch() > 10;
+    if (is3D !== wasPitch) update3DButton();
+});
+
+// Home / zoom-to-extent control
+var HomeControl = function() {};
+HomeControl.prototype.onAdd = function(map) {
+    this._map = map;
+    this._container = document.createElement('div');
+    this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
+    this._btn = document.createElement('button');
+    this._btn.type = 'button';
+    this._btn.className = 'maplibregl-ctrl-icon map-ctrl-btn map-ctrl-home';
+    this._btn.innerHTML = '&#8962;';
+    this._btn.title = 'Zoom to extent';
+    this._btn.onclick = function() { zoomToExtent(); };
+    this._container.appendChild(this._btn);
+    return this._container;
+};
+HomeControl.prototype.onRemove = function() { this._container.remove(); };
+map.addControl(new HomeControl(), 'top-right');
+
+function zoomToExtent() {
+    // If we have a drawn bbox, fit to it
+    if (bboxStr) {
+        var p = bboxStr.split(',').map(Number);
+        map.fitBounds([[p[0], p[1]], [p[2], p[3]]], { padding: 40, duration: 600 });
+        return;
+    }
+    // If we have result buildings, fit to their bounds
+    if (resultGeoJSON && resultGeoJSON.features.length > 0) {
+        var bounds = new maplibregl.LngLatBounds();
+        for (var i = 0; i < resultGeoJSON.features.length; i++) {
+            var coords = resultGeoJSON.features[i].geometry.coordinates[0];
+            for (var j = 0; j < coords.length; j++) {
+                bounds.extend(coords[j]);
+            }
+        }
+        map.fitBounds(bounds, { padding: 40, duration: 600 });
+        return;
+    }
+    // Default: Switzerland overview
+    map.flyTo({ center: [8.2, 46.8], zoom: 8, duration: 800 });
+}
+
+// Basemap switcher (thumbnail panel, like main app)
+var basemapStyles = {
+    light: {
+        style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+        thumb: 'assets/thumb-light.png'
+    },
+    satellite: {
+        style: {
+            version: 8,
+            sources: {
+                'swissimage': {
+                    type: 'raster',
+                    tiles: ['https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg'],
+                    tileSize: 256,
+                    attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
+                }
+            },
+            layers: [{ id: 'swissimage', type: 'raster', source: 'swissimage' }]
+        },
+        thumb: 'assets/thumb-satellite.jpg'
+    },
+    topo: {
+        style: {
+            version: 8,
+            sources: {
+                'swisstopo-pixelkarte': {
+                    type: 'raster',
+                    tiles: ['https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.pixelkarte-farbe/default/current/3857/{z}/{x}/{y}.jpeg'],
+                    tileSize: 256,
+                    attribution: '&copy; <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a>'
+                }
+            },
+            layers: [{ id: 'swisstopo-pk', type: 'raster', source: 'swisstopo-pixelkarte' }]
+        },
+        thumb: 'assets/thumb-topo.jpg'
+    }
+};
+var currentBasemap = 'light';
+
+// Panel toggle
+document.getElementById('style-switcher-btn').onclick = function() {
+    document.getElementById('style-panel').classList.toggle('show');
+};
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#style-switcher')) {
+        document.getElementById('style-panel').classList.remove('show');
+    }
+});
+
+// Style option clicks
+document.getElementById('style-panel').onclick = function(e) {
+    var opt = e.target.closest('.style-option');
+    if (!opt) return;
+    var key = opt.getAttribute('data-style');
+    if (key === currentBasemap) return;
+    switchBasemap(key);
+    document.getElementById('style-panel').classList.remove('show');
+};
+
+function switchBasemap(key) {
+    currentBasemap = key;
+    var bm = basemapStyles[key];
+    // Save camera
+    var center = map.getCenter();
+    var zoom = map.getZoom();
+    var pitch = map.getPitch();
+    var bearing = map.getBearing();
+
+    map.once('idle', function() {
+        // Re-add data sources/layers after style change
+        map.addSource('draw-rect', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        map.addLayer({ id: 'draw-rect-fill', type: 'fill', source: 'draw-rect', paint: { 'fill-color': '#c00', 'fill-opacity': 0.1 } });
+        map.addLayer({ id: 'draw-rect-line', type: 'line', source: 'draw-rect', paint: { 'line-color': '#c00', 'line-width': 2, 'line-dasharray': [3, 2] } });
+        map.addSource('result-buildings', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+        map.addLayer({
+            id: 'result-fill', type: 'fill-extrusion', source: 'result-buildings',
+            paint: {
+                'fill-extrusion-color': ['case',
+                    ['has', '_prev_height'], '#FFC107',
+                    ['has', 'source:height'], '#4CAF50',
+                    ['==', ['get', '_skip_reason'], 'roof'], '#FF9800',
+                    ['==', ['get', '_skip_reason'], 'tree_canopy'], '#8D6E63',
+                    ['has', 'height'], '#2196F3',
+                    '#9E9E9E'
+                ],
+                'fill-extrusion-height': ['case', ['has', 'height'], ['to-number', ['get', 'height'], 5], 5],
+                'fill-extrusion-base': ['case', ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0], 0],
+                'fill-extrusion-opacity': 0.85,
+            },
+            layout: { visibility: resultGeoJSON ? 'visible' : 'none' },
+        });
+        map.addLayer({
+            id: 'result-selected', type: 'line', source: 'result-buildings',
+            paint: { 'line-color': '#fff', 'line-width': 3 },
+            filter: ['==', ['get', 'osm_id'], ''],
+            layout: { visibility: 'none' },
+        });
+        if (resultGeoJSON) map.getSource('result-buildings').setData(resultGeoJSON);
+        if (bboxStr) {
+            var p = bboxStr.split(',').map(Number);
+            map.getSource('draw-rect').setData({ type: 'Feature', geometry: { type: 'Polygon', coordinates: [[[p[0],p[1]],[p[2],p[1]],[p[2],p[3]],[p[0],p[3]],[p[0],p[1]]]] } });
+        }
+    });
+
+    map.setStyle(bm.style);
+    map.jumpTo({ center: center, zoom: zoom, pitch: pitch, bearing: bearing });
+
+    // Update UI
+    document.getElementById('current-style-thumb').src = bm.thumb;
+    var opts = document.querySelectorAll('.style-option');
+    for (var i = 0; i < opts.length; i++) {
+        opts[i].classList.toggle('active', opts[i].getAttribute('data-style') === key);
+    }
+}
 
 var drawMode = false, drawing = false, startLngLat = null, bboxStr = null, running = false, resultGeoJSON = null;
 
@@ -1033,6 +1067,7 @@ document.getElementById('btn-clear').onclick = function() {
     map.getSource('result-buildings').setData({ type: 'FeatureCollection', features: [] });
     map.setLayoutProperty('result-fill', 'visibility', 'none');
     map.easeTo({ pitch: 0, bearing: 0, duration: 500 });
+    is3D = false; update3DButton();
     document.getElementById('bbox-display').textContent = 'No area selected';
     document.getElementById('bbox-display').classList.add('empty');
     document.getElementById('btn-run').disabled = true;
@@ -1103,6 +1138,7 @@ document.getElementById('btn-run').onclick = async function() {
             map.getSource('result-buildings').setData(geojson);
             map.setLayoutProperty('result-fill', 'visibility', 'visible');
             map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+            is3D = true; update3DButton();
 
             // Build and show review table
             buildTableData(geojson);
@@ -1135,7 +1171,7 @@ map.on('click', 'result-fill', function(e) {
     var html = '<div class="popup-header"><a href="https://www.openstreetmap.org/' + props.osm_type + '/' + escHtml(osmId) + '" target="_blank" rel="noopener">' + typeLabel + ' ' + escHtml(osmId) + ' \u2197</a></div>';
     html += '<div class="popup-body"><table>';
 
-    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1, _is_part: 1, _has_parts: 1, _prev_height: 1 };
+    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1, _is_part: 1, _has_parts: 1, _prev_height: 1, _area: 1 };
     var isImproved = !!props['_prev_height'];
     var newKeys = { height: 1, 'source:height': 1 };
     for (var k in props) {
@@ -1175,6 +1211,69 @@ map.on('mouseenter', 'result-fill', function() { map.getCanvas().style.cursor = 
 map.on('mouseleave', 'result-fill', function() { if (!buildingPopup.isOpen()) map.getCanvas().style.cursor = ''; });
 
 // =============================================
+// Context menu (right-click)
+// =============================================
+var ctxMenu = document.createElement('div');
+ctxMenu.className = 'map-ctx-menu';
+ctxMenu.style.display = 'none';
+document.body.appendChild(ctxMenu);
+
+function hideCtxMenu() { ctxMenu.style.display = 'none'; }
+document.addEventListener('click', hideCtxMenu);
+map.on('movestart', hideCtxMenu);
+
+map.on('contextmenu', function(e) {
+    e.preventDefault();
+    var lng = e.lngLat.lng;
+    var lat = e.lngLat.lat;
+    var lngStr = lng.toFixed(6);
+    var latStr = lat.toFixed(6);
+    var coordStr = latStr + ', ' + lngStr;
+
+    ctxMenu.innerHTML =
+        '<div class="ctx-coords">' + coordStr + '</div>' +
+        '<button class="ctx-item" data-action="copy-latlng">' +
+            '<span class="ctx-icon">\uD83D\uDCCB</span> Copy coordinates' +
+        '</button>' +
+        '<button class="ctx-item" data-action="copy-lnglat">' +
+            '<span class="ctx-icon">\uD83D\uDCCB</span> Copy as lng, lat' +
+        '</button>' +
+        '<div class="ctx-sep"></div>' +
+        '<a class="ctx-item" href="https://www.google.com/maps/search/?api=1&query=' + latStr + ',' + lngStr + '" target="_blank" rel="noopener">' +
+            '<span class="ctx-icon">\uD83C\uDF0D</span> Open in Google Maps' +
+        '</a>' +
+        '<a class="ctx-item" href="https://www.openstreetmap.org/?mlat=' + latStr + '&mlon=' + lngStr + '#map=18/' + latStr + '/' + lngStr + '" target="_blank" rel="noopener">' +
+            '<span class="ctx-icon">\uD83C\uDF0D</span> Open in OpenStreetMap' +
+        '</a>';
+
+    // Position the menu
+    var mapRect = map.getContainer().getBoundingClientRect();
+    var x = e.point.x + mapRect.left;
+    var y = e.point.y + mapRect.top;
+    ctxMenu.style.display = 'block';
+    // Adjust if overflowing viewport
+    var menuW = ctxMenu.offsetWidth;
+    var menuH = ctxMenu.offsetHeight;
+    if (x + menuW > window.innerWidth) x = window.innerWidth - menuW - 4;
+    if (y + menuH > window.innerHeight) y = window.innerHeight - menuH - 4;
+    ctxMenu.style.left = x + 'px';
+    ctxMenu.style.top = y + 'px';
+
+    // Copy handlers
+    ctxMenu.onclick = function(ev) {
+        var btn = ev.target.closest('[data-action]');
+        if (!btn) return;
+        var action = btn.getAttribute('data-action');
+        var text = action === 'copy-lnglat' ? lngStr + ', ' + latStr : coordStr;
+        navigator.clipboard.writeText(text).then(function() {
+            btn.querySelector('.ctx-icon').textContent = '\u2713';
+            setTimeout(hideCtxMenu, 600);
+        });
+        ev.stopPropagation();
+    };
+});
+
+// =============================================
 // OAuth + Upload
 // =============================================
 document.getElementById('redirect-uri-hint').textContent = getRedirectUri();
@@ -1186,8 +1285,9 @@ document.getElementById('btn-osm-login').onclick = async function() {
     if (!clientId) { alert('Please enter your OAuth2 Client ID.'); return; }
     var mc = map.getCenter();
     sessionStorage.setItem('osm_elevation_map', JSON.stringify({ lng: mc.lng, lat: mc.lat, zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing() }));
-    // Save checked IDs
+    // Save checked IDs and last stats
     sessionStorage.setItem('osm_elevation_checked', JSON.stringify(checkedIds));
+    sessionStorage.setItem('osm_elevation_stats', document.getElementById('stats').innerHTML);
     try { await startOAuthLogin(clientId, resultGeoJSON, bboxStr); } catch (e) { addLog('error', e.message); }
 };
 
@@ -1219,13 +1319,7 @@ document.getElementById('btn-upload').onclick = async function() {
     uploadLog.style.display = 'block';
     uploadLog.innerHTML = '';
 
-    function addUploadLog(type, msg) {
-        var line = document.createElement('div');
-        line.className = 'log-' + type;
-        line.textContent = msg;
-        uploadLog.appendChild(line);
-        uploadLog.scrollTop = uploadLog.scrollHeight;
-    }
+    function addUploadLog(type, msg) { addLog(type, msg, 'upload-log'); }
 
     var rateLimitPerHour = parseInt(slider.value) || 1000;
     showMapStatus('Uploading to OSM...');
@@ -1267,6 +1361,7 @@ document.getElementById('btn-upload').onclick = async function() {
             var mv = JSON.parse(savedMap);
             function applyMapPosition() {
                 map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
+                is3D = mv.pitch > 10; update3DButton();
             }
             if (map.loaded()) applyMapPosition(); else map.once('load', applyMapPosition);
             mapRestored = true;
@@ -1276,11 +1371,13 @@ document.getElementById('btn-upload').onclick = async function() {
     var saved = sessionStorage.getItem('osm_elevation_result');
     var savedBbox = sessionStorage.getItem('osm_elevation_bbox');
     var savedChecked = sessionStorage.getItem('osm_elevation_checked');
+    var savedStats = sessionStorage.getItem('osm_elevation_stats');
     if (!saved) return;
 
     sessionStorage.removeItem('osm_elevation_result');
     sessionStorage.removeItem('osm_elevation_bbox');
     sessionStorage.removeItem('osm_elevation_checked');
+    sessionStorage.removeItem('osm_elevation_stats');
     try {
         resultGeoJSON = JSON.parse(saved);
         bboxStr = savedBbox || null;
@@ -1290,19 +1387,18 @@ document.getElementById('btn-upload').onclick = async function() {
             document.getElementById('bbox-display').classList.remove('empty');
             document.getElementById('btn-clear').disabled = false;
         }
-        var total = resultGeoJSON.features.length;
-        var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height'] && !f.properties['_prev_height']; }).length;
-        var improved = resultGeoJSON.features.filter(function(f) { return !!f.properties['_prev_height']; }).length;
-        var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height'] && !f.properties['_prev_height']; }).length;
-        var totalParts = resultGeoJSON.features.filter(function(f) { return f.properties['_is_part']; }).length;
-        var enrichedParts = resultGeoJSON.features.filter(function(f) { return f.properties['_is_part'] && f.properties['source:height']; }).length;
         setStepState(1, 'done');
         setStepState(2, 'done');
         unlockAndExpandStep(3);
         unlockAndExpandStep(4);
         setProgress(100);
-        addLog('step', 'Restored ' + (enriched + improved) + ' enriched buildings from previous session');
-        showResults({ total: total, enriched: enriched, improved: improved, alreadyHad: alreadyHad, skipped: total - enriched - improved - alreadyHad, parts: totalParts, enrichedParts: enrichedParts });
+        // Restore stats from saved HTML (avoid 5 full feature scans)
+        if (savedStats) {
+            document.getElementById('stats').innerHTML = savedStats;
+        }
+        document.getElementById('btn-osm-login').disabled = false;
+        document.getElementById('btn-upload').disabled = false;
+        addLog('step', 'Restored results from previous session');
 
         // Restore table
         buildTableData(resultGeoJSON);
