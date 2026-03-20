@@ -174,6 +174,18 @@ function createGridPoints(coordsLV95, spacing) {
 }
 
 // =============================================
+// Polygon area (Shoelace formula on LV95 coords → m²)
+// =============================================
+function polygonAreaLV95(lv95Ring) {
+    var area = 0;
+    for (var i = 0, j = lv95Ring.length - 1; i < lv95Ring.length; j = i++) {
+        area += lv95Ring[j][0] * lv95Ring[i][1];
+        area -= lv95Ring[i][0] * lv95Ring[j][1];
+    }
+    return Math.abs(area) / 2;
+}
+
+// =============================================
 // Height computation
 // =============================================
 
@@ -410,6 +422,13 @@ async function runPipeline(bbox, callbacks) {
         if (result.height < 2 || result.height > 60) {
             props['_skip_reason'] = 'out_of_range'; skipped++; continue;
         }
+
+        // Skip small-footprint buildings with disproportionately tall height (likely tree canopy)
+        var lv95Ring = fcoords[0].map(function(c) { return toLV95(c[0], c[1]); });
+        var footprintArea = polygonAreaLV95(lv95Ring);
+        if (footprintArea < 50 && result.height > 15) {
+            props['_skip_reason'] = 'tree_canopy'; skipped++; continue;
+        }
         props.height = String(result.height);
         props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
         enriched++;
@@ -425,7 +444,7 @@ async function runPipeline(bbox, callbacks) {
             var reason = f.properties['_skip_reason'];
             if (reason) skipReasons[reason] = (skipReasons[reason] || 0) + 1;
         });
-        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height' };
+        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height', tree_canopy: 'small footprint + tall height (likely trees)' };
         for (var reason in skipReasons) {
             if (reason !== 'has_height') { // already counted in alreadyHad
                 onLog('  Skipped (' + (reasonLabels[reason] || reason) + '): ' + skipReasons[reason]);

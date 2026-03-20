@@ -121,7 +121,7 @@ async function handleOAuthCallback() {
  * @param {function} onLog - callback(type, message)
  * @returns {{ updated: number, errors: number, changesetId: string }}
  */
-async function uploadToOSM(features, onProgress, onLog) {
+async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
     if (!osmAccessToken) throw new Error('Not logged in');
 
     var auth = 'Bearer ' + osmAccessToken;
@@ -256,11 +256,12 @@ async function uploadToOSM(features, onProgress, onLog) {
         }
 
         // Step 3: Upload OsmChange in small batches with rate-limit handling
-        // OSM rate limit for new accounts: ~1,000 changes/hour (ramps up over 1 week).
-        // Strategy: 50/batch, 6s delay = ~500 changes/min burst, but paced.
+        // Batch delay is derived from the user's rate limit slider.
+        // Formula: delay = (3600s * BATCH_SIZE / rateLimitPerHour) in ms
         // After a 429, we slow down significantly.
         var BATCH_SIZE = 50;
-        var BATCH_DELAY_MS = 6000; // 6s between batches (~500/min max burst)
+        var effectiveRate = rateLimitPerHour || 1000;
+        var BATCH_DELAY_MS = Math.round(3600 * 1000 * BATCH_SIZE / effectiveRate);
         var MAX_RETRIES = 10;
         var MAX_PER_CHANGESET = 9000; // OSM limit is 10K, leave margin
         var elementsInChangeset = 0;
@@ -270,6 +271,7 @@ async function uploadToOSM(features, onProgress, onLog) {
         }
 
         onLog('step', 'Uploading ' + osmChangeWays.length + ' buildings in ' + batches.length + ' batch(es)...');
+        onLog('info', 'Rate limit: ' + effectiveRate + ' edits/hr (' + (BATCH_DELAY_MS / 1000).toFixed(0) + 's between batches of ' + BATCH_SIZE + ')');
 
         for (var batchIdx = 0; batchIdx < batches.length; batchIdx++) {
             var batch = batches[batchIdx];

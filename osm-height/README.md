@@ -30,12 +30,13 @@ flowchart TB
         D -->|has height?| SKIP1["Skip (blue)"]
         D -->|has roof:height?| SKIP2["Skip (orange)"]
         D -->|multipolygon?| SKIP3["Skip (grey)"]
-        D -->|processable| E["Create 3m sample grid inside footprint"]
+        D -->|processable| E["Create 2m sample grid inside footprint"]
         E --> F["geotiff.js → swissALTI3D COG"]
         E --> G["geotiff.js → swissSURFACE3D COG"]
         F --> H["height = P95(DSM) − min(DTM)"]
         G --> H
         H -->|< 2m or > 60m| SKIP4["Skip (out of range)"]
+        H -->|small footprint + tall| SKIP5["Skip (likely trees, brown)"]
         H -->|2m–60m| I["Add height + source:height"]
         I --> J["2. Enriched GeoJSON"]
         J --> K["3. Review: 3D visualization + stats"]
@@ -48,6 +49,7 @@ flowchart TB
     style SKIP2 fill:#fff3e0,stroke:#ffcc80
     style SKIP3 fill:#f5f5f5,stroke:#ccc
     style SKIP4 fill:#f5f5f5,stroke:#ccc
+    style SKIP5 fill:#efebe9,stroke:#8d6e63
 ```
 
 For each building, a grid of sample points (3m spacing) is created inside the footprint.
@@ -116,6 +118,13 @@ The grid sampling could hit the open courtyard, producing incorrect heights.
 Single-ring polygons of any vertex count are processed — even detailed
 footprints like the Bundeshaus (106 vertices) work fine.
 
+### Small footprint + tall height (brown on map)
+
+Buildings with a footprint area under 50 m² and a computed height above 15 m are
+skipped. These are almost always small sheds or outbuildings where the DSM reads
+tree canopy instead of the actual roof. The P95 filter cannot help here because
+the entire footprint is under the canopy.
+
 ### Height out of range (grey on map)
 
 Computed heights outside a plausible range are discarded:
@@ -159,9 +168,10 @@ OSM enforces rate limits on edits ([source](https://github.com/openstreetmap/ope
 | With `importer` role | Higher (granted by moderators) |
 
 The limit ramps up quadratically over the first week. Each modified way counts as
-1 change. The tool handles rate limits automatically:
+1 change. A **rate limit slider** in Step 4 lets you control the upload speed
+(default: 1,000 edits/hour, range: 100–5,000). The tool handles rate limits automatically:
 
-- Uploads in batches of 50 elements with 6s pauses
+- Uploads in batches of 50 elements, paced by the slider setting
 - On 429 (rate limited): retries with progressive backoff (30s → 60s → 90s → ...)
 - After each rate limit hit, future batch delays increase
 - Up to 10 retries before giving up on a batch
