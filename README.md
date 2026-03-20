@@ -19,11 +19,13 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 
 **Simple Version:** https://bbl-dres.github.io/property-inventory/
 
+<p align="center">
+  <img src="assets/images/preview6.jpg" width="90%"/>
+</p>
+
 **OSM Height Enrichment:** https://bbl-dres.github.io/property-inventory/osm-height
 
 **Advanced Prototype:** https://bbl-dres.github.io/property-inventory/prototype1
-
-
 
 <p align="center">
   <img src="assets/images/preview1.jpg" width="90%"/>
