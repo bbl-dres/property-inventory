@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>OSM Building Height Enrichment</title>
     <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20,400,0,0" rel="stylesheet">
     <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/styles.css">
     <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js" integrity="sha384-pEfbADcwebVj4NNOvWFLUkm+FiGTICE5bChpV647czG7OpSqcHNgxM8QawfAkbRO" crossorigin="anonymous"></script>
@@ -33,6 +34,14 @@
         <div class="left-panel">
             <div class="map-container" id="map-container">
                 <div id="map"></div>
+                <div class="map-search" id="map-search">
+                    <div class="map-search-bar" id="search-bar">
+                        <button class="map-search-btn" id="search-toggle" title="Search places"><span class="icon">search</span></button>
+                        <input type="text" class="map-search-input" id="search-input" placeholder="Search places..." autocomplete="off">
+                        <button class="map-search-clear" id="search-clear" title="Clear"><span class="icon icon--sm">close</span></button>
+                    </div>
+                    <div class="map-search-results" id="search-results"></div>
+                </div>
                 <div class="draw-hint hidden" id="draw-hint">Click and drag to draw a rectangle</div>
                 <div class="map-status hidden" id="map-status">
                     <svg class="map-status-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
@@ -61,7 +70,7 @@
                         <span>Basemap</span>
                     </button>
                 </div>
-                <div class="table-toggle-bar" id="table-toggle-bar" onclick="toggleTable()">&#9650; Show Table</div>
+                <div class="table-toggle-bar" id="table-toggle-bar" onclick="toggleTable()"><span class="icon icon--sm">expand_less</span> Show Table</div>
             </div>
             <div class="resize-handle" id="resize-handle"></div>
             <div class="table-container" id="table-container">
@@ -76,7 +85,7 @@
                     <span class="spacer"></span>
                     <span class="table-selection-count" id="table-selection-count">0 selected</span>
                     <div class="dl-dropdown" id="dl-dropdown">
-                        <button class="dl-dropdown-btn" id="btn-dl-toggle">Download &#9662;</button>
+                        <button class="dl-dropdown-btn" id="btn-dl-toggle"><span class="icon icon--sm">download</span> Download</button>
                         <div class="dl-dropdown-menu" id="dl-dropdown-menu">
                             <button id="btn-dl-geojson">GeoJSON</button>
                             <button id="btn-dl-csv">CSV</button>
@@ -108,9 +117,9 @@
                 <div class="table-pagination">
                     <span id="page-info">0 of 0</span>
                     <span class="spacer"></span>
-                    <button id="page-prev" disabled>&laquo;</button>
+                    <button id="page-prev" disabled><span class="icon icon--sm">chevron_left</span></button>
                     <span id="page-number">1</span>
-                    <button id="page-next" disabled>&raquo;</button>
+                    <button id="page-next" disabled><span class="icon icon--sm">chevron_right</span></button>
                     <span class="spacer"></span>
                     <select id="page-size"><option value="50">50</option><option value="100">100</option><option value="200">200</option></select>
                 </div>
@@ -124,7 +133,7 @@
                 <div class="step-header" onclick="toggleStep(1)">
                     <span class="step-indicator indicator-active" id="ind-1">1</span>
                     <span class="step-title">Select Area</span>
-                    <span class="step-chevron">&#9662;</span>
+                    <span class="step-chevron"><span class="icon icon--sm">expand_more</span></span>
                 </div>
                 <div class="step-body">
                     <p class="step-hint">Click "Draw Area", then click and drag on the map to select buildings.</p>
@@ -144,11 +153,12 @@
                 <div class="step-header" onclick="toggleStep(2)">
                     <span class="step-indicator indicator-waiting" id="ind-2">2</span>
                     <span class="step-title">Processing</span>
-                    <span class="step-lock" id="lock-2">&#128274;</span>
-                    <span class="step-chevron">&#9662;</span>
+                    <span class="step-lock" id="lock-2"><span class="icon icon--xs">lock</span></span>
+                    <span class="step-chevron"><span class="icon icon--sm">expand_more</span></span>
                 </div>
                 <div class="step-body">
                     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+                    <button class="btn btn-abort" id="btn-abort">Abort</button>
                     <div class="log-area" id="log-area"><div class="log-info">Waiting for Step 1...</div></div>
                 </div>
             </div>
@@ -158,8 +168,8 @@
                 <div class="step-header" onclick="toggleStep(3)">
                     <span class="step-indicator indicator-waiting" id="ind-3">3</span>
                     <span class="step-title">Review Results</span>
-                    <span class="step-lock" id="lock-3">&#128274;</span>
-                    <span class="step-chevron">&#9662;</span>
+                    <span class="step-lock" id="lock-3"><span class="icon icon--xs">lock</span></span>
+                    <span class="step-chevron"><span class="icon icon--sm">expand_more</span></span>
                 </div>
                 <div class="step-body">
                     <p class="step-hint">Click buildings on the map or rows in the table to inspect. Use checkboxes to select which to upload.</p>
@@ -185,8 +195,8 @@
                 <div class="step-header" onclick="toggleStep(4)">
                     <span class="step-indicator indicator-waiting" id="ind-4">4</span>
                     <span class="step-title">Upload to OSM</span>
-                    <span class="step-lock" id="lock-4">&#128274;</span>
-                    <span class="step-chevron">&#9662;</span>
+                    <span class="step-lock" id="lock-4"><span class="icon icon--xs">lock</span></span>
+                    <span class="step-chevron"><span class="icon icon--sm">expand_more</span></span>
                 </div>
                 <div class="step-body">
                     <p class="step-hint">Uploads selected buildings with <code>height</code> and <code>source:height</code> tags.</p>
@@ -256,6 +266,7 @@ function setStepState(n, state) {
     var ind = document.getElementById('ind-' + n);
     ind.className = 'step-indicator indicator-' + state;
     var symbols = { waiting: String(n), active: String(n), running: '\u27F3', done: '\u2713', error: '!' };
+    // Note: step indicators use text content (not Material Symbols) because they're tiny circles
     ind.textContent = symbols[state] || String(n);
 
     var step = document.getElementById('step-' + n);
@@ -532,7 +543,7 @@ function showTablePanel() {
     tc.classList.add('visible');
     rh.style.display = 'block';
 
-    bar.innerHTML = '&#9660; Hide Table';
+    bar.innerHTML = '<span class="icon icon--sm">expand_more</span> Hide Table';
     tableVisible = true;
     // Toggle empty state vs table content
     empty.classList.toggle('hidden', hasData);
@@ -553,7 +564,7 @@ function hideTablePanel() {
     var bar = document.getElementById('table-toggle-bar');
     tc.classList.remove('visible');
     rh.style.display = 'none';
-    bar.innerHTML = '&#9650; Show Table';
+    bar.innerHTML = '<span class="icon icon--sm">expand_less</span> Show Table';
     tableVisible = false;
     var mc = document.getElementById('map-container');
     mc.style.flex = '1';
@@ -848,7 +859,7 @@ HomeControl.prototype.onAdd = function(map) {
     this._btn = document.createElement('button');
     this._btn.type = 'button';
     this._btn.className = 'maplibregl-ctrl-icon map-ctrl-btn map-ctrl-home';
-    this._btn.innerHTML = '&#8962;';
+    this._btn.innerHTML = '<span class="icon" style="font-size:18px">home</span>';
     this._btn.title = 'Zoom to extent';
     this._btn.onclick = function() { zoomToExtent(); };
     this._container.appendChild(this._btn);
@@ -1098,6 +1109,14 @@ document.getElementById('btn-clear').onclick = function() {
 };
 
 // Run pipeline
+var aborted = false;
+
+document.getElementById('btn-abort').onclick = function() {
+    aborted = true;
+    this.disabled = true;
+    this.textContent = 'Aborting...';
+};
+
 document.getElementById('btn-run').onclick = async function() {
     if (!bboxStr || running) return;
     var parts = bboxStr.split(',').map(Number);
@@ -1108,8 +1127,13 @@ document.getElementById('btn-run').onclick = async function() {
     if (areaSqKm > 2 && !confirm('Area is ~' + areaSqKm.toFixed(1) + ' km\u00B2. This may take a while.\n\nContinue?')) return;
 
     running = true;
+    aborted = false;
     document.getElementById('btn-run').disabled = true;
     document.getElementById('btn-clear').disabled = true;
+    var abortBtn = document.getElementById('btn-abort');
+    abortBtn.classList.add('visible');
+    abortBtn.disabled = false;
+    abortBtn.textContent = 'Abort';
 
     setStepState(1, 'done');
     setStepState(2, 'running');
@@ -1119,11 +1143,12 @@ document.getElementById('btn-run').onclick = async function() {
     clearPipelineCache();
     showMapStatus('Extracting buildings...');
 
-    await runPipeline(parts, {
+    var result = await runPipeline(parts, {
         onStep: function(msg) { addLog('step', msg); showMapStatus(msg); },
         onProgress: function(cur, tot) { setProgress((cur / tot) * 100); updateMapStatusCount(cur, tot); },
         onLog: function(msg) { addLog('info', msg); },
         onError: function(msg) { addLog('error', msg); setStepState(2, 'error'); hideMapStatus(); },
+        isAborted: function() { return aborted; },
         onDone: function(geojson, stats) {
             resultGeoJSON = geojson;
             hideMapStatus();
@@ -1147,8 +1172,17 @@ document.getElementById('btn-run').onclick = async function() {
         },
     });
 
+    abortBtn.classList.remove('visible');
     running = false;
     document.getElementById('btn-clear').disabled = false;
+
+    // Handle abort: reset to step 1
+    if (result === null && aborted) {
+        hideMapStatus();
+        addLog('error', 'Processing aborted');
+        setStepState(2, 'error');
+        document.getElementById('btn-run').disabled = false;
+    }
 };
 
 // Building inspector
@@ -1180,9 +1214,9 @@ map.on('click', 'result-fill', function(e) {
         var isRoofTag = k.indexOf('roof:') === 0;
         var rowClass = isNew ? 'new-tag' : isRoofTag ? 'roof-tag' : '';
         html += '<tr class="' + rowClass + '"><td>' + escHtml(k) + '</td><td>' + escHtml(String(props[k]));
-        if (isNew && k === 'height' && isImproved) html += ' \u2713 <span style="color:#999;text-decoration:line-through;">' + escHtml(props['_prev_height']) + '</span>';
-        else if (isNew) html += ' \u2713';
-        if (isRoofTag) html += ' \uD83D\uDD12';
+        if (isNew && k === 'height' && isImproved) html += ' <span class="icon icon--xs" style="color:inherit">check</span> <span style="color:#999;text-decoration:line-through;">' + escHtml(props['_prev_height']) + '</span>';
+        else if (isNew) html += ' <span class="icon icon--xs" style="color:inherit">check</span>';
+        if (isRoofTag) html += ' <span class="icon icon--xs" style="color:inherit">lock</span>';
         html += '</td></tr>';
     }
     html += '</table></div>';
@@ -1233,17 +1267,17 @@ map.on('contextmenu', function(e) {
     ctxMenu.innerHTML =
         '<div class="ctx-coords">' + coordStr + '</div>' +
         '<button class="ctx-item" data-action="copy-latlng">' +
-            '<span class="ctx-icon">\uD83D\uDCCB</span> Copy coordinates' +
+            '<span class="ctx-icon icon icon--sm">content_copy</span> Copy coordinates' +
         '</button>' +
         '<button class="ctx-item" data-action="copy-lnglat">' +
-            '<span class="ctx-icon">\uD83D\uDCCB</span> Copy as lng, lat' +
+            '<span class="ctx-icon icon icon--sm">content_copy</span> Copy as lng, lat' +
         '</button>' +
         '<div class="ctx-sep"></div>' +
         '<a class="ctx-item" href="https://www.google.com/maps/search/?api=1&query=' + latStr + ',' + lngStr + '" target="_blank" rel="noopener">' +
-            '<span class="ctx-icon">\uD83C\uDF0D</span> Open in Google Maps' +
+            '<span class="ctx-icon icon icon--sm">open_in_new</span> Open in Google Maps' +
         '</a>' +
         '<a class="ctx-item" href="https://www.openstreetmap.org/?mlat=' + latStr + '&mlon=' + lngStr + '#map=18/' + latStr + '/' + lngStr + '" target="_blank" rel="noopener">' +
-            '<span class="ctx-icon">\uD83C\uDF0D</span> Open in OpenStreetMap' +
+            '<span class="ctx-icon icon icon--sm">open_in_new</span> Open in OpenStreetMap' +
         '</a>';
 
     // Position the menu
@@ -1266,12 +1300,110 @@ map.on('contextmenu', function(e) {
         var action = btn.getAttribute('data-action');
         var text = action === 'copy-lnglat' ? lngStr + ', ' + latStr : coordStr;
         navigator.clipboard.writeText(text).then(function() {
-            btn.querySelector('.ctx-icon').textContent = '\u2713';
+            btn.querySelector('.ctx-icon').textContent = 'check';
             setTimeout(hideCtxMenu, 600);
         });
         ev.stopPropagation();
     };
 });
+
+// =============================================
+// Map search (swisstopo GeoAdmin API)
+// =============================================
+var searchBar = document.getElementById('search-bar');
+var searchInput = document.getElementById('search-input');
+var searchResults = document.getElementById('search-results');
+var searchTimer = null;
+var searchMarker = null;
+
+document.getElementById('search-toggle').onclick = function() {
+    var expanded = searchBar.classList.toggle('expanded');
+    if (expanded) {
+        searchInput.focus();
+    } else {
+        searchInput.value = '';
+        searchBar.classList.remove('has-text');
+        searchResults.classList.remove('visible');
+    }
+};
+
+document.getElementById('search-clear').onclick = function() {
+    searchInput.value = '';
+    searchBar.classList.remove('has-text');
+    searchResults.classList.remove('visible');
+    searchInput.focus();
+    if (searchMarker) { searchMarker.remove(); searchMarker = null; }
+};
+
+searchInput.oninput = function() {
+    var q = this.value.trim();
+    searchBar.classList.toggle('has-text', q.length > 0);
+    clearTimeout(searchTimer);
+    if (q.length < 2) {
+        searchResults.classList.remove('visible');
+        return;
+    }
+    searchTimer = setTimeout(function() { searchPlaces(q); }, 250);
+};
+
+searchInput.onkeydown = function(e) {
+    if (e.key === 'Escape') {
+        searchInput.value = '';
+        searchBar.classList.remove('has-text', 'expanded');
+        searchResults.classList.remove('visible');
+    }
+};
+
+// Close results when clicking outside
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('#map-search')) {
+        searchResults.classList.remove('visible');
+    }
+});
+
+function searchPlaces(query) {
+    fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=locations&searchText=' + encodeURIComponent(query))
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            if (!data.results || data.results.length === 0) {
+                searchResults.innerHTML = '<div class="search-no-results">No results found</div>';
+                searchResults.classList.add('visible');
+                return;
+            }
+            var html = '';
+            var results = data.results.slice(0, 8);
+            for (var i = 0; i < results.length; i++) {
+                var a = results[i].attrs;
+                html += '<div class="search-result" data-lat="' + a.lat + '" data-lon="' + a.lon + '">' + a.label + '</div>';
+            }
+            searchResults.innerHTML = html;
+            searchResults.classList.add('visible');
+        })
+        .catch(function() {
+            searchResults.innerHTML = '<div class="search-no-results">Search failed</div>';
+            searchResults.classList.add('visible');
+        });
+}
+
+searchResults.onclick = function(e) {
+    var item = e.target.closest('.search-result');
+    if (!item) return;
+    var lat = parseFloat(item.getAttribute('data-lat'));
+    var lon = parseFloat(item.getAttribute('data-lon'));
+
+    // Place marker
+    if (searchMarker) searchMarker.remove();
+    searchMarker = new maplibregl.Marker({ color: '#b71c1c' })
+        .setLngLat([lon, lat])
+        .addTo(map);
+
+    // Fly to location
+    map.flyTo({ center: [lon, lat], zoom: 16, duration: 800 });
+
+    // Update search bar with selected text
+    searchInput.value = item.textContent;
+    searchResults.classList.remove('visible');
+};
 
 // =============================================
 // OAuth + Upload

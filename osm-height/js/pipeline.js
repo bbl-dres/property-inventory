@@ -421,7 +421,7 @@ async function extractBuildings(bbox, onLog) {
 /**
  * Run the full enrichment pipeline.
  * @param {number[]} bbox - [west, south, east, north]
- * @param {object} callbacks - { onStep, onProgress, onLog, onError, onDone }
+ * @param {object} callbacks - { onStep, onProgress, onLog, onError, onDone, isAborted }
  */
 async function runPipeline(bbox, callbacks) {
     var onStep = callbacks.onStep || function() {};
@@ -429,6 +429,7 @@ async function runPipeline(bbox, callbacks) {
     var onLog = callbacks.onLog || function() {};
     var onError = callbacks.onError || function() {};
     var onDone = callbacks.onDone || function() {};
+    var isAborted = callbacks.isAborted || function() { return false; };
 
     var startTime = Date.now();
 
@@ -467,6 +468,11 @@ async function runPipeline(bbox, callbacks) {
         onProgress(cur, tot * 2); // tile loading = 0–50%
     });
 
+    if (isAborted()) {
+        onLog('Aborted by user during tile loading');
+        return null;
+    }
+
     // Step 3: Compute heights (synchronous per building — tiles are in memory)
     onStep('Computing building heights...');
     var enriched = 0, skipped = 0, alreadyHad = 0, improved = 0;
@@ -475,6 +481,10 @@ async function runPipeline(bbox, callbacks) {
         if (b % 50 === 0 || b === total - 1) {
             onProgress(total + b + 1, total * 2); // height computation = 50–100%
             await new Promise(function(r) { setTimeout(r, 0); }); // yield to UI
+            if (isAborted()) {
+                onLog('Aborted by user at ' + b + '/' + total + ' buildings');
+                return null;
+            }
         }
 
         var feature = geojson.features[b];
