@@ -1,5 +1,14 @@
 # Property Inventory / Liegenschaften Inventar
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![GitHub Pages](https://img.shields.io/badge/demo-GitHub%20Pages-blue?logo=github)](https://bbl-dres.github.io/property-inventory/)
+[![JavaScript](https://img.shields.io/badge/JavaScript-ES6+-F7DF1E?logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
+[![MapLibre GL JS](https://img.shields.io/badge/MapLibre_GL_JS-v5.19-396CB2?logo=maplibre&logoColor=white)](https://maplibre.org/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/CSS)
+[![No Build Tools](https://img.shields.io/badge/build-none_%F0%9F%8E%89-brightgreen)](#tech-stack)
+[![GitHub last commit](https://img.shields.io/github/last-commit/bbl-dres/property-inventory)](https://github.com/bbl-dres/property-inventory/commits/main)
+
 ![Social Media Preview](assets/images/preview4.jpg)
 
 > [!CAUTION]
