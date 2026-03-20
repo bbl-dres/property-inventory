@@ -11,172 +11,302 @@
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif; background: #f5f5f5; color: #1a1a1a; font-size: 14px; line-height: 1.5; }
-        .layout { display: flex; height: 100vh; }
-        #map { flex: 1; }
+
+        /* App grid: header | main | footer */
+        .app-layout { display: grid; grid-template-rows: auto 1fr auto; height: 100vh; }
+
+        /* Header (includes wizard) */
+        .app-header { padding: 0 24px; background: #fff; color: #1a1a1a; display: flex; align-items: center; height: 44px; border-bottom: 1px solid #e0e0e0; position: relative; }
+        .app-header h1 { font-size: 14px; font-weight: 700; letter-spacing: -0.2px; white-space: nowrap; }
+        .main-area { display: flex; overflow: hidden; }
+        .left-panel { flex: 1; display: flex; flex-direction: column; min-width: 0; }
+
+        /* Map container */
+        .map-container { flex: 1; position: relative; min-height: 200px; }
+        .map-container #map { width: 100%; height: 100%; }
+
+        /* Resize handle */
+        .resize-handle { height: 5px; background: #d0d0d0; cursor: row-resize; flex-shrink: 0; display: none; position: relative; }
+        .resize-handle:hover, .resize-handle.dragging { background: #b71c1c; }
+        .resize-handle::after { content: ''; position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 32px; height: 3px; border-top: 1px solid #999; border-bottom: 1px solid #999; }
+
+        /* Table container */
+        .table-container { display: none; flex-direction: column; min-height: 0; background: #fff; border-top: 1px solid #d0d0d0; overflow: hidden; }
+        .table-container.visible { display: flex; }
+
+        /* Table toggle tab (shown when table is hidden) */
+        .table-toggle-tab { display: none; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%); background: #fff; border: 1px solid #d0d0d0; border-bottom: none; border-radius: 6px 6px 0 0; padding: 4px 16px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; z-index: 5; }
+        .table-toggle-tab:hover { background: #f0f0f0; color: #1a1a1a; }
+
+        /* Table toolbar (two rows) */
+        .table-toolbar { display: flex; flex-direction: column; gap: 5px; padding: 8px 12px; background: #fafafa; border-bottom: 1px solid #e0e0e0; flex-shrink: 0; }
+        .table-toolbar-row { display: flex; align-items: center; gap: 8px; }
+        .table-toolbar label { display: flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: #555; cursor: pointer; white-space: nowrap; }
+        .table-toolbar input[type="checkbox"] { accent-color: #b71c1c; }
+        .table-search { padding: 5px 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; outline: none; width: 160px; }
+        .table-search:focus { border-color: #666; }
+        .table-toolbar .spacer { flex: 1; }
+        .table-selection-count { font-size: 12px; color: #888; white-space: nowrap; font-variant-numeric: tabular-nums; }
+        .table-toolbar .btn-collapse { background: none; border: 1px solid #ccc; color: #666; padding: 4px 8px; font-size: 14px; min-height: 0; width: auto; cursor: pointer; border-radius: 4px; line-height: 1; }
+        .table-toolbar .btn-collapse:hover { background: #e8e8e8; }
+
+        /* Filter pills */
+        .filter-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+        .filter-pill { padding: 4px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; border: 1px solid #d0d0d0; background: #fff; color: #555; cursor: pointer; white-space: nowrap; transition: all 0.15s; user-select: none; }
+        .filter-pill:hover { background: #f0f0f0; }
+        .filter-pill.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+        .filter-pill .pill-count { font-weight: 400; opacity: 0.7; margin-left: 2px; }
+
+        /* Download dropdown */
+        .dl-dropdown { position: relative; }
+        .dl-dropdown-btn { padding: 4px 10px; font-size: 12px; font-weight: 600; border: 1px solid #ccc; border-radius: 4px; background: #fff; color: #555; cursor: pointer; white-space: nowrap; display: flex; align-items: center; gap: 4px; }
+        .dl-dropdown-btn:hover { background: #f0f0f0; }
+        .dl-dropdown-menu { display: none; position: absolute; bottom: calc(100% + 4px); right: 0; background: #fff; border: 1px solid #d0d0d0; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 20; min-width: 140px; overflow: hidden; }
+        .dl-dropdown-menu.open { display: block; }
+        .dl-dropdown-menu button { display: block; width: 100%; padding: 8px 14px; text-align: left; font-size: 13px; border: none; background: none; cursor: pointer; color: #333; }
+        .dl-dropdown-menu button:hover { background: #f5f5f5; }
+
+        /* Table */
+        .table-scroll { flex: 1; overflow-y: auto; overflow-x: auto; }
+        .review-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: fixed; }
+        .review-table thead { position: sticky; top: 0; z-index: 1; }
+        .review-table th { background: #f0f0f0; padding: 7px 8px; text-align: left; font-weight: 700; font-size: 11px; text-transform: uppercase; letter-spacing: 0.3px; color: #555; border-bottom: 2px solid #d0d0d0; cursor: pointer; user-select: none; white-space: nowrap; }
+        .review-table th:hover { background: #e4e4e4; }
+        .review-table th.sort-asc::after { content: ' \25B2'; font-size: 9px; }
+        .review-table th.sort-desc::after { content: ' \25BC'; font-size: 9px; }
+        .review-table th.col-check { width: 36px; cursor: default; }
+        .review-table th.col-status { width: 90px; }
+        .review-table th.col-type { width: 80px; }
+        .review-table th.col-id { width: 110px; }
+        .review-table th.col-height { width: 70px; }
+        .review-table th.col-prev { width: 60px; }
+        .review-table th.col-delta { width: 60px; }
+        .review-table td { padding: 5px 8px; border-bottom: 1px solid #f0f0f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .review-table tbody tr { cursor: pointer; transition: background 0.1s; }
+        .review-table tbody tr:hover { background: #f5f9ff; }
+        .review-table tbody tr.row-highlighted { background: #e3f2fd; }
+        .review-table td input[type="checkbox"] { accent-color: #b71c1c; }
+        .review-table .status-dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
+        .review-table .osm-link { color: #1565C0; text-decoration: none; font-family: 'SF Mono', 'Consolas', monospace; font-size: 11px; }
+        .review-table .osm-link:hover { text-decoration: underline; }
+
+        /* Pagination */
+        .table-pagination { display: flex; align-items: center; gap: 8px; padding: 6px 12px; background: #fafafa; border-top: 1px solid #e0e0e0; font-size: 12px; color: #666; flex-shrink: 0; }
+        .table-pagination .spacer { flex: 1; }
+        .table-pagination button { background: #e8e8e8; border: 1px solid #ccc; border-radius: 4px; padding: 3px 10px; cursor: pointer; font-size: 12px; }
+        .table-pagination button:hover { background: #ddd; }
+        .table-pagination button:disabled { opacity: 0.4; cursor: default; }
+        .table-pagination select { padding: 3px 6px; border: 1px solid #ccc; border-radius: 4px; font-size: 12px; }
 
         /* Sidebar */
-        .sidebar { width: 420px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; }
-        .sidebar-header { padding: 20px 24px 16px; background: #1a1a1a; color: #fff; }
-        .sidebar-header h1 { font-size: 17px; font-weight: 700; margin-bottom: 6px; letter-spacing: -0.2px; }
-        .sidebar-header p { font-size: 13px; color: #aaa; line-height: 1.5; }
-        .sidebar-content { flex: 1; overflow-y: auto; }
-        .sidebar-footer { padding: 12px 24px; border-top: 1px solid #d0d0d0; background: #fafafa; font-size: 12px; color: #666; display: flex; justify-content: space-between; align-items: center; }
-        .sidebar-footer a { color: #555; text-decoration: none; }
-        .sidebar-footer a:hover { color: #1a1a1a; text-decoration: underline; }
+        .sidebar { width: 380px; background: #fff; border-left: 1px solid #d0d0d0; display: flex; flex-direction: column; overflow-y: auto; }
 
-        /* Step wizard bar */
-        .wizard-bar { display: flex; padding: 14px 24px; border-bottom: 1px solid #d0d0d0; background: #fafafa; gap: 4px; align-items: center; }
-        .wizard-step { display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: #bbb; transition: color 0.2s; }
+        /* Wizard bar (true center in header) */
+        .wizard-bar { display: flex; gap: 4px; align-items: center; max-width: 420px; width: 100%; position: absolute; left: 50%; transform: translateX(-50%); }
+        .wizard-step { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 600; color: #bbb; transition: color 0.2s; }
         .wizard-step.active { color: #b71c1c; }
         .wizard-step.done { color: #2e7d32; }
-        .wizard-dot { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #d0d0d0; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: #bbb; transition: all 0.2s; }
+        .wizard-dot { width: 20px; height: 20px; border-radius: 50%; border: 2px solid #d0d0d0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #bbb; transition: all 0.2s; }
         .wizard-step.active .wizard-dot { border-color: #b71c1c; color: #b71c1c; background: #fce4ec; }
         .wizard-step.done .wizard-dot { border-color: #2e7d32; color: #fff; background: #2e7d32; }
-        .wizard-connector { flex: 1; height: 2px; background: #e0e0e0; min-width: 10px; }
+        .wizard-connector { flex: 1; height: 2px; background: #e0e0e0; min-width: 8px; }
         .wizard-connector.done { background: #2e7d32; }
 
         /* Step sections */
         .step { border-bottom: 1px solid #e0e0e0; }
-        .step-header { display: flex; align-items: center; padding: 12px 24px; cursor: pointer; user-select: none; transition: background 0.15s; background: #f0f0f0; border-bottom: 1px solid #e0e0e0; }
+        .step-header { display: flex; align-items: center; padding: 10px 20px; cursor: pointer; user-select: none; transition: background 0.15s; background: #f0f0f0; border-bottom: 1px solid #e0e0e0; }
         .step-header:hover { background: #e8e8e8; }
         .step.locked .step-header { cursor: default; opacity: 0.45; }
         .step.locked .step-header:hover { background: #f0f0f0; }
-        .step-indicator { width: 22px; height: 22px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-right: 12px; }
+        .step-indicator { width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; flex-shrink: 0; margin-right: 10px; }
         .indicator-waiting { background: #e0e0e0; color: #888; }
         .indicator-active { background: #b71c1c; color: #fff; }
         .indicator-running { background: #e65100; color: #fff; animation: pulse-indicator 1.2s ease-in-out infinite; }
         @keyframes pulse-indicator { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
         .indicator-done { background: #2e7d32; color: #fff; }
         .indicator-error { background: #c62828; color: #fff; }
-        .step-title { font-size: 14px; font-weight: 600; color: #1a1a1a; flex: 1; }
+        .step-title { font-size: 13px; font-weight: 600; color: #1a1a1a; flex: 1; }
         .step.locked .step-title { color: #999; }
-        .step-lock { font-size: 14px; color: #bbb; margin-right: 8px; }
-        .step-chevron { font-size: 18px; color: #888; transition: transform 0.2s; }
+        .step-lock { font-size: 13px; color: #bbb; margin-right: 8px; }
+        .step-chevron { font-size: 16px; color: #888; transition: transform 0.2s; }
         .step.collapsed .step-chevron { transform: rotate(-90deg); }
-        .step-body { padding: 4px 24px 20px 24px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s, padding 0.3s; }
+        .step-body { padding: 4px 20px 16px 20px; overflow: hidden; transition: max-height 0.3s ease, opacity 0.2s, padding 0.3s; }
         .step.collapsed .step-body { max-height: 0; padding-top: 0; padding-bottom: 0; opacity: 0; }
-        .step-hint { font-size: 13px; color: #555; margin-bottom: 12px; line-height: 1.6; }
+        .step-hint { font-size: 12px; color: #555; margin-bottom: 10px; line-height: 1.6; }
 
         /* Buttons */
-        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; min-height: 42px; }
+        .btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; width: 100%; justify-content: center; transition: all 0.15s; min-height: 38px; }
         .btn-primary { background: #b71c1c; color: #fff; }
         .btn-primary:hover { background: #8e0000; }
         .btn-primary:disabled { background: #d0d0d0; color: #888; cursor: not-allowed; }
         .btn-secondary { background: #e8e8e8; color: #333; border: 1px solid #d0d0d0; }
         .btn-secondary:hover { background: #ddd; }
         .btn-secondary:disabled { background: #f5f5f5; color: #aaa; border-color: #e0e0e0; cursor: not-allowed; }
-        .btn-group { display: flex; gap: 8px; margin-top: 10px; }
+        .btn-group { display: flex; gap: 8px; margin-top: 8px; }
         .btn-group .btn { flex: 1; }
-
-        /* Focus styles for accessibility */
         .btn:focus-visible, .form-input:focus-visible { outline: 2px solid #1976D2; outline-offset: 2px; }
 
         /* Inputs */
-        .bbox-display { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 12px; background: #f5f5f5; padding: 10px 14px; border-radius: 6px; color: #333; min-height: 40px; display: flex; align-items: center; border: 1px solid #e0e0e0; }
+        .bbox-display { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 11px; background: #f5f5f5; padding: 8px 12px; border-radius: 6px; color: #333; min-height: 36px; display: flex; align-items: center; border: 1px solid #e0e0e0; }
         .bbox-display.empty { color: #999; }
-        .form-input { padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; outline: none; transition: border-color 0.15s; width: 100%; min-height: 42px; }
+        .form-input { padding: 8px 12px; border: 1px solid #ccc; border-radius: 6px; font-size: 13px; outline: none; transition: border-color 0.15s; width: 100%; min-height: 38px; }
         .form-input:focus { border-color: #666; box-shadow: 0 0 0 3px rgba(0,0,0,0.06); }
-        .form-label { display: block; font-size: 13px; font-weight: 600; color: #333; margin-bottom: 6px; }
 
         /* Progress + Log */
-        .progress-bar { height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 10px; overflow: hidden; }
+        .progress-bar { height: 5px; background: #e0e0e0; border-radius: 3px; margin-bottom: 8px; overflow: hidden; }
         .progress-fill { height: 100%; background: #b71c1c; border-radius: 3px; transition: width 0.3s; width: 0%; }
-        .log-area { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 12px; background: #111; color: #bbb; padding: 12px 14px; border-radius: 6px; max-height: 200px; overflow-y: auto; line-height: 1.7; border: 1px solid #333; }
+        .log-area { font-family: 'SF Mono', 'Consolas', 'Liberation Mono', monospace; font-size: 11px; background: #111; color: #bbb; padding: 10px 12px; border-radius: 6px; max-height: 160px; overflow-y: auto; line-height: 1.7; border: 1px solid #333; }
         .log-step { color: #66bb6a; font-weight: 600; }
         .log-error { color: #ef5350; }
         .log-info { color: #888; }
 
         /* Stats */
-        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 8px; }
-        .stat-card { background: #f5f5f5; padding: 12px 8px; border-radius: 8px; text-align: center; border: 1px solid #e8e8e8; }
-        .stat-value { font-size: 22px; font-weight: 800; color: #1a1a1a; }
-        .stat-label { font-size: 11px; color: #666; margin-top: 4px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600; }
+        .stats { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 6px; }
+        .stat-card { background: #f5f5f5; padding: 10px 6px; border-radius: 6px; text-align: center; border: 1px solid #e8e8e8; }
+        .stat-value { font-size: 18px; font-weight: 800; color: #1a1a1a; }
+        .stat-label { font-size: 10px; color: #666; margin-top: 2px; text-transform: uppercase; letter-spacing: 0.4px; font-weight: 600; }
 
         /* Legend */
-        .legend { font-size: 12px; color: #555; margin-top: 12px; }
-        .legend-item { display: flex; align-items: center; gap: 8px; margin: 5px 0; }
-        .legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-
-        /* Building inspector */
-        .building-props { font-size: 13px; }
-        .building-props table { width: 100%; border-collapse: collapse; }
-        .building-props td { padding: 6px 10px; border-bottom: 1px solid #eee; vertical-align: top; }
-        .building-props td:first-child { color: #666; font-weight: 600; width: 40%; white-space: nowrap; }
-        .building-props td:last-child { color: #1a1a1a; word-break: break-all; }
-        .building-props .new-tag { background: #e8f5e9; }
-        .building-props .new-tag td { color: #1b5e20; }
-        .building-props .osm-link { color: #1565C0; text-decoration: none; font-weight: 600; }
-        .building-props .osm-link:hover { text-decoration: underline; }
+        .legend { font-size: 11px; color: #555; margin-top: 10px; }
+        .legend-item { display: flex; align-items: center; gap: 6px; margin: 4px 0; }
+        .legend-dot { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
 
         /* Popup */
-        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 12px; font-family: 'SF Mono', 'Consolas', monospace; }
+        code { background: #eee; padding: 2px 5px; border-radius: 3px; font-size: 11px; font-family: 'SF Mono', 'Consolas', monospace; }
         .maplibregl-popup { max-width: 340px !important; }
         .maplibregl-popup-content { padding: 0 !important; border-radius: 10px !important; overflow: hidden; box-shadow: 0 6px 24px rgba(0,0,0,0.18); }
         .maplibregl-popup-close-button { font-size: 18px; width: 30px; height: 30px; line-height: 30px; text-align: center; padding: 0; color: #888; border-radius: 50%; top: 4px; right: 4px; }
         .maplibregl-popup-close-button:hover { color: #1a1a1a; background: #e8e8e8; }
-        .popup-header { padding: 12px 16px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
-        .popup-header a { font-size: 14px; font-weight: 700; color: #1565C0; text-decoration: none; }
+        .popup-header { padding: 10px 14px; background: #f5f5f5; border-bottom: 1px solid #e0e0e0; }
+        .popup-header a { font-size: 13px; font-weight: 700; color: #1565C0; text-decoration: none; }
         .popup-header a:hover { text-decoration: underline; }
         .popup-body { padding: 4px 0; }
-        .popup-body table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .popup-body td { padding: 6px 16px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
+        .popup-body table { width: 100%; border-collapse: collapse; font-size: 12px; }
+        .popup-body td { padding: 5px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: top; }
         .popup-body tr:last-child td { border-bottom: none; }
-        .popup-body td:first-child { color: #666; font-weight: 600; white-space: nowrap; padding-right: 14px; }
+        .popup-body td:first-child { color: #666; font-weight: 600; white-space: nowrap; padding-right: 12px; }
         .popup-body td:last-child { color: #1a1a1a; word-break: break-word; }
         .popup-body .new-tag td { background: #e8f5e9; color: #1b5e20; font-weight: 600; }
         .popup-body .roof-tag td { background: #fff3e0; color: #bf360c; }
-        .popup-footer { padding: 8px 16px 10px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; }
-        .draw-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 10; pointer-events: none; transition: opacity 0.3s; letter-spacing: 0.1px; }
+        .popup-footer { padding: 6px 14px 8px; font-size: 11px; color: #999; text-align: center; border-top: 1px solid #eee; }
+
+        /* Map overlays */
+        .draw-hint { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.85); color: #fff; padding: 10px 20px; border-radius: 24px; font-size: 14px; font-weight: 500; z-index: 10; pointer-events: none; transition: opacity 0.3s; }
         .draw-hint.hidden { opacity: 0; }
+        .map-status { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); background: rgba(0,0,0,0.82); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; padding: 10px 20px 10px 14px; border-radius: 24px; z-index: 10; pointer-events: none; display: flex; align-items: center; gap: 10px; transition: opacity 0.35s, transform 0.35s; box-shadow: 0 4px 16px rgba(0,0,0,0.25); }
+        .map-status.hidden { opacity: 0; transform: translateX(-50%) translateY(-12px); }
+        .map-status-spinner { width: 20px; height: 20px; flex-shrink: 0; animation: status-spin 1s linear infinite; }
+        .map-status-spinner circle { fill: none; stroke: #fff; stroke-width: 2.5; stroke-dasharray: 42; stroke-dashoffset: 14; stroke-linecap: round; }
+        @keyframes status-spin { to { transform: rotate(360deg); } }
+        .map-status-text { display: flex; flex-direction: column; gap: 1px; }
+        .map-status-step { font-size: 13px; font-weight: 600; white-space: nowrap; }
+        .map-status-count { font-size: 11px; color: rgba(255,255,255,0.55); font-variant-numeric: tabular-nums; white-space: nowrap; }
 
-        /* Upload section */
-        .upload-progress { display: none; margin-top: 10px; }
-        .upload-log { display: none; margin-top: 8px; }
-
-        /* Collapsible help */
-        .help-toggle { font-size: 13px; color: #1565C0; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; margin-top: 8px; font-weight: 500; }
-        .help-toggle:hover { color: #0d47a1; }
-        .help-content { display: none; margin-top: 8px; font-size: 12px; color: #555; line-height: 1.7; background: #f9f9f9; padding: 12px 14px; border-radius: 6px; border: 1px solid #e8e8e8; }
-        .help-content.visible { display: block; }
-        .help-content ol { margin: 0; padding-left: 18px; }
-        .help-content li { margin-bottom: 4px; }
-
-        /* Logged in state */
-        .logged-in-badge { display: inline-flex; align-items: center; gap: 6px; background: #e8f5e9; color: #1b5e20; padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; border: 1px solid #c8e6c9; }
+        /* Footer */
+        .app-footer { padding: 4px 24px; background: #fff; font-size: 11px; color: #999; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #e0e0e0; }
+        .app-footer a { color: #999; text-decoration: none; }
+        .app-footer a:hover { color: #555; text-decoration: underline; }
     </style>
 </head>
 <body>
-<div class="layout">
-    <div id="map">
-        <div class="draw-hint hidden" id="draw-hint">Click and drag to draw a rectangle</div>
+<div class="app-layout">
+    <!-- Header with wizard -->
+    <div class="app-header">
+        <h1>OSM Building Height Enrichment</h1>
+        <div class="wizard-bar">
+            <div class="wizard-step active" id="wiz-1"><div class="wizard-dot">1</div><span>Select</span></div>
+            <div class="wizard-connector" id="wiz-c1"></div>
+            <div class="wizard-step" id="wiz-2"><div class="wizard-dot">2</div><span>Process</span></div>
+            <div class="wizard-connector" id="wiz-c2"></div>
+            <div class="wizard-step" id="wiz-3"><div class="wizard-dot">3</div><span>Review</span></div>
+            <div class="wizard-connector" id="wiz-c3"></div>
+            <div class="wizard-step" id="wiz-4"><div class="wizard-dot">4</div><span>Upload</span></div>
+        </div>
     </div>
-    <div class="sidebar">
-        <div class="sidebar-content">
-            <div class="sidebar-header">
-                <h1>OSM Building Height Enrichment</h1>
-                <p>Add accurate heights to OpenStreetMap buildings using swisstopo elevation data. Runs entirely in the browser.</p>
-            </div>
 
-            <!-- Wizard bar -->
-            <div class="wizard-bar">
-                <div class="wizard-step active" id="wiz-1"><div class="wizard-dot">1</div><span>Select</span></div>
-                <div class="wizard-connector" id="wiz-c1"></div>
-                <div class="wizard-step" id="wiz-2"><div class="wizard-dot">2</div><span>Process</span></div>
-                <div class="wizard-connector" id="wiz-c2"></div>
-                <div class="wizard-step" id="wiz-3"><div class="wizard-dot">3</div><span>Review</span></div>
-                <div class="wizard-connector" id="wiz-c3"></div>
-                <div class="wizard-step" id="wiz-4"><div class="wizard-dot">4</div><span>Upload</span></div>
+    <!-- Main area -->
+    <div class="main-area">
+        <!-- Left panel: map + table -->
+        <div class="left-panel">
+            <div class="map-container" id="map-container">
+                <div id="map"></div>
+                <div class="draw-hint hidden" id="draw-hint">Click and drag to draw a rectangle</div>
+                <div class="map-status hidden" id="map-status">
+                    <svg class="map-status-spinner" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/></svg>
+                    <div class="map-status-text">
+                        <div class="map-status-step" id="map-status-step">Processing...</div>
+                        <div class="map-status-count" id="map-status-count"></div>
+                    </div>
+                </div>
+                <div class="table-toggle-tab" id="table-toggle-tab" onclick="showTable()">&#9650; Show Review Table</div>
             </div>
+            <div class="resize-handle" id="resize-handle"></div>
+            <div class="table-container" id="table-container">
+                <div class="table-toolbar">
+                    <div class="table-toolbar-row">
+                        <div class="filter-pills" id="filter-pills">
+                            <span class="filter-pill active" data-filter="all">All <span class="pill-count" id="pill-all">0</span></span>
+                            <span class="filter-pill" data-filter="new">New <span class="pill-count" id="pill-new">0</span></span>
+                            <span class="filter-pill" data-filter="improved">Improved <span class="pill-count" id="pill-improved">0</span></span>
+                            <span class="filter-pill" data-filter="attention">Attention <span class="pill-count" id="pill-attention">0</span></span>
+                        </div>
+                        <span class="spacer"></span>
+                        <label><input type="checkbox" id="table-select-recommended" checked> Recommended</label>
+                        <label><input type="checkbox" id="table-select-all"> All</label>
+                    </div>
+                    <div class="table-toolbar-row">
+                        <input type="text" class="table-search" id="table-search" placeholder="Search ID, name...">
+                        <span class="spacer"></span>
+                        <span class="table-selection-count" id="table-selection-count">0 selected</span>
+                        <div class="dl-dropdown" id="dl-dropdown">
+                            <button class="dl-dropdown-btn" id="btn-dl-toggle">Download &#9662;</button>
+                            <div class="dl-dropdown-menu" id="dl-dropdown-menu">
+                                <button id="btn-dl-geojson">GeoJSON</button>
+                                <button id="btn-dl-csv">CSV</button>
+                            </div>
+                        </div>
+                        <button class="btn-collapse" id="btn-table-collapse" title="Hide table">&#9660;</button>
+                    </div>
+                </div>
+                <div class="table-scroll" id="table-scroll">
+                    <table class="review-table" id="review-table">
+                        <thead>
+                            <tr>
+                                <th class="col-check"><input type="checkbox" id="th-check-all" title="Toggle page"></th>
+                                <th class="col-status" data-col="status">Status</th>
+                                <th class="col-type" data-col="type">Type</th>
+                                <th class="col-id" data-col="osm_id">OSM ID</th>
+                                <th class="col-height" data-col="height">Height</th>
+                                <th class="col-prev" data-col="prev">Prev</th>
+                                <th class="col-delta" data-col="delta">Delta</th>
+                                <th data-col="name">Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body"></tbody>
+                    </table>
+                </div>
+                <div class="table-pagination">
+                    <select id="page-size"><option value="50">50</option><option value="100">100</option><option value="200">200</option></select>
+                    <span>per page</span>
+                    <span class="spacer"></span>
+                    <span id="page-info">0 of 0</span>
+                    <button id="page-prev" disabled>&laquo; Prev</button>
+                    <button id="page-next" disabled>Next &raquo;</button>
+                </div>
+            </div>
+        </div>
 
+        <!-- Sidebar (right) -->
+        <div class="sidebar">
             <!-- Step 1 -->
             <div class="step" id="step-1" data-step="1">
                 <div class="step-header" onclick="toggleStep(1)">
                     <span class="step-indicator indicator-active" id="ind-1">1</span>
                     <span class="step-title">Select Area</span>
-                    <span class="step-chevron">▾</span>
+                    <span class="step-chevron">&#9662;</span>
                 </div>
                 <div class="step-body">
-                    <p class="step-hint">Click "Draw Area", then click and drag on the map to select a rectangle of buildings.</p>
+                    <p class="step-hint">Click "Draw Area", then click and drag on the map to select buildings.</p>
                     <div class="bbox-display empty" id="bbox-display">No area selected</div>
                     <div class="btn-group">
                         <button class="btn btn-secondary" id="btn-draw">Draw Area</button>
@@ -193,8 +323,8 @@
                 <div class="step-header" onclick="toggleStep(2)">
                     <span class="step-indicator indicator-waiting" id="ind-2">2</span>
                     <span class="step-title">Processing</span>
-                    <span class="step-lock" id="lock-2">🔒</span>
-                    <span class="step-chevron">▾</span>
+                    <span class="step-lock" id="lock-2">&#128274;</span>
+                    <span class="step-chevron">&#9662;</span>
                 </div>
                 <div class="step-body">
                     <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
@@ -207,26 +337,24 @@
                 <div class="step-header" onclick="toggleStep(3)">
                     <span class="step-indicator indicator-waiting" id="ind-3">3</span>
                     <span class="step-title">Review Results</span>
-                    <span class="step-lock" id="lock-3">🔒</span>
-                    <span class="step-chevron">▾</span>
+                    <span class="step-lock" id="lock-3">&#128274;</span>
+                    <span class="step-chevron">&#9662;</span>
                 </div>
                 <div class="step-body">
-                    <p class="step-hint">Click on a 3D building to inspect its properties. Green buildings have a new <code>height</code> tag.</p>
+                    <p class="step-hint">Click buildings on the map or rows in the table to inspect. Use checkboxes to select which to upload.</p>
                     <div class="stats" id="stats">
-                        <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Total</div></div>
-                        <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Enriched</div></div>
-                        <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Had Height</div></div>
-                        <div class="stat-card"><div class="stat-value">—</div><div class="stat-label">Skipped</div></div>
+                        <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Total</div></div>
+                        <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Enriched</div></div>
+                        <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Had Height</div></div>
+                        <div class="stat-card"><div class="stat-value">&mdash;</div><div class="stat-label">Skipped</div></div>
                     </div>
-                    <div class="legend" style="margin-top:10px;">
-                        <div class="legend-item"><div class="legend-dot" style="background:#4CAF50;"></div> Enriched — new <code>height</code> tag</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#2196F3;"></div> Already had height — untouched</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#FF9800;"></div> Has roof tags — not modified</div>
-                        <div class="legend-item"><div class="legend-dot" style="background:#8D6E63;"></div> Small footprint + tall — likely trees</div>
-                    <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped — complex or no data</div>
-                    </div>
-                    <div class="btn-group" style="margin-top:10px;">
-                        <button class="btn btn-secondary" id="btn-download" disabled>Download GeoJSON</button>
+                    <div class="legend" style="margin-top:8px;">
+                        <div class="legend-item"><div class="legend-dot" style="background:#4CAF50;"></div> Enriched</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#FFC107;"></div> Improved</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#2196F3;"></div> Had height</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#FF9800;"></div> Roof tags</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#8D6E63;"></div> Trees</div>
+                        <div class="legend-item"><div class="legend-dot" style="background:#9E9E9E;"></div> Skipped</div>
                     </div>
                 </div>
             </div>
@@ -236,11 +364,11 @@
                 <div class="step-header" onclick="toggleStep(4)">
                     <span class="step-indicator indicator-waiting" id="ind-4">4</span>
                     <span class="step-title">Upload to OSM</span>
-                    <span class="step-lock" id="lock-4">🔒</span>
-                    <span class="step-chevron">▾</span>
+                    <span class="step-lock" id="lock-4">&#128274;</span>
+                    <span class="step-chevron">&#9662;</span>
                 </div>
                 <div class="step-body">
-                    <p class="step-hint">Adds <code>height</code> and <code>source:height</code> tags to existing OSM ways. Buildings with existing height or roof tags are never modified.</p>
+                    <p class="step-hint">Uploads selected buildings with <code>height</code> and <code>source:height</code> tags.</p>
                     <div id="osm-login-area">
                         <input type="text" id="osm-client-id" placeholder="Your OAuth2 Client ID" class="form-input" style="margin-bottom:4px;">
                         <details style="font-size:11px; color:#888; margin-bottom:8px;">
@@ -257,7 +385,7 @@
                         </details>
                         <button class="btn btn-secondary" id="btn-osm-login" disabled>Login with OpenStreetMap</button>
                     </div>
-                    <div style="margin-bottom:10px;">
+                    <div style="margin-bottom:8px; margin-top:8px;">
                         <label style="font-size:12px; color:#666; display:flex; justify-content:space-between;">
                             <span>Rate limit</span>
                             <span id="rate-limit-value">1000 edits/hr</span>
@@ -266,11 +394,11 @@
                         <div style="display:flex; justify-content:space-between; font-size:10px; color:#aaa;"><span>100</span><span>5000</span></div>
                     </div>
                     <div id="osm-logged-in" style="display:none;">
-                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:8px 12px; background:#e8f5e9; border-radius:6px; font-size:13px;">
+                        <div style="display:flex; align-items:center; gap:8px; margin-bottom:8px; padding:6px 10px; background:#e8f5e9; border-radius:6px; font-size:12px;">
                             <span style="color:#2e7d32;">Logged in as <strong id="osm-display-name"></strong></span>
-                            <button style="margin-left:auto; background:none; border:none; color:#888; cursor:pointer; font-size:12px;" id="btn-osm-logout">Logout</button>
+                            <button style="margin-left:auto; background:none; border:none; color:#888; cursor:pointer; font-size:11px;" id="btn-osm-logout">Logout</button>
                         </div>
-                        <button class="btn btn-primary" id="btn-upload" disabled>Upload to OSM</button>
+                        <button class="btn btn-primary" id="btn-upload" disabled>Upload selected (0)</button>
                     </div>
                     <div id="upload-progress" style="display:none; margin-top:8px;">
                         <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill"></div></div>
@@ -279,12 +407,13 @@
                     <div class="log-area" id="upload-log" style="margin-top:8px; display:none;"></div>
                 </div>
             </div>
+        </div>
+    </div>
 
-        </div>
-        <div class="sidebar-footer">
-            <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Source Code</a>
-            <span>Data: <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a> (OGD) + <a href="https://www.openstreetmap.org" target="_blank">OSM</a></span>
-        </div>
+    <!-- Footer (full width) -->
+    <div class="app-footer">
+        <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Source Code</a>
+        <span>Data: <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a> (OGD) + <a href="https://www.openstreetmap.org" target="_blank">OSM</a></span>
     </div>
 </div>
 
@@ -298,21 +427,18 @@ var currentStep = 1;
 
 function toggleStep(n) {
     var step = document.getElementById('step-' + n);
-    if (step.classList.contains('locked')) return; // locked steps can't toggle
+    if (step.classList.contains('locked')) return;
     step.classList.toggle('collapsed');
 }
 
 function setStepState(n, state) {
-    // state: 'waiting', 'active', 'running', 'done', 'error'
     var ind = document.getElementById('ind-' + n);
     ind.className = 'step-indicator indicator-' + state;
-    var symbols = { waiting: String(n), active: String(n), running: '⟳', done: '✓', error: '!' };
+    var symbols = { waiting: String(n), active: String(n), running: '\u27F3', done: '\u2713', error: '!' };
     ind.textContent = symbols[state] || String(n);
 
     var step = document.getElementById('step-' + n);
     var lock = document.getElementById('lock-' + n);
-
-    // Unlock when not waiting
     if (state !== 'waiting') {
         step.classList.remove('locked');
         if (lock) lock.style.display = 'none';
@@ -321,14 +447,12 @@ function setStepState(n, state) {
         if (lock) lock.style.display = '';
     }
 
-    // Update wizard bar
     var wiz = document.getElementById('wiz-' + n);
     if (wiz) {
         wiz.className = 'wizard-step';
         if (state === 'done') wiz.classList.add('done');
         else if (state === 'active' || state === 'running') wiz.classList.add('active');
     }
-    // Update connector before this step
     if (n > 1) {
         var conn = document.getElementById('wiz-c' + (n - 1));
         if (conn) {
@@ -344,13 +468,10 @@ function unlockAndExpandStep(n) {
     var lock = document.getElementById('lock-' + n);
     if (lock) lock.style.display = 'none';
     setStepState(n, 'active');
-    // Scroll into view after a short delay for transition
     setTimeout(function() { step.scrollIntoView({ behavior: 'smooth', block: 'nearest' }); }, 100);
 }
 
-function collapseStep(n) {
-    document.getElementById('step-' + n).classList.add('collapsed');
-}
+function collapseStep(n) { document.getElementById('step-' + n).classList.add('collapsed'); }
 
 // =============================================
 // UI helpers
@@ -360,19 +481,481 @@ function setProgress(pct) { document.getElementById('progress-fill').style.width
 function clearLog() { document.getElementById('log-area').innerHTML = ''; }
 function addLog(type, text) { var el = document.getElementById('log-area'); var line = document.createElement('div'); line.className = 'log-' + type; line.textContent = text; el.appendChild(line); el.scrollTop = el.scrollHeight; }
 
-function renderStats(total, enriched, alreadyHad, skipped) {
-    return '<div class="stat-card"><div class="stat-value">' + total + '</div><div class="stat-label">Total</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + enriched + '</div><div class="stat-label">Enriched</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + alreadyHad + '</div><div class="stat-label">Had Height</div></div>' +
-        '<div class="stat-card"><div class="stat-value">' + skipped + '</div><div class="stat-label">Skipped</div></div>';
+function showMapStatus(step) {
+    document.getElementById('map-status-step').textContent = step;
+    document.getElementById('map-status-count').textContent = '';
+    document.getElementById('map-status').classList.remove('hidden');
+}
+function updateMapStatusCount(cur, tot) { document.getElementById('map-status-count').textContent = cur + ' / ' + tot; }
+function hideMapStatus() { document.getElementById('map-status').classList.add('hidden'); }
+
+function renderStats(stats) {
+    var html = '<div class="stat-card"><div class="stat-value">' + stats.total + '</div><div class="stat-label">Total</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + stats.enriched + '</div><div class="stat-label">Enriched</div></div>';
+    if (stats.improved && stats.improved !== '\u2014' && stats.improved > 0) {
+        html += '<div class="stat-card"><div class="stat-value">' + stats.improved + '</div><div class="stat-label">Improved</div></div>';
+    }
+    html += '<div class="stat-card"><div class="stat-value">' + stats.alreadyHad + '</div><div class="stat-label">Had Height</div></div>' +
+        '<div class="stat-card"><div class="stat-value">' + stats.skipped + '</div><div class="stat-label">Skipped</div></div>';
+    if (stats.parts && stats.parts !== '\u2014' && stats.parts > 0) {
+        html += '<div class="stat-card"><div class="stat-value">' + stats.enrichedParts + '/' + stats.parts + '</div><div class="stat-label">Parts</div></div>';
+    }
+    return html;
 }
 
 function showResults(stats) {
-    document.getElementById('stats').innerHTML = renderStats(stats.total, stats.enriched, stats.alreadyHad, stats.skipped);
-    document.getElementById('btn-download').disabled = false;
+    document.getElementById('stats').innerHTML = renderStats(stats);
     document.getElementById('btn-osm-login').disabled = false;
     document.getElementById('btn-upload').disabled = false;
 }
+
+// =============================================
+// Review table state
+// =============================================
+var tableRows = [];          // derived row data
+var checkedIds = {};          // osm_id -> true/false
+var tablePage = 1;
+var tablePageSize = 50;
+var tableSortCol = 'status';
+var tableSortDir = 'asc';
+var tableSearchQ = '';
+var tableFilterMode = 'all'; // 'all', 'new', 'improved', 'attention'
+
+function getFeatureStatus(p) {
+    if (p['_prev_height']) return { label: 'Improved', color: '#FFC107', order: 1 };
+    if (p['source:height']) return { label: 'Enriched', color: '#4CAF50', order: 0 };
+    if (p['_skip_reason'] === 'has_height' || (!p['source:height'] && p.height)) return { label: 'Had height', color: '#2196F3', order: 3 };
+    if (p['_skip_reason'] === 'roof') return { label: 'Roof tags', color: '#FF9800', order: 4 };
+    if (p['_skip_reason'] === 'tree_canopy') return { label: 'Trees', color: '#8D6E63', order: 5 };
+    return { label: 'Skipped', color: '#9E9E9E', order: 6 };
+}
+
+function isRecommended(p) {
+    return !!p['source:height'] || !!p['_prev_height'];
+}
+
+function isAttention(h, delta) {
+    // Near thresholds (possibly wrong)
+    if (h !== null && (h >= 2 && h <= 4)) return true;
+    if (h !== null && (h >= 50 && h <= 60)) return true;
+    // Large delta on improved parts
+    if (delta !== null && Math.abs(delta) > 5) return true;
+    return false;
+}
+
+function buildTableData(geojson) {
+    tableRows = [];
+    checkedIds = {};
+    var counts = { all: 0, new_: 0, improved: 0, attention: 0 };
+    for (var i = 0; i < geojson.features.length; i++) {
+        var f = geojson.features[i];
+        var p = f.properties;
+        var st = getFeatureStatus(p);
+        var h = p.height ? parseFloat(p.height) : null;
+        var prev = p['_prev_height'] ? parseFloat(p['_prev_height']) : null;
+        var delta = (h !== null && prev !== null) ? h - prev : null;
+        var rec = isRecommended(p);
+        var att = rec && isAttention(h, delta);
+        var row = {
+            osm_id: p.osm_id,
+            osm_type: p.osm_type,
+            status: st.label,
+            statusColor: st.color,
+            statusOrder: st.order,
+            type: p['_is_part'] ? 'bldg:part' : (p.osm_type === 'relation' ? 'relation' : 'way'),
+            height: h,
+            prev: prev,
+            delta: delta,
+            name: p.name || p['addr:street'] || '',
+            recommended: rec,
+            attention: att,
+            feature: f,
+        };
+        tableRows.push(row);
+        checkedIds[p.osm_id] = rec;
+        counts.all++;
+        if (st.label === 'Enriched') counts.new_++;
+        if (st.label === 'Improved') counts.improved++;
+        if (att) counts.attention++;
+    }
+    // Update pill counts
+    document.getElementById('pill-all').textContent = counts.all;
+    document.getElementById('pill-new').textContent = counts.new_;
+    document.getElementById('pill-improved').textContent = counts.improved;
+    document.getElementById('pill-attention').textContent = counts.attention;
+    updateSelectionCount();
+}
+
+function getFilteredRows() {
+    var rows = tableRows;
+    // Filter by pill
+    if (tableFilterMode === 'new') {
+        rows = rows.filter(function(r) { return r.status === 'Enriched'; });
+    } else if (tableFilterMode === 'improved') {
+        rows = rows.filter(function(r) { return r.status === 'Improved'; });
+    } else if (tableFilterMode === 'attention') {
+        rows = rows.filter(function(r) { return r.attention; });
+    }
+    // Filter by search
+    var q = tableSearchQ.toLowerCase();
+    if (q) {
+        rows = rows.filter(function(r) {
+            return String(r.osm_id).indexOf(q) !== -1 || r.name.toLowerCase().indexOf(q) !== -1 || r.status.toLowerCase().indexOf(q) !== -1;
+        });
+    }
+    // Sort
+    var col = tableSortCol;
+    var dir = tableSortDir === 'asc' ? 1 : -1;
+    rows = rows.slice().sort(function(a, b) {
+        var va, vb;
+        if (col === 'status') { va = a.statusOrder; vb = b.statusOrder; }
+        else if (col === 'osm_id') { va = a.osm_id; vb = b.osm_id; }
+        else if (col === 'height') { va = a.height || 0; vb = b.height || 0; }
+        else if (col === 'prev') { va = a.prev || 0; vb = b.prev || 0; }
+        else if (col === 'delta') { va = a.delta || 0; vb = b.delta || 0; }
+        else if (col === 'type') { va = a.type; vb = b.type; }
+        else if (col === 'name') { va = a.name; vb = b.name; }
+        else { va = a.statusOrder; vb = b.statusOrder; }
+        if (va < vb) return -dir;
+        if (va > vb) return dir;
+        return 0;
+    });
+    return rows;
+}
+
+function renderTable() {
+    var rows = getFilteredRows();
+    var total = rows.length;
+    var maxPage = Math.max(1, Math.ceil(total / tablePageSize));
+    if (tablePage > maxPage) tablePage = maxPage;
+
+    var start = (tablePage - 1) * tablePageSize;
+    var end = Math.min(start + tablePageSize, total);
+    var page = rows.slice(start, end);
+
+    var tbody = document.getElementById('table-body');
+    var html = '';
+    for (var i = 0; i < page.length; i++) {
+        var r = page[i];
+        var checked = checkedIds[r.osm_id] ? ' checked' : '';
+        var hStr = r.height !== null ? r.height.toFixed(1) + 'm' : '\u2014';
+        var pStr = r.prev !== null ? r.prev.toFixed(1) + 'm' : '\u2014';
+        var dStr = r.delta !== null ? (r.delta >= 0 ? '+' : '') + r.delta.toFixed(1) + 'm' : '\u2014';
+        html += '<tr data-osm-id="' + r.osm_id + '">' +
+            '<td><input type="checkbox"' + checked + ' data-id="' + r.osm_id + '"></td>' +
+            '<td><span class="status-dot" style="background:' + r.statusColor + ';"></span>' + r.status + '</td>' +
+            '<td>' + r.type + '</td>' +
+            '<td><a class="osm-link" href="https://www.openstreetmap.org/' + r.osm_type + '/' + r.osm_id + '" target="_blank" rel="noopener" onclick="event.stopPropagation();">' + r.osm_id + '</a></td>' +
+            '<td>' + hStr + '</td>' +
+            '<td>' + pStr + '</td>' +
+            '<td>' + dStr + '</td>' +
+            '<td title="' + escHtml(r.name) + '">' + escHtml(r.name) + '</td>' +
+            '</tr>';
+    }
+    tbody.innerHTML = html;
+
+    // Pagination
+    document.getElementById('page-info').textContent = (total > 0 ? (start + 1) + '\u2013' + end : '0') + ' of ' + total;
+    document.getElementById('page-prev').disabled = tablePage <= 1;
+    document.getElementById('page-next').disabled = tablePage >= maxPage;
+
+    // Sort header indicators
+    var ths = document.querySelectorAll('.review-table th[data-col]');
+    for (var t = 0; t < ths.length; t++) {
+        ths[t].classList.remove('sort-asc', 'sort-desc');
+        if (ths[t].getAttribute('data-col') === tableSortCol) {
+            ths[t].classList.add('sort-' + tableSortDir);
+        }
+    }
+}
+
+function updateSelectionCount() {
+    var count = 0;
+    for (var id in checkedIds) { if (checkedIds[id]) count++; }
+    document.getElementById('table-selection-count').textContent = count + ' selected';
+    var btn = document.getElementById('btn-upload');
+    if (btn) btn.textContent = 'Upload selected (' + count + ')';
+}
+
+function showTablePanel() {
+    var tc = document.getElementById('table-container');
+    var rh = document.getElementById('resize-handle');
+    var tab = document.getElementById('table-toggle-tab');
+    tc.classList.add('visible');
+    rh.style.display = 'block';
+    tab.style.display = 'none';
+    // Set initial 50/50 split
+    var mc = document.getElementById('map-container');
+    mc.style.flex = '1';
+    tc.style.flex = '1';
+    mc.style.height = '';
+    tc.style.height = '';
+    setTimeout(function() { map.resize(); }, 50);
+}
+
+function hideTable() {
+    var tc = document.getElementById('table-container');
+    var rh = document.getElementById('resize-handle');
+    var tab = document.getElementById('table-toggle-tab');
+    tc.classList.remove('visible');
+    rh.style.display = 'none';
+    tab.style.display = 'block';
+    var mc = document.getElementById('map-container');
+    mc.style.flex = '1';
+    mc.style.height = '';
+    setTimeout(function() { map.resize(); }, 50);
+}
+
+function showTable() {
+    showTablePanel();
+    renderTable();
+}
+
+function resetTable() {
+    tableRows = [];
+    checkedIds = {};
+    tablePage = 1;
+    tableSearchQ = '';
+    tableFilterMode = 'all';
+    document.getElementById('table-search').value = '';
+    document.getElementById('table-body').innerHTML = '';
+    // Reset filter pills
+    var pills = document.querySelectorAll('.filter-pill');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    var allPill = document.querySelector('.filter-pill[data-filter="all"]');
+    if (allPill) allPill.classList.add('active');
+    document.getElementById('table-container').classList.remove('visible');
+    document.getElementById('resize-handle').style.display = 'none';
+    document.getElementById('table-toggle-tab').style.display = 'none';
+    var mc = document.getElementById('map-container');
+    mc.style.flex = '1';
+    mc.style.height = '';
+    updateSelectionCount();
+}
+
+// Table event handlers
+document.getElementById('table-search').oninput = function() {
+    tableSearchQ = this.value.trim();
+    tablePage = 1;
+    renderTable();
+};
+
+document.getElementById('page-size').onchange = function() {
+    tablePageSize = parseInt(this.value);
+    tablePage = 1;
+    renderTable();
+};
+
+document.getElementById('page-prev').onclick = function() { if (tablePage > 1) { tablePage--; renderTable(); } };
+document.getElementById('page-next').onclick = function() { tablePage++; renderTable(); };
+
+// Sort by column header click
+document.querySelector('.review-table thead').onclick = function(e) {
+    var th = e.target.closest('th[data-col]');
+    if (!th) return;
+    var col = th.getAttribute('data-col');
+    if (tableSortCol === col) {
+        tableSortDir = tableSortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+        tableSortCol = col;
+        tableSortDir = 'asc';
+    }
+    renderTable();
+};
+
+// Checkbox clicks in table body
+document.getElementById('table-body').onclick = function(e) {
+    var cb = e.target.closest('input[type="checkbox"]');
+    if (cb) {
+        var id = parseInt(cb.getAttribute('data-id'));
+        checkedIds[id] = cb.checked;
+        updateSelectionCount();
+        e.stopPropagation();
+        return;
+    }
+    // Row click -> fly to building
+    var tr = e.target.closest('tr[data-osm-id]');
+    if (tr) {
+        var osmId = parseInt(tr.getAttribute('data-osm-id'));
+        highlightTableRow(osmId);
+        flyToFeature(osmId);
+    }
+};
+
+// Select recommended / select all toggles
+document.getElementById('table-select-recommended').onchange = function() {
+    for (var i = 0; i < tableRows.length; i++) {
+        if (tableRows[i].recommended) checkedIds[tableRows[i].osm_id] = this.checked;
+    }
+    if (!this.checked) document.getElementById('table-select-all').checked = false;
+    updateSelectionCount();
+    renderTable();
+};
+document.getElementById('table-select-all').onchange = function() {
+    for (var i = 0; i < tableRows.length; i++) {
+        checkedIds[tableRows[i].osm_id] = this.checked;
+    }
+    if (this.checked) document.getElementById('table-select-recommended').checked = true;
+    updateSelectionCount();
+    renderTable();
+};
+
+document.getElementById('btn-table-collapse').onclick = function() { hideTable(); };
+
+// Page checkbox toggle
+document.getElementById('th-check-all').onchange = function() {
+    var rows = getFilteredRows();
+    var start = (tablePage - 1) * tablePageSize;
+    var end = Math.min(start + tablePageSize, rows.length);
+    for (var i = start; i < end; i++) {
+        checkedIds[rows[i].osm_id] = this.checked;
+    }
+    updateSelectionCount();
+    renderTable();
+};
+
+// Filter pills
+document.getElementById('filter-pills').onclick = function(e) {
+    var pill = e.target.closest('.filter-pill');
+    if (!pill) return;
+    tableFilterMode = pill.getAttribute('data-filter');
+    tablePage = 1;
+    var pills = this.querySelectorAll('.filter-pill');
+    for (var i = 0; i < pills.length; i++) pills[i].classList.remove('active');
+    pill.classList.add('active');
+    renderTable();
+};
+
+// Download dropdown
+document.getElementById('btn-dl-toggle').onclick = function(e) {
+    e.stopPropagation();
+    document.getElementById('dl-dropdown-menu').classList.toggle('open');
+};
+document.addEventListener('click', function() {
+    document.getElementById('dl-dropdown-menu').classList.remove('open');
+});
+
+function downloadCSV() {
+    if (!tableRows.length) return;
+    var header = 'osm_id,osm_type,status,type,height,prev_height,delta,name,selected\n';
+    var csv = header;
+    for (var i = 0; i < tableRows.length; i++) {
+        var r = tableRows[i];
+        csv += r.osm_id + ',' + r.osm_type + ',' + r.status + ',' + r.type + ',' +
+            (r.height !== null ? r.height : '') + ',' +
+            (r.prev !== null ? r.prev : '') + ',' +
+            (r.delta !== null ? r.delta : '') + ',' +
+            '"' + r.name.replace(/"/g, '""') + '",' +
+            (checkedIds[r.osm_id] ? 'yes' : 'no') + '\n';
+    }
+    var blob = new Blob([csv], { type: 'text/csv' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'building_heights_review.csv'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+function downloadGeoJSON() {
+    if (!resultGeoJSON) return;
+    var cleanFeatures = resultGeoJSON.features.map(function(f) {
+        var cleanProps = {};
+        for (var k in f.properties) {
+            if (k.charAt(0) !== '_') cleanProps[k] = f.properties[k];
+        }
+        return { type: 'Feature', geometry: f.geometry, properties: cleanProps };
+    });
+    var cleanGeoJSON = { type: 'FeatureCollection', features: cleanFeatures };
+    var blob = new Blob([JSON.stringify(cleanGeoJSON)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a'); a.href = url; a.download = 'osm_buildings_enriched.geojson'; a.click();
+    URL.revokeObjectURL(url);
+}
+
+document.getElementById('btn-dl-geojson').onclick = function() { downloadGeoJSON(); };
+document.getElementById('btn-dl-csv').onclick = function() { downloadCSV(); };
+
+// =============================================
+// Map-table sync
+// =============================================
+function highlightTableRow(osmId) {
+    // Remove previous highlight
+    var prev = document.querySelector('.review-table .row-highlighted');
+    if (prev) prev.classList.remove('row-highlighted');
+    // Find and highlight row — navigate to correct page if needed
+    var rows = getFilteredRows();
+    var idx = -1;
+    for (var i = 0; i < rows.length; i++) {
+        if (rows[i].osm_id === osmId) { idx = i; break; }
+    }
+    if (idx === -1) return;
+    var neededPage = Math.floor(idx / tablePageSize) + 1;
+    if (neededPage !== tablePage) {
+        tablePage = neededPage;
+        renderTable();
+    }
+    var tr = document.querySelector('tr[data-osm-id="' + osmId + '"]');
+    if (tr) {
+        tr.classList.add('row-highlighted');
+        tr.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+}
+
+function flyToFeature(osmId) {
+    if (!resultGeoJSON) return;
+    var feature = null;
+    for (var i = 0; i < resultGeoJSON.features.length; i++) {
+        if (resultGeoJSON.features[i].properties.osm_id === osmId) {
+            feature = resultGeoJSON.features[i];
+            break;
+        }
+    }
+    if (!feature) return;
+
+    // Compute centroid
+    var coords = feature.geometry.coordinates[0];
+    var cx = 0, cy = 0;
+    for (var j = 0; j < coords.length; j++) { cx += coords[j][0]; cy += coords[j][1]; }
+    cx /= coords.length; cy /= coords.length;
+
+    // Fly to and highlight
+    map.flyTo({ center: [cx, cy], zoom: Math.max(map.getZoom(), 17), duration: 600 });
+    map.setFilter('result-selected', ['==', ['get', 'osm_id'], osmId]);
+    map.setLayoutProperty('result-selected', 'visibility', 'visible');
+}
+
+// =============================================
+// Resize handle
+// =============================================
+(function() {
+    var handle = document.getElementById('resize-handle');
+    var leftPanel = document.querySelector('.left-panel');
+    var mapC = document.getElementById('map-container');
+    var tableC = document.getElementById('table-container');
+
+    handle.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        handle.classList.add('dragging');
+        var startY = e.clientY;
+        var startMapH = mapC.offsetHeight;
+        var totalH = leftPanel.offsetHeight - handle.offsetHeight;
+
+        function onMove(ev) {
+            var delta = ev.clientY - startY;
+            var newMapH = Math.max(150, Math.min(totalH - 150, startMapH + delta));
+            mapC.style.flex = 'none';
+            mapC.style.height = newMapH + 'px';
+            tableC.style.flex = 'none';
+            tableC.style.height = (totalH - newMapH) + 'px';
+            map.resize();
+        }
+        function onUp() {
+            handle.classList.remove('dragging');
+            document.removeEventListener('mousemove', onMove);
+            document.removeEventListener('mouseup', onUp);
+        }
+        document.addEventListener('mousemove', onMove);
+        document.addEventListener('mouseup', onUp);
+    });
+})();
 
 // =============================================
 // Map
@@ -391,6 +974,7 @@ map.on('load', function() {
         id: 'result-fill', type: 'fill-extrusion', source: 'result-buildings',
         paint: {
             'fill-extrusion-color': ['case',
+                ['has', '_prev_height'], '#FFC107',
                 ['has', 'source:height'], '#4CAF50',
                 ['==', ['get', '_skip_reason'], 'roof'], '#FF9800',
                 ['==', ['get', '_skip_reason'], 'tree_canopy'], '#8D6E63',
@@ -398,11 +982,11 @@ map.on('load', function() {
                 '#9E9E9E'
             ],
             'fill-extrusion-height': ['case', ['has', 'height'], ['to-number', ['get', 'height'], 5], 5],
-            'fill-extrusion-base': 0, 'fill-extrusion-opacity': 0.85,
+            'fill-extrusion-base': ['case', ['has', 'min_height'], ['to-number', ['get', 'min_height'], 0], 0],
+            'fill-extrusion-opacity': 0.85,
         },
         layout: { visibility: 'none' },
     });
-    // Selection highlight layer
     map.addLayer({
         id: 'result-selected', type: 'line', source: 'result-buildings',
         paint: { 'line-color': '#fff', 'line-width': 3 },
@@ -445,6 +1029,8 @@ map.on('mouseup', function(e) {
 // Clear
 document.getElementById('btn-clear').onclick = function() {
     bboxStr = null; resultGeoJSON = null;
+    hideMapStatus();
+    resetTable();
     map.getSource('draw-rect').setData({ type: 'FeatureCollection', features: [] });
     map.getSource('result-buildings').setData({ type: 'FeatureCollection', features: [] });
     map.setLayoutProperty('result-fill', 'visibility', 'none');
@@ -453,12 +1039,10 @@ document.getElementById('btn-clear').onclick = function() {
     document.getElementById('bbox-display').classList.add('empty');
     document.getElementById('btn-run').disabled = true;
     document.getElementById('btn-clear').disabled = true;
-    document.getElementById('btn-download').disabled = true;
     document.getElementById('btn-upload').disabled = true;
     document.getElementById('btn-osm-login').disabled = true;
     if (buildingPopup) buildingPopup.remove();
-    document.getElementById('stats').innerHTML = renderStats('—', '—', '—', '—');
-    // Reset all steps
+    document.getElementById('stats').innerHTML = renderStats({ total: '\u2014', enriched: '\u2014', improved: 0, alreadyHad: '\u2014', skipped: '\u2014', parts: 0, enrichedParts: 0 });
     setStepState(1, 'active');
     document.getElementById('step-1').classList.remove('collapsed', 'locked');
     for (var s = 2; s <= 4; s++) {
@@ -467,7 +1051,6 @@ document.getElementById('btn-clear').onclick = function() {
         var lk = document.getElementById('lock-' + s);
         if (lk) lk.style.display = '';
     }
-    // Reset wizard connectors
     for (var c = 1; c <= 3; c++) {
         var conn = document.getElementById('wiz-c' + c);
         if (conn) conn.className = 'wizard-connector';
@@ -478,6 +1061,7 @@ document.getElementById('btn-clear').onclick = function() {
     document.getElementById('upload-log').innerHTML = '';
     document.getElementById('upload-progress').style.display = 'none';
     setProgress(0);
+    setTimeout(function() { map.resize(); }, 50);
 };
 
 // Run pipeline
@@ -487,30 +1071,30 @@ document.getElementById('btn-run').onclick = async function() {
     var kmW = Math.abs(parts[2] - parts[0]) * 111 * Math.cos(parts[1] * Math.PI / 180);
     var kmH = Math.abs(parts[3] - parts[1]) * 111;
     var areaSqKm = kmW * kmH;
-    if (areaSqKm > 25) { alert('Area is ~' + areaSqKm.toFixed(1) + ' km² — maximum is 25 km².\nPlease draw a smaller area.'); return; }
-    if (areaSqKm > 2 && !confirm('Area is ~' + areaSqKm.toFixed(1) + ' km². This may take a while.\n\nContinue?')) return;
+    if (areaSqKm > 25) { alert('Area is ~' + areaSqKm.toFixed(1) + ' km\u00B2 \u2014 maximum is 25 km\u00B2.\nPlease draw a smaller area.'); return; }
+    if (areaSqKm > 2 && !confirm('Area is ~' + areaSqKm.toFixed(1) + ' km\u00B2. This may take a while.\n\nContinue?')) return;
 
     running = true;
     document.getElementById('btn-run').disabled = true;
     document.getElementById('btn-clear').disabled = true;
 
-    // Step 1 done → Step 2 running
     setStepState(1, 'done');
     setStepState(2, 'running');
     unlockAndExpandStep(2);
     clearLog();
     setProgress(0);
     clearPipelineCache();
+    showMapStatus('Extracting buildings...');
 
     await runPipeline(parts, {
-        onStep: function(msg) { addLog('step', msg); },
-        onProgress: function(cur, tot) { setProgress((cur / tot) * 100); },
+        onStep: function(msg) { addLog('step', msg); showMapStatus(msg); },
+        onProgress: function(cur, tot) { setProgress((cur / tot) * 100); updateMapStatusCount(cur, tot); },
         onLog: function(msg) { addLog('info', msg); },
-        onError: function(msg) { addLog('error', msg); setStepState(2, 'error'); },
+        onError: function(msg) { addLog('error', msg); setStepState(2, 'error'); hideMapStatus(); },
         onDone: function(geojson, stats) {
             resultGeoJSON = geojson;
+            hideMapStatus();
 
-            // Step 2 done → unlock Steps 3 & 4
             setStepState(2, 'done');
             setProgress(100);
             showResults(stats);
@@ -521,6 +1105,11 @@ document.getElementById('btn-run').onclick = async function() {
             map.getSource('result-buildings').setData(geojson);
             map.setLayoutProperty('result-fill', 'visibility', 'visible');
             map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+
+            // Build and show review table
+            buildTableData(geojson);
+            showTablePanel();
+            renderTable();
         },
     });
 
@@ -528,7 +1117,7 @@ document.getElementById('btn-run').onclick = async function() {
     document.getElementById('btn-clear').disabled = false;
 };
 
-// Building inspector — popup on map
+// Building inspector
 var buildingPopup = new maplibregl.Popup({ closeButton: true, closeOnClick: true, maxWidth: '320px' });
 
 map.on('click', 'result-fill', function(e) {
@@ -540,38 +1129,43 @@ map.on('click', 'result-fill', function(e) {
     var isTreeCanopy = props['_skip_reason'] === 'tree_canopy';
     var osmId = props.osm_id;
 
-    // Selection highlight
     map.setFilter('result-selected', ['==', ['get', 'osm_id'], osmId]);
     map.setLayoutProperty('result-selected', 'visibility', 'visible');
 
-    // Build popup HTML
-    var html = '<div class="popup-header"><a href="https://www.openstreetmap.org/way/' + escHtml(osmId) + '" target="_blank" rel="noopener">way/' + escHtml(osmId) + ' ↗</a></div>';
+    var isPart = props['_is_part'];
+    var typeLabel = isPart ? 'building:part' : (props.osm_type === 'relation' ? 'relation' : 'way');
+    var html = '<div class="popup-header"><a href="https://www.openstreetmap.org/' + props.osm_type + '/' + escHtml(osmId) + '" target="_blank" rel="noopener">' + typeLabel + ' ' + escHtml(osmId) + ' \u2197</a></div>';
     html += '<div class="popup-body"><table>';
 
-    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1 };
+    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1, _is_part: 1, _has_parts: 1, _prev_height: 1 };
+    var isImproved = !!props['_prev_height'];
     var newKeys = { height: 1, 'source:height': 1 };
     for (var k in props) {
         if (skipKeys[k] || props[k] == null) continue;
-        var isNew = isEnriched && newKeys[k];
+        var isNew = (isEnriched || isImproved) && newKeys[k];
         var isRoofTag = k.indexOf('roof:') === 0;
         var rowClass = isNew ? 'new-tag' : isRoofTag ? 'roof-tag' : '';
         html += '<tr class="' + rowClass + '"><td>' + escHtml(k) + '</td><td>' + escHtml(String(props[k]));
-        if (isNew) html += ' &#10003;';
-        if (isRoofTag) html += ' &#128274;'; // lock icon for roof tags
+        if (isNew && k === 'height' && isImproved) html += ' \u2713 <span style="color:#999;text-decoration:line-through;">' + escHtml(props['_prev_height']) + '</span>';
+        else if (isNew) html += ' \u2713';
+        if (isRoofTag) html += ' \uD83D\uDD12';
         html += '</td></tr>';
     }
     html += '</table></div>';
 
-    // Status footer
-    var statusText = isEnriched ? 'Enriched — height tag will be added' :
-                     isRoof ? 'Skipped — has roof:height tag' :
-                     isTreeCanopy ? 'Skipped — small footprint + tall (likely trees)' :
-                     props.height ? 'Already has height — not modified' :
+    var statusText = isImproved ? 'Improved \u2014 height updated (' + props['_prev_height'] + 'm \u2192 ' + props.height + 'm)' :
+                     isEnriched ? 'Enriched \u2014 height tag will be added' :
+                     isRoof ? 'Skipped \u2014 has roof:height tag' :
+                     isTreeCanopy ? 'Skipped \u2014 small footprint + tall (likely trees)' :
+                     props.height ? 'Already has height \u2014 not modified' :
                      'Skipped';
-    var statusColor = isEnriched ? '#2e7d32' : isRoof ? '#e65100' : isTreeCanopy ? '#5D4037' : props.height ? '#1976D2' : '#999';
+    var statusColor = isImproved ? '#F57F17' : isEnriched ? '#2e7d32' : isRoof ? '#e65100' : isTreeCanopy ? '#5D4037' : props.height ? '#1976D2' : '#999';
     html += '<div class="popup-footer" style="color:' + statusColor + ';">' + statusText + '</div>';
 
     buildingPopup.setLngLat(e.lngLat).setHTML(html).addTo(map);
+
+    // Sync: highlight table row
+    if (tableRows.length > 0) highlightTableRow(osmId);
 });
 
 buildingPopup.on('close', function() {
@@ -581,23 +1175,6 @@ buildingPopup.on('close', function() {
 
 map.on('mouseenter', 'result-fill', function() { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'result-fill', function() { if (!buildingPopup.isOpen()) map.getCanvas().style.cursor = ''; });
-
-// Download
-document.getElementById('btn-download').onclick = function() {
-    if (!resultGeoJSON) return;
-    // Strip internal properties (underscore-prefixed) from download
-    var cleanFeatures = resultGeoJSON.features.map(function(f) {
-        var cleanProps = {};
-        for (var k in f.properties) {
-            if (k.charAt(0) !== '_') cleanProps[k] = f.properties[k];
-        }
-        return { type: 'Feature', geometry: f.geometry, properties: cleanProps };
-    });
-    var cleanGeoJSON = { type: 'FeatureCollection', features: cleanFeatures };
-    var blob = new Blob([JSON.stringify(cleanGeoJSON)], { type: 'application/json' });
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement('a'); a.href = url; a.download = 'osm_buildings_enriched.geojson'; a.click(); URL.revokeObjectURL(url);
-};
 
 // =============================================
 // OAuth + Upload
@@ -609,14 +1186,10 @@ if (savedClientId) document.getElementById('osm-client-id').value = savedClientI
 document.getElementById('btn-osm-login').onclick = async function() {
     var clientId = document.getElementById('osm-client-id').value.trim() || sessionStorage.getItem('osm_client_id');
     if (!clientId) { alert('Please enter your OAuth2 Client ID.'); return; }
-    // Save map position before OAuth redirect
     var mc = map.getCenter();
-    sessionStorage.setItem('osm_elevation_map', JSON.stringify({
-        lng: mc.lng, lat: mc.lat,
-        zoom: map.getZoom(),
-        pitch: map.getPitch(),
-        bearing: map.getBearing(),
-    }));
+    sessionStorage.setItem('osm_elevation_map', JSON.stringify({ lng: mc.lng, lat: mc.lat, zoom: map.getZoom(), pitch: map.getPitch(), bearing: map.getBearing() }));
+    // Save checked IDs
+    sessionStorage.setItem('osm_elevation_checked', JSON.stringify(checkedIds));
     try { await startOAuthLogin(clientId, resultGeoJSON, bboxStr); } catch (e) { addLog('error', e.message); }
 };
 
@@ -633,8 +1206,11 @@ document.getElementById('rate-limit-slider').oninput = function() {
 
 document.getElementById('btn-upload').onclick = async function() {
     if (!resultGeoJSON || !isOsmLoggedIn()) return;
-    var count = resultGeoJSON.features.filter(function(f) { return f.properties['source:height']; }).length;
-    if (!confirm('Upload height tags for ~' + count + ' buildings?\n\nThis modifies live OSM data.')) return;
+    // Get selected features
+    var selectedFeatures = resultGeoJSON.features.filter(function(f) { return checkedIds[f.properties.osm_id]; });
+    var count = selectedFeatures.length;
+    if (count === 0) { alert('No buildings selected for upload.'); return; }
+    if (!confirm('Upload height tags for ' + count + ' buildings?\n\nThis modifies live OSM data.')) return;
 
     setStepState(4, 'running');
     var btn = this; btn.disabled = true; btn.textContent = 'Uploading...';
@@ -654,24 +1230,27 @@ document.getElementById('btn-upload').onclick = async function() {
     }
 
     var rateLimitPerHour = parseInt(slider.value) || 1000;
+    showMapStatus('Uploading to OSM...');
 
-    await uploadToOSM(resultGeoJSON.features,
+    await uploadToOSM(selectedFeatures,
         function(cur, tot) {
             document.getElementById('upload-progress-fill').style.width = (cur / tot * 100) + '%';
             document.getElementById('upload-status-text').textContent = cur + '/' + tot;
+            updateMapStatusCount(cur, tot);
         },
         addUploadLog,
         rateLimitPerHour
     );
 
+    hideMapStatus();
     setStepState(4, 'done');
-    btn.disabled = false; btn.textContent = 'Upload to OSM';
+    btn.disabled = false;
+    btn.textContent = 'Upload selected (' + count + ')';
     slider.disabled = false;
 };
 
 // Handle OAuth callback + restore state
 (async function() {
-    // 1. Handle OAuth callback first (token exchange)
     try {
         var auth = await handleOAuthCallback();
         if (auth) {
@@ -682,14 +1261,12 @@ document.getElementById('btn-upload').onclick = async function() {
         }
     } catch (e) { addLog('error', 'OAuth: ' + e.message); }
 
-    // 2. Restore map position immediately (before map renders first frame)
     var savedMap = sessionStorage.getItem('osm_elevation_map');
     var mapRestored = false;
     if (savedMap) {
         sessionStorage.removeItem('osm_elevation_map');
         try {
             var mv = JSON.parse(savedMap);
-            // jumpTo is synchronous — sets position before first render
             function applyMapPosition() {
                 map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
             }
@@ -698,70 +1275,71 @@ document.getElementById('btn-upload').onclick = async function() {
         } catch (e) { /* ignore */ }
     }
 
-    // 3. Restore workflow state (results, bbox, steps, 3D preview)
     var saved = sessionStorage.getItem('osm_elevation_result');
     var savedBbox = sessionStorage.getItem('osm_elevation_bbox');
+    var savedChecked = sessionStorage.getItem('osm_elevation_checked');
     if (!saved) return;
 
     sessionStorage.removeItem('osm_elevation_result');
     sessionStorage.removeItem('osm_elevation_bbox');
+    sessionStorage.removeItem('osm_elevation_checked');
     try {
         resultGeoJSON = JSON.parse(saved);
         bboxStr = savedBbox || null;
 
-        // Restore UI state
         if (bboxStr) {
             document.getElementById('bbox-display').textContent = bboxStr;
             document.getElementById('bbox-display').classList.remove('empty');
             document.getElementById('btn-clear').disabled = false;
         }
         var total = resultGeoJSON.features.length;
-        var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height']; }).length;
-        var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height']; }).length;
+        var enriched = resultGeoJSON.features.filter(function(f) { return f.properties['source:height'] && !f.properties['_prev_height']; }).length;
+        var improved = resultGeoJSON.features.filter(function(f) { return !!f.properties['_prev_height']; }).length;
+        var alreadyHad = resultGeoJSON.features.filter(function(f) { return f.properties.height && !f.properties['source:height'] && !f.properties['_prev_height']; }).length;
+        var totalParts = resultGeoJSON.features.filter(function(f) { return f.properties['_is_part']; }).length;
+        var enrichedParts = resultGeoJSON.features.filter(function(f) { return f.properties['_is_part'] && f.properties['source:height']; }).length;
         setStepState(1, 'done');
         setStepState(2, 'done');
         unlockAndExpandStep(3);
         unlockAndExpandStep(4);
         setProgress(100);
-        addLog('step', 'Restored ' + enriched + ' enriched buildings from previous session');
-        showResults({ total: total, enriched: enriched, alreadyHad: alreadyHad, skipped: total - enriched - alreadyHad });
+        addLog('step', 'Restored ' + (enriched + improved) + ' enriched buildings from previous session');
+        showResults({ total: total, enriched: enriched, improved: improved, alreadyHad: alreadyHad, skipped: total - enriched - improved - alreadyHad, parts: totalParts, enrichedParts: enrichedParts });
 
-        // Restore 3D preview — wait for source to exist
+        // Restore table
+        buildTableData(resultGeoJSON);
+        if (savedChecked) {
+            try {
+                var restoredChecked = JSON.parse(savedChecked);
+                for (var rid in restoredChecked) checkedIds[rid] = restoredChecked[rid];
+                updateSelectionCount();
+            } catch (e) { /* use defaults */ }
+        }
+        showTablePanel();
+        renderTable();
+
         function restorePreview() {
             var src = map.getSource('result-buildings');
-            if (!src) return; // safety check
+            if (!src) return;
             src.setData(resultGeoJSON);
             map.setLayoutProperty('result-fill', 'visibility', 'visible');
             if (bboxStr) {
                 var p = bboxStr.split(',').map(Number);
                 updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] });
             }
-            if (!mapRestored) {
-                map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
-            }
+            if (!mapRestored) map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
         }
 
-        // Source is added in map.on('load') — wait for it with a polling fallback
         if (map.getSource('result-buildings')) {
             restorePreview();
         } else {
-            // Try on idle first, with a polling fallback for race conditions
             var restored = false;
-            map.once('idle', function() {
-                if (restored) return;
-                restored = true;
-                restorePreview();
-            });
-            // Fallback: poll every 100ms for up to 3 seconds
+            map.once('idle', function() { if (restored) return; restored = true; restorePreview(); });
             var attempts = 0;
             var pollInterval = setInterval(function() {
                 if (restored || attempts > 30) { clearInterval(pollInterval); return; }
                 attempts++;
-                if (map.getSource('result-buildings')) {
-                    restored = true;
-                    clearInterval(pollInterval);
-                    restorePreview();
-                }
+                if (map.getSource('result-buildings')) { restored = true; clearInterval(pollInterval); restorePreview(); }
             }, 100);
         }
     } catch (e) { console.error('Restore failed:', e); }

@@ -33,7 +33,7 @@ flowchart TB
         D -->|processable| E["Create 2m sample grid inside footprint"]
         E --> F["geotiff.js → swissALTI3D COG"]
         E --> G["geotiff.js → swissSURFACE3D COG"]
-        F --> H["height = P95(DSM) − min(DTM)"]
+        F --> H["height = P95(DSM_i − DTM_i)"]
         G --> H
         H -->|< 2m or > 60m| SKIP4["Skip (out of range)"]
         H -->|small footprint + tall| SKIP5["Skip (likely trees, brown)"]
@@ -52,16 +52,18 @@ flowchart TB
     style SKIP5 fill:#efebe9,stroke:#8d6e63
 ```
 
-For each building, a grid of sample points (3m spacing) is created inside the footprint.
+For each building, a grid of sample points (2m spacing) is created inside the footprint.
 At each point, terrain (DTM) and surface (DSM) elevations are read directly from
 swisstopo Cloud Optimized GeoTIFF (COG) files via HTTP range requests — no download needed.
 The building height is computed as:
 
 ```
-height = P95(DSM inside footprint) − min(DTM inside footprint)
-       = 95th percentile roof height − lowest ground contact
+height_i = DSM_i − DTM_i         (per-point height above ground)
+height   = P95(height_i)          (95th percentile of all sample points)
 ```
 
+The per-point difference accounts for sloped terrain correctly — each sample
+measures roof height relative to the ground directly beneath it.
 The 95th percentile filters outliers from chimneys, antennas, and overhanging trees.
 `max()` would overestimate due to these point features in the DSM.
 
@@ -207,7 +209,7 @@ No npm, no webpack, no build step, no server-side code.
 
 - **Vegetation**: DSM includes tree canopy — buildings under/near trees may have inflated heights (mitigated by P95)
 - **Temporal mismatch**: DTM and DSM tiles may be from different years (2017–2025)
-- **Small footprints**: Buildings < 2m² use a single sample point (centroid), less accurate
+- **Small footprints**: Very small buildings may use a single sample point (centroid), less accurate
 - **Spires/antennas**: filtered by P95 + 60m max threshold, but short spires on small buildings may still inflate values
 - **Area size limit**: hard limit at 25 km² per run; recommended < 2 km² for best performance
 - **Swiss coverage only**: swisstopo elevation data covers Switzerland; buildings outside are skipped

@@ -135,16 +135,19 @@ async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
         return h >= 2 && h <= 60;
     });
 
+    var parts = toUpload.filter(function(f) { return f.properties['_is_part']; }).length;
     var relations = features.filter(function(f) { return f.properties.osm_type === 'relation' && f.properties['source:height']; }).length;
     var preFiltered = features.length - toUpload.length;
-    onLog('info', toUpload.length + ' ways to upload, ' + preFiltered + ' skipped' + (relations > 0 ? ' (' + relations + ' relations — upload not supported yet)' : ''));
+    onLog('info', toUpload.length + ' ways to upload (' + (toUpload.length - parts) + ' buildings + ' + parts + ' building:part), ' + preFiltered + ' skipped' + (relations > 0 ? ' (' + relations + ' relations — upload not supported yet)' : ''));
 
     if (toUpload.length === 0) throw new Error('No buildings to upload');
 
-    // Build lookup: osm_id → computed height
+    // Build lookups: osm_id → computed height, and set of improved IDs
     var heightByOsmId = {};
+    var improvedIds = {};
     for (var i = 0; i < toUpload.length; i++) {
         heightByOsmId[toUpload[i].properties.osm_id] = toUpload[i].properties.height;
+        if (toUpload[i].properties['_prev_height']) improvedIds[toUpload[i].properties.osm_id] = true;
     }
 
     var updated = 0, errors = 0, skippedAtUpload = 0, changesetId = null;
@@ -196,7 +199,7 @@ async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
         onLog('step', 'Building changeset...');
 
         var csBody = '<osm><changeset>' +
-            '<tag k="comment" v="Add building heights from swisstopo DSM/DTM elevation models"/>' +
+            '<tag k="comment" v="Add/update building heights from swisstopo DSM/DTM elevation models"/>' +
             '<tag k="source" v="swisstopo/swissALTI3D;swissSURFACE3D"/>' +
             '<tag k="created_by" v="osm-height (bbl-dres/property-inventory)"/>' +
             '</changeset></osm>';
@@ -219,8 +222,9 @@ async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
             var computedHeight = heightByOsmId[w.id];
             if (!computedHeight) continue;
 
-            // Safety re-check
-            if (w.tags['height'] || w.tags['roof:height']) {
+            // Safety re-check — allow improved building:part ways through
+            // (they already have height in OSM, but we're updating it)
+            if (!improvedIds[w.id] && (w.tags['height'] || w.tags['roof:height'])) {
                 skippedAtUpload++;
                 continue;
             }

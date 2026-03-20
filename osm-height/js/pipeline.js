@@ -241,6 +241,7 @@ function computeBuildingHeightSync(feature) {
         elevation_ground: Math.round(minDTM * 10) / 10,
         elevation_roof: Math.round(maxDSM * 10) / 10,
         sample_points: heights.length,
+        lv95Ring: lv95Coords,
     };
 }
 
@@ -251,7 +252,7 @@ var OVERPASS_URL = 'https://overpass.osm.ch/api/interpreter';
 
 async function extractBuildings(bbox, onLog) {
     var west = bbox[0], south = bbox[1], east = bbox[2], north = bbox[3];
-    var query = '[out:json][timeout:180];(way["building"](' + south + ',' + west + ',' + north + ',' + east + ');relation["building"](' + south + ',' + west + ',' + north + ',' + east + '););out body;>;out skel qt;';
+    var query = '[out:json][timeout:180];(way["building"](' + south + ',' + west + ',' + north + ',' + east + ');way["building:part"](' + south + ',' + west + ',' + north + ',' + east + ');relation["building"](' + south + ',' + west + ',' + north + ',' + east + '););out body;>;out skel qt;';
 
     if (onLog) onLog('Extracting OSM buildings...');
     var resp = await fetch(OVERPASS_URL, {
@@ -272,15 +273,41 @@ async function extractBuildings(bbox, onLog) {
     }
 
     var features = [];
-    var tagsToCopy = ['height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'roof:levels', 'roof:colour', 'roof:material', 'name', 'addr:street', 'addr:housenumber'];
+    var tagsToCopy = ['height', 'source:height', 'building:levels', 'min_height', 'roof:height', 'roof:shape', 'roof:levels', 'roof:colour', 'roof:material', 'name', 'addr:street', 'addr:housenumber', 'building:part'];
 
     // Build ways lookup for relation member resolution
     var waysById = {};
+    // Detect buildings that have building:part ways (shared nodes)
+    var buildingNodeSets = {}; // wayId → Set of node IDs (for building outlines)
+    var partNodeIds = new Set(); // all node IDs used by building:part ways
+
+    // First pass: collect node IDs for buildings and parts
+    for (var jp = 0; jp < data.elements.length; jp++) {
+        var elp = data.elements[jp];
+        if (elp.type !== 'way' || !elp.tags || !elp.nodes) continue;
+        if (elp.tags.building) {
+            var ns = new Set();
+            for (var np = 0; np < elp.nodes.length; np++) ns.add(elp.nodes[np]);
+            buildingNodeSets[elp.id] = ns;
+        }
+        if (elp.tags['building:part'] && !elp.tags.building) {
+            for (var np2 = 0; np2 < elp.nodes.length; np2++) partNodeIds.add(elp.nodes[np2]);
+        }
+    }
+    // Mark building outlines that share nodes with building:part ways
+    var buildingsWithParts = {};
+    for (var bwId in buildingNodeSets) {
+        var bns = buildingNodeSets[bwId];
+        bns.forEach(function(nid) {
+            if (partNodeIds.has(nid)) buildingsWithParts[bwId] = true;
+        });
+    }
+
     for (var j = 0; j < data.elements.length; j++) {
         var el2 = data.elements[j];
         if (el2.type === 'way') waysById[el2.id] = el2;
 
-        if (el2.type !== 'way' || !el2.tags || !el2.tags.building) continue;
+        if (el2.type !== 'way' || !el2.tags || (!el2.tags.building && !el2.tags['building:part'])) continue;
         var coords = [];
         for (var n = 0; n < (el2.nodes || []).length; n++) {
             var node = nodes[el2.nodes[n]];
@@ -291,7 +318,13 @@ async function extractBuildings(bbox, onLog) {
             coords.push(coords[0]);
         }
 
+        var isBuildingPart = !el2.tags.building && !!el2.tags['building:part'];
         var props = { osm_id: el2.id, osm_type: 'way', building: el2.tags.building || 'yes' };
+        if (isBuildingPart) {
+            props['_is_part'] = true;
+            props['building:part'] = el2.tags['building:part'];
+        }
+        if (!isBuildingPart && buildingsWithParts[el2.id]) props['_has_parts'] = true;
         for (var t = 0; t < tagsToCopy.length; t++) {
             if (el2.tags[tagsToCopy[t]]) props[tagsToCopy[t]] = el2.tags[tagsToCopy[t]];
         }
@@ -303,31 +336,61 @@ async function extractBuildings(bbox, onLog) {
         });
     }
 
-    // Parse relation buildings (use outer ring for height computation)
+    // Parse relation buildings (join outer ring segments for height computation)
     for (var rj = 0; rj < data.elements.length; rj++) {
         var rel = data.elements[rj];
         if (rel.type !== 'relation' || !rel.tags || !rel.tags.building) continue;
 
-        // Find outer member way
-        var outerCoords = null;
+        // Collect all outer member way segments
+        var outerSegments = [];
         for (var mi = 0; mi < (rel.members || []).length; mi++) {
             var member = rel.members[mi];
             if (member.type === 'way' && member.role === 'outer') {
                 var outerWay = waysById[member.ref];
-                if (!outerWay || !outerWay.nodes) continue;
-                var rc = [];
+                if (!outerWay || !outerWay.nodes || outerWay.nodes.length < 2) continue;
+                var seg = [];
                 for (var rn = 0; rn < outerWay.nodes.length; rn++) {
                     var rnode = nodes[outerWay.nodes[rn]];
-                    if (rnode) rc.push(rnode);
+                    if (rnode) seg.push(rnode);
                 }
-                if (rc.length >= 4) {
-                    if (rc[0][0] !== rc[rc.length - 1][0] || rc[0][1] !== rc[rc.length - 1][1]) rc.push(rc[0]);
-                    outerCoords = rc;
-                    break; // use first outer ring
-                }
+                if (seg.length >= 2) outerSegments.push(seg);
             }
         }
-        if (!outerCoords) continue;
+        if (outerSegments.length === 0) continue;
+
+        // Join segments end-to-end into a closed ring
+        var outerCoords;
+        if (outerSegments.length === 1) {
+            outerCoords = outerSegments[0];
+        } else {
+            // Greedy join: start with first segment, append matching segments
+            outerCoords = outerSegments[0].slice();
+            var used = [true];
+            for (var si = 1; si < outerSegments.length; si++) used.push(false);
+            for (var attempt = 0; attempt < outerSegments.length; attempt++) {
+                var found = false;
+                var tail = outerCoords[outerCoords.length - 1];
+                for (var sj = 0; sj < outerSegments.length; sj++) {
+                    if (used[sj]) continue;
+                    var s = outerSegments[sj];
+                    if (s[0][0] === tail[0] && s[0][1] === tail[1]) {
+                        // Segment starts where ring ends — append (skip shared node)
+                        for (var sk = 1; sk < s.length; sk++) outerCoords.push(s[sk]);
+                        used[sj] = true; found = true; break;
+                    } else if (s[s.length - 1][0] === tail[0] && s[s.length - 1][1] === tail[1]) {
+                        // Segment ends where ring ends — append reversed (skip shared node)
+                        for (var sk2 = s.length - 2; sk2 >= 0; sk2--) outerCoords.push(s[sk2]);
+                        used[sj] = true; found = true; break;
+                    }
+                }
+                if (!found) break;
+            }
+        }
+        if (outerCoords.length < 4) continue;
+        if (outerCoords[0][0] !== outerCoords[outerCoords.length - 1][0] || outerCoords[0][1] !== outerCoords[outerCoords.length - 1][1]) {
+            outerCoords.push(outerCoords[0]);
+        }
+        if (outerCoords.length < 4) continue;
 
         var rprops = { osm_id: rel.id, osm_type: 'relation', building: rel.tags.building || 'yes' };
         for (var rt = 0; rt < tagsToCopy.length; rt++) {
@@ -373,8 +436,10 @@ async function runPipeline(bbox, callbacks) {
     }
 
     var total = geojson.features.length;
+    var totalParts = geojson.features.filter(function(f) { return f.properties['_is_part']; }).length;
+    var totalBuildings = total - totalParts;
     var withHeight = geojson.features.filter(function(f) { return f.properties.height; }).length;
-    onLog('Extracted ' + total + ' buildings (' + withHeight + ' already have height)');
+    onLog('Extracted ' + totalBuildings + ' buildings + ' + totalParts + ' building:part ways (' + withHeight + ' already have height)');
 
     if (total === 0) {
         onError('No buildings found in selected area');
@@ -397,7 +462,7 @@ async function runPipeline(bbox, callbacks) {
 
     // Step 3: Compute heights (synchronous per building — tiles are in memory)
     onStep('Computing building heights...');
-    var enriched = 0, skipped = 0, alreadyHad = 0;
+    var enriched = 0, skipped = 0, alreadyHad = 0, improved = 0;
 
     for (var b = 0; b < total; b++) {
         if (b % 50 === 0 || b === total - 1) {
@@ -407,9 +472,21 @@ async function runPipeline(bbox, callbacks) {
 
         var feature = geojson.features[b];
         var props = feature.properties;
+        var isPart = !!props['_is_part'];
+        var existingHeight = props.height ? parseFloat(props.height) : null;
 
-        // Skip filters
-        if (props.height) { props['_skip_reason'] = 'has_height'; alreadyHad++; continue; }
+        // For building:part with existing height — don't skip, we'll compare later.
+        // For regular buildings with existing height — skip (don't override).
+        if (existingHeight !== null && !isPart) {
+            props['_skip_reason'] = 'has_height'; alreadyHad++; continue;
+        }
+
+        // Skip building outlines that have building:part sub-polygons.
+        // The parts get their own heights; enriching the outline would produce
+        // an averaged height that conflicts with per-part heights in 3D rendering.
+        if (props['_has_parts']) {
+            props['_skip_reason'] = 'has_parts'; skipped++; continue;
+        }
 
         // Only skip buildings where someone already measured roof height precisely.
         // roof:shape alone is fine — adding height actually helps the 3D renderer.
@@ -424,18 +501,47 @@ async function runPipeline(bbox, callbacks) {
 
         var result = computeBuildingHeightSync(feature);
         if (!result) {
-            props['_skip_reason'] = 'no_data'; skipped++; continue;
+            if (existingHeight !== null) { alreadyHad++; } else { props['_skip_reason'] = 'no_data'; skipped++; }
+            continue;
         }
         if (result.height < 2 || result.height > 60) {
-            props['_skip_reason'] = 'out_of_range'; skipped++; continue;
+            if (existingHeight !== null) { alreadyHad++; } else { props['_skip_reason'] = 'out_of_range'; skipped++; }
+            continue;
         }
 
         // Skip small-footprint buildings with disproportionately tall height (likely tree canopy)
-        var lv95Ring = fcoords[0].map(function(c) { return toLV95(c[0], c[1]); });
-        var footprintArea = polygonAreaLV95(lv95Ring);
+        var footprintArea = polygonAreaLV95(result.lv95Ring);
         if (footprintArea < 50 && result.height > 15) {
-            props['_skip_reason'] = 'tree_canopy'; skipped++; continue;
+            if (existingHeight !== null) { alreadyHad++; } else { props['_skip_reason'] = 'tree_canopy'; skipped++; }
+            continue;
         }
+
+        // building:part with existing height — only update if significantly different
+        // and the existing source doesn't indicate a precision survey
+        if (isPart && existingHeight !== null) {
+            var existingSource = (props['source:height'] || '').toLowerCase();
+            var precisionSources = ['survey', 'cadastre', 'lidar', 'gps', 'gnss', 'laser'];
+            var isPrecise = precisionSources.some(function(s) { return existingSource.indexOf(s) !== -1; });
+            if (isPrecise) {
+                // Existing height from a precision source — never override
+                alreadyHad++;
+                continue;
+            }
+            var diff = Math.abs(result.height - existingHeight);
+            var pct = existingHeight > 0 ? diff / existingHeight : 1;
+            // Update only when deviation is > 2m AND > 20% — avoids overriding good data
+            if (diff > 2 && pct > 0.2) {
+                props['_prev_height'] = props.height;
+                props.height = String(result.height);
+                props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
+                improved++;
+            } else {
+                // Existing height is close enough — keep it
+                alreadyHad++;
+            }
+            continue;
+        }
+
         props.height = String(result.height);
         props['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
         enriched++;
@@ -444,14 +550,14 @@ async function runPipeline(bbox, callbacks) {
     // Report with detailed skip reasons
     var elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
     onLog('Done in ' + elapsed + 's');
-    onLog('Enriched: ' + enriched + ', Already had height: ' + alreadyHad + ', Skipped: ' + skipped);
+    onLog('Enriched: ' + enriched + ', Improved: ' + improved + ', Already had height: ' + alreadyHad + ', Skipped: ' + skipped);
     if (skipped > 0) {
         var skipReasons = {};
         geojson.features.forEach(function(f) {
             var reason = f.properties['_skip_reason'];
             if (reason) skipReasons[reason] = (skipReasons[reason] || 0) + 1;
         });
-        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height', tree_canopy: 'small footprint + tall height (likely trees)' };
+        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height', has_parts: 'outline has building:part ways', tree_canopy: 'small footprint + tall height (likely trees)' };
         for (var reason in skipReasons) {
             if (reason !== 'has_height') { // already counted in alreadyHad
                 onLog('  Skipped (' + (reasonLabels[reason] || reason) + '): ' + skipReasons[reason]);
@@ -471,7 +577,8 @@ async function runPipeline(bbox, callbacks) {
         onLog('Height range: ' + heights[0] + 'm - ' + heights[heights.length - 1] + 'm, Mean: ' + mean + 'm, Median: ' + median + 'm');
     }
 
-    onDone(geojson, { total: total, enriched: enriched, alreadyHad: alreadyHad, skipped: skipped });
+    var enrichedParts = geojson.features.filter(function(f) { return f.properties['_is_part'] && f.properties['source:height']; }).length;
+    onDone(geojson, { total: total, enriched: enriched, improved: improved, alreadyHad: alreadyHad, skipped: skipped, parts: totalParts, enrichedParts: enrichedParts });
     return geojson;
 }
 
