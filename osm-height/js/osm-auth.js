@@ -121,7 +121,8 @@ async function handleOAuthCallback() {
  * @param {function} onLog - callback(type, message)
  * @returns {{ updated: number, errors: number, changesetId: string }}
  */
-async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
+async function uploadToOSM(features, onProgress, onLog, isAborted) {
+    isAborted = isAborted || function() { return false; };
     if (!osmAccessToken) throw new Error('Not logged in');
 
     var auth = 'Bearer ' + osmAccessToken;
@@ -259,13 +260,9 @@ async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
             return { updated: 0, errors: 0, changesetId: changesetId };
         }
 
-        // Step 3: Upload OsmChange in small batches with rate-limit handling
-        // Batch delay is derived from the user's rate limit slider.
-        // Formula: delay = (3600s * BATCH_SIZE / rateLimitPerHour) in ms
-        // After a 429, we slow down significantly.
+        // Step 3: Upload OsmChange in batches — go full speed, back off on 429
         var BATCH_SIZE = 50;
-        var effectiveRate = rateLimitPerHour || 1000;
-        var BATCH_DELAY_MS = Math.round(3600 * 1000 * BATCH_SIZE / effectiveRate);
+        var BATCH_DELAY_MS = 0; // no proactive delay — let the server tell us when to slow down
         var MAX_RETRIES = 10;
         var MAX_PER_CHANGESET = 9000; // OSM limit is 10K, leave margin
         var elementsInChangeset = 0;
@@ -275,10 +272,16 @@ async function uploadToOSM(features, onProgress, onLog, rateLimitPerHour) {
         }
 
         onLog('step', 'Uploading ' + osmChangeWays.length + ' buildings in ' + batches.length + ' batch(es)...');
-        onLog('info', 'Rate limit: ' + effectiveRate + ' edits/hr (' + (BATCH_DELAY_MS / 1000).toFixed(0) + 's between batches of ' + BATCH_SIZE + ')');
+        onLog('info', 'Uploading at full speed (batches of ' + BATCH_SIZE + ', backoff on rate limit)');
 
         for (var batchIdx = 0; batchIdx < batches.length; batchIdx++) {
             var batch = batches[batchIdx];
+
+            // Abort check
+            if (isAborted()) {
+                onLog('info', 'Upload aborted by user after ' + updated + ' buildings');
+                break;
+            }
 
             // Split to new changeset if approaching OSM's 10K element limit
             if (elementsInChangeset + batch.length > MAX_PER_CHANGESET) {

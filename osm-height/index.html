@@ -216,14 +216,6 @@
                         </details>
                         <button class="btn btn-secondary" id="btn-osm-login" disabled>Login with OpenStreetMap</button>
                     </div>
-                    <div class="rate-limit-group">
-                        <label class="rate-limit-label">
-                            <span>Rate limit</span>
-                            <span id="rate-limit-value">1000 edits/hr</span>
-                        </label>
-                        <input type="range" id="rate-limit-slider" min="100" max="5000" step="100" value="1000" class="rate-limit-slider">
-                        <div class="rate-limit-range"><span>100</span><span>5000</span></div>
-                    </div>
                     <div id="osm-logged-in" class="osm-logged-in">
                         <div class="logged-in-badge">
                             <span>Logged in as <strong id="osm-display-name"></strong></span>
@@ -235,6 +227,7 @@
                         <div class="progress-bar"><div class="progress-fill" id="upload-progress-fill"></div></div>
                         <div class="upload-status-text" id="upload-status-text"></div>
                     </div>
+                    <button class="btn btn-abort" id="btn-abort-upload">Abort</button>
                     <div class="log-area upload-log" id="upload-log"></div>
                 </div>
             </div>
@@ -1430,22 +1423,28 @@ document.getElementById('btn-osm-logout').onclick = function() {
     setStepState(4, 'active');
 };
 
-document.getElementById('rate-limit-slider').oninput = function() {
-    document.getElementById('rate-limit-value').textContent = this.value + ' edits/hr';
+var uploadAborted = false;
+
+document.getElementById('btn-abort-upload').onclick = function() {
+    uploadAborted = true;
+    this.disabled = true;
+    this.textContent = 'Aborting...';
 };
 
 document.getElementById('btn-upload').onclick = async function() {
     if (!resultGeoJSON || !isOsmLoggedIn()) return;
-    // Get selected features
     var selectedFeatures = resultGeoJSON.features.filter(function(f) { return checkedIds[f.properties.osm_id]; });
     var count = selectedFeatures.length;
     if (count === 0) { alert('No buildings selected for upload.'); return; }
     if (!confirm('Upload height tags for ' + count + ' buildings?\n\nThis modifies live OSM data.')) return;
 
+    uploadAborted = false;
     setStepState(4, 'running');
     var btn = this; btn.disabled = true; btn.textContent = 'Uploading...';
-    var slider = document.getElementById('rate-limit-slider');
-    slider.disabled = true;
+    var abortBtn = document.getElementById('btn-abort-upload');
+    abortBtn.classList.add('visible');
+    abortBtn.disabled = false;
+    abortBtn.textContent = 'Abort';
     document.getElementById('upload-progress').style.display = 'block';
     var uploadLog = document.getElementById('upload-log');
     uploadLog.style.display = 'block';
@@ -1453,7 +1452,6 @@ document.getElementById('btn-upload').onclick = async function() {
 
     function addUploadLog(type, msg) { addLog(type, msg, 'upload-log'); }
 
-    var rateLimitPerHour = parseInt(slider.value) || 1000;
     showMapStatus('Uploading to OSM...');
 
     await uploadToOSM(selectedFeatures,
@@ -1463,14 +1461,14 @@ document.getElementById('btn-upload').onclick = async function() {
             updateMapStatusCount(cur, tot);
         },
         addUploadLog,
-        rateLimitPerHour
+        function() { return uploadAborted; }
     );
 
     hideMapStatus();
-    setStepState(4, 'done');
+    abortBtn.classList.remove('visible');
+    setStepState(4, uploadAborted ? 'error' : 'done');
     btn.disabled = false;
     btn.textContent = 'Upload selected (' + count + ')';
-    slider.disabled = false;
 };
 
 // Handle OAuth callback + restore state
@@ -1486,18 +1484,10 @@ document.getElementById('btn-upload').onclick = async function() {
     } catch (e) { addLog('error', 'OAuth: ' + e.message); }
 
     var savedMap = sessionStorage.getItem('osm_elevation_map');
-    var mapRestored = false;
+    var savedMapData = null;
     if (savedMap) {
         sessionStorage.removeItem('osm_elevation_map');
-        try {
-            var mv = JSON.parse(savedMap);
-            function applyMapPosition() {
-                map.jumpTo({ center: [mv.lng, mv.lat], zoom: mv.zoom, pitch: mv.pitch, bearing: mv.bearing });
-                is3D = mv.pitch > 10; update3DButton();
-            }
-            if (map.loaded()) applyMapPosition(); else map.once('load', applyMapPosition);
-            mapRestored = true;
-        } catch (e) { /* ignore */ }
+        try { savedMapData = JSON.parse(savedMap); } catch (e) { /* ignore */ }
     }
 
     var saved = sessionStorage.getItem('osm_elevation_result');
@@ -1553,7 +1543,17 @@ document.getElementById('btn-upload').onclick = async function() {
                 var p = bboxStr.split(',').map(Number);
                 updateRect({ lng: p[0], lat: p[1] }, { lng: p[2], lat: p[3] });
             }
-            if (!mapRestored) map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+            // Restore exact camera position from before OAuth redirect
+            if (savedMapData) {
+                map.jumpTo({ center: [savedMapData.lng, savedMapData.lat], zoom: savedMapData.zoom, pitch: savedMapData.pitch, bearing: savedMapData.bearing });
+                is3D = savedMapData.pitch > 10; update3DButton();
+            } else if (bboxStr) {
+                // Fallback: fit to bbox
+                var bp = bboxStr.split(',').map(Number);
+                map.fitBounds([[bp[0], bp[1]], [bp[2], bp[3]]], { padding: 40, duration: 0 });
+                map.easeTo({ pitch: 60, bearing: -20, duration: 800 });
+                is3D = true; update3DButton();
+            }
         }
 
         if (map.getSource('result-buildings')) {
