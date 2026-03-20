@@ -97,12 +97,13 @@ function sampleFromTileData(tileData, x, y) {
  * Pre-load all tiles needed for a set of LV95 points.
  * Loads DTM and DSM tiles in parallel.
  */
-async function preloadTiles(pointsLV95, onLog) {
+async function preloadTiles(pointsLV95, onLog, onProgress) {
     var tileIds = new Set();
     for (var i = 0; i < pointsLV95.length; i++) {
         tileIds.add(tileIdFromLV95(pointsLV95[i][0], pointsLV95[i][1]));
     }
 
+    var loaded = 0;
     var promises = [];
     tileIds.forEach(function(tileId) {
         var dtmKey = 'dtm:' + tileId;
@@ -110,14 +111,18 @@ async function preloadTiles(pointsLV95, onLog) {
         if (!tileDataCache.has(dtmKey) && !failedTiles.has(dtmKey)) {
             promises.push(
                 getTileData(ALTI3D_URL, tileId).then(function(r) {
+                    loaded++;
                     if (r && onLog) onLog('Loaded DTM tile ' + tileId);
+                    if (onProgress) onProgress(loaded, promises.length);
                 })
             );
         }
         if (!tileDataCache.has(dsmKey) && !failedTiles.has(dsmKey)) {
             promises.push(
                 getTileData(SURFACE3D_URL, tileId).then(function(r) {
+                    loaded++;
                     if (r && onLog) onLog('Loaded DSM tile ' + tileId);
+                    if (onProgress) onProgress(loaded, promises.length);
                 })
             );
         }
@@ -386,7 +391,9 @@ async function runPipeline(bbox, callbacks) {
             allLV95Points.push(toLV95(coords[c][0], coords[c][1]));
         }
     }
-    await preloadTiles(allLV95Points, onLog);
+    await preloadTiles(allLV95Points, onLog, function(cur, tot) {
+        onProgress(cur, tot * 2); // tile loading = 0–50%
+    });
 
     // Step 3: Compute heights (synchronous per building — tiles are in memory)
     onStep('Computing building heights...');
@@ -394,7 +401,7 @@ async function runPipeline(bbox, callbacks) {
 
     for (var b = 0; b < total; b++) {
         if (b % 50 === 0 || b === total - 1) {
-            onProgress(b + 1, total);
+            onProgress(total + b + 1, total * 2); // height computation = 50–100%
             await new Promise(function(r) { setTimeout(r, 0); }); // yield to UI
         }
 
