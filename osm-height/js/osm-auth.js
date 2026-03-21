@@ -263,7 +263,7 @@ async function uploadToOSM(features, onProgress, onLog, isAborted) {
         // Step 3: Upload OsmChange in batches — go full speed, back off on 429
         var BATCH_SIZE = 50;
         var BATCH_DELAY_MS = 0; // no proactive delay — let the server tell us when to slow down
-        var MAX_RETRIES = 10;
+        var MAX_RETRIES = 2;
         var MAX_PER_CHANGESET = 9000; // OSM limit is 10K, leave margin
         var elementsInChangeset = 0;
         var batches = [];
