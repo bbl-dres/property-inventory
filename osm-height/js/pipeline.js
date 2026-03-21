@@ -526,18 +526,20 @@ async function runPipeline(bbox, callbacks) {
             props['_area'] = Math.round(polygonAreaLV95(areaRing));
         }
 
+        // Building outlines with building:part children: always defer height assignment.
+        // After all parts are enriched, the outline gets the max part height
+        // (per OSM Simple 3D Buildings spec: outline carries overall height as metadata,
+        // 3D renderers use only part heights).
+        // This check must come BEFORE the has_height check so outlines with parts
+        // are always deferred, even if they already have a height tag.
+        if (props['_has_parts']) {
+            props['_skip_reason'] = 'has_parts_deferred'; continue;
+        }
+
         // For building:part with existing height — don't skip, we'll compare later.
         // For regular buildings with existing height — skip (don't override).
         if (existingHeight !== null && !isPart) {
             props['_skip_reason'] = 'has_height'; alreadyHad++; continue;
-        }
-
-        // Building outlines with building:part children: defer height assignment.
-        // After all parts are enriched, the outline gets the max part height
-        // (per OSM Simple 3D Buildings spec: outline carries overall height as metadata,
-        // 3D renderers use only part heights).
-        if (props['_has_parts']) {
-            props['_skip_reason'] = 'has_parts_deferred'; continue;
         }
 
         // Only skip buildings where someone already measured roof height precisely.
@@ -633,6 +635,14 @@ async function runPipeline(bbox, callbacks) {
         var outlineProps = outlineF.properties;
         var existingOutlineHeight = outlineProps.height ? parseFloat(outlineProps.height) : null;
         var derivedHeight = maxPartHeight[parentOsmId];
+
+        // Never override outlines with precision roof measurements
+        if (outlineProps['roof:height']) continue;
+
+        // Never override outlines with height from a precision source
+        var outlineSrc = (outlineProps['source:height'] || '').toLowerCase();
+        var precisionSrcs = ['survey', 'cadastre', 'lidar', 'gps', 'gnss', 'laser'];
+        if (precisionSrcs.some(function(s) { return outlineSrc.indexOf(s) !== -1; })) continue;
 
         // Skip if outline already has a height and it's close enough
         if (existingOutlineHeight !== null) {
