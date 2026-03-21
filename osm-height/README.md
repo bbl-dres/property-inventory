@@ -21,35 +21,103 @@ python -m http.server 8080
 
 ## How it works
 
+### Pipeline overview
+
 ```mermaid
 flowchart TB
-    subgraph "Browser — no server required"
-        A["1. User draws rectangle on map"] --> B["fetch() → Overpass API"]
-        B --> C["OSM buildings (ways + relations)"]
-        C --> D{For each building}
-        D -->|has height?| SKIP1["Skip (blue)"]
-        D -->|has roof:height?| SKIP2["Skip (orange)"]
-        D -->|multipolygon?| SKIP3["Skip (grey)"]
-        D -->|processable| E["Create 2m sample grid inside footprint"]
-        E --> F["geotiff.js → swissALTI3D COG"]
-        E --> G["geotiff.js → swissSURFACE3D COG"]
-        F --> H["height = P95(DSM_i − DTM_i)"]
-        G --> H
-        H -->|< 2m or > 60m| SKIP4["Skip (out of range)"]
-        H -->|small footprint + tall| SKIP5["Skip (likely trees, brown)"]
-        H -->|2m–60m| I["Add height + source:height"]
-        I --> J["2. Enriched GeoJSON"]
-        J --> K["3. Review: 3D visualization + stats"]
-        J --> L["Download GeoJSON"]
-        K --> M["4. OAuth2 login → OSM API"]
-        M --> N["Batch upload via OsmChange XML"]
-    end
+    A["1. User draws rectangle on map"] --> B["fetch() → Overpass API"]
+    B --> C["OSM buildings + building:part ways + relations"]
+    C --> D["Detect parent–child relationships via shared nodes"]
+    D --> E["Pre-load swisstopo elevation tiles (COG via HTTP range)"]
+    E --> F["Compute heights for each feature"]
+    F --> G["Derive outline heights from max part height"]
+    G --> H["2. Enriched GeoJSON"]
+    H --> I["3. Review: 3D visualization + stats"]
+    H --> J["Download GeoJSON"]
+    I --> K["4. OAuth2 login → OSM API"]
+    K --> L["Re-fetch each way from OSM (safety re-check)"]
+    L --> M["Batch upload via OsmChange XML"]
+```
 
-    style SKIP1 fill:#e3f2fd,stroke:#90caf9
-    style SKIP2 fill:#fff3e0,stroke:#ffcc80
-    style SKIP3 fill:#f5f5f5,stroke:#ccc
-    style SKIP4 fill:#f5f5f5,stroke:#ccc
-    style SKIP5 fill:#efebe9,stroke:#8d6e63
+### Per-feature enrichment logic
+
+```mermaid
+flowchart TD
+    START["For each feature"] --> IS_PARTS{"Outline with\nbuilding:part\nchildren?"}
+    IS_PARTS -->|yes| DEFER["Defer — height derived\nfrom parts in Step 4"]
+    IS_PARTS -->|no| HAS_H{"Already has\nheight tag?"}
+
+    HAS_H -->|"yes (building)"| SKIP_H["Skip — preserve\nexisting height"]
+    HAS_H -->|"yes (part)"| COMPARE["Compare with\ncomputed height"]
+    HAS_H -->|no| ROOF{"Has\nroof:height?"}
+
+    ROOF -->|yes| SKIP_R["Skip — precision\nroof measurement"]
+    ROOF -->|no| GEOM{"Valid\ngeometry?"}
+
+    GEOM -->|multipolygon/invalid| SKIP_G["Skip — complex\nfootprint"]
+    GEOM -->|simple polygon| COMPUTE["Sample grid → DSM − DTM\nheight = P95"]
+
+    COMPUTE --> RANGE{"2m ≤ height\n≤ 60m?"}
+    RANGE -->|no| SKIP_RANGE["Skip — out of range"]
+    RANGE -->|yes| TREE{"Small footprint\n+ tall height?"}
+
+    TREE -->|yes| SKIP_TREE["Skip — likely\ntree canopy"]
+    TREE -->|no| ENRICH
+
+    COMPARE --> PRECISE{"Existing from\nprecision source?"}
+    PRECISE -->|yes| SKIP_PREC["Skip — precision\nsource"]
+    PRECISE -->|no| DEVIATE{">2m AND\n>20% deviation?"}
+    DEVIATE -->|yes| IMPROVE["Update height\n(improved)"]
+    DEVIATE -->|no| SKIP_CLOSE["Skip — existing\nis close enough"]
+
+    ENRICH["Set height +\nsource:height"]
+
+    style SKIP_H fill:#e3f2fd,stroke:#90caf9
+    style SKIP_PREC fill:#e3f2fd,stroke:#90caf9
+    style SKIP_CLOSE fill:#e3f2fd,stroke:#90caf9
+    style SKIP_R fill:#fff3e0,stroke:#ffcc80
+    style SKIP_G fill:#f5f5f5,stroke:#ccc
+    style SKIP_RANGE fill:#f5f5f5,stroke:#ccc
+    style SKIP_TREE fill:#efebe9,stroke:#8d6e63
+    style DEFER fill:#f3e5f5,stroke:#ce93d8
+    style ENRICH fill:#e8f5e9,stroke:#81c784
+    style IMPROVE fill:#fff8e1,stroke:#ffd54f
+```
+
+### Outline height derivation (Step 4)
+
+```mermaid
+flowchart TD
+    START2["For each outline\nwith building:part children"] --> ROOF2{"Has\nroof:height?"}
+    ROOF2 -->|yes| SKIP2A["Skip — preserve\nprecision measurement"]
+    ROOF2 -->|no| SRC2{"source:height\nfrom precision?"}
+    SRC2 -->|yes| SKIP2B["Skip — preserve\nprecision source"]
+    SRC2 -->|no| PARTS["Collect max height\nacross all child parts"]
+    PARTS --> EXISTING2{"Outline already\nhas height?"}
+    EXISTING2 -->|no| SET["Set height = max(part heights)"]
+    EXISTING2 -->|yes| CLOSE2{"Close enough?\n(≤2m or ≤20%)"}
+    CLOSE2 -->|yes| KEEP2["Keep existing height"]
+    CLOSE2 -->|no| UPDATE2["Update height = max(part heights)"]
+
+    style SET fill:#e8f5e9,stroke:#81c784
+    style UPDATE2 fill:#fff8e1,stroke:#ffd54f
+    style SKIP2A fill:#fff3e0,stroke:#ffcc80
+    style SKIP2B fill:#e3f2fd,stroke:#90caf9
+    style KEEP2 fill:#e3f2fd,stroke:#90caf9
+```
+
+### Upload safety re-checks
+
+```mermaid
+flowchart TD
+    UP["For each way\nto upload"] --> REFETCH["Re-fetch current state\nfrom OSM API"]
+    REFETCH --> CHANGED{"height or roof:height\nadded since extraction?"}
+    CHANGED -->|"yes (not an improved way)"| SKIP_UP["Skip — concurrent edit"]
+    CHANGED -->|no| UPLOAD["Upload: set height +\nsource:height tags"]
+    CHANGED -->|"yes (improved way)"| UPLOAD
+
+    style SKIP_UP fill:#ffebee,stroke:#ef9a9a
+    style UPLOAD fill:#e8f5e9,stroke:#81c784
 ```
 
 For each building, a grid of sample points (2m spacing) is created inside the footprint.
@@ -84,66 +152,74 @@ using Cloud Optimized GeoTIFF range requests.
 
 ## OSM tags
 
-Only two tags are added per building. No geometry or other tags are modified.
+Only two tags are added per building or building:part. No geometry or other tags are modified.
 
 | Tag | Example | Description |
 |-----|---------|-------------|
 | `height` | `19.2` | 95th percentile height in meters (decimal, no unit suffix) |
 | `source:height` | `swisstopo/swissALTI3D;swissSURFACE3D` | Data source attribution |
 
+For buildings with `building:part` children, each part gets its own computed height.
+The parent outline receives the **maximum** height across all its parts (per the
+[Simple 3D Buildings](https://wiki.openstreetmap.org/wiki/Simple_3D_Buildings) spec).
+
 ## Safety filters
 
 The pipeline is designed to be **non-destructive** — it only adds missing data, never
-modifies existing tags or geometry. Buildings are skipped for the following reasons:
+modifies existing tags or geometry. Only two tags are ever written: `height` and
+`source:height`. The following rules ensure existing data is respected.
 
-### Already has height (blue on map)
+### Buildings (outlines without parts)
 
-Buildings with an existing `height` tag are never modified. The original value is
-preserved regardless of whether it matches our computation.
+| Condition | Action | Map color |
+|-----------|--------|-----------|
+| Has `height` tag | Skip — preserve existing | Blue |
+| Has `roof:height` tag | Skip — precision measurement | Orange |
+| Has `source:height` from precision source | Skip — never override | Blue |
+| Multipolygon geometry (holes) | Skip — grid sampling unreliable | Grey |
+| Height < 2m or > 60m | Skip — out of plausible range | Grey |
+| Footprint < 100 m² and slenderness > 1.5 | Skip — likely tree canopy | Brown |
+| No swisstopo elevation coverage | Skip — no data | Grey |
+| All checks pass | Enrich with computed height | Green |
 
-### Measured roof height (orange on map)
+### Building parts (`building:part`)
 
-Buildings with a `roof:height` tag are skipped. This tag means someone already
-measured the building precisely — our DSM-based estimate could be less accurate.
+Building parts follow the same filters as buildings, with two differences:
 
-Tags that are **not** skipped:
+- **Existing height is compared, not skipped.** If a part already has a `height` tag:
+  - From a precision source (`survey`, `cadastre`, `lidar`, `gps`, `gnss`, `laser`) → never override
+  - Otherwise: update only if deviation is **> 2m AND > 20%** — avoids overriding good data with marginal differences
+  - The previous value is preserved as `_prev_height` for review before upload
+
+### Building outlines with parts
+
+Per the [OSM Simple 3D Buildings](https://wiki.openstreetmap.org/wiki/Simple_3D_Buildings) spec,
+building outlines carry the **overall height** as metadata (used by 2D renderers and
+data consumers), while 3D renderers use only the part heights.
+
+After all parts are enriched, each parent outline's height is derived as the
+**maximum height** across its child `building:part` features:
+
+- Has `roof:height` on the outline → skip
+- Has `source:height` from precision source → skip
+- Existing height is close enough (≤ 2m or ≤ 20% deviation) → keep existing
+- Otherwise → set outline height to max(part heights)
+
+### Tags that are NOT skipped
+
 - `roof:shape` — defines shape (gabled, hipped, etc.) but not total height. Adding
   `height` actually helps: the renderer calculates `wall = height - roof:height`.
 - `roof:levels` — informational (floor count in roof), safe to enrich
 - `roof:colour`, `roof:material` — cosmetic, no geometric conflict
-
-### Complex footprint (grey on map)
-
-Buildings with multipolygon geometry (holes in the footprint) are skipped.
-The grid sampling could hit the open courtyard, producing incorrect heights.
-
-Single-ring polygons of any vertex count are processed — even detailed
-footprints like the Bundeshaus (106 vertices) work fine.
-
-### Small footprint + tall height (brown on map)
-
-Buildings with a footprint area under 50 m² and a computed height above 15 m are
-skipped. These are almost always small sheds or outbuildings where the DSM reads
-tree canopy instead of the actual roof. The P95 filter cannot help here because
-the entire footprint is under the canopy.
-
-### Height out of range (grey on map)
-
-Computed heights outside a plausible range are discarded:
-- **< 2m** — likely noise, sheds, or measurement error
-- **\> 60m** — likely spires, antennas, cranes, or vegetation artifacts in the DSM
-
-### No elevation data
-
-Buildings in areas without swisstopo coverage (outside Switzerland) or where
-elevation tiles are unavailable are skipped silently.
+- `building:levels` — floor count estimate, not a measured height
 
 ### Upload re-checks
 
-At upload time, each building is re-fetched from OSM and checked again:
-- If `height` was added since extraction → skip
-- If `roof:shape` or `roof:height` was added since extraction → skip
-- This prevents conflicts with concurrent OSM edits
+At upload time, each way is **re-fetched from OSM** and checked for concurrent edits:
+
+- If `height` was added since extraction → skip (unless this is an intentional update of an existing value)
+- If `roof:height` was added since extraction → skip
+- This prevents conflicts with other mappers' edits between extraction and upload
 
 ## Upload to OSM
 
