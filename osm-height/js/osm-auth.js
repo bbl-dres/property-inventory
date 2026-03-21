@@ -131,7 +131,8 @@ async function uploadToOSM(features, onProgress, onLog, isAborted) {
     var toUpload = features.filter(function(f) {
         var p = f.properties;
         if (!p['source:height'] || p.osm_type !== 'way') return false;
-        if (p['_skip_reason']) return false;
+        // Allow features with no skip reason, or outlines whose height was derived from parts
+        if (p['_skip_reason'] && p['_skip_reason'] !== 'has_parts_derived') return false;
         var h = parseFloat(p.height);
         return h >= 2 && h <= 60;
     });

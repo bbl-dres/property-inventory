@@ -310,11 +310,37 @@ async function extractBuildings(bbox, onLog) {
         }
     }
     // Mark building outlines that share nodes with building:part ways
+    // Also build a mapping: partWayId → parent building wayId
     var buildingsWithParts = {};
+    var partToBuilding = {};  // part osm_id → parent building osm_id
+
+    // Build reverse index: nodeId → list of part way IDs that use it
+    var nodeToPartWays = {};
+    for (var jp2 = 0; jp2 < data.elements.length; jp2++) {
+        var elp2 = data.elements[jp2];
+        if (elp2.type !== 'way' || !elp2.tags || !elp2.nodes) continue;
+        if (elp2.tags['building:part'] && !elp2.tags.building) {
+            for (var np3 = 0; np3 < elp2.nodes.length; np3++) {
+                var nid2 = elp2.nodes[np3];
+                if (!nodeToPartWays[nid2]) nodeToPartWays[nid2] = [];
+                nodeToPartWays[nid2].push(elp2.id);
+            }
+        }
+    }
+
     for (var bwId in buildingNodeSets) {
         var bns = buildingNodeSets[bwId];
         bns.forEach(function(nid) {
-            if (partNodeIds.has(nid)) buildingsWithParts[bwId] = true;
+            if (partNodeIds.has(nid)) {
+                buildingsWithParts[bwId] = true;
+                // Link each part that shares this node to this building
+                var linkedParts = nodeToPartWays[nid];
+                if (linkedParts) {
+                    for (var lp = 0; lp < linkedParts.length; lp++) {
+                        partToBuilding[linkedParts[lp]] = bwId;
+                    }
+                }
+            }
         });
     }
 
@@ -336,6 +362,7 @@ async function extractBuildings(bbox, onLog) {
         if (isBuildingPart) {
             props['_is_part'] = true;
             props['building:part'] = el2.tags['building:part'];
+            if (partToBuilding[el2.id]) props['_parent_id'] = partToBuilding[el2.id];
         }
         if (!isBuildingPart && buildingsWithParts[el2.id]) props['_has_parts'] = true;
         copyTags(el2.tags, props, tagsToCopy);
@@ -505,11 +532,12 @@ async function runPipeline(bbox, callbacks) {
             props['_skip_reason'] = 'has_height'; alreadyHad++; continue;
         }
 
-        // Skip building outlines that have building:part sub-polygons.
-        // The parts get their own heights; enriching the outline would produce
-        // an averaged height that conflicts with per-part heights in 3D rendering.
+        // Building outlines with building:part children: defer height assignment.
+        // After all parts are enriched, the outline gets the max part height
+        // (per OSM Simple 3D Buildings spec: outline carries overall height as metadata,
+        // 3D renderers use only part heights).
         if (props['_has_parts']) {
-            props['_skip_reason'] = 'has_parts'; skipped++; continue;
+            props['_skip_reason'] = 'has_parts_deferred'; continue;
         }
 
         // Only skip buildings where someone already measured roof height precisely.
@@ -573,6 +601,59 @@ async function runPipeline(bbox, callbacks) {
         enriched++;
     }
 
+    // Step 4: Derive outline heights from building:part children
+    // Per OSM Simple 3D Buildings spec, the outline carries the overall max height
+    // as metadata (for 2D renderers and data consumers). 3D renderers ignore it.
+    var outlinesDerived = 0;
+    var outlineFeatures = {};
+    for (var of1 = 0; of1 < geojson.features.length; of1++) {
+        var f = geojson.features[of1];
+        if (f.properties['_has_parts']) outlineFeatures[f.properties.osm_id] = f;
+    }
+
+    // Collect max part height per parent building
+    var maxPartHeight = {};  // parent osm_id → max height number
+    for (var pf = 0; pf < geojson.features.length; pf++) {
+        var partF = geojson.features[pf];
+        var partProps = partF.properties;
+        if (!partProps['_is_part'] || !partProps['_parent_id']) continue;
+        var parentId = partProps['_parent_id'];
+        var partHeight = partProps.height ? parseFloat(partProps.height) : null;
+        if (partHeight !== null && !isNaN(partHeight)) {
+            if (!maxPartHeight[parentId] || partHeight > maxPartHeight[parentId]) {
+                maxPartHeight[parentId] = partHeight;
+            }
+        }
+    }
+
+    // Apply max part height to parent outlines
+    for (var parentOsmId in maxPartHeight) {
+        var outlineF = outlineFeatures[parentOsmId];
+        if (!outlineF) continue;
+        var outlineProps = outlineF.properties;
+        var existingOutlineHeight = outlineProps.height ? parseFloat(outlineProps.height) : null;
+        var derivedHeight = maxPartHeight[parentOsmId];
+
+        // Skip if outline already has a height and it's close enough
+        if (existingOutlineHeight !== null) {
+            var hDiff = Math.abs(derivedHeight - existingOutlineHeight);
+            var hPct = existingOutlineHeight > 0 ? hDiff / existingOutlineHeight : 1;
+            if (hDiff <= 2 || hPct <= 0.2) continue;  // close enough, keep original
+            // Track previous height so upload re-check allows the update
+            outlineProps['_prev_height'] = outlineProps.height;
+        }
+
+        outlineProps.height = String(derivedHeight);
+        outlineProps['source:height'] = 'swisstopo/swissALTI3D;swissSURFACE3D';
+        outlineProps['_skip_reason'] = 'has_parts_derived';
+        outlinesDerived++;
+        enriched++;
+    }
+
+    if (outlinesDerived > 0) {
+        onLog('Derived outline height from building:part for ' + outlinesDerived + ' buildings');
+    }
+
     // Report with detailed skip reasons
     var elapsed = ((Date.now() - startTime) / 1000).toFixed(0);
     onLog('Done in ' + elapsed + 's');
@@ -583,9 +664,9 @@ async function runPipeline(bbox, callbacks) {
             var reason = f.properties['_skip_reason'];
             if (reason) skipReasons[reason] = (skipReasons[reason] || 0) + 1;
         });
-        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height', has_parts: 'outline has building:part ways', tree_canopy: 'small footprint + tall height (likely trees)' };
+        var reasonLabels = { roof: 'has roof:height', complex: 'multipolygon/invalid', no_data: 'no elevation data', out_of_range: 'height <2m or >60m', has_height: 'already had height', has_parts_deferred: 'outline with parts (no enriched parts yet)', has_parts_derived: 'outline height derived from parts', tree_canopy: 'small footprint + tall height (likely trees)' };
         for (var reason in skipReasons) {
-            if (reason !== 'has_height') { // already counted in alreadyHad
+            if (reason !== 'has_height' && reason !== 'has_parts_derived') { // already counted elsewhere
                 onLog('  Skipped (' + (reasonLabels[reason] || reason) + '): ' + skipReasons[reason]);
             }
         }

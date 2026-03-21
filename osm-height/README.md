@@ -227,6 +227,22 @@ python main.py --bbox "7.443,46.945,7.455,46.950"
 python main.py --bbox "7.443,46.945,7.455,46.950" --upload
 ```
 
+## Future consideration: 3D viewer with `building:part` support
+
+The main property inventory app uses Carto vector tiles for 3D extrusion, which only
+provide the `building` source-layer — no `building:part`. This means complex buildings
+are rendered as a single flat block instead of showing varying heights for wings, towers,
+or annexes.
+
+**Possible improvement:** keep Carto for 2D rendering and add a dedicated
+[OpenMapTiles](https://openmaptiles.org/) vector tile source (e.g., via
+[MapTiler free tier](https://www.maptiler.com/cloud/) or self-hosted
+[Versatiles](https://versatiles.org/)/PMTiles) specifically for the 3D layer. OpenMapTiles
+includes `building:part` with `render_height` and `render_min_height`, enabling proper
+multi-level extrusion. This would also fix the current issue where 3D buildings don't
+appear when the swissimage (aerial) basemap is active, since raster-only styles have
+no vector building data.
+
 ## Related
 
 - [area-estimator](https://github.com/DavidRasner/area-estimator) — building volume and floor area estimation using the same DSM/DTM approach

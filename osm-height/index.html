@@ -229,6 +229,7 @@
                     </div>
                     <button class="btn btn-abort" id="btn-abort-upload">Abort</button>
                     <div class="log-area upload-log" id="upload-log"></div>
+                    <div class="upload-result" id="upload-result"></div>
                 </div>
             </div>
         </div>
@@ -236,8 +237,16 @@
 
     <!-- Footer (full width) -->
     <div class="app-footer">
-        <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Source Code</a>
-        <span>Data: <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a> (OGD) + <a href="https://www.openstreetmap.org" target="_blank">OSM</a></span>
+        <span class="footer-coords">
+            <span class="footer-projection">WGS 84</span>
+            <span class="footer-sep">|</span>
+            <span id="footer-cursor">—</span>
+        </span>
+        <span class="footer-links">
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Source Code</a>
+            <span class="footer-sep">|</span>
+            Data: <a href="https://www.swisstopo.admin.ch" target="_blank">swisstopo</a> (OGD) + <a href="https://www.openstreetmap.org" target="_blank">OSM</a>
+        </span>
     </div>
 </div>
 
@@ -1097,6 +1106,8 @@ document.getElementById('btn-clear').onclick = function() {
     document.getElementById('upload-log').style.display = 'none';
     document.getElementById('upload-log').innerHTML = '';
     document.getElementById('upload-progress').style.display = 'none';
+    document.getElementById('upload-result').className = 'upload-result';
+    document.getElementById('upload-result').innerHTML = '';
     setProgress(0);
     setTimeout(function() { map.resize(); }, 50);
 };
@@ -1198,7 +1209,7 @@ map.on('click', 'result-fill', function(e) {
     var html = '<div class="popup-header"><a href="https://www.openstreetmap.org/' + props.osm_type + '/' + escHtml(osmId) + '" target="_blank" rel="noopener">' + typeLabel + ' ' + escHtml(osmId) + ' \u2197</a></div>';
     html += '<div class="popup-body"><table>';
 
-    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1, _is_part: 1, _has_parts: 1, _prev_height: 1, _area: 1 };
+    var skipKeys = { osm_id: 1, osm_type: 1, _skip_reason: 1, _is_part: 1, _has_parts: 1, _parent_id: 1, _prev_height: 1, _area: 1 };
     var isImproved = !!props['_prev_height'];
     var newKeys = { height: 1, 'source:height': 1 };
     for (var k in props) {
@@ -1236,6 +1247,15 @@ buildingPopup.on('close', function() {
 
 map.on('mouseenter', 'result-fill', function() { map.getCanvas().style.cursor = 'pointer'; });
 map.on('mouseleave', 'result-fill', function() { if (!buildingPopup.isOpen()) map.getCanvas().style.cursor = ''; });
+
+// Footer coordinates
+var footerCursor = document.getElementById('footer-cursor');
+map.on('mousemove', function(e) {
+    footerCursor.textContent = e.lngLat.lat.toFixed(6) + ', ' + e.lngLat.lng.toFixed(6);
+});
+map.getContainer().addEventListener('mouseleave', function() {
+    footerCursor.textContent = '\u2014';
+});
 
 // =============================================
 // Context menu (right-click)
@@ -1446,6 +1466,9 @@ document.getElementById('btn-upload').onclick = async function() {
     abortBtn.disabled = false;
     abortBtn.textContent = 'Abort';
     document.getElementById('upload-progress').style.display = 'block';
+    var uploadResult = document.getElementById('upload-result');
+    uploadResult.className = 'upload-result';
+    uploadResult.innerHTML = '';
     var uploadLog = document.getElementById('upload-log');
     uploadLog.style.display = 'block';
     uploadLog.innerHTML = '';
@@ -1454,7 +1477,7 @@ document.getElementById('btn-upload').onclick = async function() {
 
     showMapStatus('Uploading to OSM...');
 
-    await uploadToOSM(selectedFeatures,
+    var result = await uploadToOSM(selectedFeatures,
         function(cur, tot) {
             document.getElementById('upload-progress-fill').style.width = (cur / tot * 100) + '%';
             document.getElementById('upload-status-text').textContent = cur + '/' + tot;
@@ -1466,9 +1489,32 @@ document.getElementById('btn-upload').onclick = async function() {
 
     hideMapStatus();
     abortBtn.classList.remove('visible');
-    setStepState(4, uploadAborted ? 'error' : 'done');
-    btn.disabled = false;
-    btn.textContent = 'Upload selected (' + count + ')';
+
+    if (uploadAborted) {
+        setStepState(4, 'error');
+        uploadResult.className = 'upload-result visible error';
+        uploadResult.innerHTML = '<span class="icon icon--sm">cancel</span> Upload aborted. ' + (result ? result.updated + ' buildings were uploaded before abort.' : '');
+        btn.disabled = false;
+        btn.textContent = 'Upload selected (' + count + ')';
+    } else if (result && result.updated > 0) {
+        setStepState(4, 'done');
+        var csLink = result.changesetId ? ' <a href="https://www.openstreetmap.org/changeset/' + result.changesetId + '" target="_blank">View changeset \u2197</a>' : '';
+        uploadResult.className = 'upload-result visible success';
+        uploadResult.innerHTML = '<span class="icon icon--sm">check_circle</span> ' + result.updated + ' buildings uploaded successfully.' +
+            (result.errors > 0 ? ' ' + result.errors + ' failed.' : '') + csLink;
+        btn.textContent = 'Uploaded \u2713';
+        btn.disabled = true;
+    } else if (result && result.errors > 0) {
+        setStepState(4, 'error');
+        uploadResult.className = 'upload-result visible error';
+        uploadResult.innerHTML = '<span class="icon icon--sm">error</span> Upload failed. ' + result.errors + ' buildings had errors.';
+        btn.disabled = false;
+        btn.textContent = 'Retry upload (' + count + ')';
+    } else {
+        setStepState(4, 'done');
+        btn.disabled = false;
+        btn.textContent = 'Upload selected (' + count + ')';
+    }
 };
 
 // Handle OAuth callback + restore state

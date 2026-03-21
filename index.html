@@ -300,16 +300,30 @@
                                     <option value="100000">1:100'000</option>
                                 </select>
                             </div>
+                            <div class="print-form-row">
+                                <label for="print-dpi" data-i18n="print.dpi">Auflösung</label>
+                                <select id="print-dpi" class="custom-select print-select">
+                                    <option value="150" data-i18n="print.dpi.fast">150 DPI (schnell)</option>
+                                    <option value="300" selected data-i18n="print.dpi.standard">300 DPI (Standard)</option>
+                                </select>
+                            </div>
                             <label class="print-checkbox-label">
                                 <input type="checkbox" id="print-legend" checked> <span data-i18n="accordion.print.legend">Legende anzeigen</span>
                             </label>
                             <label class="print-checkbox-label">
                                 <input type="checkbox" id="print-title" checked> <span data-i18n="accordion.print.title_date">Titel und Datum</span>
                             </label>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-labels" checked> <span data-i18n="print.labels">Gebäudebeschriftung</span>
+                            </label>
                             <button class="print-btn" id="print-generate-btn">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
                                 <span data-i18n="accordion.print.button">PDF erstellen</span>
                             </button>
+                            <div class="print-progress" id="print-progress" style="display: none;">
+                                <div class="print-progress-bar"><div class="print-progress-fill" id="print-progress-fill"></div></div>
+                                <div class="print-progress-text" id="print-progress-text"></div>
+                            </div>
                         </div>
                     </div>
                 </div>

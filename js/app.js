@@ -303,7 +303,7 @@ initI18n().then(function() {
     removeSwisstopoLayer: function(el) { removeSwisstopoLayer(el.dataset.layerId); },
     showLayerInfo: function(el) { showLayerInfo(el.dataset.layerId); },
     searchLocal: function(el) { handleSearchClick('local', el.dataset.id); },
-    searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), parseFloat(el.dataset.zoom)); },
+    searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), null, null, el.dataset.bbox || null, el.dataset.origin || ''); },
     searchLayer: function(el) { handleSearchClick('layer', el.dataset.layerId, null, null, null, el.dataset.title); }
   };
 

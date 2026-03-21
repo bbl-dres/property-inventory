@@ -41,7 +41,8 @@
       "Bash(rm -rf templates __pycache__)",
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d[''''elements''''][0].get\\(''''tags'''',{}\\), indent=2\\)\\)\")",
       "Bash(openssl dgst:*)",
-      "Bash(openssl base64:*)"
+      "Bash(openssl base64:*)",
+      "Bash(grep -r handleSearchClick /c/Users/DavidRasner/Documents/GitHub/property-inventory/ --include=*.html --include=*.js)"
     ]
   }
 }

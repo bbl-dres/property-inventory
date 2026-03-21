@@ -1847,6 +1847,78 @@
     "fr": "Création en cours...",
     "it": "Creazione in corso..."
   },
+  "print.rendering": {
+    "de": "Karte wird gerendert…",
+    "en": "Rendering map…",
+    "fr": "Rendu de la carte…",
+    "it": "Rendering della mappa…"
+  },
+  "print.rendering.tile": {
+    "de": "Kachel {current} von {total} wird gerendert…",
+    "en": "Rendering tile {current} of {total}…",
+    "fr": "Rendu de la tuile {current} sur {total}…",
+    "it": "Rendering riquadro {current} di {total}…"
+  },
+  "print.composing": {
+    "de": "PDF wird zusammengestellt…",
+    "en": "Composing PDF…",
+    "fr": "Composition du PDF…",
+    "it": "Composizione del PDF…"
+  },
+  "print.dpi": {
+    "de": "Auflösung",
+    "en": "Resolution",
+    "fr": "Résolution",
+    "it": "Risoluzione"
+  },
+  "print.dpi.fast": {
+    "de": "150 DPI (schnell)",
+    "en": "150 DPI (fast)",
+    "fr": "150 DPI (rapide)",
+    "it": "150 DPI (veloce)"
+  },
+  "print.dpi.standard": {
+    "de": "300 DPI (Standard)",
+    "en": "300 DPI (standard)",
+    "fr": "300 DPI (standard)",
+    "it": "300 DPI (standard)"
+  },
+  "print.labels": {
+    "de": "Gebäudebeschriftung",
+    "en": "Building labels",
+    "fr": "Étiquettes des bâtiments",
+    "it": "Etichette degli edifici"
+  },
+  "print.center": {
+    "de": "Zentrum",
+    "en": "Center",
+    "fr": "Centre",
+    "it": "Centro"
+  },
+  "print.date": {
+    "de": "Erstellt am {date}",
+    "en": "Created on {date}",
+    "fr": "Créé le {date}",
+    "it": "Creato il {date}"
+  },
+  "print.layers": {
+    "de": "Sichtbare Ebenen",
+    "en": "Visible layers",
+    "fr": "Couches visibles",
+    "it": "Livelli visibili"
+  },
+  "print.basemap": {
+    "de": "Grundkarte",
+    "en": "Basemap",
+    "fr": "Carte de base",
+    "it": "Mappa di base"
+  },
+  "print.error.timeout": {
+    "de": "Zeitüberschreitung beim Rendern der Karte. Versuchen Sie eine niedrigere Auflösung.",
+    "en": "Map rendering timed out. Try a lower resolution.",
+    "fr": "Délai de rendu de la carte dépassé. Essayez une résolution inférieure.",
+    "it": "Timeout nel rendering della mappa. Provare con una risoluzione inferiore."
+  },
   "swisstopo.error": {
     "de": "Fehler",
     "en": "Error",

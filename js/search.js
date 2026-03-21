@@ -36,12 +36,25 @@ function stripHtml(str) {
   return str.replace(/<[^>]*>/g, '');
 }
 
+// Map Swisstopo origin types to appropriate fallback zoom levels
+function zoomForOrigin(origin) {
+  switch (origin) {
+    case 'kantone': return 10;
+    case 'gg25': return 14;       // municipality
+    case 'district': return 12;
+    case 'gazetteer': return 14;  // settlement name
+    case 'address': return 17;
+    case 'parcel': return 17;
+    default: return 15;
+  }
+}
+
 // Module-level references set during initSearch
 let _searchInput = null;
 let _searchResults = null;
 let _searchClearBtn = null;
 
-export function handleSearchClick(type, id, lat, lon, zoom, title) {
+export function handleSearchClick(type, id, lat, lon, zoom, title, bbox, origin) {
   _searchResults.classList.remove('active');
 
   // Save search term to history
@@ -75,8 +88,21 @@ export function handleSearchClick(type, id, lat, lon, zoom, title) {
       state.searchMarker.remove();
     }
 
-    // 2. Fly to location
-    smartFlyTo({ center: [lon, lat], zoom: zoom });
+    // 2. Fly to location using bounding box when available
+
+    if (bbox) {
+      // Parse "BOX(minLng minLat,maxLng maxLat)"
+      var match = bbox.match(/BOX\(([^ ]+) ([^,]+),([^ ]+) ([^)]+)\)/);
+      if (match) {
+        var bounds = [[parseFloat(match[1]), parseFloat(match[2])], [parseFloat(match[3]), parseFloat(match[4])]];
+        var minZoom = (origin === 'gg25' || origin === 'gazetteer') ? 13 : 0;
+        state.map.fitBounds(bounds, { padding: 40, minZoom: minZoom, maxZoom: 18, duration: 1000 });
+      } else {
+        smartFlyTo({ center: [lon, lat], zoom: zoomForOrigin(origin) });
+      }
+    } else {
+      smartFlyTo({ center: [lon, lat], zoom: zoomForOrigin(origin) });
+    }
 
     // 3. Add Red Marker
     state.searchMarker = new maplibregl.Marker({ color: '#c00' })
@@ -298,8 +324,9 @@ export function initSearch() {
       locResults.forEach(function(r, index) {
         const lat = r.attrs.lat;
         const lon = r.attrs.lon;
-        const zoom = r.attrs.zoomlevel || 14;
-        html += '<div class="search-item" data-action="searchLocation" data-lat="' + lat + '" data-lng="' + lon + '" data-zoom="' + zoom + '">' +
+        const origin = r.attrs.origin || '';
+        const bbox = r.attrs.geom_st_box2d || '';
+        html += '<div class="search-item" data-action="searchLocation" data-lat="' + lat + '" data-lng="' + lon + '" data-origin="' + escapeHtml(origin) + '" data-bbox="' + escapeHtml(bbox) + '">' +
                 '<div class="search-item-title">' + escapeHtml(stripHtml(r.attrs.label)) + '</div>' +
                 '</div>';
       });
