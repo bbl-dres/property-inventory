@@ -42,7 +42,8 @@
       "Bash(python3 -c \"import json,sys; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d[''''elements''''][0].get\\(''''tags'''',{}\\), indent=2\\)\\)\")",
       "Bash(openssl dgst:*)",
       "Bash(openssl base64:*)",
-      "Bash(grep -r handleSearchClick /c/Users/DavidRasner/Documents/GitHub/property-inventory/ --include=*.html --include=*.js)"
+      "Bash(grep -r handleSearchClick /c/Users/DavidRasner/Documents/GitHub/property-inventory/ --include=*.html --include=*.js)",
+      "Bash(grep -r \"preserveDrawingBuffer\\\\|canvasContextAttributes\\\\|drawImage\\\\|toDataURL\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/js --include=*.js)"
     ]
   }
 }
