@@ -1,0 +1,28 @@
+{
+  "products": [
+    {
+      "slug": "property-viewer",
+      "name": "Property viewer",
+      "description": "Public-facing map that lets citizens browse parcels and see who owns them.",
+      "url": "https://property-viewer.example.ch",
+      "thumbnail": "./assets/images/property-viewer.svg",
+      "consumed_layers": ["parcels_2026"],
+      "owner": "GIS team",
+      "status": "live",
+      "last_deployed_at": "2026-04-10T12:00:00Z",
+      "tags": ["public", "map"]
+    },
+    {
+      "slug": "field-inspection-app",
+      "name": "Field inspection app",
+      "description": "Mobile tool inspectors use to log on-site visits. Writes back to the inspections layer.",
+      "url": "https://inspections.example.ch",
+      "thumbnail": "./assets/images/field-inspection-app.svg",
+      "consumed_layers": ["inspections", "parcels_2026"],
+      "owner": "Facilities",
+      "status": "staging",
+      "last_deployed_at": "2026-04-14T09:30:00Z",
+      "tags": ["internal", "mobile"]
+    }
+  ]
+}

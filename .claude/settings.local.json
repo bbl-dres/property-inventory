@@ -7,7 +7,19 @@
       "Bash(curl:*)",
       "Bash(python:*)",
       "Bash(find:*)",
-      "Bash(xargs ls -la)"
+      "Bash(xargs ls -la)",
+      "Bash(git mv *)",
+      "Bash(node --check js/map-preview.js)",
+      "Bash(node --check js/new-layer.js)",
+      "Bash(node --check js/data-grid.js)",
+      "Bash(node --check js/layer-detail.js)",
+      "Bash(node --check js/utils.js)",
+      "Bash(node --input-type=module --check)",
+      "Bash(node -e \"import\\('file:///c:/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/utils.js'\\).then\\(\\(\\)=>console.log\\('utils OK'\\)\\).catch\\(e=>console.error\\('utils FAIL',e.message\\)\\)\")",
+      "Bash(mv js/sidebar-layers.js js/sidebar-features.js)",
+      "Bash(mv js/layer-detail.js js/feature-detail.js)",
+      "Bash(mv js/new-layer-drawer.js js/new-feature-drawer.js)",
+      "Bash(mv data/mock-layers.json data/mock-features.json)"
     ]
   }
 }

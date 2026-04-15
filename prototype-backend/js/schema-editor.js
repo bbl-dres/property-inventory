@@ -1,0 +1,430 @@
+// prototype-backend — Schema tab
+// View/Edit toggle. In edit mode: descriptions inline-editable, drag handle
+// reorder (native HTML5 DnD), "+ Add column" visible. Locked columns stay
+// at top and are NOT draggable.
+
+import * as api from './api.js';
+import { ApiError } from './api.js';
+import { el, toast, openModal, closeModal } from './utils.js';
+import { bus } from './state.js';
+import { COLUMN_NAME_RE, COLUMN_TYPES as TYPES } from './constants.js';
+
+let root = null;
+let layer = null;
+let columns = [];
+let mode = 'view'; // 'view' | 'edit'
+
+// DnD state
+let dragIdx = -1;
+let dropIndicator = null;
+let keyboardDragIdx = -1;
+
+// Keyboard shortcut: "E" toggles edit mode when schema tab is active.
+let keydownHandler = null;
+
+export async function mount(container, { layer: l }) {
+  // Refetch to avoid rendering against a stale cached layer from the parent.
+  try { l = await api.getLayer(l.name); } catch {}
+  root = container;
+  layer = l;
+  columns = Array.isArray(layer.columns) ? layer.columns.slice() : [];
+  mode = 'view';
+  render();
+
+  keydownHandler = (e) => {
+    // Ignore when typing in inputs.
+    const tag = (e.target && e.target.tagName) || '';
+    if (/input|textarea|select/i.test(tag) || e.target?.isContentEditable) return;
+    if (e.key === 'e' || e.key === 'E') {
+      e.preventDefault();
+      toggleMode();
+    }
+  };
+  document.addEventListener('keydown', keydownHandler);
+}
+
+export function unmount() {
+  if (keydownHandler) document.removeEventListener('keydown', keydownHandler);
+  keydownHandler = null;
+  if (root) root.innerHTML = '';
+  root = null;
+  layer = null;
+  columns = [];
+  dragIdx = -1;
+  keyboardDragIdx = -1;
+  dropIndicator = null;
+}
+
+async function refresh() {
+  try {
+    columns = await api.listColumns(layer.name);
+    render();
+  } catch (err) {
+    toast(err?.message || 'Failed to reload columns', 'error');
+  }
+}
+
+function toggleMode() {
+  mode = mode === 'view' ? 'edit' : 'view';
+  render();
+  announce(`Schema ${mode} mode`);
+}
+
+function render() {
+  if (!root) return;
+  root.innerHTML = '';
+
+  const lockedCount = columns.filter((c) => c.locked).length;
+  const editableCount = columns.length - lockedCount;
+
+  const toggle = el('div', { class: 'pb-edit-toggle', role: 'group', 'aria-label': 'Schema mode' }, [
+    (() => {
+      const b = el('button', {
+        type: 'button',
+        class: 'pb-edit-toggle-btn' + (mode === 'view' ? ' is-active' : ''),
+        'aria-pressed': mode === 'view' ? 'true' : 'false'
+      }, 'View');
+      b.addEventListener('click', () => { if (mode !== 'view') toggleMode(); });
+      return b;
+    })(),
+    (() => {
+      const b = el('button', {
+        type: 'button',
+        class: 'pb-edit-toggle-btn' + (mode === 'edit' ? ' is-active' : ''),
+        'aria-pressed': mode === 'edit' ? 'true' : 'false'
+      }, 'Edit');
+      b.addEventListener('click', () => { if (mode !== 'edit') toggleMode(); });
+      return b;
+    })()
+  ]);
+
+  const addBtn = el('button', { type: 'button', class: 'btn-primary' }, [
+    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+    ' Add column'
+  ]);
+  addBtn.addEventListener('click', openAddColumnModal);
+
+  // In view mode we show only the total column count to avoid the confusing
+  // "N users" wording that read as "users of this feature". In edit mode,
+  // the editable/locked breakdown is genuinely useful (you can only reorder
+  // editable ones), so we show it there.
+  const toolbarTitle = mode === 'edit'
+    ? `${columns.length} columns · ${editableCount} editable · ${lockedCount} locked`
+    : `${columns.length} column${columns.length === 1 ? '' : 's'}`;
+
+  const toolbar = el('div', { class: 'pb-toolbar pb-schema-toolbar' }, [
+    el('div', { class: 'pb-toolbar-title' }, toolbarTitle),
+    el('div', { style: { flex: '1' } }),
+    el('span', { class: 'pb-muted pb-schema-hint' }, mode === 'view' ? 'Press E to edit' : 'Press E to view'),
+    toggle,
+    mode === 'edit' ? addBtn : null
+  ].filter(Boolean));
+
+  const head = el('tr', {}, [
+    mode === 'edit' ? el('th', { style: { width: '32px' }, 'aria-label': 'Drag' }, '') : null,
+    el('th', { style: { width: '48px' } }, '#'),
+    el('th', {}, 'Name'),
+    el('th', {}, 'Type'),
+    el('th', {}, 'Description'),
+    el('th', { style: { width: '80px' } }, '')
+  ].filter(Boolean));
+
+  const tbody = el('tbody', {});
+  columns.forEach((c, i) => tbody.appendChild(renderRow(c, i)));
+
+  const tableCard = el('div', { class: 'pb-card' }, [
+    el('table', { class: 'pb-table pb-schema-table' + (mode === 'edit' ? ' is-edit' : ''), id: 'pb-schema-table' }, [
+      el('thead', {}, [head]),
+      tbody
+    ])
+  ]);
+
+  root.appendChild(toolbar);
+  root.appendChild(tableCard);
+
+  // Drop indicator container (absolute, one per render).
+  if (mode === 'edit') {
+    dropIndicator = el('div', { class: 'pb-drop-indicator', style: { display: 'none' } });
+    tableCard.appendChild(dropIndicator);
+  }
+}
+
+function renderRow(column, idx) {
+  const locked = !!column.locked;
+  const editing = mode === 'edit';
+
+  const handle = editing
+    ? (() => {
+        const h = el('td', { class: 'pb-drag-cell' }, [
+          locked
+            ? el('span', { class: 'pb-drag-handle is-disabled', title: 'Locked' }, '⋮⋮')
+            : (() => {
+                const g = el('span', {
+                  class: 'pb-drag-handle',
+                  tabindex: '0',
+                  role: 'button',
+                  'aria-label': `Reorder ${column.name}. Press Space to grab, arrow keys to move, Space to drop, Escape to cancel.`,
+                  title: 'Drag to reorder'
+                }, '⋮⋮');
+                bindHandleDnd(g, idx, column.name);
+                return g;
+              })()
+        ]);
+        return h;
+      })()
+    : null;
+
+  const desc = locked
+    ? (column.description || el('span', { class: 'pb-muted' }, '—'))
+    : (editing ? renderEditableDescription(column) : (column.description || el('span', { class: 'pb-muted' }, '—')));
+
+  const actions = locked
+    ? el('td', {}, [el('span', { class: 'pb-muted' }, '(locked)')])
+    : el('td', {}, editing ? [] : []);
+
+  const tr = el('tr', {
+    dataset: { col: column.name, idx: String(idx) },
+    draggable: false
+  }, [
+    handle,
+    el('td', {}, String(idx + 1)),
+    el('td', {}, [el('span', { class: 'pb-name-mono' }, column.name)]),
+    el('td', {}, [el('span', { class: 'pb-badge-type' }, column.type)]),
+    el('td', { class: 'pb-desc-cell' }, [desc]),
+    actions
+  ].filter(Boolean));
+
+  if (editing && !locked) {
+    tr.addEventListener('dragover', (e) => onRowDragOver(e, idx));
+    tr.addEventListener('drop', (e) => onRowDrop(e, idx));
+  }
+
+  return tr;
+}
+
+// ===== Description inline edit (edit mode only) =====
+
+function renderEditableDescription(column) {
+  const input = el('input', {
+    type: 'text',
+    class: 'pb-inline-input',
+    value: column.description || '',
+    placeholder: '— add description —'
+  });
+  let current = column.description || '';
+  input.addEventListener('blur', async () => {
+    const next = input.value.trim();
+    if (next === current) return;
+    try {
+      await api.setColumnDescription(layer.name, column.name, next);
+      current = next;
+      column.description = next;
+      toast('Description saved', 'success');
+      bus.emit('schema:changed');
+    } catch (err) {
+      toast(err?.message || 'Save failed', 'error');
+      input.value = current;
+    }
+  });
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); input.blur(); }
+    else if (e.key === 'Escape') { e.preventDefault(); input.value = current; input.blur(); }
+  });
+  return input;
+}
+
+// ===== Drag-and-drop (mouse) =====
+
+function bindHandleDnd(handleEl, idx, colName) {
+  handleEl.setAttribute('draggable', 'true');
+  handleEl.addEventListener('dragstart', (e) => {
+    dragIdx = idx;
+    e.dataTransfer.effectAllowed = 'move';
+    try { e.dataTransfer.setData('text/plain', colName); } catch {}
+    handleEl.closest('tr')?.classList.add('is-dragging');
+  });
+  handleEl.addEventListener('dragend', () => {
+    handleEl.closest('tr')?.classList.remove('is-dragging');
+    hideDropIndicator();
+    dragIdx = -1;
+  });
+
+  // Keyboard a11y
+  handleEl.addEventListener('keydown', (e) => {
+    if (e.key === ' ' || e.key === 'Enter') {
+      e.preventDefault();
+      if (keyboardDragIdx === -1) {
+        keyboardDragIdx = idx;
+        handleEl.closest('tr')?.classList.add('is-dragging');
+        announce(`Grabbed ${colName}. Use arrow keys to move.`);
+      } else {
+        // drop
+        announce(`Dropped ${colName}.`);
+        handleEl.closest('tr')?.classList.remove('is-dragging');
+        keyboardDragIdx = -1;
+        // Persist the current order.
+        persistOrder();
+      }
+    } else if (e.key === 'Escape' && keyboardDragIdx !== -1) {
+      e.preventDefault();
+      handleEl.closest('tr')?.classList.remove('is-dragging');
+      announce('Cancelled.');
+      keyboardDragIdx = -1;
+      refresh();
+    } else if ((e.key === 'ArrowUp' || e.key === 'ArrowDown') && keyboardDragIdx !== -1) {
+      e.preventDefault();
+      const delta = e.key === 'ArrowUp' ? -1 : 1;
+      const target = keyboardDragIdx + delta;
+      if (!canSwap(keyboardDragIdx, target)) return;
+      swapColumns(keyboardDragIdx, target);
+      keyboardDragIdx = target;
+      // Re-render then re-focus the handle at the new index.
+      render();
+      const row = root.querySelector(`tr[data-idx="${target}"]`);
+      const h = row?.querySelector('.pb-drag-handle');
+      if (h) { h.classList.add('is-grabbed'); h.focus(); row.classList.add('is-dragging'); }
+    }
+  });
+}
+
+function canSwap(from, to) {
+  if (to < 0 || to >= columns.length) return false;
+  if (columns[to]?.locked) return false;
+  if (columns[from]?.locked) return false;
+  return true;
+}
+
+function swapColumns(from, to) {
+  const [moved] = columns.splice(from, 1);
+  columns.splice(to, 0, moved);
+}
+
+function onRowDragOver(e, idx) {
+  if (dragIdx === -1) return;
+  if (columns[idx]?.locked) return;
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+  showDropIndicator(e, idx);
+}
+
+function onRowDrop(e, idx) {
+  if (dragIdx === -1) return;
+  if (columns[idx]?.locked) return;
+  e.preventDefault();
+  const from = dragIdx;
+  let to = idx;
+  // If dropping onto the lower half of a row, insert after.
+  const tr = e.currentTarget;
+  const rect = tr.getBoundingClientRect();
+  const after = (e.clientY - rect.top) > rect.height / 2;
+  if (after && to < columns.length - 1) to = to + 1;
+  if (from < to) to -= 1; // account for removal
+  if (from === to) { hideDropIndicator(); return; }
+  const prevOrder = columns.slice();
+  swapColumns(from, to);
+  hideDropIndicator();
+  render();
+  persistOrder(prevOrder);
+}
+
+function showDropIndicator(e, idx) {
+  if (!dropIndicator) return;
+  const table = root.querySelector('#pb-schema-table');
+  const row = table.querySelector(`tr[data-idx="${idx}"]`);
+  if (!row) return;
+  const tableRect = table.parentElement.getBoundingClientRect();
+  const rect = row.getBoundingClientRect();
+  const after = (e.clientY - rect.top) > rect.height / 2;
+  const y = (after ? rect.bottom : rect.top) - tableRect.top;
+  dropIndicator.style.display = 'block';
+  dropIndicator.style.top = y + 'px';
+}
+
+function hideDropIndicator() {
+  if (dropIndicator) dropIndicator.style.display = 'none';
+}
+
+async function persistOrder(prevOrder) {
+  const names = columns.filter((c) => !c.locked).map((c) => c.name);
+  try {
+    await api.reorderColumns(layer.name, names);
+    announce('Column order saved.');
+  } catch (err) {
+    toast(err?.message || 'Reorder failed', 'error');
+    if (prevOrder) { columns = prevOrder; render(); }
+  }
+}
+
+function announce(msg) {
+  const live = document.getElementById('aria-live');
+  if (live) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 20); }
+}
+
+// ===== Add column modal =====
+
+function openAddColumnModal() {
+  const nameInput = el('input', { type: 'text', autocomplete: 'off', placeholder: 'e.g. parcel_no' });
+  const typeSelect = el('select', {}, TYPES.map((t) => el('option', { value: t }, t)));
+  const descInput = el('textarea', { rows: '3', placeholder: 'Optional description' });
+
+  const nameErr = el('div', { class: 'pb-field-error', style: { display: 'none' } });
+  const submitErr = el('div', { class: 'pb-field-error', style: { display: 'none' } });
+
+  function validateName() {
+    const v = nameInput.value.trim();
+    if (!v) { nameInput.classList.remove('is-invalid'); nameErr.style.display = 'none'; return false; }
+    const ok = COLUMN_NAME_RE.test(v);
+    nameInput.classList.toggle('is-invalid', !ok);
+    nameErr.textContent = ok ? '' : 'Must match ^[a-z][a-z0-9_]{0,62}$';
+    nameErr.style.display = ok ? 'none' : '';
+    return ok;
+  }
+  nameInput.addEventListener('input', validateName);
+
+  const cancelBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Cancel');
+  const submitBtn = el('button', { type: 'submit', class: 'btn-primary' }, 'Add column');
+
+  const form = el('form', { class: 'pb-form', novalidate: true }, [
+    el('div', { class: 'pb-field' }, [
+      el('label', {}, 'Name'),
+      nameInput,
+      el('div', { class: 'pb-field-hint' }, 'Lowercase, digits and underscore. Starts with a letter.'),
+      nameErr
+    ]),
+    el('div', { class: 'pb-field' }, [el('label', {}, 'Type'), typeSelect]),
+    el('div', { class: 'pb-field' }, [el('label', {}, 'Description'), descInput]),
+    submitErr
+  ]);
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    submitErr.style.display = 'none';
+    const name = nameInput.value.trim();
+    if (!validateName() || !name) {
+      if (!name) { nameErr.textContent = 'Name is required'; nameErr.style.display = ''; }
+      return;
+    }
+    submitBtn.disabled = true;
+    try {
+      await api.addColumn(layer.name, { name, type: typeSelect.value, description: descInput.value.trim() });
+      closeModal();
+      toast('Column added', 'success');
+      bus.emit('schema:changed');
+      await refresh();
+    } catch (err) {
+      const msg = err instanceof ApiError ? `${err.code}: ${err.message}` : (err?.message || 'Failed to add column');
+      submitErr.textContent = msg;
+      submitErr.style.display = '';
+      submitBtn.disabled = false;
+    }
+  });
+
+  cancelBtn.addEventListener('click', () => closeModal());
+
+  const content = el('div', {}, [
+    el('div', { class: 'pb-modal-header' }, 'Add column'),
+    el('div', { class: 'pb-modal-body' }, [form]),
+    el('div', { class: 'pb-modal-footer' }, [cancelBtn, submitBtn])
+  ]);
+  openModal(content);
+}

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GIS Admin</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/icon?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+
+  <link href="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.css" rel="stylesheet">
+  <script src="https://unpkg.com/maplibre-gl@5.0.0/dist/maplibre-gl.js"></script>
+
+  <link rel="stylesheet" href="./css/tokens.css">
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/admin.css">
+</head>
+<body class="pb-body">
+  <header class="pb-topbar">
+    <div class="pb-topbar-title">
+      <span class="material-symbols-outlined">database</span>
+      <span>GIS Admin</span>
+    </div>
+    <nav class="pb-tabs" id="pb-tabs" aria-label="Primary"></nav>
+    <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
+      <span class="material-symbols-outlined">cloud_off</span>
+      <span>mock &middot; localStorage</span>
+    </div>
+  </header>
+
+  <nav class="pb-breadcrumb-strip" id="pb-breadcrumb" aria-label="Breadcrumb"></nav>
+
+  <div class="pb-layout-grid" id="pb-layout-grid">
+    <aside class="pb-object-sidebar" id="pb-object-sidebar" aria-label="Object list"></aside>
+
+    <main id="app" class="pb-main" tabindex="-1"></main>
+  </div>
+
+  <div id="toast-host" class="pb-toast-host" aria-live="polite" aria-atomic="true"></div>
+  <div id="modal-host" class="pb-modal-host"></div>
+  <div id="aria-live" class="pb-sr-only" aria-live="polite" aria-atomic="true"></div>
+
+  <script type="module" src="./js/app.js"></script>
+</body>
+</html>

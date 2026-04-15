@@ -1,0 +1,161 @@
+{
+  "layers": [
+    {
+      "name": "parcels_2026",
+      "title": "Parcels 2026",
+      "description": "Cadastral parcels for the 2026 fiscal year (Zurich pilot area).",
+      "geometry_type": "Polygon",
+      "srid": 4326,
+      "created_at": "2026-03-02T09:15:00Z",
+      "updated_at": "2026-04-13T14:22:00Z",
+      "metadata": {
+        "tags": ["cadastre", "parcels", "zurich"],
+        "license": "CC BY 4.0",
+        "attribution": "© Kanton Zürich, Amt für Geoinformation",
+        "contact": "geodata@zh.ch",
+        "update_frequency": "yearly",
+        "lineage": "Derived from the official Kanton Zürich cadastre export (AV93), filtered to the 2026 fiscal pilot area and reprojected to WGS 84.",
+        "thumbnail_url": null
+      },
+      "columns": [
+        { "name": "id", "type": "uuid", "description": "Primary key", "locked": true, "nullable": false },
+        { "name": "geom", "type": "geometry(Polygon, 4326)", "description": "Geometry", "locked": true, "nullable": false },
+        { "name": "parcel_no", "type": "varchar", "description": "Cantonal parcel number" },
+        { "name": "area_m2", "type": "numeric", "description": "Area in square metres" },
+        { "name": "owner", "type": "text", "description": "Registered owner (canton or municipality)" },
+        { "name": "extra", "type": "jsonb", "description": "Flexible attributes (zoning, heritage flags, etc.)" }
+      ],
+      "features": [
+        {
+          "id": "a1b2c3d4-0001-4000-8000-000000000001",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[8.540, 47.374], [8.542, 47.374], [8.542, 47.376], [8.540, 47.376], [8.540, 47.374]]]
+          },
+          "properties": {
+            "parcel_no": "ZH-4412-017",
+            "area_m2": 1842.5,
+            "owner": "Kanton Zürich",
+            "extra": { "zone": "residential", "heritage": false }
+          }
+        },
+        {
+          "id": "a1b2c3d4-0001-4000-8000-000000000002",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[8.545, 47.376], [8.548, 47.376], [8.548, 47.378], [8.545, 47.378], [8.545, 47.376]]]
+          },
+          "properties": {
+            "parcel_no": "ZH-4412-018",
+            "area_m2": 2410.0,
+            "owner": "Stadt Zürich",
+            "extra": { "zone": "mixed", "heritage": true, "protection_class": "B" }
+          }
+        },
+        {
+          "id": "a1b2c3d4-0001-4000-8000-000000000003",
+          "geometry": {
+            "type": "Polygon",
+            "coordinates": [[[8.550, 47.370], [8.553, 47.370], [8.553, 47.372], [8.550, 47.372], [8.550, 47.370]]]
+          },
+          "properties": {
+            "parcel_no": "ZH-4412-019",
+            "area_m2": 980.25,
+            "owner": "Bund",
+            "extra": { "zone": "industrial", "heritage": false }
+          }
+        }
+      ]
+    },
+    {
+      "name": "inspections",
+      "title": "Field inspections",
+      "description": "On-site inspection reports for managed properties.",
+      "geometry_type": "Point",
+      "srid": 4326,
+      "created_at": "2026-02-10T08:00:00Z",
+      "updated_at": "2026-04-15T11:05:00Z",
+      "metadata": {
+        "tags": ["inspections", "field-ops"],
+        "license": "Internal — not for redistribution",
+        "attribution": "Facility Management team",
+        "contact": "fm-team@example.ch",
+        "update_frequency": "weekly",
+        "lineage": "Entered manually by field inspectors via the mobile app; coordinates from device GPS.",
+        "thumbnail_url": null
+      },
+      "columns": [
+        { "name": "id", "type": "uuid", "description": "Primary key", "locked": true, "nullable": false },
+        { "name": "geom", "type": "geometry(Point, 4326)", "description": "Geometry", "locked": true, "nullable": false },
+        { "name": "inspector", "type": "text", "description": "Name of the inspector" },
+        { "name": "inspected_at", "type": "timestamptz", "description": "When the inspection took place" },
+        { "name": "passed", "type": "boolean", "description": "Whether the inspection passed" },
+        { "name": "parent_id", "type": "uuid", "description": "FK placeholder — references a future parent record (nullable)" }
+      ],
+      "features": [
+        {
+          "id": "b2c3d4e5-0002-4000-8000-000000000001",
+          "geometry": { "type": "Point", "coordinates": [8.5417, 47.3769] },
+          "properties": { "inspector": "M. Meier", "inspected_at": "2026-04-12T09:30:00Z", "passed": true, "parent_id": null }
+        },
+        {
+          "id": "b2c3d4e5-0002-4000-8000-000000000002",
+          "geometry": { "type": "Point", "coordinates": [8.5465, 47.3772] },
+          "properties": { "inspector": "A. Keller", "inspected_at": "2026-04-13T14:00:00Z", "passed": false, "parent_id": null }
+        },
+        {
+          "id": "b2c3d4e5-0002-4000-8000-000000000003",
+          "geometry": { "type": "Point", "coordinates": [8.5510, 47.3710] },
+          "properties": { "inspector": "S. Huber", "inspected_at": "2026-04-14T10:15:00Z", "passed": true, "parent_id": null }
+        },
+        {
+          "id": "b2c3d4e5-0002-4000-8000-000000000004",
+          "geometry": { "type": "Point", "coordinates": [8.5383, 47.3755] },
+          "properties": { "inspector": "M. Meier", "inspected_at": "2026-04-15T08:45:00Z", "passed": true, "parent_id": null }
+        }
+      ]
+    },
+    {
+      "name": "contracts",
+      "title": "Contracts",
+      "description": "Lease and service contracts attached to properties.",
+      "geometry_type": "Table",
+      "srid": null,
+      "created_at": "2026-01-05T10:00:00Z",
+      "updated_at": "2026-04-01T16:30:00Z",
+      "metadata": {
+        "tags": [],
+        "license": null,
+        "attribution": null,
+        "contact": null,
+        "update_frequency": null,
+        "lineage": null,
+        "thumbnail_url": null
+      },
+      "columns": [
+        { "name": "id", "type": "uuid", "description": "Primary key", "locked": true, "nullable": false },
+        { "name": "contract_no", "type": "varchar", "description": "Contract number" },
+        { "name": "counterparty", "type": "text", "description": "Counterparty name" },
+        { "name": "start_date", "type": "date", "description": "Contract start date" },
+        { "name": "annual_chf", "type": "numeric", "description": "Annual value in CHF" }
+      ],
+      "features": [
+        {
+          "id": "c3d4e5f6-0003-4000-8000-000000000001",
+          "geometry": null,
+          "properties": { "contract_no": "C-2026-001", "counterparty": "ABB Schweiz AG", "start_date": "2026-01-01", "annual_chf": 48200.0 }
+        },
+        {
+          "id": "c3d4e5f6-0003-4000-8000-000000000002",
+          "geometry": null,
+          "properties": { "contract_no": "C-2026-002", "counterparty": "Migros Genossenschaft", "start_date": "2026-02-15", "annual_chf": 125000.0 }
+        },
+        {
+          "id": "c3d4e5f6-0003-4000-8000-000000000003",
+          "geometry": null,
+          "properties": { "contract_no": "C-2026-003", "counterparty": "SBB AG", "start_date": "2026-03-01", "annual_chf": 76500.5 }
+        }
+      ]
+    }
+  ]
+}
