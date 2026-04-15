@@ -25,10 +25,10 @@ Ruthlessly small. If it isn't listed here, it isn't in v1.
 
 ### In (Phases 1–4)
 
-1. **Sidebar IA** — Data products (default/first), Features, Settings as first-class navigation (Phase 1, rail reordered Phase 4). Default route is `#/products`.
-2. **Features list** (was Layers) — sidebar list of features, **create**, **delete**. No rename/duplicate.
-3. **Create feature** — name, geometry type (all OGC core types + Multi* variants), **SRID** (4326/2056/3857/21781), optional GeoJSON/CSV upload that infers columns.
-4. **Feature overview** — inline-editable title/description, record count, geometry type, SRID + human name, REST endpoint + curl copy, "Used by" data products, and a **Metadata card** (tags, license, attribution, contact, update frequency, lineage — all inline-editable).
+1. **Sidebar IA** — Data products, Layers (default landing), Settings as first-class navigation. Default route is `#/features` (the Layers landing).
+2. **Layers list** — sidebar list of layers, **create**, **delete**. No rename/duplicate.
+3. **Create layer** — name, geometry type (all OGC core types + Multi* variants), **SRID** (4326/2056/3857/21781), optional GeoJSON/CSV upload that infers columns.
+4. **Layer overview** — inline-editable title/description, record count + updated-at in the hero, geometry type, SRID + human name, REST endpoint + curl copy, "Used by" data products, and a **Metadata card** (tags, license, attribution, contact, update frequency, lineage — all inline-editable).
 5. **Schema view** — list columns. **Add column** (now with the expanded PostGIS-aligned type set: `text`, `varchar`, `integer`, `bigint`, `double precision`, `numeric`, `boolean`, `date`, `timestamptz`, `uuid`, `jsonb`) and **edit description** only. Column reorder via drag/keyboard.
 6. **Data grid** — paginated, sort, attribute **filter bar** (case-insensitive, client-side in MVP) with "Showing N of M" counts, inline-edit, delete, side-panel form. `jsonb` renders as inline code; the record form edits jsonb via textarea (validated JSON) and uuid via text input (regex-validated).
 7. **Geometry input** — side-panel textarea accepts **GeoJSON or WKT**. "Copy as WKT" button for existing geometries.
@@ -59,9 +59,9 @@ Drop/rename/retype columns · domains/units/aliases/required · upsert & replace
 
 Four screens, reachable by URL hash. Static site, no build step.
 
-### 1. Features list — `#/features`
+### 1. Layers list — `#/features`
 
-Sidebar list of all features. (Default landing screen is `#/products`; the Features section is one rail click away.) Legacy `#/layers*` URLs redirect to their `#/features*` equivalents.
+Sidebar list of all layers. This is the default landing screen. The URL route stays `#/features` (and legacy `#/layers*` URLs redirect to `#/features*`) — only the user-facing label says "Layers".
 
 | Name | Title | Type | Features | Updated |
 |------|-------|------|----------|---------|
@@ -73,7 +73,7 @@ Sidebar list of all features. (Default landing screen is `#/products`; the Featu
 - Row click → layer detail.
 - Row action: delete (confirm modal, type name to confirm).
 
-### 2. New feature — drawer on the Features section (legacy `#/layers/new` → drawer)
+### 2. New layer — drawer on the Layers section (legacy `#/layers/new` → drawer)
 
 One screen, three fields + optional file:
 
@@ -81,7 +81,7 @@ One screen, three fields + optional file:
 - **Geometry type:** Point / Polygon / Table.
 - **Optional:** upload a GeoJSON or CSV → infer columns + preview first 5 rows. Click Create → DDL runs → redirect to the new layer.
 
-### 3. Feature detail — `#/features/:name`
+### 3. Layer detail — `#/features/:name`
 
 Tabs:
 

@@ -19,7 +19,7 @@ Static JS GIS admin frontend. MVP scope is locked by `README.md`. No build step,
 | M | Name | Effort | Deliverables |
 |---|------|--------|--------------|
 | **M1** | Shell, router, design tokens, mock seed | 1.5 |  `index.html` with sidebar + topbar + `#app`; hash router; CSS imported; views mount/unmount cleanly; seed JSON loads |
-| **M2** | Mock API + Features list + Create feature | 2.0 | Full `api.js` contract against localStorage; `#/features` list with search + delete; "New feature" drawer with name regex + geom type (legacy `#/layers*` URLs redirect to `#/features*`) |
+| **M2** | Mock API + Layers list + Create layer | 2.0 | Full `api.js` contract against localStorage; `#/features` list with search + delete; "New layer" drawer with name regex + geom type (legacy `#/layers*` URLs redirect to `#/features*`; the tab label says "Layers" but the route stays `#/features`) |
 | **M3** | Layer detail shell + Overview + Schema tab | 2.0 | Tab host, Overview inline-edit + REST card, Schema with Add-column modal + description edit |
 | **M4** | Data grid (CRUD) | 2.5 | Paginated 50 rows, sort, inline-edit, side-panel form with GeoJSON textarea, add/delete |
 | **M5** | Import flow + Export | 1.5 | GeoJSON/CSV parse, column mapping, append with skip-and-report, GeoJSON + CSV download |
@@ -88,10 +88,10 @@ Header comment in `api.js` must document: the real adapter must invoke `NOTIFY p
 Hash-based:
 
 ```
-#/products                           → products empty / detail (DEFAULT)
-#/features                           → features-empty (select one or create)
-#/features/:name                     → feature-detail (tab=schema)
-#/features/:name?tab=schema|data|map → feature-detail
+#/features                           → layers landing / empty state (DEFAULT)
+#/features/:name                     → layer detail (tab=schema)
+#/features/:name?tab=schema|data|map → layer detail
+#/products                           → products empty / detail
 #/settings                           → settings
 ```
 

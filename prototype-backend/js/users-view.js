@@ -17,7 +17,7 @@ let users = [];
 
 export async function mount(container) {
   root = container;
-  renderBreadcrumb([{ label: 'Users' }]);
+  renderBreadcrumb([{ label: 'Settings', href: '#/settings' }, { label: 'Members' }]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading users…</div></div>';
   await refresh();
 }
@@ -46,7 +46,7 @@ function render() {
 
   const header = el('div', { class: 'pb-view-header' }, [
     el('div', {}, [
-      el('div', { class: 'pb-view-title' }, 'Users'),
+      el('div', { class: 'pb-view-title' }, 'Members'),
       el('div', { class: 'pb-view-subtitle' },
         'Prototype-only IAM. Roles are stored but not enforced.')
     ]),

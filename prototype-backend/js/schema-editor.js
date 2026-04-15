@@ -77,26 +77,25 @@ function render() {
   const lockedCount = columns.filter((c) => c.locked).length;
   const editableCount = columns.length - lockedCount;
 
-  const toggle = el('div', { class: 'pb-edit-toggle', role: 'group', 'aria-label': 'Schema mode' }, [
-    (() => {
-      const b = el('button', {
-        type: 'button',
-        class: 'pb-edit-toggle-btn' + (mode === 'view' ? ' is-active' : ''),
-        'aria-pressed': mode === 'view' ? 'true' : 'false'
-      }, 'View');
-      b.addEventListener('click', () => { if (mode !== 'view') toggleMode(); });
-      return b;
-    })(),
-    (() => {
-      const b = el('button', {
-        type: 'button',
-        class: 'pb-edit-toggle-btn' + (mode === 'edit' ? ' is-active' : ''),
-        'aria-pressed': mode === 'edit' ? 'true' : 'false'
-      }, 'Edit');
-      b.addEventListener('click', () => { if (mode !== 'edit') toggleMode(); });
-      return b;
-    })()
+  // Single toggle button. View mode = outline/secondary ("Edit schema").
+  // Edit mode = primary filled ("Done editing") to signal active state.
+  const toggleBtn = el('button', {
+    type: 'button',
+    class: mode === 'edit' ? 'btn-primary pb-schema-edit-btn is-editing' : 'btn-secondary pb-schema-edit-btn',
+    'aria-pressed': mode === 'edit' ? 'true' : 'false',
+    title: mode === 'edit' ? 'Done editing (E)' : 'Edit schema (E)'
+  }, [
+    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } },
+      mode === 'edit' ? 'check' : 'edit'),
+    ' ',
+    mode === 'edit' ? 'Done editing' : 'Edit schema'
   ]);
+  toggleBtn.addEventListener('click', () => toggleMode());
+
+  // Subtle "Editing" pill, visible only in edit mode.
+  const editingPill = mode === 'edit'
+    ? el('span', { class: 'pb-editing-pill', 'aria-live': 'polite' }, 'Editing')
+    : null;
 
   const addBtn = el('button', { type: 'button', class: 'btn-primary' }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
@@ -114,10 +113,10 @@ function render() {
 
   const toolbar = el('div', { class: 'pb-toolbar pb-schema-toolbar' }, [
     el('div', { class: 'pb-toolbar-title' }, toolbarTitle),
+    editingPill,
     el('div', { style: { flex: '1' } }),
-    el('span', { class: 'pb-muted pb-schema-hint' }, mode === 'view' ? 'Press E to edit' : 'Press E to view'),
-    toggle,
-    mode === 'edit' ? addBtn : null
+    mode === 'edit' ? addBtn : null,
+    toggleBtn
   ].filter(Boolean));
 
   const head = el('tr', {}, [

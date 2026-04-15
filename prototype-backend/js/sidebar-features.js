@@ -48,12 +48,12 @@ export function setActive(key) {
 
 function renderShell() {
   const header = el('div', { class: 'pb-sidebar-header' }, [
-    el('div', { class: 'pb-sidebar-title' }, 'Features'),
+    el('div', { class: 'pb-sidebar-title' }, 'Layers'),
     (() => {
       const btn = el('button', {
         type: 'button',
         class: 'btn-primary pb-sidebar-new',
-        title: 'New feature'
+        title: 'New layer'
       }, [
         el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
         ' New'
@@ -65,7 +65,7 @@ function renderShell() {
 
   const searchBox = el('div', { class: 'pb-sidebar-search' }, [
     el('span', { class: 'material-symbols-outlined' }, 'search'),
-    el('input', { type: 'search', placeholder: 'Search features…', 'aria-label': 'Search features', value: searchValue })
+    el('input', { type: 'search', placeholder: 'Search layers…', 'aria-label': 'Search layers', value: searchValue })
   ]);
   const searchInput = searchBox.querySelector('input');
   searchInput.addEventListener('input', debounce((e) => {
@@ -105,7 +105,7 @@ function renderList() {
 
   if (!filtered.length) {
     host.appendChild(el('div', { class: 'pb-sidebar-empty' },
-      layers.length ? `No matches for "${searchValue}"` : 'No features yet. Click + New.'
+      layers.length ? `No matches for "${searchValue}"` : 'No layers yet. Click + New.'
     ));
     return;
   }
@@ -160,10 +160,10 @@ function buildItem(layer) {
 
 async function handleDelete(layer) {
   const ok = await confirmModal({
-    title: `Delete feature "${layer.name}"?`,
-    message: 'This will permanently remove the feature and all its records. This cannot be undone.',
+    title: `Delete layer "${layer.name}"?`,
+    message: 'This will permanently remove the layer and all its records. This cannot be undone.',
     requireText: layer.name,
-    confirmLabel: 'Delete feature',
+    confirmLabel: 'Delete layer',
     danger: true
   });
   if (!ok) return;

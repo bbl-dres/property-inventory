@@ -6,8 +6,10 @@
 //   #/features/:name?tab=schema|data|map -> feature-detail (switch tab, no remount)
 //   #/products                           -> gallery, full-width (default route, no sidebar)
 //   #/products/:slug                     -> product-detail, full-width (no sidebar)
-//   #/users                              -> users-view, full-width (no sidebar)
-//   #/settings                           -> sidebar(settings) + settings view
+//   #/settings                           -> sidebar(settings) + settings view (Connection)
+//   #/settings/members                   -> sidebar(settings) + members (formerly Users)
+//
+// Legacy: #/users* redirects to #/settings/members.
 //
 // Primary nav lives in the horizontal tab bar at the top of the topbar; the
 // old vertical icon rail was removed. Sidebar is only mounted for the
@@ -31,7 +33,7 @@ let currentSidebar = null;
 let currentSection = null;
 let navToken = 0;
 
-const DEFAULT_ROUTE = '#/products';
+const DEFAULT_ROUTE = '#/features';
 
 // Sections that have an object sidebar mounted next to the main view.
 const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
@@ -40,8 +42,7 @@ const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
 // the breadcrumb (first crumb matching the active tab label is dropped).
 const TABS = [
   { key: 'products', label: 'Products', icon: 'apps',     href: '#/products' },
-  { key: 'features', label: 'Features', icon: 'layers',   href: '#/features' },
-  { key: 'users',    label: 'Users',    icon: 'group',    href: '#/users' },
+  { key: 'features', label: 'Layers',   icon: 'layers',   href: '#/features' },
   { key: 'settings', label: 'Settings', icon: 'settings', href: '#/settings' }
 ];
 
@@ -49,8 +50,7 @@ const TABS = [
 // accept both the tab label and a couple of legacy labels used by callers.
 const SECTION_CRUMB_ALIASES = {
   products: ['Products', 'Data products'],
-  features: ['Features'],
-  users:    ['Users'],
+  features: ['Layers', 'Features'],
   settings: ['Settings']
 };
 
@@ -77,6 +77,11 @@ function resolveRoute({ path, query, rawQuery }) {
     return { name: 'redirect', to: openNew ? '#/features' : to, openNewFeature: openNew };
   }
 
+  // Legacy: #/users* → #/settings/members
+  if (section === 'users') {
+    return { name: 'redirect', to: '#/settings/members' };
+  }
+
   if (section === 'features') {
     if (path.length === 1) return { name: 'features-empty', section: 'features' };
     if (path[1] === 'new') return { name: 'redirect', to: '#/features', openNewFeature: true };
@@ -87,10 +92,11 @@ function resolveRoute({ path, query, rawQuery }) {
     if (path.length === 1) return { name: 'products-gallery', section: 'products' };
     return { name: 'product-detail', section: 'products', params: { slug: path[1] } };
   }
-  if (section === 'users') {
-    return { name: 'users', section: 'users' };
-  }
   if (section === 'settings') {
+    const sub = path[1];
+    if (sub === 'members') {
+      return { name: 'settings-members', section: 'settings' };
+    }
     return { name: 'settings', section: 'settings' };
   }
   return { name: 'redirect', to: DEFAULT_ROUTE };
@@ -101,17 +107,18 @@ async function importView(routeName) {
     case 'feature-detail': return import('./feature-detail.js');
     case 'product-detail': return import('./product-detail.js');
     case 'products-gallery': return import('./products-gallery.js');
-    case 'users': return import('./users-view.js');
+    case 'settings-members': return import('./users-view.js');
     case 'settings': return import('./settings-view.js');
     default: return null;
   }
 }
 
 async function importSidebar(section) {
+  // Only `features` and `settings` actually mount a sidebar — other sections
+  // (like `products`) are full-width and intentionally no-op here. See
+  // SECTIONS_WITH_SIDEBAR above for the gate.
   switch (section) {
     case 'features': return import('./sidebar-features.js');
-    case 'products': return import('./sidebar-products.js');
-    case 'users': return import('./sidebar-users.js');
     case 'settings': return import('./sidebar-settings.js');
     default: return null;
   }
@@ -164,6 +171,16 @@ export function renderBreadcrumb(crumbs) {
     }
   }
   breadcrumb.innerHTML = '';
+  // A single crumb (or none) is just the page title — the top tab already
+  // communicates location, so fully hide the landmark to avoid a redundant
+  // screen-reader announcement.
+  if (!crumbs || crumbs.length <= 1) {
+    breadcrumb.hidden = true;
+    breadcrumb.setAttribute('aria-hidden', 'true');
+    return;
+  }
+  breadcrumb.hidden = false;
+  breadcrumb.removeAttribute('aria-hidden');
   crumbs.forEach((c, i) => {
     if (i > 0) {
       breadcrumb.appendChild(el('span', { class: 'pb-breadcrumb-sep' }, '/'));
@@ -220,6 +237,10 @@ async function handleRoute() {
   const route = resolveRoute(parseHash());
 
   if (route.name === 'redirect') {
+    // Setting location.hash schedules another `hashchange` → a fresh
+    // handleRoute with a newer navToken. Return immediately so this stale
+    // invocation doesn't also mutate the DOM. Skip DOM work entirely here.
+    if (isStale()) return;
     location.hash = route.to;
     if (route.openNewFeature) {
       // Defer until sidebar mounts.
@@ -231,6 +252,7 @@ async function handleRoute() {
     return;
   }
 
+  if (isStale()) return;
   currentSection = route.section;
   renderTabs(route.section);
   applySidebarVisibility(route.section);
@@ -249,6 +271,7 @@ async function handleRoute() {
     // Breadcrumb: update tab crumb
     try { currentView.module.updateBreadcrumb?.(); } catch {}
     await mountSidebar('features', route.params.layerName);
+    if (isStale()) return;
     return;
   }
 
@@ -261,7 +284,10 @@ async function handleRoute() {
   app.innerHTML = '';
 
   // Mount sidebar for the section.
-  const activeKey = route.params?.layerName || route.params?.slug || null;
+  let activeKey = route.params?.layerName || route.params?.slug || null;
+  if (route.section === 'settings') {
+    activeKey = route.name === 'settings-members' ? 'members' : 'connection';
+  }
   await mountSidebar(route.section, activeKey);
   if (isStale()) return;
 
@@ -277,16 +303,16 @@ async function handleRoute() {
       }
     } catch {}
     if (isStale()) return;
-    renderBreadcrumb([{ label: 'Features' }]);
+    renderBreadcrumb([{ label: 'Layers' }]);
     const cta = el('button', { type: 'button', class: 'btn-primary' }, [
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
-      ' New feature'
+      ' New layer'
     ]);
     cta.addEventListener('click', async () => {
       const mod = await import('./new-feature-drawer.js');
       mod.open();
     });
-    app.appendChild(emptyState('layers', 'Select a feature', 'Pick a feature from the sidebar, or create a new one.', cta));
+    app.appendChild(emptyState('layers', 'No layers yet', 'Create your first layer to get started.', cta));
     return;
   }
 

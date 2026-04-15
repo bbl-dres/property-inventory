@@ -18,21 +18,15 @@ export function open() {
   const nameError = el('div', { class: 'pb-field-error', style: { display: 'none' } });
 
   const titleInput = el('input', { type: 'text', placeholder: 'Human-readable title (optional)' });
-  const descInput = el('textarea', { placeholder: 'What is this feature for?' });
+  const descInput = el('textarea', { placeholder: 'What is this layer for?' });
 
   // Geometry type — the list now covers all core GeoJSON types. We render as
-  // a <select> (compact for 7 options) but keep value semantics identical to
-  // the previous radio group so downstream code is unchanged.
+  // a <select> (compact for 7 options); downstream code reads `geomSelect.value`
+  // directly (no radio-group shim).
   const geomSelect = el('select', { name: 'geom', class: 'pb-geom-select' },
     GEOMETRY_TYPES.map((t) =>
       el('option', { value: t, selected: t === 'Point' ? true : undefined }, t)
     ));
-  // Shim so existing querySelector('input[name="geom"]:checked') calls still work.
-  const geomGroup = el('div', { class: 'pb-geom-group' }, [geomSelect]);
-  geomGroup.querySelector = ((origQS) => function (sel) {
-    if (sel === 'input[name="geom"]:checked') return { value: geomSelect.value };
-    return origQS.call(geomGroup, sel);
-  })(Element.prototype.querySelector);
 
   // SRID dropdown (hidden for Table layers).
   const sridSelect = el('select', { name: 'srid' },
@@ -58,7 +52,7 @@ export function open() {
   const previewHost = el('div', {});
 
   const cancelBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Cancel');
-  const submitBtn = el('button', { type: 'button', class: 'btn-primary' }, 'Create feature');
+  const submitBtn = el('button', { type: 'button', class: 'btn-primary' }, 'Create layer');
 
   const form = el('form', { class: 'pb-form', novalidate: true }, [
     el('div', { class: 'pb-field' }, [
@@ -69,7 +63,7 @@ export function open() {
     ]),
     el('div', { class: 'pb-field' }, [el('label', {}, 'Title'), titleInput]),
     el('div', { class: 'pb-field' }, [el('label', {}, 'Description'), descInput]),
-    el('div', { class: 'pb-field' }, [el('label', {}, 'Geometry type'), geomGroup]),
+    el('div', { class: 'pb-field' }, [el('label', {}, 'Geometry type'), geomSelect]),
     sridField,
     el('div', { class: 'pb-field' }, [
       el('label', {}, 'Seed from file (optional)'),
@@ -98,7 +92,7 @@ export function open() {
     previewHost.appendChild(el('div', { class: 'pb-muted' }, 'Parsing…'));
     try {
       parsed = await parseUpload(file);
-      renderPreview(previewHost, geomGroup);
+      renderPreview(previewHost, geomSelect);
     } catch (err) {
       parsed = null;
       previewHost.innerHTML = '';
@@ -108,7 +102,7 @@ export function open() {
 
   geomSelect.addEventListener('change', () => {
     syncSridVisibility();
-    if (parsed) renderPreview(previewHost, geomGroup);
+    if (parsed) renderPreview(previewHost, geomSelect);
   });
   syncSridVisibility();
 
@@ -148,7 +142,7 @@ export function open() {
           }));
       }
       if (geometry_type !== 'Table' && parsed.features?.length && seedFeatures.length === 0) {
-        toast(`File has no ${geometry_type} features — pick a matching geometry type.`, 'error');
+        toast(`File has no ${geometry_type} records — pick a matching geometry type.`, 'error');
         return;
       }
     }
@@ -164,16 +158,16 @@ export function open() {
         : `Created "${name}"`, 'success');
       bus.emit('layer:created', { name });
     } catch (err) {
-      toast(err?.message || 'Failed to create feature', 'error');
+      toast(err?.message || 'Failed to create layer', 'error');
       submitBtn.disabled = false;
-      submitBtn.textContent = 'Create feature';
+      submitBtn.textContent = 'Create layer';
     }
   });
 
   cancelBtn.addEventListener('click', () => closeModal());
 
   const content = el('div', { class: 'pb-new-layer-drawer' }, [
-    el('div', { class: 'pb-modal-header' }, 'New feature'),
+    el('div', { class: 'pb-modal-header' }, 'New layer'),
     el('div', { class: 'pb-modal-body' }, [form]),
     el('div', { class: 'pb-modal-footer' }, [cancelBtn, submitBtn])
   ]);
@@ -192,23 +186,23 @@ function filterProps(props, columns) {
   return out;
 }
 
-function renderPreview(host, geomGroup) {
+function renderPreview(host, geomSelect) {
   host.innerHTML = '';
   if (!parsed) return;
-  const selectedGeom = geomGroup.querySelector('input[name="geom"]:checked')?.value || 'Point';
+  const selectedGeom = geomSelect?.value || 'Point';
 
   const warnings = [];
   if (parsed.kind === 'geojson') {
     if (selectedGeom === 'Table' && parsed.geomTypes.size > 0) {
-      warnings.push('File contains geometries but feature is Table; geometries will be dropped.');
+      warnings.push('File contains geometries but layer is Table; geometries will be dropped.');
     } else if (selectedGeom !== 'Table') {
       const accepted = GEOMETRY_COMPAT[selectedGeom] || [selectedGeom];
       const hasAny = Array.from(parsed.geomTypes).some((t) => accepted.includes(t));
-      if (parsed.geomTypes.size === 0) warnings.push('File has no geometries; features will be empty.');
+      if (parsed.geomTypes.size === 0) warnings.push('File has no geometries; records will be empty.');
       else if (!hasAny) warnings.push(`File contains ${Array.from(parsed.geomTypes).join(', ')} but none are compatible with ${selectedGeom} (accepts: ${accepted.join(', ')}).`);
     }
   } else if (parsed.kind === 'csv' && selectedGeom !== 'Table') {
-    warnings.push('CSV has no geometry; features will have null geometry.');
+    warnings.push('CSV has no geometry; records will have null geometry.');
   }
 
   const colRows = parsed.columns.map((col, i) => {

@@ -38,16 +38,16 @@ export async function mount(container, params) {
   root = container;
   currentTab = params.tab || 'schema';
 
-  root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading feature…</div></div>';
+  root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading layer…</div></div>';
 
   try {
     currentLayer = await api.getLayer(params.layerName);
   } catch (err) {
     root.innerHTML = '';
-    renderBreadcrumb([{ label: 'Features', href: '#/features' }, { label: params.layerName }]);
+    renderBreadcrumb([{ label: 'Layers', href: '#/features' }, { label: params.layerName }]);
     root.appendChild(el('div', { class: 'empty-state' }, [
       el('span', { class: 'material-symbols-outlined' }, 'error'),
-      el('div', { class: 'empty-state-title' }, 'Feature not found'),
+      el('div', { class: 'empty-state-title' }, 'Layer not found'),
       el('div', { class: 'empty-state-description' }, `"${params.layerName}" does not exist.`)
     ]));
     return;
@@ -89,8 +89,10 @@ export function onTabChange(tab) {
   if (next === currentTab) return;
   currentTab = next;
   if (root) {
-    for (const a of root.querySelectorAll('.pb-tab')) {
-      a.classList.toggle('is-active', a.dataset.tab === currentTab);
+    for (const a of root.querySelectorAll('.pb-subtab')) {
+      const active = a.dataset.tab === currentTab;
+      a.classList.toggle('is-active', active);
+      a.setAttribute('aria-selected', active ? 'true' : 'false');
     }
   }
   renderTab();
@@ -99,7 +101,7 @@ export function onTabChange(tab) {
 export function updateBreadcrumb() {
   if (!currentLayer) return;
   const crumbs = [
-    { label: 'Features', href: '#/features' },
+    { label: 'Layers', href: '#/features' },
     { label: currentLayer.name, href: `#/features/${encodeURIComponent(currentLayer.name)}` },
     { label: TAB_LABEL[currentTab] || currentTab }
   ];
@@ -116,10 +118,12 @@ function renderShell() {
   renderHero();
 
   const tabs = currentLayer.geometry_type === 'Table' ? TABS_TABLE : TABS_SPATIAL;
-  const tabsBar = el('nav', { class: 'pb-tabs', 'aria-label': 'Feature sections' }, tabs.map((t) =>
+  const tabsBar = el('nav', { class: 'pb-subtabs', role: 'tablist', 'aria-label': 'Layer sections' }, tabs.map((t) =>
     el('a', {
       href: `#/features/${encodeURIComponent(currentLayer.name)}?tab=${t.id}`,
-      class: 'pb-tab' + (t.id === currentTab ? ' is-active' : ''),
+      class: 'pb-subtab' + (t.id === currentTab ? ' is-active' : ''),
+      role: 'tab',
+      'aria-selected': t.id === currentTab ? 'true' : 'false',
       dataset: { tab: t.id }
     }, t.label)
   ));
@@ -139,7 +143,7 @@ function renderHero() {
   // Inline-editable title.
   const titleEditor = inlineEditable({
     value: currentLayer.title || currentLayer.name,
-    placeholder: 'Feature title',
+    placeholder: 'Layer title',
     className: 'pb-hero-title-edit',
     onSave: async (next) => {
       await api.updateLayerMeta(currentLayer.name, { title: next });
@@ -200,22 +204,31 @@ function renderHero() {
     el('div', { class: 'pb-card-body' }, [
       usedByChips.length
         ? el('div', { class: 'pb-chip-row' }, usedByChips)
-        : el('div', { class: 'pb-muted' }, 'No data products consume this feature yet.')
+        : el('div', { class: 'pb-muted' }, 'No data products consume this layer yet.')
     ])
   ]);
 
-  // Streamlined hero: title + badge on top line, description below. All the
-  // technicalia (feature name, SRID/CRS, timestamps, record count) are
-  // folded into a collapsed "Technical details" <details> block to reduce
-  // visual noise.
+  // Streamlined hero: title + geometry badge on line 1; stats line (record
+  // count + updated) under the title; description on line 3. Technical
+  // details (internal name, SRID/CRS, created, access hints) stay folded
+  // into a collapsed <details> block below.
+  const statsLine = el('div', { class: 'pb-hero-stats' }, [
+    `${fc.toLocaleString()} record${fc === 1 ? '' : 's'}`,
+    ' · ',
+    `updated ${formatRelativeTime(currentLayer.updated_at)}`
+  ]);
+
+  const accessHints = [
+    currentLayer.metadata?.access_rights ? `Access: ${currentLayer.metadata.access_rights}` : null,
+    currentLayer.metadata?.license ? `License: ${currentLayer.metadata.license}` : null
+  ].filter(Boolean).join(' · ') || '—';
+
   const techGrid = el('dl', { class: 'pb-hero-technical-grid' }, [
     el('dt', {}, 'Internal name'), el('dd', {}, el('span', { class: 'pb-name-mono' }, currentLayer.name)),
-    el('dt', {}, 'Geometry'),      el('dd', {}, currentLayer.geometry_type),
     el('dt', {}, 'SRID'),          el('dd', {}, currentLayer.srid != null ? String(currentLayer.srid) : '—'),
     el('dt', {}, 'CRS'),           el('dd', {}, currentLayer.srid != null ? (sridName(currentLayer.srid) || '—') : '—'),
-    el('dt', {}, 'Records'),       el('dd', {}, `${fc.toLocaleString()}`),
     el('dt', {}, 'Created'),       el('dd', {}, `${formatRelativeTime(currentLayer.created_at)}`),
-    el('dt', {}, 'Updated'),       el('dd', {}, `${formatRelativeTime(currentLayer.updated_at)}`)
+    el('dt', {}, 'Access hints'),  el('dd', {}, accessHints)
   ]);
 
   const techDetails = el('details', { class: 'pb-hero-technical' }, [
@@ -229,6 +242,7 @@ function renderHero() {
         el('h1', { class: 'pb-hero-title' }, [titleEditor]),
         el('span', { class: 'pb-badge' }, currentLayer.geometry_type)
       ]),
+      statsLine,
       el('div', { class: 'pb-hero-desc' }, [descEditor]),
       techDetails
     ])
@@ -382,12 +396,14 @@ function renderMetadataCard() {
   ]);
 
   const section = (summary, ...children) =>
-    el('details', { class: 'pb-meta-section', open: true }, [
+    el('details', { class: 'pb-meta-section' }, [
       el('summary', {}, summary),
       el('div', { class: 'pb-meta-section-body' }, [
         el('dl', { class: 'pb-meta-dl' }, children)
       ])
     ]);
+
+  const fieldsSet = countMetadataFields(meta);
 
   const caption = el('div', { class: 'pb-meta-caption' }, [
     'Based on ISO 19115 core + DCAT. ',
@@ -399,7 +415,10 @@ function renderMetadataCard() {
   ]);
 
   return el('section', { class: 'pb-card pb-card--padded pb-metadata-card' }, [
-    el('div', { class: 'pb-card-header' }, 'Metadata'),
+    el('div', { class: 'pb-card-header' }, [
+      'Metadata',
+      el('span', { class: 'pb-meta-summary-hint' }, ` · ${fieldsSet} field${fieldsSet === 1 ? '' : 's'} set`)
+    ]),
     el('div', { class: 'pb-card-body' }, [
       caption,
       section('Identification',
@@ -456,3 +475,25 @@ function renderTab() {
 }
 
 // Inline-edit helpers were de-duplicated into `inlineEditable` in utils.js.
+
+// Count populated metadata fields across all sections. Non-empty scalars
+// (strings/numbers/booleans), non-empty arrays, and objects with at least
+// one populated key each count as 1.
+function countMetadataFields(meta) {
+  if (!meta || typeof meta !== 'object') return 0;
+  let n = 0;
+  for (const key of Object.keys(meta)) {
+    const v = meta[key];
+    if (v == null) continue;
+    if (Array.isArray(v)) { if (v.length) n += 1; continue; }
+    if (typeof v === 'object') {
+      const hasAny = Object.values(v).some((x) => x != null && x !== '');
+      if (hasAny) n += 1;
+      continue;
+    }
+    if (typeof v === 'string') { if (v.trim() !== '') n += 1; continue; }
+    // number, boolean (including explicit false) — treat as "set".
+    n += 1;
+  }
+  return n;
+}
