@@ -6,8 +6,10 @@
 import * as api from './api.js';
 import { ApiError } from './api.js';
 import { el, toast, openModal, closeModal } from './utils.js';
-import { bus } from './state.js';
+import { bus, isAllowed } from './state.js';
 import { COLUMN_NAME_RE, COLUMN_TYPES as TYPES } from './constants.js';
+
+const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
 let root = null;
 let layer = null;
@@ -21,6 +23,7 @@ let keyboardDragIdx = -1;
 
 // Keyboard shortcut: "E" toggles edit mode when schema tab is active.
 let keydownHandler = null;
+let roleUnsub = null;
 
 export async function mount(container, { layer: l }) {
   // Refetch to avoid rendering against a stale cached layer from the parent.
@@ -41,11 +44,19 @@ export async function mount(container, { layer: l }) {
     }
   };
   document.addEventListener('keydown', keydownHandler);
+
+  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = bus.on('user:role-changed', () => {
+    // Force viewers out of edit mode and re-render with disabled affordances.
+    if (!isAllowed('write')) mode = 'view';
+    if (root) render();
+  });
 }
 
 export function unmount() {
   if (keydownHandler) document.removeEventListener('keydown', keydownHandler);
   keydownHandler = null;
+  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
   if (root) root.innerHTML = '';
   root = null;
   layer = null;
@@ -65,6 +76,12 @@ async function refresh() {
 }
 
 function toggleMode() {
+  // viewer role: refuse to enter edit mode. The button is disabled too, but
+  // the keyboard shortcut (E) also funnels here so we gate in both paths.
+  if (mode === 'view' && !isAllowed('write')) {
+    announce('Edit mode requires editor or admin role.');
+    return;
+  }
   mode = mode === 'view' ? 'edit' : 'view';
   render();
   announce(`Schema ${mode} mode`);
@@ -77,13 +94,16 @@ function render() {
   const lockedCount = columns.filter((c) => c.locked).length;
   const editableCount = columns.length - lockedCount;
 
+  const canWrite = isAllowed('write');
+
   // Single toggle button. View mode = outline/secondary ("Edit schema").
   // Edit mode = primary filled ("Done editing") to signal active state.
   const toggleBtn = el('button', {
     type: 'button',
     class: mode === 'edit' ? 'btn-primary pb-schema-edit-btn is-editing' : 'btn-secondary pb-schema-edit-btn',
     'aria-pressed': mode === 'edit' ? 'true' : 'false',
-    title: mode === 'edit' ? 'Done editing (E)' : 'Edit schema (E)'
+    disabled: (!canWrite && mode === 'view') ? true : false,
+    title: !canWrite ? ROLE_GATED_TITLE : (mode === 'edit' ? 'Done editing (E)' : 'Edit schema (E)')
   }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } },
       mode === 'edit' ? 'check' : 'edit'),
@@ -97,7 +117,12 @@ function render() {
     ? el('span', { class: 'pb-editing-pill', 'aria-live': 'polite' }, 'Editing')
     : null;
 
-  const addBtn = el('button', { type: 'button', class: 'btn-primary' }, [
+  const addBtn = el('button', {
+    type: 'button',
+    class: 'btn-primary',
+    disabled: !canWrite ? true : false,
+    title: canWrite ? '' : ROLE_GATED_TITLE
+  }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
     ' Add column'
   ]);

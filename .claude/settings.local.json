@@ -19,7 +19,10 @@
       "Bash(mv js/sidebar-layers.js js/sidebar-features.js)",
       "Bash(mv js/layer-detail.js js/feature-detail.js)",
       "Bash(mv js/new-layer-drawer.js js/new-feature-drawer.js)",
-      "Bash(mv data/mock-layers.json data/mock-features.json)"
+      "Bash(mv data/mock-layers.json data/mock-features.json)",
+      "Bash(git -C c:/Users/DavidRasner/Documents/GitHub/property-inventory show HEAD:prototype-backend/css/admin.css)",
+      "Bash(grep -c \"pb-view-header\" js/*.js css/admin.css)",
+      "Bash(grep -c \"pb-breadcrumb-strip\" js/*.js css/admin.css)"
     ]
   }
 }

@@ -7,14 +7,14 @@
 
 import * as api from './api.js';
 import { el, toast } from './utils.js';
-import { renderBreadcrumb } from './app.js';
+import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
 
 let root = null;
 let products = [];
 
 export async function mount(container) {
   root = container;
-  renderBreadcrumb([{ label: 'Data products' }]);
+  renderBreadcrumb([sectionCrumb('products', false)]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading products…</div></div>';
   try { products = await api.listProducts(); }
   catch { products = []; }
@@ -41,15 +41,13 @@ function render() {
   ]);
   newBtn.addEventListener('click', () => toast('Create product: coming soon', 'info'));
 
-  const header = el('div', { class: 'pb-view-header' }, [
-    el('div', {}, [
-      el('div', { class: 'pb-view-title' }, 'Data products'),
-      el('div', { class: 'pb-view-subtitle' },
-        'Downstream apps and dashboards that consume your features.')
-    ]),
-    newBtn
-  ]);
-  root.appendChild(header);
+  const count = products.length;
+  root.appendChild(renderViewHeader({
+    title: 'Data products',
+    subtitle: `${count} product${count === 1 ? '' : 's'}`,
+    description: 'Downstream apps and dashboards that consume your layers.',
+    actions: newBtn
+  }));
 
   if (!products.length) {
     root.appendChild(el('div', { class: 'empty-state' }, [
@@ -77,9 +75,15 @@ function renderCard(p) {
         el('span', { class: 'material-symbols-outlined' }, 'apps')
       ]);
 
-  const openLink = el('a', { href, class: 'pb-product-card-link' }, 'Open →');
-
-  const card = el('article', { class: 'pb-product-card', tabindex: '0', role: 'link', 'aria-label': p.name || p.slug }, [
+  // The whole card is a real anchor: semantic link, keyboard-accessible,
+  // middle-click-opens-new-tab works for free. We dropped the inner
+  // "Open →" link (was invalid nested <a>) — the detail view has its own
+  // open button when an external URL is configured.
+  return el('a', {
+    href,
+    class: 'pb-product-card',
+    'aria-label': p.name || p.slug
+  }, [
     thumb,
     el('div', { class: 'pb-product-card-body' }, [
       el('div', { class: 'pb-product-card-titlebar' }, [
@@ -89,22 +93,8 @@ function renderCard(p) {
       el('p', { class: 'pb-product-card-desc' }, p.description || ''),
       el('div', { class: 'pb-product-card-foot' }, [
         el('span', { class: 'pb-muted', style: { fontSize: '12px' } },
-          `${count} feature${count === 1 ? '' : 's'}`),
-        openLink
+          `${count} feature${count === 1 ? '' : 's'}`)
       ])
     ])
   ]);
-
-  // Clicking anywhere on the card (except the explicit link) navigates.
-  card.addEventListener('click', (e) => {
-    if (e.target.closest('a')) return;
-    location.hash = href;
-  });
-  card.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      location.hash = href;
-    }
-  });
-  return card;
 }

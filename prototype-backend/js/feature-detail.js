@@ -8,19 +8,20 @@ import * as api from './api.js';
 import { el, toast, formatRelativeTime, inlineEditable } from './utils.js';
 import { sridName } from './constants.js';
 import { bus } from './state.js';
-import { renderBreadcrumb } from './app.js';
+import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
 import * as schemaEditor from './schema-editor.js';
 import * as dataGrid from './data-grid.js';
 import * as mapPreview from './map-preview.js';
 
 const REST_BASE = 'https://<project>.supabase.co/rest/v1';
-const ANON_KEY = '<ANON_KEY>';
 
 let root = null;
 let currentLayer = null;
 let currentTab = 'schema';
 let tabHost = null;
 let heroHost = null;
+let apiHost = null;
+let bottomHost = null;
 let usedByHost = null;
 let activeChildView = null;
 let busUnsub = [];
@@ -44,7 +45,7 @@ export async function mount(container, params) {
     currentLayer = await api.getLayer(params.layerName);
   } catch (err) {
     root.innerHTML = '';
-    renderBreadcrumb([{ label: 'Layers', href: '#/features' }, { label: params.layerName }]);
+    renderBreadcrumb([sectionCrumb('features'), { label: params.layerName }]);
     root.appendChild(el('div', { class: 'empty-state' }, [
       el('span', { class: 'material-symbols-outlined' }, 'error'),
       el('div', { class: 'empty-state-title' }, 'Layer not found'),
@@ -80,6 +81,8 @@ export function unmount() {
   currentLayer = null;
   tabHost = null;
   heroHost = null;
+  apiHost = null;
+  bottomHost = null;
   usedByHost = null;
   productsUsing = [];
 }
@@ -101,7 +104,7 @@ export function onTabChange(tab) {
 export function updateBreadcrumb() {
   if (!currentLayer) return;
   const crumbs = [
-    { label: 'Layers', href: '#/features' },
+    sectionCrumb('features'),
     { label: currentLayer.name, href: `#/features/${encodeURIComponent(currentLayer.name)}` },
     { label: TAB_LABEL[currentTab] || currentTab }
   ];
@@ -113,9 +116,8 @@ export function updateBreadcrumb() {
 function renderShell() {
   root.innerHTML = '';
 
-  heroHost = el('section', { class: 'pb-hero', id: 'pb-layer-hero' });
+  heroHost = el('section', { class: 'pb-layer-hero', id: 'pb-layer-hero' });
   root.appendChild(heroHost);
-  renderHero();
 
   const tabs = currentLayer.geometry_type === 'Table' ? TABS_TABLE : TABS_SPATIAL;
   const tabsBar = el('nav', { class: 'pb-subtabs', role: 'tablist', 'aria-label': 'Layer sections' }, tabs.map((t) =>
@@ -131,6 +133,16 @@ function renderShell() {
 
   tabHost = el('div', { class: 'pb-tab-host' });
   root.appendChild(tabHost);
+
+  apiHost = el('section', { class: 'pb-layer-api' });
+  root.appendChild(apiHost);
+
+  bottomHost = el('section', { class: 'pb-layer-bottom' });
+  root.appendChild(bottomHost);
+
+  // Render hero last so apiHost/bottomHost already exist when renderHero
+  // tries to populate them.
+  renderHero();
 }
 
 function renderHero() {
@@ -144,7 +156,6 @@ function renderHero() {
   const titleEditor = inlineEditable({
     value: currentLayer.title || currentLayer.name,
     placeholder: 'Layer title',
-    className: 'pb-hero-title-edit',
     onSave: async (next) => {
       await api.updateLayerMeta(currentLayer.name, { title: next });
       currentLayer.title = next;
@@ -165,7 +176,11 @@ function renderHero() {
     }
   });
 
-  // REST endpoint card
+  // REST endpoint card.
+  // The URL here is an illustrative template — in MVP the app talks to an
+  // in-browser mock, so there is no live endpoint to call. We keep the
+  // copy-URL button (handy when wiring the real backend) and show a block
+  // of example curls below as documentation only.
   const url = `${REST_BASE}/${currentLayer.name}`;
   const copyBtn = el('button', { type: 'button', class: 'btn-secondary', title: 'Copy URL' }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'content_copy'),
@@ -175,18 +190,33 @@ function renderHero() {
     try { await navigator.clipboard.writeText(url); toast('URL copied', 'success'); }
     catch { toast('Copy failed', 'error'); }
   });
-  const curlExample = `curl -H "apikey: ${ANON_KEY}" "${url}?limit=10"`;
 
-  const restCard = el('section', { class: 'pb-card pb-card--padded' }, [
-    el('div', { class: 'pb-card-header' }, 'REST endpoint'),
+  const curlExamples = [
+    '# List (first 50)',
+    `curl '${url}?limit=50'`,
+    '',
+    '# Bounding box query (bbox=west,south,east,north)',
+    `curl '${url}?bbox=8.5,47.3,8.6,47.4'`,
+    '',
+    '# Field selection',
+    `curl '${url}?select=id,parcel_no,area_m2'`,
+    '',
+    '# Single record by id',
+    `curl '${url}?id=eq.{uuid}'`
+  ].join('\n');
+
+  const apiCard = el('section', { class: 'pb-card pb-card--padded' }, [
+    el('div', { class: 'pb-card-header' }, 'API & usage'),
     el('div', { class: 'pb-card-body' }, [
       el('div', { class: 'pb-url-row' }, [
         el('code', { class: 'pb-code pb-code--inline' }, url),
         copyBtn
       ]),
-      el('details', { class: 'pb-details' }, [
-        el('summary', {}, 'curl example'),
-        el('pre', { class: 'pb-code' }, curlExample)
+      el('div', { class: 'pb-field-hint', style: { marginTop: '4px' } },
+        'Example only — not a live endpoint. Wire up a Supabase/PostgREST project to call these paths.'),
+      el('details', { class: 'pb-details', open: true }, [
+        el('summary', {}, 'curl examples (reference only)'),
+        el('pre', { class: 'pb-code' }, curlExamples)
       ])
     ])
   ]);
@@ -208,49 +238,32 @@ function renderHero() {
     ])
   ]);
 
-  // Streamlined hero: title + geometry badge on line 1; stats line (record
-  // count + updated) under the title; description on line 3. Technical
-  // details (internal name, SRID/CRS, created, access hints) stay folded
-  // into a collapsed <details> block below.
-  const statsLine = el('div', { class: 'pb-hero-stats' }, [
-    `${fc.toLocaleString()} record${fc === 1 ? '' : 's'}`,
-    ' · ',
-    `updated ${formatRelativeTime(currentLayer.updated_at)}`
+  // Title is the inline-editable layer title with a geometry-type badge.
+  const titleNode = el('span', { class: 'pb-title-row' }, [
+    titleEditor,
+    el('span', { class: 'pb-badge' }, currentLayer.geometry_type)
   ]);
 
-  const accessHints = [
-    currentLayer.metadata?.access_rights ? `Access: ${currentLayer.metadata.access_rights}` : null,
-    currentLayer.metadata?.license ? `License: ${currentLayer.metadata.license}` : null
-  ].filter(Boolean).join(' · ') || '—';
+  const subtitle = `${fc.toLocaleString()} record${fc === 1 ? '' : 's'} · updated ${formatRelativeTime(currentLayer.updated_at)}`;
 
-  const techGrid = el('dl', { class: 'pb-hero-technical-grid' }, [
-    el('dt', {}, 'Internal name'), el('dd', {}, el('span', { class: 'pb-name-mono' }, currentLayer.name)),
-    el('dt', {}, 'SRID'),          el('dd', {}, currentLayer.srid != null ? String(currentLayer.srid) : '—'),
-    el('dt', {}, 'CRS'),           el('dd', {}, currentLayer.srid != null ? (sridName(currentLayer.srid) || '—') : '—'),
-    el('dt', {}, 'Created'),       el('dd', {}, `${formatRelativeTime(currentLayer.created_at)}`),
-    el('dt', {}, 'Access hints'),  el('dd', {}, accessHints)
-  ]);
+  // Unified view-header replaces the old .pb-hero top block. The REST,
+  // Used-by, and Metadata cards still render below as siblings.
+  const header = renderViewHeader({
+    title: titleNode,
+    subtitle,
+    description: descEditor
+  });
+  heroHost.appendChild(header);
 
-  const techDetails = el('details', { class: 'pb-hero-technical' }, [
-    el('summary', {}, 'Technical details'),
-    techGrid
-  ]);
+  if (apiHost) {
+    apiHost.innerHTML = '';
+    apiHost.appendChild(el('div', { class: 'pb-card-grid pb-card-grid--2col' }, [apiCard, usedByCard]));
+  }
 
-  const heroHead = el('div', { class: 'pb-hero-head' }, [
-    el('div', { style: { flex: '1', minWidth: '0' } }, [
-      el('div', { class: 'pb-hero-titlebar' }, [
-        el('h1', { class: 'pb-hero-title' }, [titleEditor]),
-        el('span', { class: 'pb-badge' }, currentLayer.geometry_type)
-      ]),
-      statsLine,
-      el('div', { class: 'pb-hero-desc' }, [descEditor]),
-      techDetails
-    ])
-  ]);
-
-  heroHost.appendChild(heroHead);
-  heroHost.appendChild(el('div', { class: 'pb-hero-cards' }, [restCard, usedByCard]));
-  heroHost.appendChild(renderMetadataCard());
+  if (bottomHost) {
+    bottomHost.innerHTML = '';
+    bottomHost.appendChild(renderMetadataCard());
+  }
 }
 
 // ===== Metadata card =====
@@ -405,14 +418,13 @@ function renderMetadataCard() {
 
   const fieldsSet = countMetadataFields(meta);
 
-  const caption = el('div', { class: 'pb-meta-caption' }, [
-    'Based on ISO 19115 core + DCAT. ',
-    el('a', {
-      href: 'https://www.iso.org/standard/53798.html',
-      target: '_blank',
-      rel: 'noopener noreferrer'
-    }, 'Learn more ↗')
-  ]);
+  const srid = currentLayer.srid;
+  const technicalSection = section('Technical',
+    kv('Internal name', el('span', { class: 'pb-name-mono' }, currentLayer.name)),
+    kv('SRID', srid != null ? String(srid) : '—'),
+    kv('CRS', srid != null ? (sridName(srid) || '—') : '—'),
+    kv('Created', formatRelativeTime(currentLayer.created_at))
+  );
 
   return el('section', { class: 'pb-card pb-card--padded pb-metadata-card' }, [
     el('div', { class: 'pb-card-header' }, [
@@ -420,7 +432,7 @@ function renderMetadataCard() {
       el('span', { class: 'pb-meta-summary-hint' }, ` · ${fieldsSet} field${fieldsSet === 1 ? '' : 's'} set`)
     ]),
     el('div', { class: 'pb-card-body' }, [
-      caption,
+      technicalSection,
       section('Identification',
         kv('Tags', el('div', {}, [tagsEditor, tagChips].filter(Boolean)),
            'ISO 19115 · keywords'),

@@ -5,11 +5,13 @@ import * as api from './api.js';
 import { ApiError } from './api.js';
 import {
   el, toast, confirmModal, downloadBlob, debounce,
-  parseGeometry, geometryToWkt
+  parseGeometry, geometryToWkt, trapFocus
 } from './utils.js';
-import { bus } from './state.js';
+import { bus, isAllowed } from './state.js';
 import { openImportModal } from './import-modal.js';
 import { GEOMETRY_COMPAT } from './constants.js';
+
+const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
 const PAGE_SIZE = 50;
 
@@ -24,8 +26,10 @@ let sort = null; // { column, direction }
 let loading = false;
 let sidePanel = null;
 let escHandler = null;
+let sidePanelTrapDetach = null;
 let lastFocused = null;
 let loadToken = 0;
+let roleUnsub = null;
 // Client-side attribute filter (Phase 3). Case-insensitive partial match
 // across all user columns. For MVP this filters the CURRENT page only after
 // the server returns rows — a real grid would push this down as a query.
@@ -44,11 +48,15 @@ export async function mount(container, { layer: l }) {
   sort = null;
   loadToken = 0;
   render();
+  // Re-render toolbar buttons when role changes so disabled state updates live.
+  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = bus.on('user:role-changed', () => { if (root) render(); });
   await loadPage();
 }
 
 export function unmount() {
   closeSidePanel();
+  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
   if (root) root.innerHTML = '';
   root = null;
   layer = null;
@@ -221,13 +229,25 @@ function filterCountLabel() {
 function renderToolbar() {
   const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const newBtn = el('button', { type: 'button', class: 'btn-primary' }, [
+  const canWrite = isAllowed('write');
+
+  const newBtn = el('button', {
+    type: 'button',
+    class: 'btn-primary',
+    disabled: !canWrite ? true : false,
+    title: canWrite ? '' : ROLE_GATED_TITLE
+  }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'add'),
     ' New record'
   ]);
   newBtn.addEventListener('click', () => openSidePanel(null));
 
-  const importBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Import');
+  const importBtn = el('button', {
+    type: 'button',
+    class: 'btn-secondary',
+    disabled: !canWrite ? true : false,
+    title: canWrite ? '' : ROLE_GATED_TITLE
+  }, 'Import');
   importBtn.addEventListener('click', () => {
     openImportModal(layer, async () => {
       bus.emit('data:changed');
@@ -283,7 +303,13 @@ function renderTable() {
         `No rows match "${filterText}" on this page.`)
     ]));
   } else if (!rows.length) {
-    const newBtn = el('button', { type: 'button', class: 'btn-primary' }, [
+    const canWrite = isAllowed('write');
+    const newBtn = el('button', {
+      type: 'button',
+      class: 'btn-primary',
+      disabled: !canWrite ? true : false,
+      title: canWrite ? '' : ROLE_GATED_TITLE
+    }, [
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'add'),
       ' New record'
     ]);
@@ -459,9 +485,20 @@ function openSidePanel(feature) {
 
   const errEl = el('div', { class: 'pb-field-error', style: { display: 'none' } });
 
-  const saveBtn = el('button', { type: 'button', class: 'btn-primary' }, isEdit ? 'Save changes' : 'Create record');
+  const canWriteSide = isAllowed('write');
+  const saveBtn = el('button', {
+    type: 'button',
+    class: 'btn-primary',
+    disabled: !canWriteSide ? true : false,
+    title: canWriteSide ? '' : ROLE_GATED_TITLE
+  }, isEdit ? 'Save changes' : 'Create record');
   const cancelBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Cancel');
-  const deleteBtn = isEdit ? el('button', { type: 'button', class: 'btn-danger' }, 'Delete') : null;
+  const deleteBtn = isEdit ? el('button', {
+    type: 'button',
+    class: 'btn-danger',
+    disabled: !canWriteSide ? true : false,
+    title: canWriteSide ? '' : ROLE_GATED_TITLE
+  }, 'Delete') : null;
   const closeXBtn = el('button', {
     type: 'button',
     class: 'pb-side-panel-close',
@@ -472,7 +509,7 @@ function openSidePanel(feature) {
     ? el('div', { class: 'pb-kv' }, [el('dt', {}, 'id'), el('dd', {}, [el('span', { class: 'pb-name-mono' }, feature.id)])])
     : null;
 
-  const panel = el('aside', { class: 'pb-side-panel', role: 'dialog', 'aria-label': isEdit ? 'Edit record' : 'New record' }, [
+  const panel = el('aside', { class: 'pb-side-panel', role: 'dialog', 'aria-modal': 'true', 'aria-label': isEdit ? 'Edit record' : 'New record' }, [
     el('header', { class: 'pb-side-panel-header' }, [
       el('div', { class: 'pb-side-panel-title' }, isEdit ? 'Edit record' : 'New record'),
       closeXBtn
@@ -508,6 +545,10 @@ function openSidePanel(feature) {
 
   escHandler = (e) => { if (e.key === 'Escape') closeSidePanel(); };
   document.addEventListener('keydown', escHandler);
+
+  // Trap Tab/Shift-Tab within the panel so keyboard users can't escape the
+  // dialog into the document behind it.
+  sidePanelTrapDetach = trapFocus(panel);
 
   closeXBtn.addEventListener('click', () => closeSidePanel());
   cancelBtn.addEventListener('click', () => closeSidePanel());
@@ -598,6 +639,7 @@ function closeSidePanel() {
   const { panel, backdrop } = sidePanel;
   sidePanel = null;
   if (escHandler) { document.removeEventListener('keydown', escHandler); escHandler = null; }
+  if (sidePanelTrapDetach) { try { sidePanelTrapDetach(); } catch {} sidePanelTrapDetach = null; }
   // Let transition play out; then remove.
   setTimeout(() => { panel.remove(); backdrop.remove(); }, 200);
   // Restore focus to whichever element opened the panel.

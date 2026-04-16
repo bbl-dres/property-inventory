@@ -2,7 +2,7 @@
 
 import * as api from './api.js';
 import { el, formatRelativeTime, toast } from './utils.js';
-import { renderBreadcrumb } from './app.js';
+import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
 
 let root = null;
 let product = null;
@@ -10,7 +10,7 @@ let product = null;
 export async function mount(container, { slug }) {
   root = container;
   product = null;
-  renderBreadcrumb([{ label: 'Data products', href: '#/products' }, { label: slug }]);
+  renderBreadcrumb([sectionCrumb('products'), { label: slug }]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try {
     product = await api.getProduct(slug);
@@ -24,7 +24,7 @@ export async function mount(container, { slug }) {
     return;
   }
   renderBreadcrumb([
-    { label: 'Data products', href: '#/products' },
+    sectionCrumb('products'),
     { label: product.name || product.slug }
   ]);
   render();
@@ -52,30 +52,26 @@ function render() {
     openBtn.addEventListener('click', (e) => { e.preventDefault(); toast('No URL set', 'info'); });
   }
 
-  const thumb = product.thumbnail
-    ? el('img', { class: 'pb-hero-thumb', src: product.thumbnail, alt: '' })
-    : null;
-
-  const hero = el('section', { class: 'pb-hero' }, [
-    el('div', { class: 'pb-hero-head' }, [
-      thumb,
-      el('div', { class: 'pb-hero-body' }, [
-        el('div', { class: 'pb-hero-titlebar' }, [
-          el('h1', { class: 'pb-hero-title' }, product.name || product.slug),
-          el('span', { class: `pb-status pb-status--${product.status || 'staging'}` }, product.status || 'staging')
-        ]),
-        el('div', { class: 'pb-hero-subtitle' }, product.description || '—'),
-        el('div', { class: 'pb-hero-meta' }, [
-          el('span', { class: 'pb-name-mono' }, product.slug),
-          ' · ',
-          `owner: ${product.owner || '—'}`,
-          ' · ',
-          `last deployed ${formatRelativeTime(product.last_deployed_at)}`
-        ])
-      ]),
-      el('div', { class: 'pb-hero-actions' }, [openBtn])
-    ])
+  const status = product.status || 'staging';
+  const titleRow = el('div', { class: 'pb-title-row' }, [
+    el('span', {}, product.name || product.slug),
+    el('span', { class: `pb-status pb-status--${status}` }, status)
   ]);
+
+  const subtitle = el('span', {}, [
+    el('span', { class: 'pb-name-mono' }, product.slug),
+    ' · ',
+    `owner: ${product.owner || '—'}`,
+    ' · ',
+    `last deployed ${formatRelativeTime(product.last_deployed_at)}`
+  ]);
+
+  const header = renderViewHeader({
+    title: titleRow,
+    subtitle,
+    description: product.description || '',
+    actions: openBtn
+  });
 
   const featureChips = (product.consumed_layers || []).map((name) =>
     el('a', { href: `#/features/${encodeURIComponent(name)}`, class: 'pb-chip' }, [
@@ -108,7 +104,10 @@ function render() {
     ])
   ]);
 
-  root.appendChild(hero);
+  root.appendChild(header);
+  if (product.thumbnail) {
+    root.appendChild(el('img', { class: 'pb-hero-thumb', src: product.thumbnail, alt: '' }));
+  }
   const grid = el('div', { class: 'pb-card-grid' }, [featuresCard, metaCard]);
   root.appendChild(grid);
 }

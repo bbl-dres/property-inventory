@@ -5,6 +5,12 @@
 import * as api from './api.js';
 import { el, toast, escHtml } from './utils.js';
 import { bus } from './state.js';
+import { sridName } from './constants.js';
+
+// sridName may be undefined for codes we don't track; wrap to a safe label.
+function sridLabel(code) {
+  try { return sridName(code) || ''; } catch { return ''; }
+}
 
 const BRAND = '#c8102e';
 const BASEMAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
@@ -78,6 +84,30 @@ export async function mount(container, { layer: l }) {
       el('div', { class: 'empty-state-description' }, 'MapLibre GL JS is unavailable.')
     ]));
     return;
+  }
+
+  // SRID sanity banner. MapLibre renders in EPSG:3857 under the hood and
+  // requires source coordinates in EPSG:4326. If the layer's declared SRID is
+  // anything else we warn — the map still renders (MapLibre doesn't refuse
+  // bad coords; it just centres on the Atlantic / nothing) but the user
+  // understands why the geometry may look wrong. Dismissible per-mount.
+  const srid = layer.srid;
+  if (srid != null && srid !== 4326) {
+    const bannerMsg = srid === 3857
+      ? 'SRID 3857 preview: coordinates interpreted as-is. Reprojection to 4326 for MapLibre is not implemented in MVP.'
+      : `Layer SRID is ${srid}${sridLabel(srid) ? ` (${sridLabel(srid)})` : ''}. Preview assumes client-side reprojection (not implemented in MVP). Coordinates will display incorrectly until v1.1.`;
+    const dismissBtn = el('button', {
+      type: 'button',
+      class: 'pb-srid-banner-close',
+      'aria-label': 'Dismiss'
+    }, [el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'close')]);
+    const banner = el('div', { class: 'pb-srid-banner', role: 'status' }, [
+      el('span', { class: 'material-symbols-outlined pb-srid-banner-icon' }, 'warning'),
+      el('span', { class: 'pb-srid-banner-text' }, ['⚠️ ', bannerMsg]),
+      dismissBtn
+    ]);
+    dismissBtn.addEventListener('click', () => { banner.remove(); });
+    root.appendChild(banner);
   }
 
   const mapEl = el('div', { class: 'pb-map' });

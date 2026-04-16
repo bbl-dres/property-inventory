@@ -20,7 +20,7 @@
 
 import { closeModal, el } from './utils.js';
 import * as api from './api.js';
-import { bus } from './state.js';
+import { bus, state } from './state.js';
 
 const app = document.getElementById('app');
 const sidebarHost = document.getElementById('pb-object-sidebar');
@@ -38,21 +38,34 @@ const DEFAULT_ROUTE = '#/features';
 // Sections that have an object sidebar mounted next to the main view.
 const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
 
-// Primary nav definition — used to paint the horizontal tabs and to dedupe
-// the breadcrumb (first crumb matching the active tab label is dropped).
+// Primary nav definition — painted once into the topbar.
 const TABS = [
-  { key: 'products', label: 'Products', icon: 'apps',     href: '#/products' },
-  { key: 'features', label: 'Layers',   icon: 'layers',   href: '#/features' },
-  { key: 'settings', label: 'Settings', icon: 'settings', href: '#/settings' }
+  { key: 'products', label: 'Data products', icon: 'apps',     href: '#/products' },
+  { key: 'features', label: 'Layers',        icon: 'layers',   href: '#/features' },
+  { key: 'settings', label: 'Settings',      icon: 'settings', href: '#/settings' }
 ];
 
-// Crumb labels that should be dropped when they match the active tab. We
-// accept both the tab label and a couple of legacy labels used by callers.
-const SECTION_CRUMB_ALIASES = {
-  products: ['Products', 'Data products'],
-  features: ['Layers', 'Features'],
-  settings: ['Settings']
+// Section label + root href, keyed by route section. Used by `sectionCrumb()`
+// so every view renders a consistent leading crumb.
+const SECTION_INFO = {
+  products: { label: 'Data products', href: '#/products' },
+  features: { label: 'Layers',        href: '#/features' },
+  settings: { label: 'Settings',      href: '#/settings' }
 };
+
+/**
+ * Build the always-leading breadcrumb entry for a section. Views call this
+ * helper to prefix their crumb trail; consistency beats cleverness here, so
+ * the section crumb is shown even when it matches the active tab.
+ *
+ * @param {string} section - route section key ('features'|'products'|'settings')
+ * @param {boolean} [asLink=true] - render as link vs. plain current
+ */
+export function sectionCrumb(section, asLink = true) {
+  const info = SECTION_INFO[section];
+  if (!info) return { label: section || '' };
+  return asLink ? { label: info.label, href: info.href } : { label: info.label };
+}
 
 function parseHash() {
   let hash = (location.hash || '').replace(/^#/, '');
@@ -159,39 +172,63 @@ function applySidebarVisibility(section) {
   }
 }
 
+/**
+ * Paint the breadcrumb strip. Every view calls this with its full crumb
+ * trail starting with the section crumb — no dedup, no hiding. The first
+ * crumb is always the section name, the last is always the current page
+ * (bold, non-link). Separator is "›".
+ *
+ * @param {Array<{label:string, href?:string}>} crumbs
+ */
 export function renderBreadcrumb(crumbs) {
-  // crumbs: Array<{ label, href? }>  — last item has no href (current)
-  // De-dup: if the first crumb matches the active tab's section label
-  // (e.g. "Features"), drop it — the tab already tells the user where
-  // they are. Callers can keep passing the full trail unchanged.
-  if (crumbs && crumbs.length > 1 && currentSection) {
-    const aliases = SECTION_CRUMB_ALIASES[currentSection] || [];
-    if (aliases.includes(crumbs[0].label)) {
-      crumbs = crumbs.slice(1);
-    }
-  }
+  if (!breadcrumb) return;
   breadcrumb.innerHTML = '';
-  // A single crumb (or none) is just the page title — the top tab already
-  // communicates location, so fully hide the landmark to avoid a redundant
-  // screen-reader announcement.
-  if (!crumbs || crumbs.length <= 1) {
-    breadcrumb.hidden = true;
-    breadcrumb.setAttribute('aria-hidden', 'true');
-    return;
-  }
   breadcrumb.hidden = false;
   breadcrumb.removeAttribute('aria-hidden');
+  if (!crumbs || !crumbs.length) return;
   crumbs.forEach((c, i) => {
     if (i > 0) {
-      breadcrumb.appendChild(el('span', { class: 'pb-breadcrumb-sep' }, '/'));
+      breadcrumb.appendChild(el('span', { class: 'pb-breadcrumb-sep', 'aria-hidden': 'true' }, '›'));
     }
     const isLast = i === crumbs.length - 1;
     if (c.href && !isLast) {
       breadcrumb.appendChild(el('a', { href: c.href }, c.label));
     } else {
-      breadcrumb.appendChild(el('span', { class: 'pb-breadcrumb-current' }, c.label));
+      breadcrumb.appendChild(el('span', {
+        class: 'pb-breadcrumb-current',
+        'aria-current': isLast ? 'page' : undefined
+      }, c.label));
     }
   });
+}
+
+/**
+ * Small utility to build a standard `.pb-view-header` block. Every view
+ * should render this directly under the breadcrumb strip so the page
+ * chrome is identical across sections.
+ *
+ * @param {object} opts
+ * @param {string|Node} opts.title
+ * @param {string|Node} [opts.subtitle]
+ * @param {string|Node} [opts.description]
+ * @param {Node|Node[]} [opts.actions]
+ */
+export function renderViewHeader({ title, subtitle, description, actions } = {}) {
+  const main = el('div', { class: 'pb-view-header-main' }, [
+    el('h1', { class: 'pb-view-title' }, title ?? ''),
+    subtitle != null && subtitle !== ''
+      ? el('div', { class: 'pb-view-subtitle' }, subtitle)
+      : null,
+    description != null && description !== ''
+      ? el('div', { class: 'pb-view-description' }, description)
+      : null
+  ].filter(Boolean));
+  const children = [main];
+  if (actions) {
+    const list = Array.isArray(actions) ? actions.filter(Boolean) : [actions];
+    if (list.length) children.push(el('div', { class: 'pb-view-header-actions' }, list));
+  }
+  return el('header', { class: 'pb-view-header' }, children);
 }
 
 function emptyState(icon, title, desc, cta) {
@@ -303,7 +340,7 @@ async function handleRoute() {
       }
     } catch {}
     if (isStale()) return;
-    renderBreadcrumb([{ label: 'Layers' }]);
+    renderBreadcrumb([sectionCrumb('features', false)]);
     const cta = el('button', { type: 'button', class: 'btn-primary' }, [
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
       ' New layer'
@@ -312,6 +349,11 @@ async function handleRoute() {
       const mod = await import('./new-feature-drawer.js');
       mod.open();
     });
+    app.appendChild(renderViewHeader({
+      title: 'Layers',
+      subtitle: '0 layers',
+      description: 'Create your first layer to get started.'
+    }));
     app.appendChild(emptyState('layers', 'No layers yet', 'Create your first layer to get started.', cta));
     return;
   }
@@ -360,6 +402,37 @@ bus.on('layer:deleted', () => {
     location.hash = '#/features';
   }
 });
+
+// Role chip next to the env hint. Shown only when the current role is not
+// admin (single-user prototype default). Updates on every role change so the
+// user always knows which restricted mode they're in.
+function renderRoleChip() {
+  const topbar = document.querySelector('.pb-topbar');
+  if (!topbar) return;
+  let chip = topbar.querySelector('.pb-role-chip');
+  const role = state.currentUser?.role || 'admin';
+  if (role === 'admin') {
+    if (chip) chip.remove();
+    return;
+  }
+  if (!chip) {
+    chip = el('div', {
+      class: 'pb-role-chip',
+      title: 'Demo role (no server enforcement). Change in Settings → Connection.'
+    }, [
+      el('span', { class: 'material-symbols-outlined' }, 'shield_person'),
+      el('span', { class: 'pb-role-chip-text' }, '')
+    ]);
+    const hint = topbar.querySelector('.pb-topbar-hint');
+    if (hint) topbar.insertBefore(chip, hint);
+    else topbar.appendChild(chip);
+  }
+  const label = chip.querySelector('.pb-role-chip-text');
+  if (label) label.textContent = `Role: ${role}`;
+}
+
+renderRoleChip();
+bus.on('user:role-changed', renderRoleChip);
 
 if (!location.hash) location.hash = DEFAULT_ROUTE;
 else handleRoute();

@@ -6,9 +6,11 @@
 // Supabase-swap contract stable. Only the UI copy says "feature(s)".
 
 import * as api from './api.js';
-import { bus } from './state.js';
+import { bus, isAllowed } from './state.js';
 import { el, debounce, confirmModal, toast } from './utils.js';
 import { open as openNewFeatureDrawer } from './new-feature-drawer.js';
+
+const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
 let root = null;
 let layers = [];
@@ -29,6 +31,13 @@ export function mount(container, { activeKey: ak } = {}) {
   }));
   unsubs.push(bus.on('layer:deleted', refresh));
   unsubs.push(bus.on('layer:updated', refresh));
+  // Re-paint shell (header button + row delete buttons) when role flips.
+  unsubs.push(bus.on('user:role-changed', () => {
+    if (!root) return;
+    root.innerHTML = '';
+    renderShell();
+    renderList();
+  }));
 }
 
 export function unmount() {
@@ -50,10 +59,12 @@ function renderShell() {
   const header = el('div', { class: 'pb-sidebar-header' }, [
     el('div', { class: 'pb-sidebar-title' }, 'Layers'),
     (() => {
+      const canWrite = isAllowed('write');
       const btn = el('button', {
         type: 'button',
         class: 'btn-primary pb-sidebar-new',
-        title: 'New layer'
+        disabled: !canWrite ? true : false,
+        title: canWrite ? 'New layer' : ROLE_GATED_TITLE
       }, [
         el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
         ' New'
@@ -117,10 +128,12 @@ function renderList() {
 
 function buildItem(layer) {
   const isActive = layer.name === activeKey;
+  const canWrite = isAllowed('write');
   const deleteBtn = el('button', {
     type: 'button',
     class: 'pb-sidebar-item-action',
-    title: `Delete ${layer.name}`,
+    disabled: !canWrite ? true : false,
+    title: canWrite ? `Delete ${layer.name}` : ROLE_GATED_TITLE,
     'aria-label': `Delete ${layer.name}`,
     dataset: { role: 'delete' }
   }, [el('span', { class: 'material-symbols-outlined' }, 'delete')]);

@@ -126,6 +126,25 @@
 
   /* ===== CHECKBOX ACCENT ===== */
   --checkbox-accent: var(--primary-red);
+
+  /* ===== PILL COLOR TOKENS (status + role pills used in the admin shell) ===== */
+  --pill-live-bg: #d1fae5;
+  --pill-live-text: #065f46;
+  --pill-staging-bg: #fef3c7;
+  --pill-staging-text: #92400e;
+  --pill-archived-bg: var(--grey-100);
+  --pill-archived-text: var(--grey-600);
+
+  --role-admin-bg: #fee2e2;
+  --role-admin-text: #991b1b;
+  --role-editor-bg: #dbeafe;
+  --role-editor-text: #1e40af;
+  --role-viewer-bg: var(--grey-100);
+  --role-viewer-text: var(--grey-700);
+
+  /* ===== MODAL SCRIM ===== */
+  --modal-scrim: rgba(45, 50, 54, 0.5);
+  --scrim-soft: rgba(45, 50, 54, 0.4);
 }
 
 /* ===== RESET ===== */

@@ -464,11 +464,35 @@ export async function setColumnDescription(layerName, columnName, description) {
 
 // ===== Features =====
 
-export async function listFeatures(layerName, { limit = 50, offset = 0, sort } = {}) {
+/**
+ * List features for a layer.
+ *
+ * @param {string} layerName
+ * @param {object} [opts]
+ * @param {number} [opts.limit=50]   — -1 for "no limit"
+ * @param {number} [opts.offset=0]
+ * @param {{column:string, direction:'asc'|'desc'}} [opts.sort]
+ * @param {[number,number,number,number]} [opts.bbox] — [west, south, east, north]
+ *     Filters features whose geometry intersects the bbox. Point geometries
+ *     are tested for point-in-box; lines/polygons accept if any coordinate
+ *     lies inside. Mock-simple; real adapter translates to PostGIS
+ *     `ST_Intersects(geom, ST_MakeEnvelope($west,$south,$east,$north, 4326))`
+ *     or PostgREST `&geom=ov.(...)` with a bounding-box operator.
+ * @param {string[]} [opts.select] — whitelist of property columns to return.
+ *     `id` is always included; geometry is always included. Real adapter
+ *     translates to PostgREST `?select=id,geom,col1,col2`.
+ */
+export async function listFeatures(layerName, { limit = 50, offset = 0, sort, bbox, select } = {}) {
   await ensureSeeded();
   await sleep(MOCK_LATENCY_MS);
   findLayerOrThrow(layerName);
   let features = loadJson(FEATURES_KEY(layerName), []).slice();
+
+  // bbox filter (mock-only, simple coord-inside check).
+  if (Array.isArray(bbox) && bbox.length === 4 && bbox.every((n) => Number.isFinite(n))) {
+    const [w, s, e, n] = bbox;
+    features = features.filter((f) => geometryIntersectsBbox(f.geometry, w, s, e, n));
+  }
 
   if (sort && sort.column) {
     const dir = sort.direction === 'desc' ? -1 : 1;
@@ -486,7 +510,57 @@ export async function listFeatures(layerName, { limit = 50, offset = 0, sort } =
 
   const total = features.length;
   if (limit !== -1) features = features.slice(offset, offset + limit);
+
+  // Column projection. Geometry and id always retained; properties filtered.
+  if (Array.isArray(select) && select.length) {
+    const keep = new Set(select.filter((n) => n !== 'id' && n !== 'geom'));
+    features = features.map((f) => {
+      const props = f.properties || {};
+      const filtered = {};
+      for (const k of Object.keys(props)) if (keep.has(k)) filtered[k] = props[k];
+      return { id: f.id, geometry: f.geometry, properties: filtered };
+    });
+  }
+
   return { features, total };
+}
+
+// ---- bbox / coord helpers (mock only; real adapter delegates to PostGIS) ----
+
+function anyCoordInBbox(coords, w, s, e, n) {
+  if (!Array.isArray(coords)) return false;
+  if (typeof coords[0] === 'number' && typeof coords[1] === 'number') {
+    const [x, y] = coords;
+    return x >= w && x <= e && y >= s && y <= n;
+  }
+  for (const c of coords) if (anyCoordInBbox(c, w, s, e, n)) return true;
+  return false;
+}
+
+function geometryIntersectsBbox(geom, w, s, e, n) {
+  if (!geom || !geom.coordinates) return false;
+  return anyCoordInBbox(geom.coordinates, w, s, e, n);
+}
+
+/**
+ * Round every coordinate in a GeoJSON geometry to `precision` decimals.
+ * Pure — returns a new geometry, does not mutate the input. Handles nested
+ * arrays of any depth (Point / LineString / Polygon / Multi*).
+ */
+export function roundCoords(geom, precision) {
+  if (!geom || !('coordinates' in geom)) return geom;
+  const p = Math.max(0, Math.min(15, Number(precision) | 0));
+  const factor = Math.pow(10, p);
+  const walk = (c) => {
+    if (Array.isArray(c)) {
+      if (typeof c[0] === 'number') {
+        return c.map((n) => (Number.isFinite(n) ? Math.round(n * factor) / factor : n));
+      }
+      return c.map(walk);
+    }
+    return c;
+  };
+  return { ...geom, coordinates: walk(geom.coordinates) };
 }
 
 export async function createFeature(layerName, feature) {
@@ -603,12 +677,19 @@ export async function exportFeatures(layerName, format) {
   const layer = findLayerOrThrow(layerName);
   const features = loadJson(FEATURES_KEY(layerName), []);
   if (format === 'geojson') {
+    // Coordinate precision: 7 dp for geographic (EPSG:4326), 3 dp for projected
+    // CRSs where units are metres (CH1903+/LV95 2056, Web Mercator 3857, CH1903
+    // 21781). Avoids the "17-digit floating-point noise" look in exported files.
+    const srid = layer.srid;
+    const precision = srid === 4326 ? 7
+      : (srid === 2056 || srid === 3857 || srid === 21781) ? 3
+      : 7;
     const fc = {
       type: 'FeatureCollection',
       features: features.map((f) => ({
         type: 'Feature',
         id: f.id,
-        geometry: f.geometry,
+        geometry: f.geometry ? roundCoords(f.geometry, precision) : f.geometry,
         properties: f.properties || {}
       }))
     };

@@ -8,6 +8,43 @@ import { el, openModal, closeModal, toast, parseUpload } from './utils.js';
 
 const FIVE_MB = 5 * 1024 * 1024;
 
+// Formats the import flow recognises but cannot parse in the MVP (no WASM
+// ogr2ogr in-browser, no shapefile/KML/GPX parser shipped). We show a friendly
+// error with the exact ogr2ogr conversion command so a GIS user who tries the
+// most likely file types gets unstuck immediately.
+const UNSUPPORTED_FORMATS = {
+  gpkg: {
+    label: 'GeoPackage (.gpkg)',
+    cmd: 'ogr2ogr -f GeoJSON output.geojson input.gpkg',
+    note: null
+  },
+  shp: {
+    label: 'Shapefile (.shp)',
+    cmd: 'ogr2ogr -f GeoJSON output.geojson input.shp',
+    note: 'Shapefiles are multi-file bundles (.shp + .shx + .dbf + .prj). Point ogr2ogr at the .shp and keep the sidecars next to it.'
+  },
+  zip: {
+    label: 'Zipped Shapefile (.zip)',
+    cmd: 'ogr2ogr -f GeoJSON output.geojson /vsizip/input.zip',
+    note: 'A .zip is assumed to contain a Shapefile bundle (.shp/.shx/.dbf/.prj). Unzip first, or use the /vsizip/ prefix shown above.'
+  },
+  kml: {
+    label: 'KML (.kml)',
+    cmd: 'ogr2ogr -f GeoJSON output.geojson input.kml',
+    note: null
+  },
+  gpx: {
+    label: 'GPX (.gpx)',
+    cmd: 'ogr2ogr -f GeoJSON output.geojson input.gpx',
+    note: null
+  }
+};
+
+function extOf(filename) {
+  const m = /\.([a-z0-9]+)$/i.exec(filename || '');
+  return m ? m[1].toLowerCase() : '';
+}
+
 /**
  * Open the import modal for a layer.
  * @param {object} layer - full layer object (with `name`, `geometry_type`, `columns`).
@@ -49,21 +86,40 @@ function setBody(ctx, children) {
 // ===== Step 1 — Pick file =====
 
 function renderStep1(ctx) {
+  // `accept` extended to include GPKG/Shapefile/KML/GPX so users can *pick*
+  // those files — we then explicitly reject with an ogr2ogr conversion
+  // recipe. Better UX than silently hiding them in the file picker.
   const fileInput = el('input', {
     type: 'file',
-    accept: '.geojson,.json,.csv',
+    accept: '.geojson,.json,.csv,.gpkg,.zip,.kml,.gpx,.shp',
     class: 'pb-import-file'
   });
 
   const err = el('div', { class: 'pb-field-error', style: { display: 'none' } });
+  // Separate container for the unsupported-format guidance block (with a
+  // copyable ogr2ogr command). Shown instead of the plain text error above
+  // when the user picks a known-but-unsupported format.
+  const unsupportedHost = el('div', { style: { display: 'none' } });
 
   const cancelBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Cancel');
   cancelBtn.addEventListener('click', () => closeModal());
 
   fileInput.addEventListener('change', async () => {
     err.style.display = 'none';
+    unsupportedHost.style.display = 'none';
+    unsupportedHost.innerHTML = '';
     const file = fileInput.files && fileInput.files[0];
     if (!file) return;
+
+    // Early reject unsupported-but-recognised formats with a copyable
+    // ogr2ogr recipe. Uses the extension only; we don't sniff contents.
+    const ext = extOf(file.name);
+    if (UNSUPPORTED_FORMATS[ext]) {
+      unsupportedHost.appendChild(renderUnsupportedBlock(ext));
+      unsupportedHost.style.display = '';
+      fileInput.value = '';
+      return;
+    }
 
     if (file.size > FIVE_MB) {
       toast(`File is larger than 5 MB (${(file.size / 1024 / 1024).toFixed(1)} MB) — proceeding anyway.`, 'info');
@@ -118,10 +174,46 @@ function renderStep1(ctx) {
         fileInput,
         el('div', { class: 'pb-field-hint' }, 'Accepts .geojson, .json, or .csv.')
       ]),
-      err
+      err,
+      unsupportedHost
     ]),
     el('div', { class: 'pb-modal-footer' }, [cancelBtn])
   ]);
+}
+
+function renderUnsupportedBlock(ext) {
+  const info = UNSUPPORTED_FORMATS[ext];
+  const copyBtn = el('button', {
+    type: 'button',
+    class: 'btn-tertiary',
+    title: 'Copy command'
+  }, [
+    el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'content_copy'),
+    ' Copy'
+  ]);
+  const pre = el('pre', { class: 'pb-code', style: { margin: '0', flex: '1' } }, info.cmd);
+  copyBtn.addEventListener('click', async () => {
+    try { await navigator.clipboard.writeText(info.cmd); toast('Command copied', 'success'); }
+    catch { toast('Copy failed', 'error'); }
+  });
+
+  return el('div', { class: 'pb-unsupported-block', style: {
+    border: '1px solid var(--status-warning)',
+    background: 'var(--status-warning-bg)',
+    color: 'var(--status-warning-text)',
+    padding: 'var(--space-3)',
+    borderRadius: 'var(--radius-sm, 4px)',
+    marginTop: 'var(--space-2)'
+  } }, [
+    el('div', { style: { fontWeight: '600', marginBottom: '6px' } },
+      `${info.label} import is not supported in MVP.`),
+    el('div', { style: { marginBottom: '6px' } },
+      'Convert with ogr2ogr, then upload the resulting GeoJSON file here:'),
+    el('div', { style: { display: 'flex', gap: '8px', alignItems: 'flex-start' } }, [pre, copyBtn]),
+    info.note
+      ? el('div', { class: 'pb-field-hint', style: { marginTop: '6px', color: 'var(--status-warning-text)' } }, info.note)
+      : null
+  ].filter(Boolean));
 }
 
 // Parsing is handled by utils.parseUpload (shared with new-layer drawer).

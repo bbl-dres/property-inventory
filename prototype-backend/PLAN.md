@@ -103,6 +103,7 @@ Parser: split on `?`, split path on `/`, use `URLSearchParams` for query. Optimi
 
 ## 5. Data shapes
 
+{% raw %}
 ```js
 /** @typedef {{name, title, geometry_type, feature_count, updated_at}} LayerSummary */
 /** @typedef {{name, title, description, geometry_type, srid, created_at, updated_at, feature_count, columns: Column[]}} Layer */
@@ -110,6 +111,7 @@ Parser: split on `?`, split path on `/`, use `URLSearchParams` for query. Optimi
 /** @typedef {{id, geometry, properties}} Feature */
 /** @typedef {{inserted, skipped, skippedDetails: Array<{row, reason}>}} ImportResult */
 ```
+{% endraw %}
 
 ---
 

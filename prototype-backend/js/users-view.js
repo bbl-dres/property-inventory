@@ -8,21 +8,27 @@
 import * as api from './api.js';
 import { ApiError } from './api.js';
 import { el, toast, openModal, closeModal, confirmModal, formatRelativeTime } from './utils.js';
-import { renderBreadcrumb } from './app.js';
+import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { bus, isAllowed } from './state.js';
 
 const ROLES = ['viewer', 'editor', 'admin'];
+const ROLE_GATED_TITLE = 'Requires admin role';
 
 let root = null;
 let users = [];
+let roleUnsub = null;
 
 export async function mount(container) {
   root = container;
-  renderBreadcrumb([{ label: 'Settings', href: '#/settings' }, { label: 'Members' }]);
+  renderBreadcrumb([sectionCrumb('settings'), { label: 'Members' }]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading users…</div></div>';
+  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = bus.on('user:role-changed', () => { if (root) render(); });
   await refresh();
 }
 
 export function unmount() {
+  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
   if (root) root.innerHTML = '';
   root = null;
   users = [];
@@ -38,21 +44,26 @@ function render() {
   if (!root) return;
   root.innerHTML = '';
 
-  const inviteBtn = el('button', { type: 'button', class: 'btn-primary' }, [
+  const canAdmin = isAllowed('admin');
+
+  const inviteBtn = el('button', {
+    type: 'button',
+    class: 'btn-primary',
+    disabled: !canAdmin ? true : false,
+    title: canAdmin ? '' : ROLE_GATED_TITLE
+  }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'person_add'),
     ' Invite user'
   ]);
   inviteBtn.addEventListener('click', openInviteModal);
 
-  const header = el('div', { class: 'pb-view-header' }, [
-    el('div', {}, [
-      el('div', { class: 'pb-view-title' }, 'Members'),
-      el('div', { class: 'pb-view-subtitle' },
-        'Prototype-only IAM. Roles are stored but not enforced.')
-    ]),
-    inviteBtn
-  ]);
-  root.appendChild(header);
+  const count = users.length;
+  root.appendChild(renderViewHeader({
+    title: 'Members',
+    subtitle: `${count} member${count === 1 ? '' : 's'}`,
+    description: 'Prototype-only IAM — roles are stored but not enforced. The real backend would use Supabase Auth + RLS.',
+    actions: inviteBtn
+  }));
 
   if (!users.length) {
     root.appendChild(el('div', { class: 'empty-state' }, [
@@ -84,7 +95,13 @@ function render() {
 }
 
 function renderRow(user) {
-  const roleSelect = el('select', { class: 'pb-inline-input', 'aria-label': `Role for ${user.email}` },
+  const canAdmin = isAllowed('admin');
+  const roleSelect = el('select', {
+    class: 'pb-inline-input',
+    'aria-label': `Role for ${user.email}`,
+    disabled: !canAdmin ? true : false,
+    title: canAdmin ? '' : ROLE_GATED_TITLE
+  },
     ROLES.map((r) => el('option', { value: r, selected: r === user.role ? true : undefined }, r))
   );
   roleSelect.addEventListener('change', async () => {
@@ -102,7 +119,8 @@ function renderRow(user) {
   const deleteBtn = el('button', {
     type: 'button',
     class: 'pb-sidebar-item-action',
-    title: `Delete ${user.email}`,
+    disabled: !canAdmin ? true : false,
+    title: canAdmin ? `Delete ${user.email}` : ROLE_GATED_TITLE,
     'aria-label': `Delete ${user.email}`,
     style: { display: 'inline-flex' }
   }, [el('span', { class: 'material-symbols-outlined' }, 'delete')]);

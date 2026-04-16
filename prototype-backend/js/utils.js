@@ -71,7 +71,44 @@ export function validateLayerName(name) {
 
 let activeModal = null;
 let escHandler = null;
+let keydownTrapHandler = null;
 let modalLastFocused = null;
+
+// Selector for focusable elements inside a trap container. Excludes disabled
+// inputs and anything explicitly removed from the tab order.
+const FOCUSABLE_SEL =
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), ' +
+  'textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
+/**
+ * Attach a keyboard focus trap to a container. Tab/Shift-Tab at the
+ * boundary wraps to the other end. Returns a function to detach.
+ * Exported so side panels and other dialog-like surfaces can reuse.
+ */
+export function trapFocus(container) {
+  const handler = (e) => {
+    if (e.key !== 'Tab') return;
+    const focusables = Array.from(container.querySelectorAll(FOCUSABLE_SEL))
+      .filter((n) => n.offsetParent !== null || n === document.activeElement);
+    if (!focusables.length) { e.preventDefault(); container.focus?.(); return; }
+    const first = focusables[0];
+    const last = focusables[focusables.length - 1];
+    const active = document.activeElement;
+    if (e.shiftKey) {
+      if (active === first || !container.contains(active)) {
+        e.preventDefault();
+        last.focus();
+      }
+    } else {
+      if (active === last) {
+        e.preventDefault();
+        first.focus();
+      }
+    }
+  };
+  container.addEventListener('keydown', handler);
+  return () => container.removeEventListener('keydown', handler);
+}
 
 export function openModal(contentNode) {
   closeModal();
@@ -84,8 +121,10 @@ export function openModal(contentNode) {
   activeModal = { backdrop, modal };
   escHandler = (e) => { if (e.key === 'Escape') closeModal(); };
   document.addEventListener('keydown', escHandler);
+  // Focus trap — wrap Tab/Shift-Tab at the boundary so focus stays inside.
+  keydownTrapHandler = trapFocus(modal);
   // Focus first focusable
-  const focusable = modal.querySelector('input, textarea, select, button');
+  const focusable = modal.querySelector(FOCUSABLE_SEL);
   if (focusable) setTimeout(() => focusable.focus(), 0);
   return { backdrop, modal };
 }
@@ -98,6 +137,10 @@ export function closeModal() {
   if (escHandler) {
     document.removeEventListener('keydown', escHandler);
     escHandler = null;
+  }
+  if (keydownTrapHandler) {
+    try { keydownTrapHandler(); } catch {}
+    keydownTrapHandler = null;
   }
   if (modalLastFocused && typeof modalLastFocused.focus === 'function') {
     try { modalLastFocused.focus(); } catch {}
