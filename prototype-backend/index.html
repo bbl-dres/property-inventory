@@ -19,10 +19,27 @@
 <body class="pb-body">
   <a href="#app" class="pb-skip-link">Skip to main content</a>
   <header class="pb-topbar">
+    <div class="pb-topbar-inner">
     <a href="#/maps" class="pb-topbar-title" aria-label="Home">
       <span class="material-symbols-outlined">database</span>
       <span>GIS Server</span>
     </a>
+    <div class="pb-topbar-search" id="pb-global-search-wrap">
+      <span class="material-symbols-outlined pb-icon-sm pb-topbar-search-icon" aria-hidden="true">search</span>
+      <input
+        type="search"
+        id="pb-global-search"
+        class="pb-topbar-search-input"
+        placeholder="Search maps, layers, attributes…"
+        autocomplete="off"
+        spellcheck="false"
+        role="combobox"
+        aria-autocomplete="list"
+        aria-expanded="false"
+        aria-controls="pb-global-search-panel"
+      >
+      <div class="pb-topbar-search-panel" id="pb-global-search-panel" role="listbox" hidden></div>
+    </div>
     <div class="pb-topbar-right">
       <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
         <span class="material-symbols-outlined">cloud_off</span>
@@ -57,6 +74,7 @@
           </button>
         </div>
       </div>
+    </div>
     </div>
   </header>
 

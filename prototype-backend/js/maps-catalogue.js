@@ -11,9 +11,11 @@
 // keeps the `product` name to match the future Supabase table.
 
 import * as api from './api.js';
-import { el, toast, wireMenu, formatRelativeTime } from './utils.js';
+import { el, formatRelativeTime } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { mountCatalogue } from './catalogue.js';
+import { paintExtentMap } from './extent-map.js';
+import { buildNewButton } from './new-button.js';
 
 let root = null;
 let catalogueBody = null;
@@ -45,7 +47,7 @@ function renderShell() {
     title: 'Maps & Apps',
     subtitle: `${products.length} item${products.length === 1 ? '' : 's'}`,
     description: 'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.',
-    actions: buildNewButton()
+    actions: buildNewButton({ onRefresh: refreshList })
   }));
 
   catalogueBody = el('div', { class: 'pb-catalogue' });
@@ -62,6 +64,11 @@ function renderShell() {
     renderCard,
     renderListHeader,
     renderListRow,
+    renderMapView: (host, rows) => paintExtentMap(host, rows, {
+      itemLabel: (p) => p.name || p.slug,
+      itemHref:  (p) => `#/maps/${encodeURIComponent(p.slug)}`,
+      itemBbox:  (p) => p.bbox
+    }),
     emptyState: {
       icon: 'apps',
       title: 'No maps or apps yet',
@@ -75,83 +82,6 @@ async function refreshList() {
   catch { products = []; }
   // Refresh both the subtitle count and the catalogue body.
   renderShell();
-}
-
-function buildNewButton() {
-  // "+ New ▾" dropdown — splits creation into three kinds.
-  const newBtn = el('button', {
-    type: 'button',
-    class: 'btn-primary',
-    'aria-haspopup': 'menu',
-    'aria-expanded': 'false',
-    title: 'New map or app'
-  }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
-    ' New ',
-    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'arrow_drop_down')
-  ]);
-
-  const openModalFor = async (kind) => {
-    const mod = await import('./new-product-modal.js');
-    mod.open({
-      kind,
-      onCreated: async (created) => {
-        // A new map drops the user straight into the scene viewer so they
-        // can start authoring. Registered apps stay on the gallery.
-        if (kind === 'map') {
-          location.hash = `#/maps/${encodeURIComponent(created.slug)}`;
-        } else {
-          await refreshList();
-        }
-      }
-    });
-  };
-
-  // Shortcut: upload a file, which creates a layer AND a wrapping map.
-  const openNewMapFromData = async () => {
-    const mod = await import('./new-feature-drawer.js');
-    mod.open({
-      onCreated: async ({ name: layerName, title }) => {
-        const baseLabel = (title || layerName).trim();
-        const mapName = `${baseLabel} map`;
-        const mapSlug = `${layerName}-map-${Date.now().toString(36).slice(-5)}`;
-        try {
-          const created = await api.createProduct({
-            slug: mapSlug,
-            name: mapName,
-            kind: 'map',
-            tags: ['map'],
-            consumed_layers: [layerName]
-          });
-          toast(`Created layer "${layerName}" and map "${mapName}"`, 'success');
-          location.hash = `#/maps/${encodeURIComponent(created.slug)}`;
-        } catch (err) {
-          toast(`Layer created, but map wrapper failed: ${err?.message || err}`, 'error');
-          await refreshList();
-        }
-      }
-    });
-  };
-
-  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
-  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
-  const menuCtl = wireMenu(newBtn, menu, newBtnWrap);
-
-  const menuItem = (icon, label, handler) => {
-    const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
-      el('span', { class: 'material-symbols-outlined' }, icon),
-      el('span', {}, label)
-    ]);
-    b.addEventListener('click', () => { menuCtl.close(); handler(); });
-    return b;
-  };
-  menu.append(
-    menuItem('link',        'Register app',      () => openModalFor('app')),
-    menuItem('map',         'New map',           () => openModalFor('map')),
-    menuItem('upload_file', 'New map from data', openNewMapFromData)
-  );
-
-  return newBtnWrap;
 }
 
 function renderCard(p) {

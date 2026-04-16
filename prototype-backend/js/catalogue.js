@@ -2,12 +2,13 @@
 //
 // Shared primitive behind the Maps & Apps and Layers landing pages. Handles:
 //   - Search box with 200ms debounced filter
-//   - Gallery / List view-mode toggle (sessionStorage-persisted per section)
+//   - View-mode toggle: Gallery / List (always) + Map (opt-in via
+//     `renderMapView`). Selection is sessionStorage-persisted per section.
 //   - Empty / zero-match / populated states
 //
-// Callers supply per-section renderers (cards, list rows, header) and the
-// raw items. They can call `refresh(newItems)` after a create/delete to
-// re-paint without re-mounting.
+// Callers supply per-section renderers (cards, list rows, header,
+// optional map view) and the raw items. They can call `refresh(newItems)`
+// after a create/delete to re-paint without re-mounting.
 //
 // The component does NOT own the view-header (title, actions) — the caller
 // wraps this mount in a renderViewHeader + mount container of its choice.
@@ -15,6 +16,7 @@
 import { el } from './utils.js';
 
 const SESSION_PREFIX = 'pb:view:';
+const VALID_VIEWS = new Set(['gallery', 'list', 'map']);
 
 /**
  * Mount a catalogue into `container`.
@@ -23,12 +25,16 @@ const SESSION_PREFIX = 'pb:view:';
  * @param {object} opts
  * @param {Array<object>} opts.items
  * @param {string} opts.sectionKey             - `'maps'` | `'features'`; keys sessionStorage
- * @param {'gallery'|'list'} [opts.defaultView]
+ * @param {'gallery'|'list'|'map'} [opts.defaultView]
  * @param {string} [opts.searchPlaceholder]
  * @param {(item: object, q: string) => boolean} [opts.matchesQuery]
  * @param {(item: object) => Node} opts.renderCard
  * @param {() => Node} opts.renderListHeader   - returns a `<tr>`
  * @param {(item: object) => Node} opts.renderListRow - returns a `<tr>`
+ * @param {(container: HTMLElement, items: object[]) => ({ unmount?: () => void } | void)} [opts.renderMapView]
+ *   Optional. When provided, the view-mode toggle gains a "Map" option
+ *   and this function is called to paint the map into the body container.
+ *   May return `{ unmount }` for cleanup when leaving the map view.
  * @param {{icon: string, title: string, description: string, cta?: Node}} [opts.emptyState]
  * @returns {{ refresh: (items: Array<object>) => void, unmount: () => void }}
  */
@@ -41,15 +47,21 @@ export function mountCatalogue(container, opts) {
     renderCard,
     renderListHeader,
     renderListRow,
+    renderMapView,
     emptyState = { icon: 'inbox', title: 'Nothing here yet', description: '' }
   } = opts;
 
+  const mapAvailable = typeof renderMapView === 'function';
+
   let items = Array.isArray(opts.items) ? opts.items.slice() : [];
   let query = '';
-  let viewMode = readViewMode(sectionKey, defaultView);
+  let viewMode = readViewMode(sectionKey, defaultView, mapAvailable);
   let searchInput = null;
   let debounceTimer = null;
   let destroyed = false;
+  // Cleanup returned by the caller's renderMapView (if any). Called when
+  // leaving map mode OR when the catalogue itself unmounts.
+  let mapCleanup = null;
 
   render();
 
@@ -83,10 +95,12 @@ export function mountCatalogue(container, opts) {
       searchInput
     ]);
 
-    const toggle = el('div', { class: 'pb-view-toggle', role: 'group', 'aria-label': 'View mode' }, [
-      toggleBtn('gallery', 'grid_view',       'Gallery'),
+    const toggleButtons = [
+      toggleBtn('gallery', 'grid_view',            'Gallery'),
       toggleBtn('list',    'format_list_bulleted', 'List')
-    ]);
+    ];
+    if (mapAvailable) toggleButtons.push(toggleBtn('map', 'public', 'Map'));
+    const toggle = el('div', { class: 'pb-view-toggle', role: 'group', 'aria-label': 'View mode' }, toggleButtons);
 
     return el('div', { class: 'pb-catalogue-toolbar' }, [searchWrap, toggle]);
   }
@@ -104,11 +118,20 @@ export function mountCatalogue(container, opts) {
     ]);
     b.addEventListener('click', () => {
       if (viewMode === mode) return;
+      // Leaving map mode → tear down whatever the caller mounted.
+      if (viewMode === 'map') teardownMap();
       viewMode = mode;
       writeViewMode(sectionKey, mode);
       render();
     });
     return b;
+  }
+
+  function teardownMap() {
+    if (mapCleanup && typeof mapCleanup.unmount === 'function') {
+      try { mapCleanup.unmount(); } catch {}
+    }
+    mapCleanup = null;
   }
 
   function filteredItems() {
@@ -147,6 +170,18 @@ export function mountCatalogue(container, opts) {
         ])
       ]);
     }
+    if (viewMode === 'map' && mapAvailable) {
+      // Empty shell here; caller paints into it after the DOM is in place
+      // (deferred by one tick so MapLibre has a sized container to measure).
+      const mapHost = el('div', { class: 'pb-catalogue-map' });
+      setTimeout(() => {
+        if (destroyed || viewMode !== 'map') return;
+        teardownMap();
+        try { mapCleanup = renderMapView(mapHost, rows) || null; }
+        catch (err) { console.error('[catalogue] renderMapView', err); }
+      }, 0);
+      return mapHost;
+    }
     return el('div', { class: 'pb-catalogue-grid' }, rows.map(renderCard));
   }
 
@@ -169,6 +204,7 @@ export function mountCatalogue(container, opts) {
       if (debounceTimer) clearTimeout(debounceTimer);
       debounceTimer = null;
       searchInput = null;
+      teardownMap();
     }
   };
 }
@@ -179,10 +215,10 @@ function defaultMatchesQuery(item, q) {
   return name.includes(q) || title.includes(q);
 }
 
-function readViewMode(sectionKey, fallback) {
+function readViewMode(sectionKey, fallback, mapAvailable) {
   try {
     const v = sessionStorage.getItem(SESSION_PREFIX + sectionKey);
-    if (v === 'gallery' || v === 'list') return v;
+    if (VALID_VIEWS.has(v) && (v !== 'map' || mapAvailable)) return v;
   } catch {}
   return fallback;
 }

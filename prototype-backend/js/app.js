@@ -147,47 +147,56 @@ const SETTINGS_TABS = [
   { key: 'about',       label: 'About',       href: '#/settings/about',       icon: 'info' }
 ];
 
+/** Where should a Back link on this route point? `null` = no back link
+ *  (you're at the root of a catalogue already). Settings exits to the
+ *  default route; detail views exit to their section's catalogue. */
+function getBackHref(route) {
+  if (route.name === 'maps-catalogue' || route.name === 'features-catalogue') return null;
+  if (route.section === 'settings') return DEFAULT_ROUTE;
+  if (route.name === 'feature-detail') return '#/features';
+  if (route.name === 'maps-detail') return '#/maps';
+  return null;
+}
+
 function renderTabs(route) {
   if (!tabsHost) return;
   const inSettings = route.section === 'settings';
   const activeSection = route.section;
 
-  // The container is repainted from scratch whenever we cross the
-  // primary ↔ settings boundary, since the tab set is different. Within
-  // the same set we just toggle the active class.
-  const wantMode = inSettings ? 'settings' : 'primary';
-  if (tabsHost.dataset.mode !== wantMode) {
-    tabsHost.innerHTML = '';
-    const source = inSettings ? SETTINGS_TABS : TABS;
-    for (const t of source) {
-      const a = el('a', {
-        href: t.href,
-        class: 'pb-tab',
-        dataset: { tab: t.key },
-        title: t.label,
-        'aria-label': t.label
-      }, [
-        el('span', { class: 'material-symbols-outlined' }, t.icon),
-        el('span', { class: 'pb-tab-label' }, t.label)
-      ]);
-      tabsHost.appendChild(a);
-    }
-    // In Settings mode, also paint an explicit "Back" link on the right
-    // edge of the tab row so users have a clear way out of the settings
-    // surface. The gear icon already indicates they're here, but tabs
-    // alone don't suggest how to leave.
-    if (inSettings) {
-      const back = el('a', {
-        href: DEFAULT_ROUTE,
-        class: 'pb-section-nav-back',
-        'aria-label': 'Back to main view'
-      }, [
-        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
-        el('span', { class: 'pb-tab-label' }, 'Back')
-      ]);
-      tabsHost.appendChild(back);
-    }
-    tabsHost.dataset.mode = wantMode;
+  // Repaint the whole tab row every call — cheap (≤5 nodes) and keeps the
+  // back link's presence in sync with the current route without a separate
+  // mode tracker.
+  tabsHost.innerHTML = '';
+  const source = inSettings ? SETTINGS_TABS : TABS;
+  for (const t of source) {
+    const a = el('a', {
+      href: t.href,
+      class: 'pb-tab',
+      dataset: { tab: t.key },
+      title: t.label,
+      'aria-label': t.label
+    }, [
+      el('span', { class: 'material-symbols-outlined' }, t.icon),
+      el('span', { class: 'pb-tab-label' }, t.label)
+    ]);
+    tabsHost.appendChild(a);
+  }
+
+  // Back link on the right edge of the nav — shown on every non-catalogue
+  // route (Settings sub-pages + detail views). The nav band is already
+  // hidden altogether in the scene viewer via `.pb-body--fixed-viewport`,
+  // so the scene viewer keeps its own full-width chrome.
+  const backHref = getBackHref(route);
+  if (backHref) {
+    const back = el('a', {
+      href: backHref,
+      class: 'pb-section-nav-back',
+      'aria-label': 'Back'
+    }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+      el('span', { class: 'pb-tab-label' }, 'Back')
+    ]);
+    tabsHost.appendChild(back);
   }
 
   const activeKey = inSettings ? settingsActiveKey(route.name) : activeSection;
@@ -195,7 +204,7 @@ function renderTabs(route) {
     a.classList.toggle('pb-tab--active', a.dataset.tab === activeKey);
   });
 
-  // Settings gear (right cluster) mirrors the "am I in Settings?" state.
+  // Settings gear mirrors the "am I in Settings?" state.
   const gear = document.getElementById('pb-settings-btn');
   if (gear) gear.classList.toggle('is-active', inSettings);
 }
@@ -468,6 +477,10 @@ function wireAccountMenu() {
   });
 }
 wireAccountMenu();
+
+// Topbar global search — wired once on boot. The module owns its own
+// data index + bus subscriptions so we don't need a router-level hook.
+import('./global-search.js').then((m) => m.mountGlobalSearch());
 
 if (!location.hash) location.hash = DEFAULT_ROUTE;
 else handleRoute();

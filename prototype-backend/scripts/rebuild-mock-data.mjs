@@ -54,8 +54,51 @@ function makeFeature(slug, idx, srcFeature, schemaKeys) {
   };
 }
 
-// Layer builder — keeps common metadata shape consistent.
+/** Compute an [west, south, east, north] bbox from a list of features.
+ *  Returns null if no finite coordinates are found (non-spatial layer,
+ *  empty features, malformed geometry). */
+function computeBbox(features) {
+  let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
+  const walk = (c) => {
+    if (!Array.isArray(c)) return;
+    if (typeof c[0] === 'number' && typeof c[1] === 'number') {
+      const [lon, lat] = c;
+      if (Number.isFinite(lon) && Number.isFinite(lat)) {
+        if (lon < minLon) minLon = lon;
+        if (lon > maxLon) maxLon = lon;
+        if (lat < minLat) minLat = lat;
+        if (lat > maxLat) maxLat = lat;
+      }
+    } else {
+      for (const next of c) walk(next);
+    }
+  };
+  for (const f of features || []) {
+    if (f?.geometry?.coordinates) walk(f.geometry.coordinates);
+  }
+  if (!Number.isFinite(minLon)) return null;
+  return [minLon, minLat, maxLon, maxLat];
+}
+
+/** Union a list of bboxes into a single bbox; ignores nulls. */
+function unionBboxes(bboxes) {
+  let b = null;
+  for (const bb of bboxes) {
+    if (!bb) continue;
+    if (!b) { b = bb.slice(); continue; }
+    b[0] = Math.min(b[0], bb[0]);
+    b[1] = Math.min(b[1], bb[1]);
+    b[2] = Math.max(b[2], bb[2]);
+    b[3] = Math.max(b[3], bb[3]);
+  }
+  return b;
+}
+
+// Layer builder — keeps common metadata shape consistent. bbox is computed
+// from features and stored under metadata.bbox so the catalogue's Map view
+// can paint extents without a server round-trip.
 function buildLayer({ name, title, description, geometry_type, srid, tags, license, attribution, contact, update_frequency, lineage, columns, features }) {
+  const bbox = computeBbox(features);
   return {
     name,
     title,
@@ -71,7 +114,8 @@ function buildLayer({ name, title, description, geometry_type, srid, tags, licen
       contact: contact || null,
       update_frequency: update_frequency || null,
       lineage: lineage || null,
-      thumbnail_url: null
+      thumbnail_url: null,
+      bbox
     },
     columns,
     features
@@ -241,8 +285,17 @@ const greenLayer = buildLayer({
 // ---- Assemble new mock-features.json ------------------------------------
 
 // Preserve existing inspections + contracts layers so the Field Inspection
-// App (staging product) still has something to point at.
-const kept = currentFeats.layers.filter(l => l.name === 'inspections' || l.name === 'contracts');
+// App (staging product) still has something to point at. Patch their
+// metadata.bbox in case the existing seed didn't carry one.
+const kept = currentFeats.layers
+  .filter(l => l.name === 'inspections' || l.name === 'contracts')
+  .map(l => ({
+    ...l,
+    metadata: {
+      ...(l.metadata || {}),
+      bbox: (l.metadata && l.metadata.bbox !== undefined) ? l.metadata.bbox : computeBbox(l.features)
+    }
+  }));
 
 const nextFeatures = {
   layers: [
@@ -303,11 +356,23 @@ const fieldApp = {
     .map((n) => (n === 'parcels_2026' ? 'parcels' : n))
 };
 
+// Compute each product's bbox as the union of its consumed layers' bboxes.
+// Null if the product has no spatial layers (pure table consumers) —
+// catalogue Map view hides those items per the "empty metadata → skip" rule.
+const layerBboxByName = new Map();
+for (const l of nextFeatures.layers) {
+  if (l?.metadata?.bbox) layerBboxByName.set(l.name, l.metadata.bbox);
+}
+function productBbox(p) {
+  const bboxes = (p.consumed_layers || []).map((n) => layerBboxByName.get(n)).filter(Boolean);
+  return unionBboxes(bboxes);
+}
+
 const nextProducts = {
   products: [
-    propertyInventory,
-    greenInventory,
-    fieldApp
+    { ...propertyInventory, bbox: productBbox(propertyInventory) },
+    { ...greenInventory,    bbox: productBbox(greenInventory) },
+    { ...fieldApp,          bbox: productBbox(fieldApp) }
   ]
 };
 
@@ -324,11 +389,15 @@ writeFileSync(
 
 // ---- Summary -----------------------------------------------------------
 
+const fmtBbox = (b) => b
+  ? `[${b[0].toFixed(2)}, ${b[1].toFixed(2)}, ${b[2].toFixed(2)}, ${b[3].toFixed(2)}]`
+  : '—';
+
 console.log('--- mock-features.json ---');
 for (const l of nextFeatures.layers) {
-  console.log(`  ${l.name.padEnd(18)} ${l.geometry_type.padEnd(10)} ${String(l.features.length).padStart(3)} features`);
+  console.log(`  ${l.name.padEnd(18)} ${l.geometry_type.padEnd(10)} ${String(l.features.length).padStart(3)} features  bbox: ${fmtBbox(l.metadata?.bbox)}`);
 }
 console.log('--- mock-products.json ---');
 for (const p of nextProducts.products) {
-  console.log(`  ${p.slug.padEnd(22)} ${String(p.status).padEnd(8)} layers=[${(p.consumed_layers || []).join(', ')}]`);
+  console.log(`  ${p.slug.padEnd(22)} ${String(p.status).padEnd(8)} layers=[${(p.consumed_layers || []).join(', ')}]  bbox: ${fmtBbox(p.bbox)}`);
 }

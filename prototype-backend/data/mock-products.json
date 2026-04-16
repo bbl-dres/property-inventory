@@ -20,7 +20,13 @@
       ],
       "kind": "app",
       "basemap": null,
-      "view_mode": null
+      "view_mode": null,
+      "bbox": [
+        -73.972,
+        -35.312,
+        149.1245,
+        52.5206
+      ]
     },
     {
       "slug": "green-inventory",
@@ -40,7 +46,13 @@
       ],
       "kind": "app",
       "basemap": null,
-      "view_mode": null
+      "view_mode": null,
+      "bbox": [
+        7.471737250712772,
+        46.97445106564723,
+        7.47455856706586,
+        46.97669908661765
+      ]
     },
     {
       "slug": "field-inspection-app",
@@ -58,6 +70,12 @@
       "tags": [
         "internal",
         "mobile"
+      ],
+      "bbox": [
+        -73.972,
+        -15.795,
+        139.736,
+        52.5206
       ]
     }
   ]

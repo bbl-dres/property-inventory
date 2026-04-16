@@ -20,7 +20,13 @@
         "contact": "geodata@bbl.admin.ch",
         "update_frequency": "yearly",
         "lineage": "Derived from the BBL property register and the official Swiss cadastre (AV93). Reprojected to WGS 84; LV95 source coordinates are preserved in `extra`.",
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": [
+          -73.972,
+          -15.795,
+          139.736,
+          52.5206
+        ]
       },
       "columns": [
         {
@@ -881,7 +887,13 @@
         "contact": "geodata@bbl.admin.ch",
         "update_frequency": "monthly",
         "lineage": "Extracted from the BBL property register; coordinates in WGS 84, Swiss grid available via LV95 columns in `extra`. Merged with SIA 416 area measurements and EGID lookups.",
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": [
+          -73.9712,
+          -35.312,
+          149.1245,
+          52.52
+        ]
       },
       "columns": [
         {
@@ -1932,7 +1944,13 @@
         "contact": "geodata@bbl.admin.ch",
         "update_frequency": "yearly",
         "lineage": "Swisstopo AV93 land-cover extract, clipped to the BBL property footprints and joined to building records via EGID.",
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": [
+          6.1427,
+          46.00305,
+          8.9523,
+          47.5599
+        ]
       },
       "columns": [
         {
@@ -2596,7 +2614,13 @@
         "contact": "geodata@bbl.admin.ch",
         "update_frequency": "irregular",
         "lineage": "Extracted from PDF plan \"[838147959] 1602.GR_Mühlestrasse 2+4+6+8 Grünflächenpflege\" via the `extract_features.py` script in green-inventory. Colours sampled directly from the vector fills.",
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": [
+          7.471737250712772,
+          46.97445106564723,
+          7.47455856706586,
+          46.97669908661765
+        ]
       },
       "columns": [
         {
@@ -98528,7 +98552,13 @@
         "contact": "fm-team@example.ch",
         "update_frequency": "weekly",
         "lineage": "Entered manually by field inspectors via the mobile app; coordinates from device GPS.",
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": [
+          8.5383,
+          47.371,
+          8.551,
+          47.3772
+        ]
       },
       "columns": [
         {
@@ -98648,7 +98678,8 @@
         "contact": null,
         "update_frequency": null,
         "lineage": null,
-        "thumbnail_url": null
+        "thumbnail_url": null,
+        "bbox": null
       },
       "columns": [
         {

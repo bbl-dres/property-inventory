@@ -5,10 +5,12 @@
 // view. The `+ New layer` button opens the existing new-feature-drawer.
 
 import * as api from './api.js';
-import { el, formatRelativeTime, wireMenu } from './utils.js';
+import { el, formatRelativeTime } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { mountCatalogue } from './catalogue.js';
+import { paintExtentMap } from './extent-map.js';
 import { open as openNewFeatureDrawer } from './new-feature-drawer.js';
+import { buildNewButton } from './new-button.js';
 import { bus, isAllowed } from './state.js';
 import { geomTypeIcon } from './constants.js';
 
@@ -70,7 +72,7 @@ function renderShell() {
     title: 'Layers',
     subtitle: `${layers.length} layer${layers.length === 1 ? '' : 's'}`,
     description: 'Each layer is a PostGIS table with a geometry column (spatial) or a plain data table (non-spatial). Used by the maps and apps in the section next door.',
-    actions: buildNewButton()
+    actions: buildNewButton({ onRefresh: refresh, canWrite: isAllowed('write') })
   }));
 
   catalogueBody = el('div', { class: 'pb-catalogue' });
@@ -87,6 +89,11 @@ function renderShell() {
     renderCard,
     renderListHeader,
     renderListRow,
+    renderMapView: (host, rows) => paintExtentMap(host, rows, {
+      itemLabel: (l) => l.title || l.name,
+      itemHref:  (l) => `#/features/${encodeURIComponent(l.name)}`,
+      itemBbox:  (l) => l.metadata?.bbox
+    }),
     emptyState: {
       icon: 'layers',
       title: 'No layers yet',
@@ -105,42 +112,6 @@ function ctaNewLayer() {
   return b;
 }
 
-function buildNewButton() {
-  // Dropdown matching the Maps & Apps "+ New ▾" shape for visual
-  // consistency. Single item for now — additional flows (draw, bulk
-  // import) can slot in later without changing the button's chrome.
-  const canWrite = isAllowed('write');
-  const newBtn = el('button', {
-    type: 'button',
-    class: 'btn-primary',
-    disabled: !canWrite ? true : false,
-    title: canWrite ? 'New layer' : ROLE_GATED_TITLE,
-    'aria-haspopup': 'menu',
-    'aria-expanded': 'false'
-  }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
-    ' New ',
-    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'arrow_drop_down')
-  ]);
-
-  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
-  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
-  const menuCtl = wireMenu(newBtn, menu, newBtnWrap);
-
-  const menuItem = (icon, label, handler) => {
-    const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
-      el('span', { class: 'material-symbols-outlined' }, icon),
-      el('span', {}, label)
-    ]);
-    b.addEventListener('click', () => { menuCtl.close(); handler(); });
-    return b;
-  };
-  menu.append(
-    menuItem('layers', 'New layer', () => openNewFeatureDrawer({ onCreated: refresh }))
-  );
-
-  return newBtnWrap;
-}
 
 function sridLabel(code) {
   const c = Number(code);
