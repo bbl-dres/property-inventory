@@ -2,10 +2,30 @@
   "_comment": "Mockup Change Request (CR) store for the workflows prototype. Schema mirrors §7 of docs/WORKFLOWS.md. Not wired into the UI yet — the wireframe still renders from hardcoded HTML. Use this as the source of truth when the backend is added.",
   "generated_at": "2026-04-16T14:00:00Z",
   "phases": [
-    { "id": "draft",     "order": 1, "label": "Entwurf",    "actor_role": "requester" },
-    { "id": "review",    "order": 2, "label": "Prüfung",    "actor_role": "steward" },
-    { "id": "approval",  "order": 3, "label": "Freigabe",   "actor_role": "approver" },
-    { "id": "applied",   "order": 4, "label": "Angewendet", "actor_role": "system" }
+    {
+      "id": "start",
+      "order": 1,
+      "label": "Workflow starten",
+      "actor_role": "requester"
+    },
+    {
+      "id": "data",
+      "order": 2,
+      "label": "Stammdaten",
+      "actor_role": "requester"
+    },
+    {
+      "id": "review",
+      "order": 3,
+      "label": "Prüfung",
+      "actor_role": "steward+approver"
+    },
+    {
+      "id": "complete",
+      "order": 4,
+      "label": "Abschluss",
+      "actor_role": "system"
+    }
   ],
   "crs": [
     {
@@ -16,26 +36,133 @@
       "title": "Bundesgasse 3, Bern",
       "target_bbl_id": null,
       "actors": {
-        "requester": { "user": "u.meier",  "at": "2026-04-16T12:00:00Z" },
-        "steward":   { "user": "a.dubois", "at": "2026-04-16T13:00:00Z", "decision": "approve" },
-        "approver":  { "user": "s.rossi",  "at": null, "decision": null }
+        "requester": {
+          "user": "u.meier",
+          "at": "2026-04-16T12:00:00Z"
+        },
+        "steward": {
+          "user": "a.dubois",
+          "at": "2026-04-16T13:00:00Z",
+          "decision": "approve"
+        },
+        "approver": {
+          "user": "me",
+          "at": null,
+          "decision": null
+        }
       },
       "quality_warnings": 1,
       "diff": [
-        { "field": "adr_conct",  "label": "Adresse",            "from": null, "to": "Bundesgasse 3, 3003 Bern", "source": "swisstopo/GWR",     "source_quality": "ok" },
-        { "field": "av_egid",    "label": "Eidg. Gebäude-ID",   "from": null, "to": "150404927",                "source": "GWR",                "source_quality": "ok" },
-        { "field": "av_egrid",   "label": "Eidg. Grundstück-ID","from": null, "to": "CH123456789012",           "source": "cadastre.ch",        "source_quality": "ok" },
-        { "field": "bfs_gemnr",  "label": "BFS Gemeinde",       "from": null, "to": "351 (Bern)",               "source": "GWR + cadastre",     "source_quality": "ok" },
-        { "field": "av_zbez",    "label": "Bauzone",            "from": null, "to": "Kernzone K3",              "source": "ch.are.bauzonen",    "source_quality": "warn" },
-        { "field": "bbl_port",   "label": "Teilportfolio",      "from": null, "to": "Verwaltung Zivil",         "source": "manuell · u.meier",  "source_quality": "err"  }
+        {
+          "field": "adr_conct",
+          "label": "Adresse",
+          "from": null,
+          "to": "Bundesgasse 3, 3003 Bern",
+          "source": "swisstopo/GWR",
+          "source_quality": "ok"
+        },
+        {
+          "field": "av_egid",
+          "label": "Eidg. Gebäude-ID",
+          "from": null,
+          "to": "150404927",
+          "source": "GWR",
+          "source_quality": "ok"
+        },
+        {
+          "field": "av_egrid",
+          "label": "Eidg. Grundstück-ID",
+          "from": null,
+          "to": "CH123456789012",
+          "source": "cadastre.ch",
+          "source_quality": "ok"
+        },
+        {
+          "field": "bfs_gemnr",
+          "label": "BFS Gemeinde",
+          "from": null,
+          "to": "351 (Bern)",
+          "source": "GWR + cadastre",
+          "source_quality": "ok"
+        },
+        {
+          "field": "av_zbez",
+          "label": "Bauzone",
+          "from": null,
+          "to": "Kernzone K3",
+          "source": "ch.are.bauzonen",
+          "source_quality": "warn"
+        },
+        {
+          "field": "bbl_port",
+          "label": "Teilportfolio",
+          "from": null,
+          "to": "Verwaltung Zivil",
+          "source": "manuell · u.meier",
+          "source_quality": "err"
+        }
       ],
       "quality_checks": [
-        { "rule": "Adress-Konsistenz (GWR ↔ Eingabe)", "status": "pass", "detail": "Offizielle Adresse stimmt mit eingegebener Adresse überein." },
-        { "rule": "EGID liegt in EGRID",                "status": "pass", "detail": "Gebäude-Fussabdruck liegt innerhalb der Parzelle CH123456789012." },
-        { "rule": "Gemeinde-Kohärenz",                  "status": "warn", "detail": "Adress-Gemeinde = 351 (Bern), Parzelle-Gemeinde = 352. Grenzfall — vom Steward bestätigt." },
-        { "rule": "Koordinaten-Rundungstest",           "status": "pass", "detail": "WGS84 → LV95 Abweichung: 0,12 m (Toleranz 0,5 m)." }
+        {
+          "rule": "Adress-Konsistenz (GWR ↔ Eingabe)",
+          "status": "pass",
+          "detail": "Offizielle Adresse stimmt mit eingegebener Adresse überein."
+        },
+        {
+          "rule": "EGID liegt in EGRID",
+          "status": "pass",
+          "detail": "Gebäude-Fussabdruck liegt innerhalb der Parzelle CH123456789012."
+        },
+        {
+          "rule": "Gemeinde-Kohärenz",
+          "status": "warn",
+          "detail": "Adress-Gemeinde = 351 (Bern), Parzelle-Gemeinde = 352. Grenzfall — vom Steward bestätigt."
+        },
+        {
+          "rule": "Koordinaten-Rundungstest",
+          "status": "pass",
+          "detail": "WGS84 → LV95 Abweichung: 0,12 m (Toleranz 0,5 m)."
+        }
       ],
-      "comments": []
+      "comments": [],
+      "age": "vor 2 h",
+      "subtitle": "1 Qualitätswarnung",
+      "data": {
+        "standort": {
+          "adresse": "Bundesgasse 3, 3003 Bern",
+          "koordinaten": "2'600'950 / 1'199'800",
+          "egid": "150404927",
+          "egrid": "CH123456789012",
+          "bfs_gemeinde": "Bern (351)",
+          "bauzone": "Kernzone K3",
+          "lngLat": [
+            7.4425,
+            46.947
+          ]
+        },
+        "stammdaten": {
+          "bez": "Bundesgasse 3",
+          "we": "WE-12345",
+          "teilobjekt": "01",
+          "buchungskreis": "BBL",
+          "status": "Aktiv",
+          "baujahr": 1987,
+          "eigentum": "Eigentum",
+          "strategie": "Behalten",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "Verwaltung",
+          "gebaeudeart2": "Bürogebäude"
+        },
+        "portfolio": {
+          "teilportfolio": "Verwaltung Zivil",
+          "gruppe": "Bern Zentrum",
+          "mietmodell": "Vollmiete",
+          "ovtw": "Meier Ursula",
+          "pvtw": "Dubois Anne",
+          "awrt": null,
+          "bwrt": null
+        }
+      }
     },
     {
       "id": "cr_20260416_0006",
@@ -45,15 +172,78 @@
       "title": "BBL-01287 · Eigentum geändert",
       "target_bbl_id": "BBL-01287",
       "actors": {
-        "requester": { "user": "a.dubois",  "at": "2026-04-15T10:00:00Z" },
-        "steward":   { "user": "k.fischer", "at": "2026-04-15T14:00:00Z", "decision": "approve" },
-        "approver":  { "user": "s.rossi",   "at": null, "decision": null }
+        "requester": {
+          "user": "a.dubois",
+          "at": "2026-04-15T10:00:00Z"
+        },
+        "steward": {
+          "user": "k.fischer",
+          "at": "2026-04-15T14:00:00Z",
+          "decision": "approve"
+        },
+        "approver": {
+          "user": "me",
+          "at": null,
+          "decision": null
+        }
       },
       "quality_warnings": 0,
       "diff": [
-        { "field": "bbl_eigen", "label": "Eigentum Art", "from": "Miete",  "to": "Eigentum", "source": "manuell · a.dubois", "source_quality": "err" },
-        { "field": "bbl_ostr",  "label": "Objektstrategie", "from": "Prüfen", "to": "Behalten", "source": "manuell · a.dubois", "source_quality": "err" }
-      ]
+        {
+          "field": "bbl_eigen",
+          "label": "Eigentum Art",
+          "from": "Miete",
+          "to": "Eigentum",
+          "source": "manuell · a.dubois",
+          "source_quality": "err"
+        },
+        {
+          "field": "bbl_ostr",
+          "label": "Objektstrategie",
+          "from": "Prüfen",
+          "to": "Behalten",
+          "source": "manuell · a.dubois",
+          "source_quality": "err"
+        }
+      ],
+      "age": "vor 1 T",
+      "subtitle": "2 Felder",
+      "data": {
+        "standort": {
+          "adresse": "BBL-01287 · Belpstrasse 48, 3007 Bern",
+          "koordinaten": "2'600'120 / 1'198'540",
+          "egid": "150402311",
+          "egrid": "CH123456700000",
+          "bfs_gemeinde": "Bern (351)",
+          "bauzone": "Arbeitszone A2",
+          "lngLat": [
+            7.44,
+            46.952
+          ]
+        },
+        "stammdaten": {
+          "bez": "BBL-01287",
+          "we": "WE-01287",
+          "teilobjekt": "01",
+          "buchungskreis": "BBL",
+          "status": "Aktiv",
+          "baujahr": 1978,
+          "eigentum": "Eigentum",
+          "strategie": "Behalten",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "Depot / Lager",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "Spezialimmobilien",
+          "gruppe": "Bern Peripherie",
+          "mietmodell": "Eigennutzung",
+          "ovtw": "Berger Stefan",
+          "pvtw": "Dubois Anne",
+          "awrt": null,
+          "bwrt": null
+        }
+      }
     },
     {
       "id": "cr_20260416_0005",
@@ -62,11 +252,56 @@
       "operation": "create",
       "title": "Parzelle 4012, Biel",
       "actors": {
-        "requester": { "user": "s.rossi", "at": "2026-04-16T10:00:00Z" },
-        "steward":   { "user": "a.dubois", "at": null, "decision": null },
-        "approver":  null
+        "requester": {
+          "user": "s.rossi",
+          "at": "2026-04-16T10:00:00Z"
+        },
+        "steward": {
+          "user": "me",
+          "at": null,
+          "decision": null
+        },
+        "approver": null
       },
-      "quality_warnings": 0
+      "quality_warnings": 0,
+      "age": "vor 4 h",
+      "subtitle": "",
+      "data": {
+        "standort": {
+          "adresse": "Parzelle 4012, 2502 Biel/Bienne",
+          "koordinaten": "2'587'650 / 1'220'310",
+          "egid": "—",
+          "egrid": "CH987654321012",
+          "bfs_gemeinde": "Biel/Bienne (371)",
+          "bauzone": "Wohnzone W3",
+          "lngLat": [
+            7.247,
+            47.1367
+          ]
+        },
+        "stammdaten": {
+          "bez": "Parzelle 4012",
+          "we": "WE-04012",
+          "teilobjekt": "—",
+          "buchungskreis": "BBL",
+          "status": "In Planung",
+          "baujahr": null,
+          "eigentum": "Eigentum",
+          "strategie": "Prüfen",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "—",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "Verwaltung Zivil",
+          "gruppe": "Westschweiz",
+          "mietmodell": "—",
+          "ovtw": "Rossi Sonia",
+          "pvtw": "—",
+          "awrt": null,
+          "bwrt": null
+        }
+      }
     },
     {
       "id": "cr_20260414_0012",
@@ -75,7 +310,48 @@
       "operation": "create",
       "title": "Luzern Postgasse",
       "actors": {
-        "requester": { "user": "me", "at": "2026-04-14T09:00:00Z" }
+        "requester": {
+          "user": "me",
+          "at": "2026-04-14T09:00:00Z"
+        }
+      },
+      "age": "vor 2 T",
+      "subtitle": "(Entwurf)",
+      "data": {
+        "standort": {
+          "adresse": "Luzern Postgasse",
+          "koordinaten": "—",
+          "egid": "—",
+          "egrid": "—",
+          "bfs_gemeinde": "Luzern (1061)",
+          "bauzone": "—",
+          "lngLat": [
+            8.3072,
+            47.0502
+          ]
+        },
+        "stammdaten": {
+          "bez": "Luzern Postgasse",
+          "we": "—",
+          "teilobjekt": "—",
+          "buchungskreis": "—",
+          "status": "—",
+          "baujahr": null,
+          "eigentum": "—",
+          "strategie": "—",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "—",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "—",
+          "gruppe": "—",
+          "mietmodell": "—",
+          "ovtw": "—",
+          "pvtw": "—",
+          "awrt": null,
+          "bwrt": null
+        }
       }
     },
     {
@@ -86,9 +362,58 @@
       "title": "BBL-00921 · Adresse korrigiert",
       "target_bbl_id": "BBL-00921",
       "actors": {
-        "requester": { "user": "me",       "at": "2026-04-13T08:00:00Z" },
-        "steward":   { "user": "a.dubois", "at": "2026-04-13T16:00:00Z", "decision": "approve" },
-        "approver":  { "user": "s.rossi",  "at": null, "decision": null }
+        "requester": {
+          "user": "me",
+          "at": "2026-04-13T08:00:00Z"
+        },
+        "steward": {
+          "user": "a.dubois",
+          "at": "2026-04-13T16:00:00Z",
+          "decision": "approve"
+        },
+        "approver": {
+          "user": "s.rossi",
+          "at": null,
+          "decision": null
+        }
+      },
+      "age": "vor 3 T",
+      "subtitle": "",
+      "data": {
+        "standort": {
+          "adresse": "Zürichstrasse 14, 8050 Zürich",
+          "koordinaten": "2'683'500 / 1'250'100",
+          "egid": "300123456",
+          "egrid": "CH555666777000",
+          "bfs_gemeinde": "Zürich (261)",
+          "bauzone": "Zentrumszone",
+          "lngLat": [
+            8.5417,
+            47.3769
+          ]
+        },
+        "stammdaten": {
+          "bez": "BBL-00921",
+          "we": "WE-00921",
+          "teilobjekt": "01",
+          "buchungskreis": "BBL",
+          "status": "Aktiv",
+          "baujahr": 1963,
+          "eigentum": "Miete",
+          "strategie": "Optimieren",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "Verwaltung",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "Verwaltung Zivil",
+          "gruppe": "Ostschweiz",
+          "mietmodell": "Teilmiete",
+          "ovtw": "Schmid Peter",
+          "pvtw": "Rossi Sonia",
+          "awrt": null,
+          "bwrt": null
+        }
       }
     },
     {
@@ -98,11 +423,60 @@
       "operation": "create",
       "title": "Thun Bahnhofstr. 14",
       "actors": {
-        "requester": { "user": "r.huber",  "at": "2026-04-10T11:00:00Z" },
-        "steward":   { "user": "a.dubois", "at": "2026-04-10T15:00:00Z", "decision": "approve" },
-        "approver":  { "user": "s.rossi",  "at": "2026-04-11T09:00:00Z", "decision": "approve" }
+        "requester": {
+          "user": "r.huber",
+          "at": "2026-04-10T11:00:00Z"
+        },
+        "steward": {
+          "user": "a.dubois",
+          "at": "2026-04-10T15:00:00Z",
+          "decision": "approve"
+        },
+        "approver": {
+          "user": "me",
+          "at": "2026-04-11T09:00:00Z",
+          "decision": "approve"
+        }
       },
-      "applied_at": "2026-04-11T09:00:05Z"
+      "applied_at": "2026-04-11T09:00:05Z",
+      "age": "vor 5 T",
+      "subtitle": "",
+      "data": {
+        "standort": {
+          "adresse": "Thun Bahnhofstr. 14, 3600 Thun",
+          "koordinaten": "2'614'100 / 1'177'250",
+          "egid": "150888123",
+          "egrid": "CH111222333444",
+          "bfs_gemeinde": "Thun (942)",
+          "bauzone": "Kernzone K2",
+          "lngLat": [
+            7.6306,
+            46.758
+          ]
+        },
+        "stammdaten": {
+          "bez": "Thun Bahnhofstr. 14",
+          "we": "WE-14004",
+          "teilobjekt": "01",
+          "buchungskreis": "BBL",
+          "status": "Aktiv",
+          "baujahr": 2005,
+          "eigentum": "Eigentum",
+          "strategie": "Behalten",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "Verwaltung",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "Verwaltung Zivil",
+          "gruppe": "Bern Peripherie",
+          "mietmodell": "Vollmiete",
+          "ovtw": "Huber Rita",
+          "pvtw": "Rossi Sonia",
+          "awrt": null,
+          "bwrt": null
+        }
+      }
     },
     {
       "id": "cr_20260409_0002",
@@ -111,8 +485,54 @@
       "operation": "create",
       "title": "Parzelle 2018, Zürich",
       "actors": {
-        "requester": { "user": "p.weber",  "at": "2026-04-09T08:00:00Z" },
-        "steward":   { "user": "a.dubois", "at": "2026-04-09T14:00:00Z", "decision": "reject", "comment": "EGRID inkonsistent" }
+        "requester": {
+          "user": "p.weber",
+          "at": "2026-04-09T08:00:00Z"
+        },
+        "steward": {
+          "user": "a.dubois",
+          "at": "2026-04-09T14:00:00Z",
+          "decision": "reject",
+          "comment": "EGRID inkonsistent"
+        }
+      },
+      "age": "vor 6 T",
+      "subtitle": "„EGRID inkonsistent\"",
+      "data": {
+        "standort": {
+          "adresse": "Parzelle 2018, 8001 Zürich",
+          "koordinaten": "—",
+          "egid": "—",
+          "egrid": "—",
+          "bfs_gemeinde": "Zürich (261)",
+          "bauzone": "—",
+          "lngLat": [
+            8.53,
+            47.38
+          ]
+        },
+        "stammdaten": {
+          "bez": "Parzelle 2018",
+          "we": "—",
+          "teilobjekt": "—",
+          "buchungskreis": "—",
+          "status": "—",
+          "baujahr": null,
+          "eigentum": "—",
+          "strategie": "—",
+          "verkaufsjahr": null,
+          "gebaeudeart1": "—",
+          "gebaeudeart2": ""
+        },
+        "portfolio": {
+          "teilportfolio": "—",
+          "gruppe": "—",
+          "mietmodell": "—",
+          "ovtw": "Weber Paul",
+          "pvtw": "—",
+          "awrt": null,
+          "bwrt": null
+        }
       }
     }
   ]

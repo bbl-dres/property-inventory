@@ -34,11 +34,11 @@
   /* --- Notification badge on the Workflows button --- */
   .wf-badge-btn { position: relative; }
   .wf-badge {
-    position: absolute; top: -4px; right: -4px;
-    min-width: 18px; height: 18px;
-    padding: 0 5px; border-radius: var(--radius-full);
+    position: absolute; top: -6px; right: -6px;
+    min-width: 22px; height: 22px;
+    padding: 0 6px; border-radius: var(--radius-full);
     background: var(--status-error); color: var(--white);
-    font-size: 10px; font-weight: var(--font-bold);
+    font-size: 12px; font-weight: var(--font-bold);
     display: flex; align-items: center; justify-content: center;
     border: 2px solid var(--white);
     line-height: 1;
@@ -372,6 +372,31 @@
     border: 1px solid var(--grey-300); border-radius: var(--radius-sm);
     position: relative; overflow: hidden;
   }
+  /* Map header — review mode only: address label + Google Maps link above the map */
+  .wf-map-header {
+    display: flex; align-items: center; gap: var(--space-2);
+    padding: var(--space-3) var(--space-4);
+    background: var(--white);
+    border-bottom: 1px solid var(--grey-200);
+    font-size: var(--text-sm);
+  }
+  body.wf-mode-review .wf-map-header.wf-review-only { display: flex; }
+  .wf-map-header .material-symbols-outlined {
+    font-size: var(--icon-md); color: var(--grey-500); flex-shrink: 0;
+  }
+  .wf-map-header .address {
+    flex: 1; color: var(--grey-900); font-weight: var(--font-medium);
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .wf-map-header a {
+    color: var(--interactive-blue); text-decoration: none;
+    font-size: var(--text-sm); white-space: nowrap; flex-shrink: 0;
+  }
+  .wf-map-header a:hover { text-decoration: underline; }
+  /* When the map header is present (review mode), the map's border-top is redundant */
+  body.wf-mode-review .wf-map-preview {
+    margin-top: 0; border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
+  }
 
   .wf-derived-grid { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3) var(--space-4); }
   .wf-derived {
@@ -384,10 +409,6 @@
   .wf-derived .v { flex: 1; font-weight: var(--font-medium); color: var(--grey-900); }
   .wf-derived.empty { background: var(--white); }
   .wf-derived.empty .v { color: var(--grey-500); font-style: italic; font-weight: var(--font-normal); }
-  .wf-big-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--status-active); flex-shrink: 0; }
-  .wf-big-dot.warn { background: var(--status-warning); }
-  .wf-big-dot.err  { background: var(--status-error); }
-  .wf-big-dot.na   { background: var(--grey-400); }
 
   .wf-legend { font-size: var(--text-xs); color: var(--grey-600); margin-top: var(--space-2); display: flex; flex-wrap: wrap; gap: var(--space-3); }
   .wf-legend span { display: inline-flex; align-items: center; gap: var(--space-1); }
@@ -441,15 +462,11 @@
   .wf-summary-grid .v.empty { color: var(--grey-500); font-style: italic; font-weight: var(--font-normal); }
 
   /* Submission info box */
-  .wf-submit-box {
     background: #eef4ff; border: 1px solid #c7d8ff;
     border-radius: var(--radius-md); padding: var(--space-4);
     margin-bottom: var(--space-4); max-width: 900px;
     display: flex; gap: var(--space-3); align-items: flex-start;
   }
-  .wf-submit-box .material-symbols-outlined { color: var(--interactive-blue); font-size: var(--icon-lg); flex-shrink: 0; margin-top: 2px; }
-  .wf-submit-box .title { font-weight: var(--font-semibold); color: var(--grey-900); margin-bottom: 2px; }
-  .wf-submit-box .desc  { font-size: var(--text-sm); color: var(--grey-700); }
 
   /* Submit button (Step 4) */
   .btn-submit {
@@ -462,16 +479,6 @@
   .btn-submit:hover { background: #256d29; }
 
   /* --- CR Review view --- */
-  .wf-review-meta {
-    display: flex; flex-wrap: wrap; gap: var(--space-4); align-items: center;
-    padding: var(--space-3) var(--space-4);
-    background: var(--grey-50); border: 1px solid var(--grey-200);
-    border-radius: var(--radius-md); margin-bottom: var(--space-4);
-    max-width: 900px; font-size: var(--text-sm);
-  }
-  .wf-review-meta .item { display: flex; flex-direction: column; gap: 2px; }
-  .wf-review-meta .k { font-size: var(--text-xs); color: var(--grey-500); text-transform: uppercase; letter-spacing: var(--tracking-wide); }
-  .wf-review-meta .v { color: var(--grey-900); font-weight: var(--font-medium); }
   .wf-review-state {
     padding: 4px var(--space-2); border-radius: var(--radius-full);
     font-size: var(--text-xs); font-weight: var(--font-semibold);
@@ -501,7 +508,6 @@
   .wf-diff .old { color: var(--grey-500); text-decoration: line-through; }
   .wf-diff .new { color: var(--grey-900); background: #eaf6ec; padding: 2px 6px; border-radius: var(--radius-sm); }
   .wf-diff .src { font-size: var(--text-xs); color: var(--grey-600); display: inline-flex; align-items: center; gap: 4px; }
-  .wf-diff .src .wf-big-dot { width: 8px; height: 8px; }
 
   /* Quality checks */
   .wf-check-list { display: flex; flex-direction: column; gap: var(--space-2); }
@@ -573,12 +579,10 @@
   .wf-dash-title { font-size: var(--text-xl); font-weight: var(--font-semibold); color: var(--grey-900); display: flex; align-items: center; gap: var(--space-2); min-width: 0; }
   .wf-dash-title .material-symbols-outlined { color: var(--grey-700); }
   .wf-crumb-root { cursor: default; }
-  body.wf-dash-detail-active .wf-crumb-root,
-  body.wf-dash-create-active .wf-crumb-root {
+  body.wf-dash-workflow-active .wf-crumb-root {
     color: var(--grey-600); cursor: pointer; font-weight: var(--font-medium);
   }
-  body.wf-dash-detail-active .wf-crumb-root:hover,
-  body.wf-dash-create-active .wf-crumb-root:hover { color: var(--grey-900); text-decoration: underline; }
+  body.wf-dash-workflow-active .wf-crumb-root:hover { color: var(--grey-900); text-decoration: underline; }
   .wf-crumb-sep { color: var(--grey-400); font-weight: var(--font-normal); }
   .wf-crumb-current {
     color: var(--grey-900); font-weight: var(--font-semibold);
@@ -625,29 +629,71 @@
     flex: 1; overflow-y: auto;
     padding: var(--space-6) var(--space-8);
   }
-  .wf-dash-detail, .wf-dash-create {
+  .wf-dash-workflow {
     flex: 1; display: none; flex-direction: column; min-height: 0;
     background: var(--white);
   }
-  body.wf-dash-detail-active .wf-dash-list,
-  body.wf-dash-create-active .wf-dash-list { display: none; }
-  body.wf-dash-detail-active .wf-dash-detail { display: flex; }
-  body.wf-dash-create-active .wf-dash-create { display: flex; }
+  body.wf-dash-workflow-active .wf-dash-list { display: none; }
+  body.wf-dash-workflow-active .wf-dash-workflow { display: flex; }
+
+  /* Mode: edit (new CR) vs review (existing CR). Default both classes off. */
+  .wf-review-only { display: none; }
+  .wf-edit-only   { }
+  body.wf-mode-review .wf-review-only { display: block; }
+  body.wf-mode-review .wf-edit-only   { display: none; }
+
+  /* Step content + nav visible only on phase 2 (Stammdaten) */
+  body.wf-phase-1 .wf-step-content,
+  body.wf-phase-3 .wf-step-content,
+  body.wf-phase-4 .wf-step-content,
+  body.wf-phase-1 .wf-nav-row,
+  body.wf-phase-3 .wf-nav-row,
+  body.wf-phase-4 .wf-nav-row { display: none !important; }
+  /* Meta box only on phase 1 (Workflow starten) */
+  body.wf-phase-2 #crMeta,
+  body.wf-phase-3 #crMeta,
+  body.wf-phase-4 #crMeta { display: none !important; }
+  /* Stamp view only on phase 3 (Prüfung) */
+  #stampView { display: none; }
+  body.wf-phase-3 #stampView { display: block; }
+  /* Abschluss view only on phase 4 */
+  #abschlussView { display: none; }
+  body.wf-phase-4 #abschlussView { display: block; }
+  .wf-stamp-actor {
+    display: flex; align-items: center; gap: var(--space-3);
+    padding: var(--space-4); background: var(--grey-50);
+    border: 1px solid var(--grey-200); border-radius: var(--radius-sm);
+    margin: var(--space-4) 0;
+  }
+  .wf-stamp-actor .material-symbols-outlined { font-size: 32px; color: var(--grey-500); }
+  .wf-stamp-actor.pass .material-symbols-outlined { color: var(--status-active); }
+  .wf-stamp-actor.fail .material-symbols-outlined { color: var(--status-error); }
+  .wf-stamp-actor .info { flex: 1; }
+  .wf-stamp-actor .name { font-weight: var(--font-semibold); color: var(--grey-900); }
+  .wf-stamp-actor .desc { font-size: var(--text-sm); color: var(--grey-600); margin-top: 2px; }
+  /* In review mode: inputs are effectively read-only */
+  body.wf-mode-review .wf-dash-workflow input,
+  body.wf-mode-review .wf-dash-workflow select,
+  body.wf-mode-review .wf-dash-workflow textarea {
+    pointer-events: none;
+    background: var(--grey-50);
+    color: var(--grey-800);
+    border-color: var(--grey-200);
+  }
+  body.wf-mode-review .wf-dash-workflow select {
+    background-image: none;
+    padding-right: var(--space-3);
+  }
 
   /* Stats cards */
   .wf-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-6); }
   .wf-stat {
     background: var(--white); border: 1px solid var(--grey-200);
     border-radius: var(--radius-md); padding: var(--space-4);
-    border-left: 4px solid var(--grey-300);
   }
   .wf-stat .label { font-size: var(--text-xs); color: var(--grey-600); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: var(--font-semibold); }
   .wf-stat .count { font-size: 28px; font-weight: var(--font-bold); color: var(--grey-900); line-height: 1.1; margin-top: var(--space-2); }
   .wf-stat .hint  { font-size: var(--text-xs); color: var(--grey-500); margin-top: 2px; }
-  .wf-stat.urgent { border-left-color: var(--status-error); }
-  .wf-stat.review { border-left-color: var(--status-warning); }
-  .wf-stat.draft  { border-left-color: var(--grey-400); }
-  .wf-stat.done   { border-left-color: var(--status-active); }
 
   /* Filter / toolbar */
   .wf-dash-toolbar {
@@ -716,14 +762,6 @@
   .wf-state.applied   { background: var(--status-active-bg); color: var(--status-active-text); }
   .wf-state.rejected  { background: var(--status-error-bg); color: var(--status-error-text); }
 
-  /* --- Wireframe label --- */
-  .wf-label {
-    position: fixed; bottom: var(--space-3); left: var(--space-3);
-    background: var(--white); border: 1px solid var(--grey-300);
-    padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm);
-    font-size: var(--text-xs); color: var(--grey-600); z-index: 9999;
-  }
-  .wf-label .state { color: var(--grey-900); font-weight: var(--font-semibold); }
 </style>
 </head>
 <body>
@@ -838,6 +876,7 @@
         <span class="wf-crumb-root" id="crumbRoot">Workflows</span>
         <span class="wf-crumb-sep" id="crumbSep" hidden>/</span>
         <span class="wf-crumb-current" id="crumbCurrent" hidden></span>
+        <span class="wf-review-state" id="crumbState" hidden></span>
       </div>
       <div class="wf-dash-actions">
         <button class="btn-secondary" id="dashBackBtn">
@@ -972,264 +1011,34 @@
             <th>Alter</th>
           </tr>
         </thead>
-        <tbody>
-          <tr data-action="review" data-cr="cr_20260416_0007">
-            <td><span class="wf-state review"><span class="material-symbols-outlined">hourglass_top</span>In Prüfung</span></td>
-            <td class="title">Bundesgasse 3, Bern<small>cr_20260416_0007 · 1 Qualitätswarnung</small></td>
-            <td>Gebäude · Neu</td>
-            <td>u.meier</td>
-            <td>a.dubois ✓</td>
-            <td class="me">Sie</td>
-            <td class="age">vor 2 h</td>
-          </tr>
-          <tr data-action="review" data-cr="cr_20260416_0006">
-            <td><span class="wf-state review"><span class="material-symbols-outlined">hourglass_top</span>In Prüfung</span></td>
-            <td class="title">BBL-01287 · Eigentum geändert<small>cr_20260416_0006 · 2 Felder</small></td>
-            <td>Gebäude · Mutation</td>
-            <td>a.dubois</td>
-            <td>k.fischer ✓</td>
-            <td class="me">Sie</td>
-            <td class="age">vor 1 T</td>
-          </tr>
-          <tr data-action="review" data-cr="cr_20260416_0005">
-            <td><span class="wf-state submitted"><span class="material-symbols-outlined">send</span>Eingereicht</span></td>
-            <td class="title">Parzelle 4012, Biel<small>cr_20260416_0005</small></td>
-            <td>Grundstück · Neu</td>
-            <td>s.rossi</td>
-            <td class="me">Sie</td>
-            <td>—</td>
-            <td class="age">vor 4 h</td>
-          </tr>
-          <tr>
-            <td><span class="wf-state draft"><span class="material-symbols-outlined">edit_note</span>Entwurf</span></td>
-            <td class="title">Luzern Postgasse<small>cr_20260414_0012 (Entwurf)</small></td>
-            <td>Gebäude · Neu</td>
-            <td class="me">Sie</td>
-            <td>—</td>
-            <td>—</td>
-            <td class="age">vor 2 T</td>
-          </tr>
-          <tr>
-            <td><span class="wf-state submitted"><span class="material-symbols-outlined">send</span>Eingereicht</span></td>
-            <td class="title">BBL-00921 · Adresse korrigiert<small>cr_20260413_0008</small></td>
-            <td>Gebäude · Mutation</td>
-            <td class="me">Sie</td>
-            <td>a.dubois</td>
-            <td>s.rossi</td>
-            <td class="age">vor 3 T</td>
-          </tr>
-          <tr>
-            <td><span class="wf-state applied"><span class="material-symbols-outlined">check_circle</span>Angewendet</span></td>
-            <td class="title">Thun Bahnhofstr. 14<small>cr_20260410_0004</small></td>
-            <td>Gebäude · Neu</td>
-            <td>r.huber</td>
-            <td>a.dubois ✓</td>
-            <td>s.rossi ✓</td>
-            <td class="age">vor 5 T</td>
-          </tr>
-          <tr>
-            <td><span class="wf-state rejected"><span class="material-symbols-outlined">cancel</span>Abgelehnt</span></td>
-            <td class="title">Parzelle 2018, Zürich<small>cr_20260409_0002 · „EGRID inkonsistent"</small></td>
-            <td>Grundstück · Neu</td>
-            <td>p.weber</td>
-            <td>a.dubois ✗</td>
-            <td>—</td>
-            <td class="age">vor 6 T</td>
-          </tr>
+        <tbody id="crTableBody">
+          <tr><td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--grey-500);">Lade Workflows …</td></tr>
         </tbody>
       </table>
      </div><!-- /.wf-dash-list -->
 
-     <!-- Detail pane for a selected CR (shown when body.wf-dash-detail) -->
-     <div class="wf-dash-detail">
-      <div class="wf-wizard">
-        <aside class="wf-steps-aside">
-          <div class="wf-side-title">Prozess</div>
-          <div class="wf-phases">
-            <!-- ① ENTWURF (done, expandable) -->
-            <div class="wf-phase done" data-phase="1">
-              <div class="wf-phase-head">
-                <div class="wf-phase-num"><span class="material-symbols-outlined">check</span></div>
-                <div class="wf-phase-info">
-                  <div class="wf-phase-name">Entwurf</div>
-                  <div class="wf-phase-actor">u.meier · vor 2 h</div>
-                </div>
-              </div>
-              <div class="wf-substeps">
-                <div class="wf-sub" data-review-step="1"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Standort</span></div>
-                <div class="wf-sub" data-review-step="2"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Stammdaten</span></div>
-                <div class="wf-sub" data-review-step="3"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Portfolio &amp; Merkmale</span></div>
-                <div class="wf-sub" data-review-step="4"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Prüfen &amp; Entscheid</span></div>
-              </div>
-            </div>
-            <!-- ② PRÜFUNG (done, expandable) -->
-            <div class="wf-phase done" data-phase="2">
-              <div class="wf-phase-head">
-                <div class="wf-phase-num"><span class="material-symbols-outlined">check</span></div>
-                <div class="wf-phase-info">
-                  <div class="wf-phase-name">Prüfung</div>
-                  <div class="wf-phase-actor">a.dubois · freigegeben</div>
-                </div>
-              </div>
-              <div class="wf-substeps">
-                <div class="wf-sub" data-review-step="1"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Standort</span></div>
-                <div class="wf-sub" data-review-step="2"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Stammdaten</span></div>
-                <div class="wf-sub" data-review-step="3"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Portfolio &amp; Merkmale</span></div>
-                <div class="wf-sub" data-review-step="4"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Prüfen &amp; Entscheid</span></div>
-              </div>
-            </div>
-            <!-- ③ FREIGABE (active, Sie) -->
-            <div class="wf-phase active" data-phase="3">
-              <div class="wf-phase-head">
-                <div class="wf-phase-num">3</div>
-                <div class="wf-phase-info">
-                  <div class="wf-phase-name">Freigabe</div>
-                  <div class="wf-phase-actor">Aktiv · Sie als Approver</div>
-                </div>
-              </div>
-              <div class="wf-substeps">
-                <div class="wf-sub active" data-review-step="1"><span class="material-symbols-outlined wf-sub-status">radio_button_checked</span><span>Standort</span></div>
-                <div class="wf-sub" data-review-step="2"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Stammdaten</span></div>
-                <div class="wf-sub" data-review-step="3"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Portfolio &amp; Merkmale</span></div>
-                <div class="wf-sub" data-review-step="4"><span class="material-symbols-outlined wf-sub-status">radio_button_unchecked</span><span>Prüfen &amp; Entscheid</span></div>
-              </div>
-            </div>
-            <!-- ④ ANGEWENDET -->
-            <div class="wf-phase" data-phase="4">
-              <div class="wf-phase-head">
-                <div class="wf-phase-num">4</div>
-                <div class="wf-phase-info">
-                  <div class="wf-phase-name">Angewendet</div>
-                  <div class="wf-phase-actor">System</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </aside>
 
-        <div class="wf-content">
-          <h2 class="wf-step-title" id="reviewStepTitle">Änderungen</h2>
-          <p class="wf-step-desc" id="reviewStepDesc">Die vom Antragsteller vorgeschlagenen Feldänderungen mit ihren Quellen.</p>
-
-          <div class="wf-review-meta">
-            <div class="item"><span class="k">Antragsteller</span><span class="v">u.meier</span></div>
-            <div class="item"><span class="k">Steward</span><span class="v">a.dubois · ✓ freigegeben</span></div>
-            <div class="item"><span class="k">Approver</span><span class="v">Sie</span></div>
-            <div class="item"><span class="k">Typ</span><span class="v">Neu · Gebäude</span></div>
-            <span class="wf-review-state">In Prüfung</span>
-          </div>
-
-         <!-- ======================= REVIEW STEP 1: Standort ======================= -->
-         <div class="wf-step-content active" data-review-step="1">
-          <div class="wf-section">
-            <h3>Adresse &amp; Amtliche Vermessung</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Adresse</div><div class="v">Bundesgasse 3, 3003 Bern</div></div>
-              <div><div class="k">Koordinaten (LV95)</div><div class="v">2'600'950 / 1'199'800</div></div>
-              <div><div class="k">EGID</div><div class="v">150404927</div></div>
-              <div><div class="k">EGRID</div><div class="v">CH123456789012</div></div>
-              <div><div class="k">BFS Gemeinde</div><div class="v">Bern (351)</div></div>
-              <div><div class="k">Bauzone</div><div class="v">Kernzone K3</div></div>
-            </div>
-          </div>
-         </div>
-
-         <!-- ======================= REVIEW STEP 2: Stammdaten ======================= -->
-         <div class="wf-step-content" data-review-step="2">
-          <div class="wf-section">
-            <h3>Objekt</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Objektbezeichnung</div><div class="v">Bundesgasse 3</div></div>
-              <div><div class="k">Wirtschaftseinheit</div><div class="v">WE-12345</div></div>
-              <div><div class="k">Teilobjekt</div><div class="v">01</div></div>
-              <div><div class="k">Buchungskreis</div><div class="v">BBL</div></div>
-              <div><div class="k">Status</div><div class="v">Aktiv</div></div>
-              <div><div class="k">Baujahr</div><div class="v">1987</div></div>
-            </div>
-          </div>
-          <div class="wf-section">
-            <h3>Klassifizierung</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Gebäudeart</div><div class="v">Verwaltung · Bürogebäude</div></div>
-              <div><div class="k">Eigentum Art</div><div class="v">Eigentum</div></div>
-              <div><div class="k">Objektstrategie</div><div class="v">Behalten</div></div>
-              <div><div class="k">Verkaufsjahr</div><div class="v empty">—</div></div>
-            </div>
-          </div>
-         </div>
-
-         <!-- ======================= REVIEW STEP 3: Portfolio & Merkmale ======================= -->
-         <div class="wf-step-content" data-review-step="3">
-          <div class="wf-section">
-            <h3>Portfolio</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Teilportfolio</div><div class="v">Verwaltung Zivil</div></div>
-              <div><div class="k">Portfoliogruppe</div><div class="v">Bern Zentrum</div></div>
-              <div><div class="k">Mietmodell</div><div class="v">Vollmiete</div></div>
-            </div>
-          </div>
-          <div class="wf-section">
-            <h3>Zuständigkeiten</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Objektverantwortliche</div><div class="v">Meier Ursula</div></div>
-              <div><div class="k">Portfoliomanager</div><div class="v">Dubois Anne</div></div>
-            </div>
-          </div>
-          <div class="wf-section">
-            <h3>Finanzielles</h3>
-            <div class="wf-summary-grid">
-              <div><div class="k">Anschaffungswert</div><div class="v empty">— nicht erfasst</div></div>
-              <div><div class="k">Buchwert</div><div class="v empty">— nicht erfasst</div></div>
-            </div>
-          </div>
-         </div>
-
-         <!-- ======================= REVIEW STEP 4: Prüfen & Entscheid ======================= -->
-         <div class="wf-step-content" data-review-step="4">
-          <div class="wf-section">
-            <h3>Ihr Kommentar (optional)</h3>
-            <textarea class="wf-comment" placeholder="Begründung, Rückfrage oder Bemerkung…"></textarea>
-          </div>
-
-          <div class="wf-decision-row">
-            <button class="btn-reject" onclick="alert('CR → REJECTED (Demo)')">
-              <span class="material-symbols-outlined">close</span>
-              Ablehnen
-            </button>
-            <button class="btn-approve" onclick="alert('CR → APPROVED → APPLIED (Demo)')">
-              <span class="material-symbols-outlined">check</span>
-              Freigeben
-            </button>
-          </div>
-         </div>
-
-          <!-- Nav row (shared across review sub-steps 1 and 2) -->
-          <div class="wf-nav-row" id="reviewNavRow">
-            <button class="btn-secondary" id="reviewPrevBtn" disabled>
-              <span class="material-symbols-outlined">chevron_left</span>
-              Zurück
-            </button>
-            <button class="btn-primary" id="reviewNextBtn">
-              Weiter
-              <span class="material-symbols-outlined">chevron_right</span>
-            </button>
-          </div>
-        </div>
-      </div>
-     </div><!-- /.wf-dash-detail -->
-
-     <!-- Create pane (wizard) -->
-     <div class="wf-dash-create">
+     <!-- Workflow pane (shared across Entwurf / Prüfung / Freigabe / Angewendet) -->
+     <div class="wf-dash-workflow">
       <div class="wf-wizard">
         <aside class="wf-steps-aside">
           <div class="wf-side-title">Prozess</div>
           <div class="wf-phases" id="stepSidebar">
-            <!-- ① ENTWURF (active, expanded with sub-steps) -->
-            <div class="wf-phase active" data-phase="1">
+            <!-- ① WORKFLOW STARTEN — metadata header -->
+            <div class="wf-phase" data-phase="1">
               <div class="wf-phase-head">
                 <div class="wf-phase-num">1</div>
                 <div class="wf-phase-info">
-                  <div class="wf-phase-name">Entwurf</div>
+                  <div class="wf-phase-name">Workflow starten</div>
+                </div>
+              </div>
+            </div>
+            <!-- ② STAMMDATEN — 4 sub-steps of data capture -->
+            <div class="wf-phase active" data-phase="2">
+              <div class="wf-phase-head">
+                <div class="wf-phase-num">2</div>
+                <div class="wf-phase-info">
+                  <div class="wf-phase-name">Stammdaten</div>
                   <div class="wf-phase-actor">Aktiv · Sie</div>
                 </div>
               </div>
@@ -1252,33 +1061,22 @@
                 </div>
               </div>
             </div>
-            <!-- ② PRÜFUNG -->
-            <div class="wf-phase" data-phase="2">
-              <div class="wf-phase-head">
-                <div class="wf-phase-num">2</div>
-                <div class="wf-phase-info">
-                  <div class="wf-phase-name">Prüfung</div>
-                  <div class="wf-phase-actor">Data Steward · a.dubois</div>
-                </div>
-              </div>
-            </div>
-            <!-- ③ FREIGABE -->
+            <!-- ③ PRÜFUNG — Data Steward + Approver stamps -->
             <div class="wf-phase" data-phase="3">
               <div class="wf-phase-head">
                 <div class="wf-phase-num">3</div>
                 <div class="wf-phase-info">
-                  <div class="wf-phase-name">Freigabe</div>
-                  <div class="wf-phase-actor">Approver · s.rossi</div>
+                  <div class="wf-phase-name">Prüfung</div>
+                  <div class="wf-phase-actor">Data Steward · Approver</div>
                 </div>
               </div>
             </div>
-            <!-- ④ ANGEWENDET -->
+            <!-- ④ ABSCHLUSS — applied state -->
             <div class="wf-phase" data-phase="4">
               <div class="wf-phase-head">
                 <div class="wf-phase-num">4</div>
                 <div class="wf-phase-info">
-                  <div class="wf-phase-name">Angewendet</div>
-                  <div class="wf-phase-actor">System</div>
+                  <div class="wf-phase-name">Abschluss</div>
                 </div>
               </div>
             </div>
@@ -1289,9 +1087,58 @@
           <h2 class="wf-step-title" id="stepTitle">1. Standort</h2>
           <p class="wf-step-desc" id="stepDesc">Adresse suchen oder Punkt auf der Karte wählen. Identifikatoren werden automatisch aus swisstopo ermittelt.</p>
 
+          <!-- CR meta box — only shown while reviewing an existing CR -->
+          <div class="wf-section wf-review-only" id="crMeta">
+            <h3>Workflow-Informationen</h3>
+            <div class="wf-field-grid">
+              <div class="wf-field">
+                <label class="wf-label-lbl">Antragsteller</label>
+                <input class="wf-inp" id="metaRequester" readonly>
+              </div>
+              <div class="wf-field">
+                <label class="wf-label-lbl">Data Steward</label>
+                <input class="wf-inp" id="metaSteward" readonly>
+              </div>
+              <div class="wf-field">
+                <label class="wf-label-lbl">Approver</label>
+                <input class="wf-inp" id="metaApprover" readonly>
+              </div>
+              <div class="wf-field">
+                <label class="wf-label-lbl">Typ</label>
+                <input class="wf-inp" id="metaType" readonly>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stamp view — shown only on phases 2/3 in review mode -->
+          <div class="wf-section" id="stampView">
+            <h3 id="stampTitle">Prüfung</h3>
+            <p class="wf-step-desc" id="stampDesc" style="margin: 0 0 var(--space-3);"></p>
+            <div class="wf-stamp-actor" id="stampActor"><!-- populated --></div>
+            <div class="wf-section" style="padding: 0; border: 0; margin: 0 0 var(--space-4);">
+              <label class="wf-label-lbl">Kommentar (optional)</label>
+              <textarea class="wf-comment" id="stampComment" placeholder="Begründung, Rückfrage oder Bemerkung…"></textarea>
+            </div>
+            <div class="wf-decision-row" id="stampDecision">
+              <button class="btn-reject" onclick="alert('Antrag abgelehnt (Demo)')">
+                <span class="material-symbols-outlined">close</span>Ablehnen
+              </button>
+              <button class="btn-approve" onclick="alert('Antrag freigegeben (Demo)')">
+                <span class="material-symbols-outlined">check</span>Freigeben
+              </button>
+            </div>
+          </div>
+
+          <!-- Abschluss view — shown only on phase 4 in review mode -->
+          <div class="wf-section" id="abschlussView">
+            <h3>Abschluss</h3>
+            <p class="wf-step-desc" id="abschlussDesc" style="margin: 0 0 var(--space-3);"></p>
+            <div class="wf-stamp-actor" id="abschlussActor"><!-- populated --></div>
+          </div>
+
           <!-- STEP 1 -->
           <div class="wf-step-content active" data-step="1">
-            <div class="wf-section">
+            <div class="wf-edit-only wf-section">
               <h3>Adresse suchen</h3>
               <label class="wf-label-lbl">Strasse, PLZ oder Ort</label>
               <div class="wf-search-wrap">
@@ -1301,6 +1148,13 @@
                   <div data-pick>Bundesplatz 3, 3003 Bern</div>
                   <div data-pick>Bundesgasse 3, 3011 Bern</div>
                 </div>
+              </div>
+            </div>
+            <div class="wf-section" style="padding: 0; overflow: hidden;">
+              <div class="wf-map-header wf-review-only">
+                <span class="material-symbols-outlined">location_on</span>
+                <span class="address" id="mapAddress">—</span>
+                <a href="#" target="_blank" rel="noopener" id="mapExternalLink">auf Google Maps ansehen</a>
               </div>
               <div class="wf-map-preview" id="wizardMap"></div>
             </div>
@@ -1313,23 +1167,23 @@
               <div class="wf-field-grid">
                 <div class="wf-field full">
                   <label class="wf-label-lbl">Objektbezeichnung <span class="wf-required-mark">*</span></label>
-                  <input class="wf-inp" placeholder="z. B. Bundesgasse 3">
+                  <input class="wf-inp" data-field="bez" placeholder="z. B. Bundesgasse 3">
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Wirtschaftseinheit (bbl_we) <span class="wf-required-mark">*</span></label>
-                  <input class="wf-inp" placeholder="z. B. WE-12345">
+                  <input class="wf-inp" data-field="we" placeholder="z. B. WE-12345">
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Teilobjekt (bbl_obj)</label>
-                  <input class="wf-inp" placeholder="01">
+                  <input class="wf-inp" data-field="teilobjekt" placeholder="01">
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Buchungskreis (bbl_buch)</label>
-                  <select class="wf-inp"><option>BBL</option><option>Armasuisse</option><option>BABS</option></select>
+                  <select class="wf-inp" data-field="buchungskreis"><option>BBL</option><option>Armasuisse</option><option>BABS</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Status (bbl_stat) <span class="wf-required-mark">*</span></label>
-                  <select class="wf-inp"><option>Aktiv</option><option>In Renovation</option><option>In Planung</option><option>Stillgelegt</option></select>
+                  <select class="wf-inp" data-field="status"><option>Aktiv</option><option>In Renovation</option><option>In Planung</option><option>Stillgelegt</option></select>
                 </div>
               </div>
             </div>
@@ -1338,27 +1192,27 @@
               <div class="wf-field-grid">
                 <div class="wf-field">
                   <label class="wf-label-lbl">Gebäudeart Stufe 1 <span class="wf-required-mark">*</span></label>
-                  <select class="wf-inp"><option>Verwaltung</option><option>Depot / Lager</option><option>Labor</option><option>Zoll</option><option>Spezialbau</option></select>
+                  <select class="wf-inp" data-field="gebaeudeart1"><option>Verwaltung</option><option>Depot / Lager</option><option>Labor</option><option>Zoll</option><option>Spezialbau</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Gebäudeart Stufe 2</label>
-                  <select class="wf-inp"><option>Bürogebäude</option><option>Mischnutzung</option><option>Archivbau</option></select>
+                  <select class="wf-inp" data-field="gebaeudeart2"><option>Bürogebäude</option><option>Mischnutzung</option><option>Archivbau</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Eigentum Art (bbl_eigen) <span class="wf-required-mark">*</span></label>
-                  <select class="wf-inp"><option>Eigentum</option><option>Baurecht</option><option>Miete</option><option>Leasing</option></select>
+                  <select class="wf-inp" data-field="eigentum"><option>Eigentum</option><option>Baurecht</option><option>Miete</option><option>Leasing</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Objektstrategie (bbl_ostr)</label>
-                  <select class="wf-inp"><option>Behalten</option><option>Optimieren</option><option>Verkaufen</option><option>Prüfen</option></select>
+                  <select class="wf-inp" data-field="strategie"><option>Behalten</option><option>Optimieren</option><option>Verkaufen</option><option>Prüfen</option></select>
                 </div>
               </div>
             </div>
             <div class="wf-section">
               <h3>Zeitdaten</h3>
               <div class="wf-field-grid">
-                <div class="wf-field"><label class="wf-label-lbl">Baujahr <span class="wf-required-mark">*</span></label><input class="wf-inp" type="number" placeholder="z. B. 1987"></div>
-                <div class="wf-field"><label class="wf-label-lbl">Verkaufsjahr (leer, wenn nicht verkauft)</label><input class="wf-inp" type="number" placeholder="—"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Baujahr <span class="wf-required-mark">*</span></label><input class="wf-inp" data-field="baujahr" type="number" placeholder="z. B. 1987"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Verkaufsjahr (leer, wenn nicht verkauft)</label><input class="wf-inp" data-field="verkaufsjahr" type="number" placeholder="—"></div>
               </div>
             </div>
           </div>
@@ -1370,60 +1224,52 @@
               <div class="wf-field-grid">
                 <div class="wf-field">
                   <label class="wf-label-lbl">Teilportfolio (bbl_port) <span class="wf-required-mark">*</span></label>
-                  <select class="wf-inp"><option>Verwaltung Zivil</option><option>Verwaltung Militär</option><option>Spezialimmobilien</option><option>Zoll / BAZG</option><option>Grenzwachtkorps</option></select>
+                  <select class="wf-inp" data-field="teilportfolio"><option>Verwaltung Zivil</option><option>Verwaltung Militär</option><option>Spezialimmobilien</option><option>Zoll / BAZG</option><option>Grenzwachtkorps</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Portfoliogruppe (bbl_port2)</label>
-                  <select class="wf-inp"><option>Bern Zentrum</option><option>Bern Peripherie</option><option>Westschweiz</option><option>Tessin</option></select>
+                  <select class="wf-inp" data-field="gruppe"><option>Bern Zentrum</option><option>Bern Peripherie</option><option>Westschweiz</option><option>Tessin</option></select>
                 </div>
                 <div class="wf-field">
                   <label class="wf-label-lbl">Mietmodell (bbl_mietm) <span class="wf-required-mark">*</span></label>
-                  <select class="wf-inp"><option>Vollmiete</option><option>Teilmiete</option><option>Eigennutzung</option></select>
+                  <select class="wf-inp" data-field="mietmodell"><option>Vollmiete</option><option>Teilmiete</option><option>Eigennutzung</option></select>
                 </div>
-                <div class="wf-field"><label class="wf-label-lbl">Objektstrategie-Kommentar</label><input class="wf-inp" placeholder="optional"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Objektstrategie-Kommentar</label><input class="wf-inp" data-field="strategie_kommentar" placeholder="optional"></div>
               </div>
             </div>
             <div class="wf-section">
               <h3>Zuständigkeiten</h3>
               <div class="wf-field-grid">
-                <div class="wf-field"><label class="wf-label-lbl">Objektverantwortliche Person (bbl_ovtw) <span class="wf-required-mark">*</span></label><input class="wf-inp" placeholder="z. B. Meier Ursula"></div>
-                <div class="wf-field"><label class="wf-label-lbl">Portfoliomanager (bbl_pvtw)</label><input class="wf-inp" placeholder="z. B. Dubois Anne"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Objektverantwortliche Person (bbl_ovtw) <span class="wf-required-mark">*</span></label><input class="wf-inp" data-field="ovtw" placeholder="z. B. Meier Ursula"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Portfoliomanager (bbl_pvtw)</label><input class="wf-inp" data-field="pvtw" placeholder="z. B. Dubois Anne"></div>
               </div>
             </div>
             <div class="wf-section">
               <h3>Finanzielles</h3>
               <div class="wf-field-grid">
-                <div class="wf-field"><label class="wf-label-lbl">Anschaffungswert (CHF)</label><input class="wf-inp" type="number" placeholder="0"></div>
-                <div class="wf-field"><label class="wf-label-lbl">Buchwert (CHF)</label><input class="wf-inp" type="number" placeholder="0"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Anschaffungswert (CHF)</label><input class="wf-inp" data-field="awrt" type="number" placeholder="0"></div>
+                <div class="wf-field"><label class="wf-label-lbl">Buchwert (CHF)</label><input class="wf-inp" data-field="bwrt" type="number" placeholder="0"></div>
               </div>
             </div>
           </div>
 
           <!-- STEP 4 -->
           <div class="wf-step-content" data-step="4">
-            <div class="wf-submit-box">
-              <span class="material-symbols-outlined">info</span>
-              <div>
-                <div class="title">4-Augen-Prüfung startet nach Einreichung</div>
-                <div class="desc">Der Antrag wird an den Data Steward (<strong>a.dubois</strong>) zur technischen Prüfung weitergeleitet, anschliessend an den Approver (<strong>s.rossi</strong>) zur Freigabe. Sie werden bei jeder Zustandsänderung benachrichtigt.</div>
-              </div>
-            </div>
-
             <div class="wf-summary-section">
               <div class="wf-summary-head"><h3>1 · Standort</h3><button class="wf-summary-edit" data-goto="1"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span>Bearbeiten</button></div>
-              <div class="wf-summary-body"><div class="wf-summary-grid">
-                <div><div class="k">Adresse</div><div class="v"><span class="wf-big-dot"></span>Bundesgasse 3, 3003 Bern</div></div>
-                <div><div class="k">Koordinaten (LV95)</div><div class="v"><span class="wf-big-dot"></span>2'600'950 / 1'199'800</div></div>
-                <div><div class="k">EGID</div><div class="v"><span class="wf-big-dot"></span>150404927</div></div>
-                <div><div class="k">EGRID</div><div class="v"><span class="wf-big-dot"></span>CH123456789012</div></div>
-                <div><div class="k">BFS Gemeinde</div><div class="v"><span class="wf-big-dot"></span>Bern (351)</div></div>
-                <div><div class="k">Bauzone</div><div class="v"><span class="wf-big-dot warn"></span>Kernzone K3</div></div>
+              <div class="wf-summary-body"><div class="wf-summary-grid" id="summaryStandort">
+                <div><div class="k">Adresse</div><div class="v">Bundesgasse 3, 3003 Bern</div></div>
+                <div><div class="k">Koordinaten (LV95)</div><div class="v">2'600'950 / 1'199'800</div></div>
+                <div><div class="k">EGID</div><div class="v">150404927</div></div>
+                <div><div class="k">EGRID</div><div class="v">CH123456789012</div></div>
+                <div><div class="k">BFS Gemeinde</div><div class="v">Bern (351)</div></div>
+                <div><div class="k">Bauzone</div><div class="v">Kernzone K3</div></div>
               </div></div>
             </div>
 
             <div class="wf-summary-section">
               <div class="wf-summary-head"><h3>2 · Stammdaten</h3><button class="wf-summary-edit" data-goto="2"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span>Bearbeiten</button></div>
-              <div class="wf-summary-body"><div class="wf-summary-grid">
+              <div class="wf-summary-body"><div class="wf-summary-grid" id="summaryStammdaten">
                 <div><div class="k">Objektbezeichnung</div><div class="v">Bundesgasse 3</div></div>
                 <div><div class="k">Wirtschaftseinheit</div><div class="v">WE-12345</div></div>
                 <div><div class="k">Gebäudeart</div><div class="v">Verwaltung · Bürogebäude</div></div>
@@ -1435,7 +1281,7 @@
 
             <div class="wf-summary-section">
               <div class="wf-summary-head"><h3>3 · Portfolio &amp; Merkmale</h3><button class="wf-summary-edit" data-goto="3"><span class="material-symbols-outlined" style="font-size: 14px;">edit</span>Bearbeiten</button></div>
-              <div class="wf-summary-body"><div class="wf-summary-grid">
+              <div class="wf-summary-body"><div class="wf-summary-grid" id="summaryPortfolio">
                 <div><div class="k">Teilportfolio</div><div class="v">Verwaltung Zivil</div></div>
                 <div><div class="k">Mietmodell</div><div class="v">Vollmiete</div></div>
                 <div><div class="k">Objektverantwortliche</div><div class="v">Meier Ursula</div></div>
@@ -1446,17 +1292,20 @@
             </div>
 
             <div class="wf-section">
-              <h3>Qualitätsprüfungen</h3>
-              <div class="wf-check-list">
-                <div class="wf-check pass"><span class="material-symbols-outlined">check_circle</span><div class="wf-check-text"><div class="wf-check-rule">Adress-Konsistenz</div><div class="wf-check-detail">GWR-Adresse stimmt mit Eingabe überein.</div></div></div>
-                <div class="wf-check pass"><span class="material-symbols-outlined">check_circle</span><div class="wf-check-text"><div class="wf-check-rule">EGID liegt in EGRID</div><div class="wf-check-detail">Gebäude-Fussabdruck ist innerhalb der Parzelle.</div></div></div>
-                <div class="wf-check warn"><span class="material-symbols-outlined">warning</span><div class="wf-check-text"><div class="wf-check-rule">Bauzone abweichend</div><div class="wf-check-detail">Zonendaten aus `ch.are.bauzonen` waren älter als 30 Tage — bitte bestätigen.</div></div></div>
-              </div>
-            </div>
-
-            <div class="wf-section">
               <h3>Bemerkung an Prüfer (optional)</h3>
               <textarea class="wf-comment" placeholder="z. B. besondere Umstände, Kontext, Rückfragen…"></textarea>
+            </div>
+
+            <!-- Review-only: decision buttons (Ablehnen / Freigeben) -->
+            <div class="wf-decision-row wf-review-only">
+              <button class="btn-reject" onclick="alert('CR → REJECTED (Demo)')">
+                <span class="material-symbols-outlined">close</span>
+                Ablehnen
+              </button>
+              <button class="btn-approve" onclick="alert('CR → APPROVED → APPLIED (Demo)')">
+                <span class="material-symbols-outlined">check</span>
+                Freigeben
+              </button>
             </div>
           </div>
 
@@ -1473,7 +1322,7 @@
           </div>
         </div>
       </div>
-     </div><!-- /.wf-dash-create -->
+     </div><!-- /.wf-dash-workflow -->
     </div>
   </section>
 
@@ -1491,8 +1340,6 @@
     </div>
   </aside>
 </main>
-
-<div class="wf-label">Wireframe · <span class="state" id="stateLabel">Karte</span></div>
 
 <script>
   // ===== MapLibre: Carto Positron (light grey) — same default as the parent prototype =====
@@ -1536,6 +1383,84 @@
     'rejected', WF_COLORS.rejected,
     '#9ca3af'
   ];
+
+  // ===== Data-driven CR table =====
+  const CURRENT_USER = 'me';
+  const STATE_DISPLAY = {
+    draft:    { label: 'Entwurf',     cls: 'draft',     icon: 'edit_note' },
+    review:   { label: 'Eingereicht', cls: 'submitted', icon: 'send' },
+    approval: { label: 'In Prüfung',  cls: 'review',    icon: 'hourglass_top' },
+    applied:  { label: 'Angewendet',  cls: 'applied',   icon: 'check_circle' },
+    rejected: { label: 'Abgelehnt',   cls: 'rejected',  icon: 'cancel' }
+  };
+  const ENTITY_LABELS = { building: 'Gebäude', parcel: 'Grundstück' };
+  const OP_LABELS     = { create: 'Neu', mutate: 'Mutation', delete: 'Löschung' };
+
+  function actorCell(actor) {
+    if (!actor || !actor.user) return '<td>—</td>';
+    if (actor.user === CURRENT_USER) return '<td class="me">Sie</td>';
+    return '<td>' + actor.user + '</td>';
+  }
+
+  function renderCRTable(crs) {
+    const tbody = document.getElementById('crTableBody');
+    if (!tbody) return;
+    if (!crs || !crs.length) {
+      tbody.innerHTML = '<tr><td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--grey-500);">Keine Workflows</td></tr>';
+      return;
+    }
+    tbody.innerHTML = crs.map(cr => {
+      const s = STATE_DISPLAY[cr.state] || STATE_DISPLAY.draft;
+      const entity = ENTITY_LABELS[cr.entity] || cr.entity;
+      const op = OP_LABELS[cr.operation] || cr.operation;
+      const subtitle = cr.id + (cr.subtitle ? ' · ' + cr.subtitle : '');
+      const actors = cr.actors || {};
+      return (
+        '<tr data-action="review" data-cr="' + cr.id + '">' +
+          '<td><span class="wf-state ' + s.cls + '"><span class="material-symbols-outlined">' + s.icon + '</span>' + s.label + '</span></td>' +
+          '<td class="title">' + cr.title + '<small>' + subtitle + '</small></td>' +
+          '<td>' + entity + ' · ' + op + '</td>' +
+          actorCell(actors.requester) +
+          actorCell(actors.steward) +
+          actorCell(actors.approver) +
+          '<td class="age">' + (cr.age || '—') + '</td>' +
+        '</tr>'
+      );
+    }).join('');
+  }
+
+  // ----- URL state: ?cr=<id> or ?new=<entity> -----
+  function setUrl(params) {
+    const url = new URL(window.location);
+    ['cr', 'new'].forEach(k => url.searchParams.delete(k));
+    Object.entries(params || {}).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
+    window.history.replaceState({}, '', url);
+  }
+  function getUrl() {
+    const url = new URL(window.location);
+    return { cr: url.searchParams.get('cr'), neu: url.searchParams.get('new') };
+  }
+
+  // Fetch + render — then apply any pending URL state
+  fetch('../data/workflows.json')
+    .then(r => r.json())
+    .then(data => {
+      window.WORKFLOWS = data;
+      renderCRTable(data.crs);
+      // Deep-link: open a specific CR or a new create flow
+      const u = getUrl();
+      if (u.cr) {
+        const cr = data.crs.find(c => c.id === u.cr);
+        if (cr) enterCRDetail(cr.title, cr.id);
+      } else if (u.neu === 'building' || u.neu === 'parcel') {
+        enterCreate(u.neu, false);
+      }
+    })
+    .catch(err => {
+      console.warn('workflows.json failed:', err);
+      const tbody = document.getElementById('crTableBody');
+      if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--status-error-text);">Workflows konnten nicht geladen werden</td></tr>';
+    });
 
   bgMap.on('load', async () => {
     // Parcels (polygons) — muted fill behind buildings
@@ -1604,7 +1529,6 @@
 
   // ===== State management =====
   const body = document.body;
-  const stateLabel = document.getElementById('stateLabel');
 
   function closeAllMenus() {
     ctx.classList.remove('open');
@@ -1614,32 +1538,41 @@
   }
 
   function clearAllStates() {
-    body.classList.remove('wf-dashboard-active', 'wf-dash-detail-active', 'wf-dash-create-active');
+    body.classList.remove('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-mode-edit', 'wf-mode-review', 'wf-phase-1', 'wf-phase-2', 'wf-phase-3', 'wf-phase-4');
   }
 
   function resetWizard() {
     const q = document.getElementById('q');
     if (q) q.value = '';
+    // Clear every tagged input/select/textarea so a new workflow doesn't inherit stale values
+    document.querySelectorAll('.wf-dash-workflow [data-field]').forEach(el => {
+      if (el.tagName === 'SELECT') el.selectedIndex = 0;
+      else el.value = '';
+    });
+    const comment = document.querySelector('.wf-dash-workflow .wf-comment');
+    if (comment) comment.value = '';
     if (wizardMarker) { wizardMarker.remove(); wizardMarker = null; }
     if (wizardMap) wizardMap.jumpTo({ center: [8.23, 46.8], zoom: 7.3 });
   }
 
   function enterCreate(entity, fromEnriched) {
     clearAllStates();
-    body.classList.add('wf-dashboard-active', 'wf-dash-create-active');
+    resetWizard();
+    body.classList.add('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-mode-edit');
+    setBodyPhaseClass(2);
+    setUrl({ 'new': entity });
 
     const title = entity === 'parcel' ? 'Neues Grundstück' : 'Neues Gebäude';
     crumbCurrent.textContent = title + (fromEnriched ? ' · aus Karte' : '');
     crumbSep.hidden = false;
     crumbCurrent.hidden = false;
-    stateLabel.textContent = 'Workflows · ' + title;
 
     if (fromEnriched) {
       const q = document.getElementById('q');
       q.value = 'Bundesgasse 3, 3003 Bern';
     }
+    setEditPhases();
     showStep(1);
-    // Initialize / resize the wizard map now that its container is visible
     setTimeout(() => {
       ensureWizardMap();
       if (fromEnriched) pickAddress();
@@ -1648,17 +1581,17 @@
   }
 
   function exitCreate() {
-    body.classList.remove('wf-dash-create-active');
+    body.classList.remove('wf-dash-workflow-active', 'wf-mode-edit');
     crumbSep.hidden = true;
     crumbCurrent.hidden = true;
-    stateLabel.textContent = 'Workflows';
+    if (crumbState) crumbState.hidden = true;
     resetWizard();
+    setUrl({});
   }
 
   function enterDashboard() {
     clearAllStates();
     body.classList.add('wf-dashboard-active');
-    stateLabel.textContent = 'Workflows';
     closeAllMenus();
   }
 
@@ -1666,37 +1599,226 @@
     clearAllStates();
     crumbSep.hidden = true;
     crumbCurrent.hidden = true;
-    stateLabel.textContent = 'Karte';
+    if (crumbState) crumbState.hidden = true;
     resetWizard();
-    // Map was hidden while dashboard was open — force MapLibre to re-measure
+    setUrl({});
     setTimeout(() => bgMap.resize(), 50);
   }
 
   // CR detail pane inside the dashboard (breadcrumb-navigated)
   const crumbSep = document.getElementById('crumbSep');
   const crumbCurrent = document.getElementById('crumbCurrent');
+  const crumbState = document.getElementById('crumbState');
   const crumbRoot = document.getElementById('crumbRoot');
 
   function enterCRDetail(title, crId) {
-    body.classList.remove('wf-dash-create-active');
-    body.classList.add('wf-dashboard-active', 'wf-dash-detail-active');
-    crumbCurrent.textContent = title;
+    body.classList.remove('wf-mode-edit');
+    body.classList.add('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-mode-review');
+    setUrl({ cr: crId });
+    // Look up full CR in the loaded workflows data
+    const cr = window.WORKFLOWS && window.WORKFLOWS.crs.find(c => c.id === crId);
+    renderCR(cr, title);
+    crumbCurrent.textContent = (cr && cr.title) || title;
     crumbSep.hidden = false;
     crumbCurrent.hidden = false;
-    stateLabel.textContent = 'Workflows · ' + (crId || title);
-    showReviewStep(1);
+    if (cr && crumbState) {
+      const s = STATE_DISPLAY[cr.state] || STATE_DISPLAY.draft;
+      crumbState.textContent = s.label;
+      crumbState.hidden = false;
+    }
+    setReviewPhases(cr);
+    showStep(1);
+    setTimeout(() => ensureWizardMap(), 50);
+  }
+
+  // ----- helpers -----
+  function kv(label, value) {
+    const isEmpty = (value === null || value === undefined || value === '' || value === '—');
+    const display = isEmpty ? '—' : value;
+    return '<div><div class="k">' + label + '</div><div class="v' + (isEmpty ? ' empty' : '') + '">' + display + '</div></div>';
+  }
+  function fmtActor(actor) {
+    if (!actor || !actor.user) return '—';
+    const name = actor.user === CURRENT_USER ? 'Sie' : actor.user;
+    if (actor.decision === 'approve') return name + ' · freigegeben';
+    if (actor.decision === 'reject')  return name + ' · abgelehnt';
+    return name;
+  }
+
+  // Populate the whole review pane from a CR record
+  function renderCR(cr, fallbackTitle) {
+    const a = (cr && cr.actors) || {};
+    const entity = cr ? (ENTITY_LABELS[cr.entity] || cr.entity) : '';
+    const op = cr ? (OP_LABELS[cr.operation] || cr.operation) : '';
+    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
+    setVal('metaRequester', fmtActor(a.requester));
+    setVal('metaSteward',   fmtActor(a.steward));
+    setVal('metaApprover',  fmtActor(a.approver));
+    setVal('metaType',      (op && entity) ? (op + ' · ' + entity) : '');
+
+    const data = (cr && cr.data) || {};
+    const st = data.standort || {}, sm = data.stammdaten || {}, pt = data.portfolio || {};
+
+    // Populate the SAME edit-mode inputs used for Erfassung; in review mode CSS
+    // renders them read-only. One DOM, two modes.
+    const fieldValues = Object.assign({}, sm, pt);
+    document.querySelectorAll('.wf-dash-workflow [data-field]').forEach(el => {
+      const key = el.dataset.field;
+      if (!(key in fieldValues)) return;
+      const v = fieldValues[key];
+      el.value = (v === null || v === undefined) ? '' : String(v);
+    });
+
+    // Map header (review-only): address label + Google Maps link
+    const mapAddress = document.getElementById('mapAddress');
+    const mapExtLink = document.getElementById('mapExternalLink');
+    if (mapAddress) mapAddress.textContent = st.adresse || '—';
+    if (mapExtLink && st.lngLat && Array.isArray(st.lngLat)) {
+      mapExtLink.href = 'https://www.google.com/maps?q=' + st.lngLat[1] + ',' + st.lngLat[0];
+    }
+
+    // Recenter the wizard map on the CR's coordinates + drop a marker
+    if (st.lngLat && Array.isArray(st.lngLat)) {
+      setTimeout(() => {
+        ensureWizardMap();
+        if (wizardMarker) wizardMarker.remove();
+        wizardMarker = new maplibregl.Marker({ color: '#c00' }).setLngLat(st.lngLat).addTo(wizardMap);
+        wizardMap.flyTo({ center: st.lngLat, zoom: 17, duration: 600 });
+      }, 50);
+    }
+
+    // Step 4 summary grids
+    const sumStandort = document.getElementById('summaryStandort');
+    if (sumStandort) sumStandort.innerHTML =
+      kv('Adresse', st.adresse) + kv('Koordinaten (LV95)', st.koordinaten) +
+      kv('EGID', st.egid) + kv('EGRID', st.egrid) +
+      kv('BFS Gemeinde', st.bfs_gemeinde) + kv('Bauzone', st.bauzone);
+    const sumStammdaten = document.getElementById('summaryStammdaten');
+    if (sumStammdaten) sumStammdaten.innerHTML =
+      kv('Objektbezeichnung', sm.bez) + kv('Wirtschaftseinheit', sm.we) +
+      kv('Gebäudeart', sm.gebaeudeart) + kv('Eigentum', sm.eigentum) +
+      kv('Status', sm.status) + kv('Baujahr', sm.baujahr);
+    const sumPortfolio = document.getElementById('summaryPortfolio');
+    if (sumPortfolio) sumPortfolio.innerHTML =
+      kv('Teilportfolio', pt.teilportfolio) + kv('Mietmodell', pt.mietmodell) +
+      kv('Objektverantwortliche', pt.ovtw) + kv('Portfoliomanager', pt.pvtw) +
+      kv('Anschaffungswert', pt.awrt) + kv('Buchwert', pt.bwrt);
+  }
+
+  // Phase sidebar states differ between new (edit) and existing (review) CRs
+  function setEditPhases() {
+    const phases = document.querySelectorAll('.wf-dash-workflow .wf-phase');
+    phases.forEach(p => {
+      p.classList.remove('active', 'done');
+      // reset num badge
+      const num = p.querySelector('.wf-phase-num');
+      if (num) num.innerHTML = p.dataset.phase;
+    });
+    const first = document.querySelector('.wf-dash-workflow .wf-phase[data-phase="1"]');
+    if (first) first.classList.add('active');
+  }
+  // Apply a body class wf-phase-1 / 2 / 3 reflecting which phase is currently expanded
+  function setBodyPhaseClass(idx) {
+    body.classList.remove('wf-phase-1', 'wf-phase-2', 'wf-phase-3', 'wf-phase-4');
+    if (idx >= 1 && idx <= 4) body.classList.add('wf-phase-' + idx);
+  }
+
+  // Populate the Prüfung view (phase 3): show both Data Steward and Approver stamps.
+  function renderStamp(cr) {
+    const actorEl = document.getElementById('stampActor');
+    const decisionEl = document.getElementById('stampDecision');
+    const desc = document.getElementById('stampDesc');
+    if (!actorEl) return;
+    const a = (cr && cr.actors) || {};
+
+    function stampRow(role, actor) {
+      if (!actor || !actor.user) {
+        return '<div class="wf-stamp-actor"><span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">Ausstehend</div><div class="desc">' + role + ' noch nicht zugewiesen.</div></div></div>';
+      }
+      const isMe = actor.user === CURRENT_USER;
+      const name = isMe ? 'Sie' : actor.user;
+      if (actor.decision === 'approve') {
+        return '<div class="wf-stamp-actor pass"><span class="material-symbols-outlined">check_circle</span><div class="info"><div class="name">' + name + ' · freigegeben</div><div class="desc">' + role + '</div></div></div>';
+      }
+      if (actor.decision === 'reject') {
+        return '<div class="wf-stamp-actor fail"><span class="material-symbols-outlined">cancel</span><div class="info"><div class="name">' + name + ' · abgelehnt</div><div class="desc">' + role + (actor.comment ? ' · ' + actor.comment : '') + '</div></div></div>';
+      }
+      return '<div class="wf-stamp-actor"><span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">' + name + '</div><div class="desc">' + role + ' · Entscheid ausstehend</div></div></div>';
+    }
+
+    if (desc) desc.textContent = 'Zwei unabhängige Freigaben: zuerst der Data Steward, dann der Approver (4-Augen-Prinzip).';
+    actorEl.outerHTML = '<div id="stampActor">' + stampRow('Data Steward', a.steward) + stampRow('Approver', a.approver) + '</div>';
+
+    // Show decision buttons only when the current user is the next actor AND no decision yet
+    const nextPending = !a.steward || !a.steward.decision ? a.steward :
+                       (!a.approver || !a.approver.decision ? a.approver : null);
+    const showButtons = nextPending && nextPending.user === CURRENT_USER;
+    if (decisionEl) decisionEl.style.display = showButtons ? 'flex' : 'none';
+  }
+
+  // Populate the Abschluss view (phase 4): applied info or still-pending note.
+  function renderAbschluss(cr) {
+    const actorEl = document.getElementById('abschlussActor');
+    const desc = document.getElementById('abschlussDesc');
+    if (!actorEl) return;
+    if (cr && cr.state === 'applied') {
+      actorEl.className = 'wf-stamp-actor pass';
+      actorEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span><div class="info"><div class="name">Angewendet</div><div class="desc">' + (cr.applied_at ? new Date(cr.applied_at).toLocaleDateString('de-CH') : 'System') + '</div></div>';
+      if (desc) desc.textContent = 'Der Antrag wurde freigegeben und auf das Portfolio angewendet.';
+    } else if (cr && cr.state === 'rejected') {
+      actorEl.className = 'wf-stamp-actor fail';
+      actorEl.innerHTML = '<span class="material-symbols-outlined">cancel</span><div class="info"><div class="name">Abgelehnt</div><div class="desc">Wird nicht auf das Portfolio angewendet.</div></div>';
+      if (desc) desc.textContent = 'Der Antrag wurde abgelehnt.';
+    } else {
+      actorEl.className = 'wf-stamp-actor';
+      actorEl.innerHTML = '<span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">Noch offen</div><div class="desc">Wird nach Freigabe automatisch angewendet.</div></div>';
+      if (desc) desc.textContent = 'Der Workflow ist noch nicht abgeschlossen.';
+    }
+  }
+
+    // Given the CR's current state, compute which phase is active and which are done
+  function setReviewPhases(cr) {
+    // state → "active phase index"
+    // phases: 1 Workflow starten, 2 Stammdaten, 3 Prüfung, 4 Abschluss
+    const state = cr ? cr.state : 'approval';
+    let activeIdx;
+    if (state === 'draft')         activeIdx = 2;
+    else if (state === 'review')   activeIdx = 3;
+    else if (state === 'approval') activeIdx = 3;
+    else if (state === 'applied')  activeIdx = 4;
+    else if (state === 'rejected') activeIdx = 3;
+    else                           activeIdx = 3;
+
+    document.querySelectorAll('.wf-dash-workflow .wf-phase').forEach(p => {
+      p.classList.remove('active', 'done');
+      const num = p.querySelector('.wf-phase-num');
+      const idx = parseInt(p.dataset.phase);
+      if (idx < activeIdx) {
+        p.classList.add('done');
+        if (num) num.innerHTML = '<span class="material-symbols-outlined">check</span>';
+      } else if (idx === activeIdx) {
+        p.classList.add('active');
+        if (num) num.innerHTML = idx;
+      } else {
+        if (num) num.innerHTML = idx;
+      }
+    });
+    setBodyPhaseClass(activeIdx);
+    if (activeIdx === 3) renderStamp(cr);
+    if (activeIdx === 4) renderAbschluss(cr);
   }
 
   function exitCRDetail() {
-    body.classList.remove('wf-dash-detail-active');
+    body.classList.remove('wf-dash-workflow-active', 'wf-mode-review');
     crumbSep.hidden = true;
     crumbCurrent.hidden = true;
-    stateLabel.textContent = 'Workflows';
+    if (crumbState) crumbState.hidden = true;
+    setUrl({});
   }
 
   crumbRoot.addEventListener('click', () => {
-    if (body.classList.contains('wf-dash-detail-active')) exitCRDetail();
-    else if (body.classList.contains('wf-dash-create-active')) exitCreate();
+    if (body.classList.contains('wf-mode-review')) exitCRDetail();
+    else if (body.classList.contains('wf-mode-edit')) exitCreate();
   });
 
   // Delegated action handling
@@ -1830,8 +1952,7 @@
   const q = document.getElementById('q');
   const results = document.getElementById('results');
 
-  // Lazily-initialised wizard map (only create when the create pane is first shown,
-  // otherwise the container has zero size and MapLibre refuses to render)
+  // Lazily-initialised wizard map (Create pane)
   let wizardMap = null;
   let wizardMarker = null;
   function ensureWizardMap() {
@@ -1870,11 +1991,11 @@
   const stepDesc = document.getElementById('stepDesc');
   const prevBtn = document.getElementById('prevBtn');
   const nextBtn = document.getElementById('nextBtn');
-  const contentEl = document.querySelector('.wf-dash-create .wf-content');
+  const contentEl = document.querySelector('.wf-dash-workflow .wf-content');
 
   function showStep(n) {
     currentStep = n;
-    document.querySelectorAll('.wf-dash-create .wf-step-content').forEach(el => {
+    document.querySelectorAll('.wf-dash-workflow .wf-step-content').forEach(el => {
       el.classList.toggle('active', parseInt(el.dataset.step) === n);
     });
     // Sub-steps in the Entwurf phase reflect form progress
@@ -1914,72 +2035,27 @@
 
   document.getElementById('stepSidebar').addEventListener('click', (e) => {
     const s = e.target.closest('.wf-sub');
-    if (s && s.dataset.step) showStep(parseInt(s.dataset.step));
-  });
-
-  // ===== Review sub-step navigation =====
-  const REVIEW_STEPS = {
-    1: { title: 'Standort',              desc: 'Adresse, Koordinaten und amtliche Vermessung.' },
-    2: { title: 'Stammdaten',            desc: 'Objektbezeichnung, Klassifizierung und Zeitdaten.' },
-    3: { title: 'Portfolio & Merkmale',  desc: 'Portfolio-Zuordnung, Zuständigkeiten und Finanzdaten.' },
-    4: { title: 'Prüfen & Entscheid',    desc: 'Zusammenfassung ansehen und freigeben oder ablehnen.' }
-  };
-  let currentReviewStep = 1;
-  const reviewStepTitle = document.getElementById('reviewStepTitle');
-  const reviewStepDesc = document.getElementById('reviewStepDesc');
-  const reviewPrevBtn = document.getElementById('reviewPrevBtn');
-  const reviewNextBtn = document.getElementById('reviewNextBtn');
-  const reviewNavRow = document.getElementById('reviewNavRow');
-  const reviewContentEl = document.querySelector('.wf-dash-detail .wf-content');
-
-  function showReviewStep(n) {
-    currentReviewStep = n;
-    document.querySelectorAll('.wf-dash-detail .wf-step-content').forEach(el => {
-      el.classList.toggle('active', parseInt(el.dataset.reviewStep) === n);
-    });
-    // Only update the substeps inside the currently active phase
-    document.querySelectorAll('.wf-dash-detail .wf-phase.active .wf-sub').forEach(el => {
-      const s = parseInt(el.dataset.reviewStep);
-      if (!s) return;
-      el.classList.toggle('active', s === n);
-      el.classList.toggle('done', s < n);
-      const icon = el.querySelector('.wf-sub-status');
-      if (icon) {
-        icon.textContent = s < n ? 'check_circle' : (s === n ? 'radio_button_checked' : 'radio_button_unchecked');
-      }
-    });
-    if (reviewStepTitle) reviewStepTitle.textContent = REVIEW_STEPS[n].title;
-    if (reviewStepDesc)  reviewStepDesc.textContent  = REVIEW_STEPS[n].desc;
-    if (reviewPrevBtn)   reviewPrevBtn.disabled = n === 1;
-    // Hide the nav row on step 4 — the Ablehnen / Freigeben buttons are the action
-    if (reviewNavRow)    reviewNavRow.style.display = n === 4 ? 'none' : '';
-    if (reviewContentEl) reviewContentEl.scrollTop = 0;
-  }
-
-  // Switch which phase is currently expanded. Clicking an already-active phase is a no-op.
-  function setActivePhase(phaseEl) {
-    if (!phaseEl || phaseEl.classList.contains('active')) return;
-    document.querySelectorAll('.wf-dash-detail .wf-phase').forEach(p => p.classList.remove('active'));
-    phaseEl.classList.add('active');
-    showReviewStep(1);
-  }
-
-  if (reviewPrevBtn) reviewPrevBtn.addEventListener('click', () => { if (currentReviewStep > 1) showReviewStep(currentReviewStep - 1); });
-  if (reviewNextBtn) reviewNextBtn.addEventListener('click', () => { if (currentReviewStep < 4) showReviewStep(currentReviewStep + 1); });
-
-  // Delegated click on the whole detail sidebar — handles both phase heads and sub-steps
-  const detailPhases = document.querySelector('.wf-dash-detail .wf-phases');
-  if (detailPhases) detailPhases.addEventListener('click', (e) => {
-    const sub = e.target.closest('.wf-sub');
-    if (sub && sub.dataset.reviewStep) { showReviewStep(parseInt(sub.dataset.reviewStep)); return; }
+    if (s && s.dataset.step) { showStep(parseInt(s.dataset.step)); return; }
     const phaseHead = e.target.closest('.wf-phase-head');
-    if (phaseHead) setActivePhase(phaseHead.closest('.wf-phase'));
+    if (phaseHead) {
+      const phaseEl = phaseHead.closest('.wf-phase');
+      if (!phaseEl || phaseEl.classList.contains('active')) return;
+      document.querySelectorAll('#stepSidebar .wf-phase').forEach(p => p.classList.remove('active'));
+      phaseEl.classList.add('active');
+      const idx = parseInt(phaseEl.dataset.phase);
+      setBodyPhaseClass(idx);
+      const crId = new URL(window.location).searchParams.get('cr');
+      const cr = window.WORKFLOWS && window.WORKFLOWS.crs.find(c => c.id === crId);
+      if (idx === 2) showStep(1);
+      else if (idx === 3) renderStamp(cr);
+      else if (idx === 4) renderAbschluss(cr);
+    }
   });
 
   // "Bearbeiten" jump-back buttons inside the Step 4 summary
   document.addEventListener('click', (e) => {
     const jumper = e.target.closest('[data-goto]');
-    if (jumper && body.classList.contains('wf-dash-create-active')) {
+    if (jumper && body.classList.contains('wf-dash-workflow-active')) {
       showStep(parseInt(jumper.dataset.goto));
     }
   });
