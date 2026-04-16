@@ -25,6 +25,8 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 
 **Advanced Prototype:** https://bbl-dres.github.io/property-inventory/prototype-tabs
 
+**GIS Server Admin:** https://bbl-dres.github.io/property-inventory/prototype-backend
+
 <p align="center">
   <img src="assets/images/preview1.jpg" width="90%"/>
 </p>
