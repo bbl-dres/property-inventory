@@ -15,11 +15,22 @@
 .pb-body {
   display: flex;
   flex-direction: column;
+  background: var(--grey-50);
+  /* The document scrolls as a whole — no fixed-viewport chrome. Topbar
+   * and section-nav scroll away with the content. Scene viewer opts back
+   * into a pinned viewport via `.pb-body--fixed-viewport` (see below). */
+}
+
+/* Fixed-viewport escape hatch for surfaces that need a fullscreen canvas
+ * (the scene viewer / map creator). Toggled by `js/map-scene.js` on
+ * mount/unmount. Also the single signal used to hide the section-nav —
+ * every other route keeps the tabs visible. */
+.pb-body.pb-body--fixed-viewport {
   height: 100vh;
   height: 100dvh;
   overflow: hidden;
-  background: var(--grey-50);
 }
+.pb-body--fixed-viewport .pb-section-nav { display: none; }
 
 .pb-sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
@@ -42,6 +53,10 @@
 .pb-layout-grid {
   display: grid;
   grid-template-columns: 300px 1fr;
+}
+/* Scene viewer mode: reinstate the flex sizing so layout-grid fills the
+ * remaining viewport height between topbar and bottom edge. */
+.pb-body--fixed-viewport .pb-layout-grid {
   flex: 1;
   min-height: 0;
 }
@@ -51,15 +66,25 @@
 
 .pb-main {
   min-width: 0;
+  /* Cap content at the same max-width as `.pb-section-nav-inner` so the
+   * tab row above lines up vertically with the content column. Scene
+   * viewer opts out (see `.pb-main.pb-scene-root`). */
+  max-width: 1280px;
+  width: 100%;
+  margin-inline: auto;
+}
+/* Scene viewer re-enables internal scroll so the map + its sub-modules
+ * stay pinned while edits happen. */
+.pb-body--fixed-viewport .pb-main {
   overflow: auto;
 }
 
 /* ============ TOPBAR + TABS ============ */
 
 .pb-topbar {
-  display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: var(--space-4);
   padding: 0 var(--space-5);
   height: 48px;
@@ -68,9 +93,7 @@
   color: var(--white);
   border-bottom: 1px solid var(--grey-800);
 }
-.pb-topbar-title { justify-self: start; }
 .pb-topbar-right {
-  justify-self: end;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -185,15 +208,25 @@
 
 .pb-topbar-hint .material-symbols-outlined { font-size: var(--icon-sm); }
 
-/* Horizontal tab nav in the topbar. Hugs content, left-aligns. */
-.pb-tabs {
+/* Section navigation — a white band sitting between the dark topbar and
+ * the main content. Background spans the full viewport width so the
+ * separator line reads as app chrome; the tab row itself is capped at the
+ * same max-width as `.pb-main` (1280px) so tabs align visually with the
+ * content column below on wide monitors. */
+.pb-section-nav {
+  height: 40px;
+  flex-shrink: 0;
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-200);
+}
+.pb-section-nav-inner {
   display: flex;
   align-items: stretch;
-  gap: var(--space-2);
-  min-width: 0;
+  gap: var(--space-1);
+  max-width: 1280px;
+  margin-inline: auto;
+  padding-inline: var(--space-5);
   height: 100%;
-  justify-self: center;
-  overflow: hidden;
 }
 
 .pb-tab {
@@ -201,7 +234,7 @@
   align-items: center;
   gap: var(--space-2);
   padding: 0 var(--space-3);
-  color: var(--grey-300);
+  color: var(--grey-600);
   text-decoration: none;
   font-size: var(--text-sm);
   font-weight: var(--font-medium);
@@ -210,16 +243,21 @@
   white-space: nowrap;
   cursor: pointer;
   flex: 0 0 auto;
+  margin-bottom: -1px; /* overlap the band's bottom border so the active underline sits cleanly on it */
 }
-.pb-tab:hover { color: var(--white); background: var(--grey-800); }
+.pb-tab:hover { color: var(--grey-900); background: var(--grey-50); }
 .pb-tab .material-symbols-outlined { font-size: var(--icon-md); }
 .pb-tab--active {
-  color: var(--white);
+  color: var(--grey-900);
   border-bottom-color: var(--primary-red);
-  background: var(--grey-800);
+  background: transparent;
+}
+.pb-tab:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: -2px;
 }
 
-/* Collapse tab labels to icon-only below 900px so topbar stays single-row. */
+/* Collapse tab labels to icon-only below 900px so the section nav stays single-row. */
 @media (max-width: 900px) {
   .pb-tab-label { display: none; }
 }
@@ -288,7 +326,6 @@
   gap: var(--space-4);
   padding: var(--space-4) var(--space-6);
   border-bottom: 1px solid var(--grey-200);
-  background: var(--white);
   margin: calc(var(--space-5) * -1) calc(var(--space-6) * -1) var(--space-5);
 }
 
@@ -1808,9 +1845,12 @@
  * container so we can collapse the scroll-container padding and let the
  * layout fill the viewport edge-to-edge. */
 /* `.pb-scene-root` is added to `#app` (which already has `.pb-main`). The
- * chained selector wins on specificity without needing `!important`. */
+ * chained selector wins on specificity without needing `!important`. The
+ * scene viewer needs the full viewport width for its map canvas, so the
+ * 1280px cap inherited from `.pb-main` is lifted here. */
 .pb-main.pb-scene-root {
   padding: 0;
+  max-width: none;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -2393,6 +2433,172 @@
 .pb-icon-md  { font-size: var(--icon-md); }
 .pb-icon-lg  { font-size: var(--icon-lg); }
 .pb-icon-2xl { font-size: var(--icon-2xl); }
+
+/* ============ CATALOGUE ============ */
+
+/* Shared container for the Maps & Apps + Layers catalogues.
+ * Toolbar row: search (flex-grow left) + view toggle (right).
+ * Body: either `.pb-catalogue-grid` (cards) or `.pb-catalogue-list` (table). */
+.pb-catalogue {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.pb-catalogue-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.pb-catalogue-search-wrap {
+  position: relative;
+  flex: 1 1 320px;
+  min-width: 220px;
+  max-width: 480px;
+}
+.pb-catalogue-search-icon {
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--grey-500);
+  pointer-events: none;
+}
+.pb-catalogue-search {
+  width: 100%;
+  padding: var(--space-1) var(--space-3) var(--space-1) calc(var(--space-2) + var(--icon-sm) + var(--space-2));
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  background: var(--white);
+}
+.pb-catalogue-search:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: 1px;
+  border-color: var(--grey-400);
+}
+
+/* Gallery / List toggle. Single segmented button, pressed state on the
+ * active mode. */
+.pb-view-toggle {
+  display: inline-flex;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--white);
+}
+.pb-view-toggle-btn {
+  background: transparent;
+  border: 0;
+  padding: var(--space-1) var(--space-2);
+  cursor: pointer;
+  color: var(--grey-600);
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  min-width: 36px;
+  justify-content: center;
+}
+.pb-view-toggle-btn + .pb-view-toggle-btn {
+  border-left: 1px solid var(--grey-300);
+}
+.pb-view-toggle-btn:hover { background: var(--grey-50); color: var(--grey-900); }
+.pb-view-toggle-btn.is-active {
+  background: var(--grey-100);
+  color: var(--grey-900);
+}
+.pb-view-toggle-btn:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: -2px;
+}
+
+/* Gallery grid — reuses `.pb-product-grid` for Maps & Apps; features-catalogue
+ * can use its own tokens on the card class. */
+.pb-catalogue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: var(--space-4);
+}
+
+/* Compact list table. */
+.pb-catalogue-list-wrap { overflow: hidden; }
+.pb-catalogue-list tbody tr { cursor: pointer; }
+.pb-catalogue-row-name {
+  color: var(--grey-900);
+  font-weight: var(--font-medium);
+  text-decoration: none;
+}
+.pb-catalogue-row-name:hover { text-decoration: underline; }
+
+.pb-catalogue-empty { padding: var(--space-6) var(--space-4); }
+.pb-card-foot-meta { font-size: var(--text-xs); }
+
+/* Layer cards — the Layers catalogue gallery. Compact card, anchor so the
+ * whole surface is clickable. Icon left, metadata right. Contrast: the
+ * product card is large with a thumbnail image; this one is identifier-first. */
+.pb-layer-card {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  color: var(--grey-900);
+  transition: border-color 120ms, box-shadow 120ms;
+}
+.pb-layer-card:hover {
+  border-color: var(--grey-300);
+  box-shadow: var(--shadow-sm, 0 1px 2px rgba(0, 0, 0, 0.06));
+}
+.pb-layer-card:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: 2px;
+}
+.pb-layer-card-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--grey-50);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.pb-layer-card-icon .material-symbols-outlined {
+  font-size: var(--icon-lg);
+  color: var(--grey-700);
+}
+.pb-layer-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+.pb-layer-card-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.pb-layer-card-name {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  font-size: var(--text-xs);
+}
+.pb-layer-card-meta {
+  font-size: var(--text-xs);
+  color: var(--grey-700);
+  margin-top: var(--space-1);
+}
+.pb-layer-card-count {
+  font-size: var(--text-xs);
+  color: var(--grey-900);
+  font-weight: var(--font-medium);
+}
+.pb-layer-card-updated { font-size: var(--text-xs); }
 
 /* ============ MAP POPUPS ============ */
 

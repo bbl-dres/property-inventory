@@ -1,24 +1,24 @@
 // prototype-backend — hash router + shell controller
 //
 // Routes:
-//   #/features                           -> sidebar(features) + "Select a layer" empty state
-//   #/features/:name                     -> sidebar(features) + feature-detail (default tab=schema)
+//   #/                                   -> redirects to DEFAULT_ROUTE (Maps & Apps)
+//   #/products                           -> products-gallery (Maps & Apps catalogue, full-width)
+//   #/products/:slug                     -> product-detail (or map-scene for kind='map')
+//   #/features                           -> features-catalogue (Layers catalogue, full-width)
+//   #/features/:name                     -> feature-detail (default tab=schema)
 //   #/features/:name?tab=schema|data|map -> feature-detail (switch tab, no remount)
-//   #/products                           -> gallery, full-width (default route, no sidebar)
-//   #/products/:slug                     -> product-detail, full-width (no sidebar)
 //   #/settings                           -> redirects to #/settings/members
-//   #/settings/members                   -> sidebar(settings) + members (formerly Users)
-//   #/settings/connection                -> sidebar(settings) + Connection view
+//   #/settings/members                   -> sidebar(settings) + members
+//   #/settings/connection                -> sidebar(settings) + Connection
 //   #/settings/preferences               -> sidebar(settings) + Preferences stub
+//   #/settings/about                     -> sidebar(settings) + About
 //
-// Legacy: #/users* redirects to #/settings/members.
+// Legacy redirects: `#/layers*` → `#/features*`, `#/users*` → `#/settings/members`.
 //
-// Primary nav lives in the horizontal tab bar at the top of the topbar; the
-// old vertical icon rail was removed. Sidebar is only mounted for the
-// `features` and `settings` sections (see SECTIONS_WITH_SIDEBAR).
-//
-// Legacy redirects: `#/layers*` → `#/features*` (kept so existing bookmarks
-// don't break; the route path stays `features` even though UI says "Layer").
+// Primary nav lives in the `.pb-section-nav` band below the topbar (not
+// in the topbar itself). Only `settings` mounts a sidebar — see
+// SECTIONS_WITH_SIDEBAR. Layers and Maps & Apps are full-width catalogues
+// built on `mountCatalogue` (js/catalogue.js).
 
 import { closeModal, el, wireMenu } from './utils.js';
 import * as api from './api.js';
@@ -36,8 +36,11 @@ let navToken = 0;
 
 const DEFAULT_ROUTE = '#/products';
 
-// Sections that have an object sidebar mounted next to the main view.
-const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
+// Sections that mount a sidebar alongside the main view. Only Settings
+// qualifies now — it's static navigation between 4 config pages. The
+// Layers sidebar was retired in favour of the Layers catalogue (gallery
+// + list) so the IA matches Maps & Apps. Maps & Apps has never had one.
+const SECTIONS_WITH_SIDEBAR = new Set(['settings']);
 
 // Primary nav definition — painted once into the topbar. Settings is
 // intentionally NOT a primary tab: it lives as a gear icon in the right
@@ -77,7 +80,7 @@ function resolveRoute({ path, query, rawQuery }) {
   }
 
   if (section === 'features') {
-    if (path.length === 1) return { name: 'features-empty', section: 'features' };
+    if (path.length === 1) return { name: 'features-catalogue', section: 'features' };
     if (path[1] === 'new') return { name: 'redirect', to: '#/features', openNewFeature: true };
     const tab = query.get('tab') || 'schema';
     return { name: 'feature-detail', section: 'features', params: { layerName: path[1], tab } };
@@ -100,9 +103,7 @@ function resolveRoute({ path, query, rawQuery }) {
     if (sub === 'about') {
       return { name: 'settings-about', section: 'settings' };
     }
-    // Bare `#/settings` → default to the first sidebar item (Members), matching
-    // the "first sidebar item is the section default" convention also used by
-    // the Features section (see `features-empty` auto-navigate below).
+    // Bare `#/settings` → default to the first sidebar item (Members).
     return { name: 'redirect', to: '#/settings/members' };
   }
   return { name: 'redirect', to: DEFAULT_ROUTE };
@@ -111,6 +112,7 @@ function resolveRoute({ path, query, rawQuery }) {
 async function importView(routeName) {
   switch (routeName) {
     case 'feature-detail': return import('./feature-detail.js');
+    case 'features-catalogue': return import('./features-catalogue.js');
     case 'product-detail': return import('./product-detail.js');
     case 'products-gallery': return import('./products-gallery.js');
     case 'settings-members': return import('./users-view.js');
@@ -124,11 +126,9 @@ async function importView(routeName) {
 }
 
 async function importSidebar(section) {
-  // Only `features` and `settings` actually mount a sidebar — other sections
-  // (like `products`) are full-width and intentionally no-op here. See
-  // SECTIONS_WITH_SIDEBAR above for the gate.
+  // Only `settings` mounts a sidebar now. Layers and Maps & Apps run
+  // as full-width catalogues. See SECTIONS_WITH_SIDEBAR above.
   switch (section) {
-    case 'features': return import('./sidebar-features.js');
     case 'settings': return import('./sidebar-settings.js');
     default: return null;
   }
@@ -171,6 +171,11 @@ function applySidebarVisibility(section) {
     sidebarHost.hidden = !hasSidebar;
   }
 }
+
+// Section-nav visibility is now driven by CSS: it's hidden only when the
+// body has `.pb-body--fixed-viewport`, which the scene viewer (map creator)
+// toggles in its mount/unmount. Every other route — catalogues, layer
+// detail, app-kind product detail, settings — keeps the nav visible.
 
 /**
  * Small utility to build a standard `.pb-view-header` block. Every view
@@ -298,8 +303,8 @@ async function handleRoute() {
     currentView.params.tab = route.params.tab;
     try { currentView.module.onTabChange?.(route.params.tab); }
     catch (err) { console.error('[router] onTabChange', err); }
-    await mountSidebar('features', route.params.layerName);
-    if (isStale()) return;
+    // No sidebar to refresh on a feature tab switch — Layers catalogues
+    // are full-width now.
     return;
   }
 
@@ -318,7 +323,10 @@ async function handleRoute() {
   // synchronously before the first `await`, which was safe within a single
   // tick but became unsafe once Task 2 added a `#/settings` → members
   // redirect (an extra hashchange pair per navigation).
-  let activeKey = route.params?.layerName || route.params?.slug || null;
+  // The only section that still mounts a sidebar is Settings; everything
+  // else no-ops inside mountSidebar. We pick a Settings-sub activeKey and
+  // ignore the rest.
+  let activeKey = null;
   if (route.section === 'settings') {
     if (route.name === 'settings-members') activeKey = 'members';
     else if (route.name === 'settings-connection') activeKey = 'connection';
@@ -330,37 +338,13 @@ async function handleRoute() {
   app.innerHTML = '';
 
   // Mount main view.
-  if (route.name === 'features-empty') {
-    // If there are features, auto-navigate to the first.
-    try {
-      const layers = await api.listLayers();
-      if (isStale()) return;
-      if (layers.length) {
-        location.hash = `#/features/${encodeURIComponent(layers[0].name)}`;
-        return;
-      }
-    } catch {}
-    if (isStale()) return;
-    const cta = el('button', { type: 'button', class: 'btn-primary' }, [
-      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
-      ' New layer'
-    ]);
-    cta.addEventListener('click', async () => {
-      const mod = await import('./new-feature-drawer.js');
-      mod.open();
-    });
-    app.appendChild(renderViewHeader({
-      title: 'Layers',
-      subtitle: '0 layers',
-      description: 'Create your first layer to get started.'
-    }));
-    app.appendChild(emptyState('layers', 'No layers yet', 'Create your first layer to get started.', cta));
-    return;
-  }
+  // Note: the old `features-empty` inline handler was replaced by
+  // `features-catalogue.js` — a real module that owns its empty state and
+  // the search/gallery/list toggle. The router no longer auto-navigates to
+  // the first layer; the catalogue shows the full inventory instead.
 
-  // Preferences is a tiny placeholder — inline here (mirrors how
-  // `features-empty` is handled above) so we don't spin up a dedicated module
-  // for a "Coming soon" state.
+  // Preferences is a tiny placeholder — inline here (mirrors About below)
+  // so we don't spin up a dedicated module for a "Coming soon" state.
   if (route.name === 'settings-preferences') {
     app.appendChild(renderViewHeader({
       breadcrumb: [

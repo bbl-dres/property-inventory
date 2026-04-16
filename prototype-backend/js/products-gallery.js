@@ -1,15 +1,17 @@
-// prototype-backend — Maps & Apps gallery (#/products)
+// prototype-backend — Maps & Apps catalogue (#/products)
 //
-// Visual grid of product cards. Clicking a card navigates to the product
-// detail view. Replaces the earlier "Select an item" / "No items yet"
-// empty states — an empty state is still shown when literally zero
-// products exist.
+// Gallery + list views of product cards. Clicking a card navigates to the
+// product detail view. Uses the shared `mountCatalogue` primitive from
+// catalogue.js to keep the same shape as the Layers catalogue.
 
 import * as api from './api.js';
-import { el, toast, wireMenu } from './utils.js';
+import { el, toast, wireMenu, formatRelativeTime } from './utils.js';
 import { renderViewHeader } from './app.js';
+import { mountCatalogue } from './catalogue.js';
 
 let root = null;
+let catalogueBody = null;
+let catalogueCtl = null;
 let products = [];
 
 export async function mount(container) {
@@ -17,22 +19,60 @@ export async function mount(container) {
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try { products = await api.listProducts(); }
   catch { products = []; }
-  render();
+  renderShell();
 }
 
 export function unmount() {
+  if (catalogueCtl) { try { catalogueCtl.unmount(); } catch {} }
+  catalogueCtl = null;
+  catalogueBody = null;
   if (root) root.innerHTML = '';
   root = null;
   products = [];
 }
 
-function render() {
+function renderShell() {
   if (!root) return;
   root.innerHTML = '';
 
-  // "+ New ▾" dropdown — splits creation into two small dedicated modals.
-  // The dropdown pattern scales better than a radio picker inside the modal
-  // as more kinds get added later (dashboard, storymap, embed…).
+  root.appendChild(renderViewHeader({
+    title: 'Maps & Apps',
+    subtitle: `${products.length} item${products.length === 1 ? '' : 's'}`,
+    description: 'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.',
+    actions: buildNewButton()
+  }));
+
+  catalogueBody = el('div', { class: 'pb-catalogue' });
+  root.appendChild(catalogueBody);
+
+  catalogueCtl = mountCatalogue(catalogueBody, {
+    items: products,
+    sectionKey: 'products',
+    defaultView: 'gallery',
+    searchPlaceholder: 'Search maps & apps…',
+    matchesQuery: (p, q) => (p.name || '').toLowerCase().includes(q)
+      || (p.slug || '').toLowerCase().includes(q)
+      || (p.description || '').toLowerCase().includes(q),
+    renderCard,
+    renderListHeader,
+    renderListRow,
+    emptyState: {
+      icon: 'apps',
+      title: 'No maps or apps yet',
+      description: 'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.'
+    }
+  });
+}
+
+async function refreshList() {
+  try { products = await api.listProducts(); }
+  catch { products = []; }
+  // Refresh both the subtitle count and the catalogue body.
+  renderShell();
+}
+
+function buildNewButton() {
+  // "+ New ▾" dropdown — splits creation into three kinds.
   const newBtn = el('button', {
     type: 'button',
     class: 'btn-primary',
@@ -45,20 +85,13 @@ function render() {
     el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'arrow_drop_down')
   ]);
 
-  const refreshList = async () => {
-    try { products = await api.listProducts(); }
-    catch { products = []; }
-    render();
-  };
-
   const openModalFor = async (kind) => {
     const mod = await import('./new-product-modal.js');
     mod.open({
       kind,
       onCreated: async (created) => {
         // A new map drops the user straight into the scene viewer so they
-        // can start authoring. Registered apps stay on the gallery so the
-        // user can see the card they just added.
+        // can start authoring. Registered apps stay on the gallery.
         if (kind === 'map') {
           location.hash = `#/products/${encodeURIComponent(created.slug)}`;
         } else {
@@ -68,17 +101,13 @@ function render() {
     });
   };
 
-  // Shortcut flow: upload a file, which creates BOTH a new layer (via the
-  // existing New Layer drawer) AND a wrapping map that consumes it. After
-  // the layer is created, auto-create the map and navigate straight into
-  // the scene viewer.
+  // Shortcut: upload a file, which creates a layer AND a wrapping map.
   const openNewMapFromData = async () => {
     const mod = await import('./new-feature-drawer.js');
     mod.open({
       onCreated: async ({ name: layerName, title }) => {
         const baseLabel = (title || layerName).trim();
         const mapName = `${baseLabel} map`;
-        // Layer names already conform to the slug charset ([a-z0-9_]).
         const mapSlug = `${layerName}-map-${Date.now().toString(36).slice(-5)}`;
         try {
           const created = await api.createProduct({
@@ -116,28 +145,7 @@ function render() {
     menuItem('upload_file', 'New map from data', openNewMapFromData)
   );
 
-  const count = products.length;
-  root.appendChild(renderViewHeader({
-    title: 'Maps & Apps',
-    subtitle: `${count} item${count === 1 ? '' : 's'}`,
-    description: 'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.',
-    actions: newBtnWrap
-  }));
-
-  if (!products.length) {
-    root.appendChild(el('div', { class: 'empty-state' }, [
-      el('span', { class: 'material-symbols-outlined' }, 'apps'),
-      el('div', { class: 'empty-state-title' }, 'No maps or apps yet'),
-      el('div', { class: 'empty-state-description' },
-        'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.')
-    ]));
-    return;
-  }
-
-  const grid = el('div', { class: 'pb-product-grid' },
-    products.map(renderCard)
-  );
-  root.appendChild(grid);
+  return newBtnWrap;
 }
 
 function renderCard(p) {
@@ -150,10 +158,6 @@ function renderCard(p) {
         el('span', { class: 'material-symbols-outlined' }, 'apps')
       ]);
 
-  // The whole card is a real anchor: semantic link, keyboard-accessible,
-  // middle-click-opens-new-tab works for free. We dropped the inner
-  // "Open →" link (was invalid nested <a>) — the detail view has its own
-  // open button when an external URL is configured.
   return el('a', {
     href,
     class: 'pb-product-card',
@@ -167,9 +171,45 @@ function renderCard(p) {
       ]),
       el('p', { class: 'pb-product-card-desc' }, p.description || ''),
       el('div', { class: 'pb-product-card-foot' }, [
-        el('span', { class: 'pb-muted', style: { fontSize: '12px' } },
+        el('span', { class: 'pb-muted pb-card-foot-meta' },
           `${count} layer${count === 1 ? '' : 's'}`)
       ])
     ])
   ]);
+}
+
+function renderListHeader() {
+  return el('tr', {}, [
+    el('th', {}, 'Name'),
+    el('th', { style: { width: '110px' } }, 'Status'),
+    el('th', { style: { width: '80px' } }, 'Kind'),
+    el('th', { style: { width: '90px' } }, 'Layers'),
+    el('th', {}, 'Owner'),
+    el('th', { style: { width: '140px' } }, 'Updated')
+  ]);
+}
+
+function renderListRow(p) {
+  const href = `#/products/${encodeURIComponent(p.slug)}`;
+  const layerCount = (p.consumed_layers || []).length;
+  const tr = el('tr', { class: 'pb-catalogue-row', dataset: { slug: p.slug } }, [
+    el('td', {}, [
+      el('a', { href, class: 'pb-catalogue-row-name' }, p.name || p.slug)
+    ]),
+    el('td', {}, [
+      el('span', { class: `pb-status pb-status--${p.status || 'staging'}` }, p.status || 'staging')
+    ]),
+    el('td', {}, p.kind || 'app'),
+    el('td', {}, `${layerCount}`),
+    el('td', {}, p.owner || el('span', { class: 'pb-muted' }, '—')),
+    el('td', {}, p.last_deployed_at
+      ? formatRelativeTime(p.last_deployed_at)
+      : el('span', { class: 'pb-muted' }, '—'))
+  ]);
+  tr.addEventListener('click', (e) => {
+    // The name cell is a real anchor already — don't double-navigate on nested clicks.
+    if (e.target.closest('a')) return;
+    location.hash = href;
+  });
+  return tr;
 }

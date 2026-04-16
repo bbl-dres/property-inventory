@@ -100,6 +100,10 @@ export async function mount(container, { product: p }) {
 
   root.innerHTML = '';
   root.classList.add('pb-scene-root');
+  // The scene viewer wants a fullscreen map canvas — opt into the
+  // fixed-viewport body mode so the map + its sub-modules stay pinned
+  // while the user edits. Every other route lets the document scroll.
+  document.body.classList.add('pb-body--fixed-viewport');
 
   renderShell();
 
@@ -152,6 +156,7 @@ export function unmount() {
     root.classList.remove('pb-scene-root');
     root.innerHTML = '';
   }
+  document.body.classList.remove('pb-body--fixed-viewport');
   root = null;
   product = null;
   scene = null;

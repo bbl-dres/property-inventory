@@ -23,7 +23,6 @@
       <span class="material-symbols-outlined">database</span>
       <span>GIS Server</span>
     </a>
-    <nav class="pb-tabs" id="pb-tabs" aria-label="Primary"></nav>
     <div class="pb-topbar-right">
       <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
         <span class="material-symbols-outlined">cloud_off</span>
@@ -61,8 +60,12 @@
     </div>
   </header>
 
+  <nav class="pb-section-nav" aria-label="Primary">
+    <div class="pb-section-nav-inner" id="pb-tabs"></div>
+  </nav>
+
   <div class="pb-layout-grid" id="pb-layout-grid">
-    <aside class="pb-object-sidebar" id="pb-object-sidebar" aria-label="Object list"></aside>
+    <aside class="pb-object-sidebar" id="pb-object-sidebar"></aside>
 
     <main id="app" class="pb-main" tabindex="-1"></main>
   </div>

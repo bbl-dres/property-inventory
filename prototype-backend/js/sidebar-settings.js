@@ -18,11 +18,17 @@ const ITEMS = [
 export function mount(container, opts = {}) {
   root = container;
   activeKey = opts.activeKey || 'members';
+  // The aside element is shared across sections; label it from here so
+  // the landmark's accessible name matches what's actually inside it.
+  root.setAttribute('aria-label', 'Settings sections');
   render();
 }
 
 export function unmount() {
-  if (root) root.innerHTML = '';
+  if (root) {
+    root.removeAttribute('aria-label');
+    root.innerHTML = '';
+  }
   root = null;
 }
 
