@@ -82,3 +82,34 @@ export function sridName(code) {
   const hit = SUPPORTED_SRIDS.find((s) => s.code === Number(code));
   return hit ? hit.name : null;
 }
+
+/**
+ * Canonical material-symbols icon per geometry type. Used by every surface
+ * that renders a layer row (sidebar, data grid, scene manager, scene layer
+ * picker). Keeping a single source of truth ensures a Polygon layer looks
+ * the same icon wherever it appears.
+ *
+ * Fallback (`help`) is intentional: it signals "unknown/mismatched geometry"
+ * to the user, which is the precise failure mode the data-grid geom column
+ * was added to surface.
+ */
+export const GEOMETRY_ICONS = {
+  Point:           'location_on',
+  MultiPoint:      'location_on',
+  LineString:      'trending_up',
+  MultiLineString: 'trending_up',
+  Polygon:         'hexagon',
+  MultiPolygon:    'hexagon',
+  Table:           'table_chart'
+};
+
+export function geomTypeIcon(type) {
+  return GEOMETRY_ICONS[type] || 'help';
+}
+
+/**
+ * Brand accent color used inside MapLibre paint specs (circle/line/fill
+ * colors), where CSS custom properties can't reach. Keep in sync with the
+ * `--primary-red` token in tokens.css — if you rebrand, change both.
+ */
+export const BRAND_COLOR = '#c8102e';

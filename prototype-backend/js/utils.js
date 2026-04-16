@@ -197,7 +197,7 @@ export function toast(message, kind = 'info') {
       type: 'button',
       'aria-label': 'Dismiss',
       'data-action': 'toast-dismiss'
-    }, [el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'close')])
+    }, [el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'close')])
   ]);
   host.appendChild(t);
   const timer = setTimeout(() => t.remove(), 3000);

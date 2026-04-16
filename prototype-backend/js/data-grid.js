@@ -9,7 +9,7 @@ import {
 } from './utils.js';
 import { bus, isAllowed } from './state.js';
 import { openImportModal } from './import-modal.js';
-import { GEOMETRY_COMPAT } from './constants.js';
+import { GEOMETRY_COMPAT, geomTypeIcon } from './constants.js';
 
 const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
@@ -144,21 +144,8 @@ function tableColumnCount() {
   return (isSpatial() ? 1 : 0) + 1 + userColumns().length + (isSpatial() ? 1 : 0);
 }
 
-// Map a GeoJSON geometry type string to the material-symbols icon name used
-// in the leading "Geom" column on spatial layers. Falls back to `help` when
-// the type is missing or unrecognised — that mismatch is precisely what
-// we want to surface to the user via this column.
-function geomTypeIcon(type) {
-  switch (type) {
-    case 'Point':
-    case 'MultiPoint':        return 'location_on';
-    case 'LineString':
-    case 'MultiLineString':   return 'trending_up';
-    case 'Polygon':
-    case 'MultiPolygon':      return 'hexagon';
-    default:                  return 'help';
-  }
-}
+// geomTypeIcon() lives in constants.js as the canonical mapping used by
+// every layer-row surface in the app.
 
 // ===== Render =====
 
@@ -232,7 +219,7 @@ function renderFilterBar() {
       ? 'Switch to Map tab — the view will fit the filtered records'
       : 'Enter a filter first'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'center_focus_strong'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'center_focus_strong'),
     ' Zoom to filter'
   ]);
   zoomBtn.addEventListener('click', () => {
@@ -271,7 +258,7 @@ function renderToolbar() {
     disabled: !canWrite ? true : false,
     title: canWrite ? '' : ROLE_GATED_TITLE
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'add'),
     ' New record'
   ]);
   newBtn.addEventListener('click', () => openSidePanel(null));
@@ -329,7 +316,7 @@ function renderTable() {
       class: 'pb-center',
       title: 'Geometry type of each record (compared against the layer declaration)'
     }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'category')
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'category')
     ]));
   }
   headers.push(renderHeaderCell('id', 'id', { width: '140px' }));
@@ -356,7 +343,7 @@ function renderTable() {
       disabled: !canWrite ? true : false,
       title: canWrite ? '' : ROLE_GATED_TITLE
     }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'add'),
+      el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'add'),
       ' New record'
     ]);
     newBtn.addEventListener('click', () => openSidePanel(null));
@@ -418,8 +405,7 @@ function renderDataRow(feature, userCols) {
       : 'No geometry';
     tr.appendChild(el('td', { class: 'pb-center', title: tooltip }, [
       el('span', {
-        class: 'material-symbols-outlined pb-muted',
-        style: { fontSize: '18px' },
+        class: 'material-symbols-outlined pb-muted pb-icon-md',
         'aria-label': tooltip
       }, iconName)
     ]));
@@ -544,7 +530,7 @@ function openSidePanel(feature) {
       class: 'btn-tertiary',
       style: { marginTop: '4px' }
     }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'content_copy'),
+      el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'content_copy'),
       ' Copy as WKT'
     ]);
     copyWktBtn.addEventListener('click', async () => {

@@ -11,7 +11,7 @@
 import * as api from './api.js';
 import { el, toast, openModal, closeModal, confirmModal, inlineEditable } from './utils.js';
 import { renderViewHeader } from './app.js';
-import { sridName } from './constants.js';
+import { sridName, geomTypeIcon, BRAND_COLOR as BRAND } from './constants.js';
 import * as layerManager from './scene-layer-manager.js';
 import * as editToolbar from './scene-edit-toolbar.js';
 import * as featureInspector from './scene-feature-inspector.js';
@@ -47,17 +47,8 @@ const BASEMAPS = {
   }
 };
 
-// Feature-collection paint colour per geometry type. Mirrors map-preview.
-const BRAND = '#c8102e';
-const GEOM_ICONS = {
-  Point: 'location_on',
-  MultiPoint: 'location_on',
-  LineString: 'trending_up',
-  MultiLineString: 'trending_up',
-  Polygon: 'hexagon',
-  MultiPolygon: 'hexagon',
-  Table: 'category'
-};
+// `BRAND` is the feature-collection paint colour per geometry type. Mirrors
+// map-preview. Imported above from constants.js so a rebrand is a one-liner.
 
 // ---- Module state ------------------------------------------------------
 
@@ -197,8 +188,8 @@ function renderShell() {
   subtitleNode = el('div', { class: 'pb-view-subtitle' }, '');
 
   const saveBtn = el('button', { type: 'button', class: 'btn-primary' }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'save'),
-    ' Save as new map'
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'save'),
+    ' Save'
   ]);
   saveBtn.addEventListener('click', () => toast('Save scene — coming soon', 'info'));
 
@@ -218,6 +209,10 @@ function renderShell() {
   );
 
   const header = renderViewHeader({
+    breadcrumb: [
+      { label: 'Maps & Apps', href: '#/products' },
+      { label: product.name || product.slug }
+    ],
     title: titleHost,
     subtitle: subtitleNode,
     actions: [saveBtn, overflowWrap]
@@ -347,7 +342,7 @@ function renderFooter() {
     class: 'pb-scene-footer-btn',
     'aria-label': 'Toggle 2D/3D'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, '3d_rotation'),
+    el('span', { class: 'material-symbols-outlined pb-icon-xs' }, '3d_rotation'),
     ' ',
     el('span', { class: 'pb-scene-view-label' }, scene.viewMode.toUpperCase())
   ]);
@@ -395,7 +390,7 @@ function renderEmptyState() {
   if (!emptyStateHost) return;
   emptyStateHost.innerHTML = '';
   const addBtn = el('button', { type: 'button', class: 'btn-primary' }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
     ' Add layer'
   ]);
   addBtn.addEventListener('click', () => openAddExistingPicker());
@@ -731,7 +726,7 @@ async function openAddExistingPicker() {
       checks.set(l.name, cb);
       return el('label', { class: 'pb-scene-picker-row' }, [
         cb,
-        el('span', { class: 'material-symbols-outlined pb-scene-picker-geom' }, GEOM_ICONS[l.geometry_type] || 'category'),
+        el('span', { class: 'material-symbols-outlined pb-scene-picker-geom' }, geomTypeIcon(l.geometry_type)),
         el('div', { class: 'pb-scene-picker-body' }, [
           el('div', { class: 'pb-scene-picker-title' }, l.title || l.name),
           el('div', { class: 'pb-scene-picker-sub' }, `${(l.feature_count || 0).toLocaleString()} record${l.feature_count === 1 ? '' : 's'} · ${l.geometry_type}`)

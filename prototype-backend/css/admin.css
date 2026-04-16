@@ -101,7 +101,8 @@
   align-items: center;
   gap: var(--space-2);
   font-size: var(--text-xs);
-  color: var(--grey-300);
+  /* grey-300 on grey-800 fails WCAG AA (~1.8:1). Bumped to grey-100 to clear 4.5:1. */
+  color: var(--grey-100);
   background: var(--grey-800);
   padding: var(--space-1) var(--space-3);
   border-radius: var(--radius-full);
@@ -238,41 +239,43 @@
 }
 .pb-role-chip .material-symbols-outlined { font-size: var(--icon-xs); }
 
-/* ============ FOOTER ============ */
+/* ============ ABOUT PAGE ============ */
 
-/* Small shell footer — version on the left, external links on the right.
- * Flex-shrink: 0 so it never collapses while the layout grid resizes. */
-.pb-footer {
+/* Simple external-link rows for Settings → About. Each row is the whole
+ * clickable surface (reuses the card body as its frame). */
+.pb-about-links {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.pb-about-link {
+  display: flex;
   align-items: center;
-  padding: var(--space-1) var(--space-5);
-  height: 32px;
-  flex-shrink: 0;
-  background: var(--grey-100);
-  border-top: 1px solid var(--grey-200);
-  font-size: var(--text-xs);
-  color: var(--grey-600);
-}
-
-.pb-footer-version {
-  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
-}
-
-.pb-footer-links {
-  display: flex;
-  gap: var(--space-4);
-}
-
-.pb-footer-links a {
-  color: var(--grey-700);
-  text-decoration: none;
-}
-
-.pb-footer-links a:hover {
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
   color: var(--grey-900);
-  text-decoration: underline;
+  text-decoration: none;
+  border: 1px solid transparent;
 }
+.pb-about-link:hover {
+  background: var(--grey-50);
+  border-color: var(--grey-200);
+}
+.pb-about-link > .material-symbols-outlined { color: var(--grey-600); }
+.pb-about-link-body { flex: 1; min-width: 0; }
+.pb-about-link-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+}
+.pb-about-link-url {
+  font-size: var(--text-xs);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.pb-about-link-arrow { color: var(--grey-500); font-size: var(--icon-sm); }
 
 /* ============ VIEW HEADER ============ */
 
@@ -295,6 +298,32 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-1);
+}
+
+/* Breadcrumb trail inside the view-header, above the title. Omitted on
+ * section-root pages where it would just echo the title (e.g. the Maps
+ * & Apps gallery). Last crumb is the current page and not a link. */
+.pb-breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  color: var(--grey-500);
+  margin-bottom: var(--space-1);
+}
+.pb-breadcrumb-link {
+  color: var(--grey-600);
+  text-decoration: none;
+}
+.pb-breadcrumb-link:hover {
+  color: var(--grey-900);
+  text-decoration: underline;
+}
+.pb-breadcrumb-sep { color: var(--grey-400); }
+.pb-breadcrumb-current {
+  color: var(--grey-700);
+  font-weight: var(--font-medium);
 }
 
 .pb-view-title {
@@ -454,7 +483,8 @@
   border: none;
   cursor: pointer;
   color: var(--grey-500);
-  padding: 2px;
+  /* WCAG 2.5.8: min 24×24. 4px padding + 16px icon = 24×24. */
+  padding: var(--space-1);
   border-radius: var(--radius-sm);
   display: none;
   align-items: center;
@@ -831,14 +861,15 @@
   flex: 1;
 }
 
-/* Pencil affordance on inline-editable fields. Hidden by default; revealed
- * when the user hovers or focuses the value wrapper. Purely visual —
- * pointer-events: none so clicks fall through to the <span> that already
- * listens for the enter-edit event. */
+/* Pencil affordance on inline-editable fields. Faintly visible by default
+ * (was `opacity: 0` but that hid the signal from keyboard users and made
+ * the field look read-only to first-timers), fully opaque on hover/focus.
+ * `pointer-events: none` so clicks fall through to the <span> that owns
+ * the enter-edit listener. */
 .pb-inline-edit-icon {
-  font-size: 14px;
+  font-size: var(--icon-xs);
   color: var(--grey-500);
-  opacity: 0;
+  opacity: 0.35;
   transition: opacity var(--transition-fast);
   pointer-events: none;
   flex-shrink: 0;
@@ -1686,8 +1717,10 @@
 /* When map-scene.js mounts into .pb-main it sets this class on the root
  * container so we can collapse the scroll-container padding and let the
  * layout fill the viewport edge-to-edge. */
-.pb-scene-root {
-  padding: 0 !important;
+/* `.pb-scene-root` is added to `#app` (which already has `.pb-main`). The
+ * chained selector wins on specificity without needing `!important`. */
+.pb-main.pb-scene-root {
+  padding: 0;
   display: flex;
   flex-direction: column;
   min-height: 0;
@@ -1784,15 +1817,18 @@
 .pb-scene-layer-drag {
   background: transparent;
   border: 0;
-  cursor: grab;
+  /* Reorder isn't wired yet — `pointer` avoids falsely advertising drag-and-drop.
+   * When real DnD lands, switch back to `grab`. */
+  cursor: pointer;
   color: var(--grey-400);
-  padding: 2px;
+  /* WCAG 2.5.8: 4px padding + 18px icon = 26×26. */
+  padding: var(--space-1);
   display: inline-flex;
   align-items: center;
   border-radius: var(--radius-sm);
 }
 .pb-scene-layer-drag:hover { color: var(--grey-700); background: var(--grey-100); }
-.pb-scene-layer-drag .material-symbols-outlined { font-size: 18px; }
+.pb-scene-layer-drag .material-symbols-outlined { font-size: var(--icon-md); }
 
 .pb-scene-layer-viz {
   margin: 0 var(--space-1);
@@ -1800,7 +1836,7 @@
 }
 
 .pb-scene-layer-geom {
-  font-size: 18px;
+  font-size: var(--icon-md);
   color: var(--grey-600);
   flex-shrink: 0;
 }
@@ -1831,7 +1867,8 @@
   border: 0;
   cursor: pointer;
   color: var(--grey-500);
-  padding: 2px;
+  /* WCAG 2.5.8: 4px padding + 18px icon = 26×26. */
+  padding: var(--space-1);
   display: inline-flex;
   align-items: center;
   border-radius: var(--radius-sm);
@@ -1841,7 +1878,7 @@
   outline: 2px solid var(--grey-700);
   outline-offset: 1px;
 }
-.pb-scene-layer-overflow .material-symbols-outlined { font-size: 18px; }
+.pb-scene-layer-overflow .material-symbols-outlined { font-size: var(--icon-md); }
 
 /* Compact popover menu used by layer overflow. */
 .pb-menu--compact { min-width: 180px; }
@@ -1941,7 +1978,7 @@
   text-align: center;
 }
 .pb-scene-empty-icon {
-  font-size: 36px;
+  font-size: var(--icon-2xl);
   color: var(--grey-400);
 }
 .pb-scene-empty-title {
@@ -1999,7 +2036,7 @@
   border-color: var(--primary-red);
   color: var(--primary-red);
 }
-.pb-scene-toolbar-btn .material-symbols-outlined { font-size: 20px; }
+.pb-scene-toolbar-btn .material-symbols-outlined { font-size: var(--icon-lg); }
 
 .pb-scene-toolbar-divider {
   width: 1px;
@@ -2214,7 +2251,7 @@
   background: var(--white);
 }
 .pb-attachment-icon {
-  font-size: 20px;
+  font-size: var(--icon-lg);
   color: var(--grey-600);
   flex-shrink: 0;
 }
@@ -2251,10 +2288,21 @@
 }
 .pb-scene-picker-row:hover { background: var(--grey-50); }
 .pb-scene-picker-row input { margin: 0; }
-.pb-scene-picker-geom { color: var(--grey-600); font-size: 18px; }
+.pb-scene-picker-geom { color: var(--grey-600); font-size: var(--icon-md); }
 .pb-scene-picker-body { flex: 1; min-width: 0; }
 .pb-scene-picker-title { font-size: var(--text-sm); color: var(--grey-900); font-weight: var(--font-medium); }
 .pb-scene-picker-sub { font-size: var(--text-xs); color: var(--grey-500); }
+
+/* ============ ICON SIZES ============ */
+
+/* Material-symbols icons appear all over the app at a handful of sizes.
+ * Use these utility classes on `<span class="material-symbols-outlined …">`
+ * instead of inline `style={{ fontSize: Xpx }}`. */
+.pb-icon-xs  { font-size: var(--icon-xs); }
+.pb-icon-sm  { font-size: var(--icon-sm); }
+.pb-icon-md  { font-size: var(--icon-md); }
+.pb-icon-lg  { font-size: var(--icon-lg); }
+.pb-icon-2xl { font-size: var(--icon-2xl); }
 
 /* ============ UTILITIES ============ */
 

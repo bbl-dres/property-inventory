@@ -113,7 +113,7 @@ function render() {
     disabled: (!canWrite && mode === 'view') ? true : false,
     title: !canWrite ? ROLE_GATED_TITLE : (mode === 'edit' ? 'Done editing (E)' : 'Edit schema (E)')
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } },
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' },
       mode === 'edit' ? 'check' : 'edit'),
     ' ',
     mode === 'edit' ? 'Done editing' : 'Edit schema'
@@ -131,7 +131,7 @@ function render() {
     disabled: !canWrite ? true : false,
     title: canWrite ? '' : ROLE_GATED_TITLE
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
     ' Add column'
   ]);
   addBtn.addEventListener('click', openAddColumnModal);

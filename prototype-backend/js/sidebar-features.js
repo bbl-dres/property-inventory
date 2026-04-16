@@ -9,6 +9,7 @@ import * as api from './api.js';
 import { bus, isAllowed } from './state.js';
 import { el, debounce, confirmModal, toast } from './utils.js';
 import { open as openNewFeatureDrawer } from './new-feature-drawer.js';
+import { geomTypeIcon } from './constants.js';
 
 const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
@@ -66,7 +67,7 @@ function renderShell() {
         disabled: !canWrite ? true : false,
         title: canWrite ? 'New layer' : ROLE_GATED_TITLE
       }, [
-        el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
         ' New'
       ]);
       btn.addEventListener('click', () => openNewFeatureDrawer());
@@ -151,9 +152,7 @@ function buildItem(layer) {
     dataset: { key: layer.name }
   }, [
     el('span', { class: 'material-symbols-outlined pb-sidebar-item-icon' },
-      layer.geometry_type === 'Table' ? 'table_chart'
-        : layer.geometry_type === 'Point' ? 'location_on'
-        : 'hexagon'
+      geomTypeIcon(layer.geometry_type)
     ),
     el('div', { class: 'pb-sidebar-item-body' }, [
       el('div', { class: 'pb-sidebar-item-title' }, layer.title || layer.name),

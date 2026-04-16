@@ -200,7 +200,7 @@ function renderSridWarningBanner(srid) {
     type: 'button',
     class: 'pb-banner-close',
     'aria-label': 'Dismiss warning'
-  }, [el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'close')]);
+  }, [el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'close')]);
   const banner = el('div', {
     class: 'pb-banner pb-banner--warn',
     role: 'status'
@@ -221,7 +221,7 @@ function renderUnsupportedBlock(ext) {
     class: 'btn-tertiary',
     title: 'Copy command'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'content_copy'),
+    el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'content_copy'),
     ' Copy'
   ]);
   const pre = el('pre', { class: 'pb-code', style: { margin: '0', flex: '1' } }, info.cmd);

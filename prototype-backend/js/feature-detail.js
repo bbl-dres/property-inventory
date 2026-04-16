@@ -185,7 +185,7 @@ function renderHero() {
   // of example curls below as documentation only.
   const url = `${REST_BASE}/${currentLayer.name}`;
   const copyBtn = el('button', { type: 'button', class: 'btn-secondary', title: 'Copy URL' }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'content_copy'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'content_copy'),
     ' Copy'
   ]);
   copyBtn.addEventListener('click', async () => {
@@ -226,7 +226,7 @@ function renderHero() {
   // Used-by card (reverse link to Maps & Apps).
   const usedByChips = productsUsing.map((p) =>
     el('a', { href: `#/products/${encodeURIComponent(p.slug)}`, class: 'pb-chip' }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'apps'),
+      el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'apps'),
       ' ',
       p.name || p.slug
     ])
@@ -264,6 +264,10 @@ function renderHero() {
   // Unified view-header replaces the old .pb-hero top block. The REST,
   // Used-by, and Metadata cards still render below as siblings.
   const header = renderViewHeader({
+    breadcrumb: [
+      { label: 'Layers', href: '#/features' },
+      { label: currentLayer.title || currentLayer.name }
+    ],
     title: titleNode,
     subtitle: subtitleNode,
     description: descEditor

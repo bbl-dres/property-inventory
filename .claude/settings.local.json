@@ -35,7 +35,13 @@
       "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=20000 \"http://localhost:8765/_test-nav.html\")",
       "Bash(pkill -f \"http.server 8765\")",
       "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=20000 \"http://localhost:8766/_test-final.html\")",
-      "Bash(pkill -f \"http.server 8766\")"
+      "Bash(pkill -f \"http.server 8766\")",
+      "Bash(grep -n \"confirmModal\\\\|confirm\\\\|Confirm\" \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js\"/*.js)",
+      "Bash(grep -n \"preventDefault\\\\|silent\\\\|without.*feedback\" \"c:/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js\"/*.js)",
+      "Bash(grep -o \"class: '[^']*'\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(grep -n \"location_on\\\\|polyline\\\\|square\\\\|polygon\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(grep \"import.*schema-editor\\\\|import.*data-grid\\\\|import.*map-preview\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(grep -n \"import.*slugify\\\\|function.*slugify\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)"
     ]
   }
 }

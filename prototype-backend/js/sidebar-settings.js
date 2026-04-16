@@ -11,7 +11,8 @@ let activeKey = 'members';
 const ITEMS = [
   { key: 'members',     label: 'Members',     sub: 'Users & roles',       icon: 'group',   href: '#/settings/members' },
   { key: 'connection',  label: 'Connection',  sub: 'Mock · localStorage', icon: 'storage', href: '#/settings/connection' },
-  { key: 'preferences', label: 'Preferences', sub: 'Coming soon',         icon: 'tune',    href: '#/settings/preferences' }
+  { key: 'preferences', label: 'Preferences', sub: 'Coming soon',         icon: 'tune',    href: '#/settings/preferences' },
+  { key: 'about',       label: 'About',       sub: 'Version & links',     icon: 'info',    href: '#/settings/about' }
 ];
 
 export function mount(container, opts = {}) {

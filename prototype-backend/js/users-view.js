@@ -51,13 +51,17 @@ function render() {
     disabled: !canAdmin ? true : false,
     title: canAdmin ? '' : ROLE_GATED_TITLE
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'person_add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'person_add'),
     ' Invite user'
   ]);
   inviteBtn.addEventListener('click', openInviteModal);
 
   const count = users.length;
   root.appendChild(renderViewHeader({
+    breadcrumb: [
+      { label: 'Settings', href: '#/settings' },
+      { label: 'Members' }
+    ],
     title: 'Members',
     subtitle: `${count} member${count === 1 ? '' : 's'}`,
     description: 'Prototype-only IAM — roles are stored but not enforced. The real backend would use Supabase Auth + RLS.',
@@ -180,6 +184,16 @@ function openInviteModal() {
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     submitErr.style.display = 'none';
+    // Client-side duplicate-email guard so the user gets immediate feedback
+    // rather than a round-tripped 409 from the mock API. The API still
+    // enforces uniqueness server-side — this is just the friendlier path.
+    const candidate = emailInput.value.trim().toLowerCase();
+    if (candidate && users.some((u) => (u.email || '').toLowerCase() === candidate)) {
+      submitErr.textContent = 'This user is already a member.';
+      submitErr.style.display = '';
+      emailInput.focus();
+      return;
+    }
     submitBtn.disabled = true;
     try {
       await api.createUser({
@@ -198,6 +212,16 @@ function openInviteModal() {
     }
   });
   cancelBtn.addEventListener('click', () => closeModal());
+
+  // Submit button lives in the modal footer, outside the form — browsers
+  // won't associate it with the form automatically. Bridge the click to a
+  // submit event (matches the pattern in new-product-modal.js).
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    form.requestSubmit
+      ? form.requestSubmit()
+      : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  });
 
   openModal(el('div', {}, [
     el('div', { class: 'pb-modal-header' }, 'Invite user'),

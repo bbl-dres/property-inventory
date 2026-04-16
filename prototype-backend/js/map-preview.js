@@ -5,14 +5,12 @@
 import * as api from './api.js';
 import { el, toast, escHtml } from './utils.js';
 import { bus } from './state.js';
-import { sridName } from './constants.js';
+import { sridName, BRAND_COLOR as BRAND } from './constants.js';
 
 // sridName may be undefined for codes we don't track; wrap to a safe label.
 function sridLabel(code) {
   try { return sridName(code) || ''; } catch { return ''; }
 }
-
-const BRAND = '#c8102e';
 const BASEMAP_STYLE = 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json';
 const MAX_FEATURES = 5000;
 const SOURCE_ID = 'pb-layer-src';
@@ -100,7 +98,7 @@ export async function mount(container, { layer: l }) {
       type: 'button',
       class: 'pb-srid-banner-close',
       'aria-label': 'Dismiss'
-    }, [el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'close')]);
+    }, [el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'close')]);
     const banner = el('div', { class: 'pb-srid-banner', role: 'status' }, [
       el('span', { class: 'material-symbols-outlined pb-srid-banner-icon' }, 'warning'),
       el('span', { class: 'pb-srid-banner-text' }, ['⚠️ ', bannerMsg]),

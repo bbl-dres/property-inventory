@@ -40,9 +40,9 @@ function render() {
     'aria-expanded': 'false',
     title: 'New map or app'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
     ' New ',
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'arrow_drop_down')
+    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'arrow_drop_down')
   ]);
 
   const refreshList = async () => {

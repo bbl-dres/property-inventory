@@ -78,7 +78,7 @@ function render() {
     target: '_blank',
     rel: 'noopener noreferrer'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'open_in_new'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'open_in_new'),
     ' Open'
   ]);
   if (!product.url) {
@@ -100,6 +100,10 @@ function render() {
   ]);
 
   const header = renderViewHeader({
+    breadcrumb: [
+      { label: 'Maps & Apps', href: '#/products' },
+      { label: product.name || product.slug }
+    ],
     title: titleRow,
     subtitle,
     description: product.description || '',
@@ -108,7 +112,7 @@ function render() {
 
   const featureChips = (product.consumed_layers || []).map((name) =>
     el('a', { href: `#/features/${encodeURIComponent(name)}`, class: 'pb-chip' }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'layers'),
+      el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'layers'),
       ' ',
       name
     ])

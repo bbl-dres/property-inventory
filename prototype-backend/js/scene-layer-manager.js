@@ -13,16 +13,7 @@
 // callback provided by map-scene.js. No direct map/api access here.
 
 import { el, toast } from './utils.js';
-
-const GEOM_ICONS = {
-  Point: 'location_on',
-  MultiPoint: 'location_on',
-  LineString: 'trending_up',
-  MultiLineString: 'trending_up',
-  Polygon: 'hexagon',
-  MultiPolygon: 'hexagon',
-  Table: 'category'
-};
+import { geomTypeIcon } from './constants.js';
 
 const BASEMAPS = [
   { id: 'swisstopo-pixelkarte', label: 'Swisstopo Pixelkarte', cosmetic: true },
@@ -72,9 +63,9 @@ function render() {
     'aria-haspopup': 'menu',
     'aria-expanded': 'false'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'add'),
     ' Add ',
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'arrow_drop_down')
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_drop_down')
   ]);
 
   const addMenu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
@@ -147,7 +138,7 @@ function render() {
     class: 'pb-scene-edit-toggle',
     'aria-pressed': opts.scene?.editMode ? 'true' : 'false'
   }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'edit'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'edit'),
     ' Edit mode'
   ]);
   cachedEditToggle.addEventListener('click', () => {
@@ -205,7 +196,7 @@ function renderLayerRow(layer) {
   const geomIcon = el('span', {
     class: 'material-symbols-outlined pb-scene-layer-geom',
     'aria-hidden': 'true'
-  }, GEOM_ICONS[layer.geometry_type] || 'category');
+  }, geomTypeIcon(layer.geometry_type));
 
   const body = el('div', { class: 'pb-scene-layer-row-body' }, [
     el('div', { class: 'pb-scene-layer-title' }, layer.title || layer.name),

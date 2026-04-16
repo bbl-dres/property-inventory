@@ -97,6 +97,9 @@ function resolveRoute({ path, query, rawQuery }) {
     if (sub === 'preferences') {
       return { name: 'settings-preferences', section: 'settings' };
     }
+    if (sub === 'about') {
+      return { name: 'settings-about', section: 'settings' };
+    }
     // Bare `#/settings` → default to the first sidebar item (Members), matching
     // the "first sidebar item is the section default" convention also used by
     // the Features section (see `features-empty` auto-navigate below).
@@ -175,21 +178,38 @@ function applySidebarVisibility(section) {
  * page chrome is identical across sections.
  *
  * @param {object} opts
+ * @param {Array<{label: string, href?: string}>} [opts.breadcrumb] - Trail of
+ *   parent → current. Items with an `href` render as links; the last item
+ *   (typically with no `href`) is styled as the current page. Omit or pass
+ *   an empty array on section-root views where a single-crumb trail would
+ *   just duplicate the title.
  * @param {string|Node} opts.title
  * @param {string|Node} [opts.subtitle]
  * @param {string|Node} [opts.description]
  * @param {Node|Node[]} [opts.actions]
  */
-export function renderViewHeader({ title, subtitle, description, actions } = {}) {
-  const main = el('div', { class: 'pb-view-header-main' }, [
-    el('h1', { class: 'pb-view-title' }, title ?? ''),
-    subtitle != null && subtitle !== ''
-      ? el('div', { class: 'pb-view-subtitle' }, subtitle)
-      : null,
-    description != null && description !== ''
-      ? el('div', { class: 'pb-view-description' }, description)
-      : null
-  ].filter(Boolean));
+export function renderViewHeader({ breadcrumb, title, subtitle, description, actions } = {}) {
+  const mainChildren = [];
+  if (Array.isArray(breadcrumb) && breadcrumb.length > 0) {
+    const crumbNodes = [];
+    breadcrumb.forEach((c, i) => {
+      if (i > 0) crumbNodes.push(el('span', { class: 'pb-breadcrumb-sep', 'aria-hidden': 'true' }, '/'));
+      if (c.href) {
+        crumbNodes.push(el('a', { href: c.href, class: 'pb-breadcrumb-link' }, c.label));
+      } else {
+        crumbNodes.push(el('span', { class: 'pb-breadcrumb-current', 'aria-current': 'page' }, c.label));
+      }
+    });
+    mainChildren.push(el('nav', { class: 'pb-breadcrumb', 'aria-label': 'Breadcrumb' }, crumbNodes));
+  }
+  mainChildren.push(el('h1', { class: 'pb-view-title' }, title ?? ''));
+  if (subtitle != null && subtitle !== '') {
+    mainChildren.push(el('div', { class: 'pb-view-subtitle' }, subtitle));
+  }
+  if (description != null && description !== '') {
+    mainChildren.push(el('div', { class: 'pb-view-description' }, description));
+  }
+  const main = el('div', { class: 'pb-view-header-main' }, mainChildren);
   const children = [main];
   if (actions) {
     const list = Array.isArray(actions) ? actions.filter(Boolean) : [actions];
@@ -297,6 +317,7 @@ async function handleRoute() {
     if (route.name === 'settings-members') activeKey = 'members';
     else if (route.name === 'settings-connection') activeKey = 'connection';
     else if (route.name === 'settings-preferences') activeKey = 'preferences';
+    else if (route.name === 'settings-about') activeKey = 'about';
   }
   await mountSidebar(route.section, activeKey);
   if (isStale()) return;
@@ -315,7 +336,7 @@ async function handleRoute() {
     } catch {}
     if (isStale()) return;
     const cta = el('button', { type: 'button', class: 'btn-primary' }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
       ' New layer'
     ]);
     cta.addEventListener('click', async () => {
@@ -336,11 +357,48 @@ async function handleRoute() {
   // for a "Coming soon" state.
   if (route.name === 'settings-preferences') {
     app.appendChild(renderViewHeader({
+      breadcrumb: [
+        { label: 'Settings', href: '#/settings' },
+        { label: 'Preferences' }
+      ],
       title: 'Preferences',
       subtitle: 'Coming soon',
       description: 'Workspace-level defaults (units, theme, notifications) will live here.'
     }));
     app.appendChild(emptyState('tune', 'Not implemented yet', 'Preferences are not part of this prototype.'));
+    return;
+  }
+
+  // About — version marker and external links. Used to live as a shell
+  // footer, but that collided with the scene viewer's own footer strip
+  // (double chrome at the bottom). Inline here.
+  if (route.name === 'settings-about') {
+    app.appendChild(renderViewHeader({
+      breadcrumb: [
+        { label: 'Settings', href: '#/settings' },
+        { label: 'About' }
+      ],
+      title: 'About',
+      subtitle: 'v0.1.0 · prototype',
+      description: 'Static JS frontend for a PostGIS-backed REST API (Supabase-compatible). This is a visual mockup — most mutations go to browser localStorage.'
+    }));
+    const linkRow = (icon, label, href) =>
+      el('a', { class: 'pb-about-link', href, target: '_blank', rel: 'noopener' }, [
+        el('span', { class: 'material-symbols-outlined' }, icon),
+        el('div', { class: 'pb-about-link-body' }, [
+          el('div', { class: 'pb-about-link-title' }, label),
+          el('div', { class: 'pb-about-link-url pb-muted' }, href)
+        ]),
+        el('span', { class: 'material-symbols-outlined pb-about-link-arrow' }, 'open_in_new')
+      ]);
+    app.appendChild(el('div', { class: 'pb-card pb-card--padded' }, [
+      el('div', { class: 'pb-card-header' }, 'Links'),
+      el('div', { class: 'pb-card-body pb-about-links' }, [
+        linkRow('code',         'Source code', 'https://github.com/bbl-dres/property-inventory'),
+        linkRow('mail',         'Contact',     'https://www.bbl.admin.ch/de/kontakt'),
+        linkRow('gavel',        'Legal',       'https://www.admin.ch/gov/de/start/rechtliches.html')
+      ])
+    ]));
     return;
   }
 
@@ -456,9 +514,14 @@ function wireAccountMenu() {
     if (!item) return;
     closeMenu();
     // All account actions are mocked for now. Prototype-only — no auth.
-    const labels = { profile: 'Profile', preferences: 'Preferences', signout: 'Sign out' };
-    const label = labels[item.dataset.accountAction] || 'Action';
-    import('./utils.js').then((u) => u.toast(`${label} — coming soon`, 'info'));
+    const action = item.dataset.accountAction;
+    // Sign-out is a distinct concept from "not implemented yet" — the
+    // prototype has no auth to sign out of. Calling it "coming soon" would
+    // imply users are stuck in the app. Own the honest copy.
+    const msg = action === 'signout'
+      ? 'Sign out is not available in this prototype — reload the page to reset.'
+      : `${ { profile: 'Profile', preferences: 'Preferences' }[action] || 'Action' } — coming soon`;
+    import('./utils.js').then((u) => u.toast(msg, 'info'));
   });
 }
 wireAccountMenu();
