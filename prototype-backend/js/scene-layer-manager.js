@@ -159,11 +159,23 @@ function renderLayerList() {
     : layers;
 
   if (!filtered.length) {
-    cachedLayerPanel.appendChild(el('div', { class: 'pb-scene-layer-empty' },
-      layers.length === 0
-        ? 'No layers yet. Click Add to get started.'
-        : 'No layers match your search.'
-    ));
+    if (layers.length === 0) {
+      const addCta = el('button', { type: 'button', class: 'btn-primary' }, [
+        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
+        ' Add layer'
+      ]);
+      addCta.addEventListener('click', () => opts.onAddLayer?.({ source: 'existing' }));
+      cachedLayerPanel.appendChild(el('div', { class: 'pb-scene-layer-empty' }, [
+        el('span', { class: 'material-symbols-outlined' }, 'layers'),
+        el('div', { class: 'pb-scene-layer-empty-title' }, 'No layers yet'),
+        el('div', { class: 'pb-scene-layer-empty-desc' },
+          'Pull in an existing layer, upload a file, or draw from scratch.'),
+        addCta
+      ]));
+    } else {
+      cachedLayerPanel.appendChild(el('div', { class: 'pb-scene-layer-empty' },
+        'No layers match your search.'));
+    }
     return;
   }
 

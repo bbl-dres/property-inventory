@@ -144,11 +144,15 @@ function render() {
     ? `${columns.length} columns · ${editableCount} editable · ${lockedCount} locked`
     : `${columns.length} column${columns.length === 1 ? '' : 's'}`;
 
+  // "Add column" is additive and non-destructive — show it in both view
+  // and edit mode so users don't have to enter edit mode just to append a
+  // new column. "Edit schema" is only needed for description edits and
+  // reordering, which *do* modify existing columns.
   const toolbar = el('div', { class: 'pb-toolbar pb-schema-toolbar' }, [
     el('div', { class: 'pb-toolbar-title' }, toolbarTitle),
     editingPill,
     el('div', { style: { flex: '1' } }),
-    mode === 'edit' ? addBtn : null,
+    addBtn,
     toggleBtn
   ].filter(Boolean));
 

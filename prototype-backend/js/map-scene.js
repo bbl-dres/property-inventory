@@ -62,7 +62,6 @@ let mapHost = null;
 let sidebarHost = null;
 let toolbarHost = null;
 let inspectorHost = null;
-let emptyStateHost = null;
 let footerStrip = null;
 let subtitleNode = null;
 let titleHost = null;
@@ -122,7 +121,6 @@ export async function mount(container, { product: p }) {
     await loadLayersByName(initialLayerNames);
   }
 
-  updateEmptyState();
   refreshSubtitle();
 
   // Esc closes the inspector drawer.
@@ -164,7 +162,6 @@ export function unmount() {
   sidebarHost = null;
   toolbarHost = null;
   inspectorHost = null;
-  emptyStateHost = null;
   footerStrip = null;
   subtitleNode = null;
   titleHost = null;
@@ -191,6 +188,19 @@ function renderShell() {
   titleHost = el('div', { class: 'pb-title-row' }, [titleEditor]);
 
   subtitleNode = el('div', { class: 'pb-view-subtitle' }, '');
+
+  // Explicit exit. The section-nav (which hosts the shared back link on
+  // every other route) is hidden in fixed-viewport mode, so the scene
+  // needs its own prominent way out — the breadcrumb alone is too quiet
+  // for a fullscreen tool.
+  const backBtn = el('a', {
+    href: '#/maps',
+    class: 'btn-secondary pb-scene-back',
+    'aria-label': 'Back to Maps & Apps'
+  }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+    ' Maps & Apps'
+  ]);
 
   const saveBtn = el('button', { type: 'button', class: 'btn-primary' }, [
     el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'save'),
@@ -220,7 +230,7 @@ function renderShell() {
     ],
     title: titleHost,
     subtitle: subtitleNode,
-    actions: [saveBtn, overflowWrap]
+    actions: [backBtn, saveBtn, overflowWrap]
   });
   root.appendChild(header);
 
@@ -229,14 +239,12 @@ function renderShell() {
 
   toolbarHost = el('div', { class: 'pb-scene-edit-toolbar', hidden: true });
   inspectorHost = el('aside', { class: 'pb-scene-inspector', 'aria-label': 'Feature inspector' });
-  emptyStateHost = el('div', { class: 'pb-scene-empty', hidden: true });
   mapHost = el('div', { class: 'pb-scene-canvas-map' });
   footerStrip = el('div', { class: 'pb-scene-footer-strip' });
 
   const canvas = el('section', { class: 'pb-scene-canvas' }, [
     mapHost,
     toolbarHost,
-    emptyStateHost,
     inspectorHost,
     footerStrip
   ]);
@@ -245,7 +253,6 @@ function renderShell() {
   root.appendChild(layout);
 
   renderFooter();
-  renderEmptyState();
 
   // Mount sub-modules.
   layerManagerMod = layerManager;
@@ -361,30 +368,6 @@ function renderFooter() {
     map.on('moveend', updateScale);
     updateScale();
   }
-}
-
-// ---- Empty state -------------------------------------------------------
-
-function renderEmptyState() {
-  if (!emptyStateHost) return;
-  emptyStateHost.innerHTML = '';
-  const addBtn = el('button', { type: 'button', class: 'btn-primary' }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
-    ' Add layer'
-  ]);
-  addBtn.addEventListener('click', () => openAddExistingPicker());
-  const card = el('div', { class: 'pb-scene-empty-card' }, [
-    el('span', { class: 'material-symbols-outlined pb-scene-empty-icon' }, 'layers'),
-    el('div', { class: 'pb-scene-empty-title' }, 'This scene is empty'),
-    el('div', { class: 'pb-scene-empty-desc' }, 'Add a layer to get started — pull in an existing layer, upload a file, or draw from scratch.'),
-    addBtn
-  ]);
-  emptyStateHost.appendChild(card);
-}
-
-function updateEmptyState() {
-  if (!emptyStateHost) return;
-  emptyStateHost.hidden = scene.layers.length > 0;
 }
 
 // ---- Map ---------------------------------------------------------------
@@ -529,7 +512,6 @@ async function addExistingLayer(name, { silent } = {}) {
   });
   scene.dirty = true;
   refreshSubtitle();
-  updateEmptyState();
   layerManagerMod?.refresh?.();
 }
 
@@ -572,7 +554,6 @@ async function handleLayerRemove(name) {
   if (scene.selectedFeature?.layerName === name) closeInspector();
   scene.dirty = true;
   refreshSubtitle();
-  updateEmptyState();
   layerManagerMod?.refresh?.();
   toast(`Removed "${entry.title}"`, 'success');
 }

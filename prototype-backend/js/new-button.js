@@ -119,13 +119,13 @@ export function buildNewButton(opts = {}) {
   function openNewLayer() {
     import('./new-feature-drawer.js').then((m) => {
       m.open({
-        onCreated: async () => {
-          if (typeof onRefresh === 'function') {
-            try { await onRefresh(); } catch {}
-          }
-          // If not already on the Layers catalogue, send the user there
-          // so they see their new layer in context.
-          if (!location.hash.startsWith('#/features')) location.hash = '#/features';
+        onCreated: async ({ name }) => {
+          // Jump straight into the new layer's detail view — the user just
+          // created this thing, show it to them rather than sending them
+          // back to the catalogue to find it. The schema tab is the
+          // default landing (see router), which is the first thing you
+          // want to look at on a freshly-created layer.
+          location.hash = `#/features/${encodeURIComponent(name)}`;
         }
       });
     });

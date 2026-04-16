@@ -32,6 +32,13 @@
 }
 .pb-body--fixed-viewport .pb-section-nav { display: none; }
 
+/* Scene viewer: let the topbar span the full width (no 1280px cap) and
+ * hide the global search. The scene has its own in-sidebar layer search
+ * and its own breadcrumb/back chrome, so the topbar search only adds
+ * noise in a fullscreen tool context. */
+.pb-body--fixed-viewport .pb-topbar-inner { max-width: none; }
+.pb-body--fixed-viewport .pb-topbar-search { display: none; }
+
 .pb-sr-only {
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0;
@@ -1930,13 +1937,6 @@
   gap: 2px;
 }
 
-.pb-scene-layer-empty {
-  padding: var(--space-3);
-  font-size: var(--text-xs);
-  color: var(--grey-500);
-  text-align: center;
-}
-
 .pb-scene-layer-row {
   display: flex;
   align-items: center;
@@ -2085,45 +2085,32 @@
   bottom: 28px; /* above footer strip */
 }
 
-/* Empty state shown when the scene has zero layers. */
-.pb-scene-empty {
-  position: absolute;
-  inset: 0;
-  bottom: 28px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  pointer-events: none;
-  z-index: 2;
-}
-.pb-scene-empty-card {
-  pointer-events: auto;
-  background: var(--white);
-  border: 1px solid var(--grey-200);
-  border-radius: var(--radius-md);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-5) var(--space-6);
+/* Sidebar empty-state card — shown when the scene has zero layers.
+ * Lives inside `.pb-scene-layer-list` so it never occludes the base map
+ * (the map is the tool's best demo; don't cover it). */
+.pb-scene-layer-empty {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: var(--space-2);
-  max-width: 360px;
+  padding: var(--space-4) var(--space-3);
   text-align: center;
+  color: var(--grey-600);
 }
-.pb-scene-empty-icon {
-  font-size: var(--icon-2xl);
+.pb-scene-layer-empty .material-symbols-outlined {
+  font-size: var(--icon-xl);
   color: var(--grey-400);
 }
-.pb-scene-empty-title {
-  font-size: var(--text-base);
+.pb-scene-layer-empty-title {
+  font-size: var(--text-sm);
   font-weight: var(--font-semibold);
   color: var(--grey-900);
 }
-.pb-scene-empty-desc {
-  font-size: var(--text-sm);
-  color: var(--grey-600);
+.pb-scene-layer-empty-desc {
+  font-size: var(--text-xs);
+  color: var(--grey-500);
   line-height: var(--leading-normal);
-  margin-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
 }
 
 /* ---- Floating edit toolbar ---- */
