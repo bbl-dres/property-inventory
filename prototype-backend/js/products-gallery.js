@@ -53,21 +53,64 @@ function render() {
 
   const openModalFor = async (kind) => {
     const mod = await import('./new-product-modal.js');
-    mod.open({ kind, onCreated: refreshList });
+    mod.open({
+      kind,
+      onCreated: async (created) => {
+        // A new map drops the user straight into the scene viewer so they
+        // can start authoring. Registered apps stay on the gallery so the
+        // user can see the card they just added.
+        if (kind === 'map') {
+          location.hash = `#/products/${encodeURIComponent(created.slug)}`;
+        } else {
+          await refreshList();
+        }
+      }
+    });
   };
 
-  const menuItem = (icon, label, kind) => {
+  // Shortcut flow: upload a file, which creates BOTH a new layer (via the
+  // existing New Layer drawer) AND a wrapping map that consumes it. After
+  // the layer is created, auto-create the map and navigate straight into
+  // the scene viewer.
+  const openNewMapFromData = async () => {
+    const mod = await import('./new-feature-drawer.js');
+    mod.open({
+      onCreated: async ({ name: layerName, title }) => {
+        const baseLabel = (title || layerName).trim();
+        const mapName = `${baseLabel} map`;
+        // Layer names already conform to the slug charset ([a-z0-9_]).
+        const mapSlug = `${layerName}-map-${Date.now().toString(36).slice(-5)}`;
+        try {
+          const created = await api.createProduct({
+            slug: mapSlug,
+            name: mapName,
+            kind: 'map',
+            tags: ['map'],
+            consumed_layers: [layerName]
+          });
+          toast(`Created layer "${layerName}" and map "${mapName}"`, 'success');
+          location.hash = `#/products/${encodeURIComponent(created.slug)}`;
+        } catch (err) {
+          toast(`Layer created, but map wrapper failed: ${err?.message || err}`, 'error');
+          await refreshList();
+        }
+      }
+    });
+  };
+
+  const menuItem = (icon, label, handler) => {
     const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
       el('span', { class: 'material-symbols-outlined' }, icon),
       el('span', {}, label)
     ]);
-    b.addEventListener('click', () => { closeMenu(); openModalFor(kind); });
+    b.addEventListener('click', () => { closeMenu(); handler(); });
     return b;
   };
 
   const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true }, [
-    menuItem('link', 'Register app', 'app'),
-    menuItem('map', 'New map', 'map')
+    menuItem('link',         'Register app',       () => openModalFor('app')),
+    menuItem('map',          'New map',            () => openModalFor('map')),
+    menuItem('upload_file',  'New map from data',  openNewMapFromData)
   ]);
 
   const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);

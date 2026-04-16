@@ -11,7 +11,7 @@ import { COLUMN_TYPES as TYPES, GEOMETRY_TYPES, SUPPORTED_SRIDS, GEOMETRY_COMPAT
 
 let parsed = null;
 
-export function open() {
+export function open({ onCreated } = {}) {
   parsed = null;
 
   const nameInput = el('input', { type: 'text', autocomplete: 'off', required: true, spellcheck: 'false', placeholder: 'e.g. inspections_2026' });
@@ -157,6 +157,10 @@ export function open() {
         ? `Created "${name}" with ${count.toLocaleString()} seed record${count === 1 ? '' : 's'}.`
         : `Created "${name}"`, 'success');
       bus.emit('layer:created', { name });
+      if (typeof onCreated === 'function') {
+        try { onCreated({ name, geometry_type, srid, title, seedCount: seedFeatures.length }); }
+        catch (cbErr) { console.error('[new-feature-drawer] onCreated', cbErr); }
+      }
     } catch (err) {
       toast(err?.message || 'Failed to create layer', 'error');
       submitBtn.disabled = false;

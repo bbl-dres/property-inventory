@@ -34,16 +34,18 @@ let currentSidebar = null;
 let currentSection = null;
 let navToken = 0;
 
-const DEFAULT_ROUTE = '#/features';
+const DEFAULT_ROUTE = '#/products';
 
 // Sections that have an object sidebar mounted next to the main view.
 const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
 
-// Primary nav definition — painted once into the topbar.
+// Primary nav definition — painted once into the topbar. Settings is
+// intentionally NOT a primary tab: it lives as a gear icon in the right
+// cluster (next to the account avatar) so the tab row stays focused on
+// "things you work on" (content) rather than workspace configuration.
 const TABS = [
   { key: 'products', label: 'Maps & Apps', icon: 'apps',     href: '#/products' },
-  { key: 'features', label: 'Layers',      icon: 'layers',   href: '#/features' },
-  { key: 'settings', label: 'Settings',    icon: 'settings', href: '#/settings' }
+  { key: 'features', label: 'Layers',      icon: 'layers',   href: '#/features' }
 ];
 
 function parseHash() {
@@ -152,6 +154,9 @@ function renderTabs(activeSection) {
   tabsHost.querySelectorAll('.pb-tab').forEach((a) => {
     a.classList.toggle('pb-tab--active', a.dataset.tab === activeSection);
   });
+  // Settings gear (right cluster) mirrors tab active state.
+  const gear = document.getElementById('pb-settings-btn');
+  if (gear) gear.classList.toggle('is-active', activeSection === 'settings');
 }
 
 function applySidebarVisibility(section) {
@@ -388,9 +393,9 @@ bus.on('layer:deleted', () => {
 // admin (single-user prototype default). Updates on every role change so the
 // user always knows which restricted mode they're in.
 function renderRoleChip() {
-  const topbar = document.querySelector('.pb-topbar');
-  if (!topbar) return;
-  let chip = topbar.querySelector('.pb-role-chip');
+  const rightWrap = document.querySelector('.pb-topbar-right');
+  if (!rightWrap) return;
+  let chip = rightWrap.querySelector('.pb-role-chip');
   const role = state.currentUser?.role || 'admin';
   if (role === 'admin') {
     if (chip) chip.remove();
@@ -404,9 +409,10 @@ function renderRoleChip() {
       el('span', { class: 'material-symbols-outlined' }, 'shield_person'),
       el('span', { class: 'pb-role-chip-text' }, '')
     ]);
-    const hint = topbar.querySelector('.pb-topbar-hint');
-    if (hint) topbar.insertBefore(chip, hint);
-    else topbar.appendChild(chip);
+    // Insert before the hint chip so order reads: role · mock · avatar
+    const hint = rightWrap.querySelector('.pb-topbar-hint');
+    if (hint) rightWrap.insertBefore(chip, hint);
+    else rightWrap.insertBefore(chip, rightWrap.firstChild);
   }
   const label = chip.querySelector('.pb-role-chip-text');
   if (label) label.textContent = `Role: ${role}`;
@@ -414,6 +420,48 @@ function renderRoleChip() {
 
 renderRoleChip();
 bus.on('user:role-changed', renderRoleChip);
+
+// ===== Account menu (topbar avatar dropdown) =====
+//
+// Prototype-only: clicking an item toasts "Coming soon" — no real auth.
+// Shares the `.pb-menu` visual pattern with the Maps & Apps "+ New" menu.
+function wireAccountMenu() {
+  const btn = document.getElementById('pb-account-btn');
+  const menu = document.getElementById('pb-account-menu');
+  const wrap = document.getElementById('pb-account-wrap');
+  if (!btn || !menu || !wrap) return;
+
+  const openMenu = () => {
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    document.addEventListener('click', onOutside, true);
+    document.addEventListener('keydown', onEsc);
+  };
+  const closeMenu = () => {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', onOutside, true);
+    document.removeEventListener('keydown', onEsc);
+  };
+  const onOutside = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
+  const onEsc = (e) => { if (e.key === 'Escape') { closeMenu(); btn.focus(); } };
+
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.hidden) openMenu(); else closeMenu();
+  });
+
+  menu.addEventListener('click', (e) => {
+    const item = e.target.closest('[data-account-action]');
+    if (!item) return;
+    closeMenu();
+    // All account actions are mocked for now. Prototype-only — no auth.
+    const labels = { profile: 'Profile', preferences: 'Preferences', signout: 'Sign out' };
+    const label = labels[item.dataset.accountAction] || 'Action';
+    import('./utils.js').then((u) => u.toast(`${label} — coming soon`, 'info'));
+  });
+}
+wireAccountMenu();
 
 if (!location.hash) location.hash = DEFAULT_ROUTE;
 else handleRoute();

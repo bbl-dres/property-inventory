@@ -55,6 +55,16 @@ export function open({ kind = 'app', onCreated } = {}) {
 
   const form = el('form', { class: 'pb-form', novalidate: true }, fields);
 
+  // The submit button lives in the modal footer (outside the form), so the
+  // native `type=submit` → form-submit association doesn't fire. Bridge it
+  // with an explicit click handler that re-dispatches the submit event.
+  submitBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    form.requestSubmit
+      ? form.requestSubmit()
+      : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+  });
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
     submitErr.style.display = 'none';

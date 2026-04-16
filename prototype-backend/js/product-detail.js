@@ -1,4 +1,14 @@
 // prototype-backend — Product detail view
+//
+// Branch point:
+//   - product.kind === 'map' → hand off to the scene authoring view
+//     (js/map-scene.js). The scene module owns the full `app` container
+//     while mounted.
+//   - otherwise: render the classic app-detail cards here.
+//
+// Scene handoff uses dynamic import so the MapLibre-heavy scene module is
+// not loaded when viewing an app-kind product. `unmount()` delegates back
+// to whichever module actually did the mount.
 
 import * as api from './api.js';
 import { el, formatRelativeTime, toast } from './utils.js';
@@ -6,10 +16,12 @@ import { renderViewHeader } from './app.js';
 
 let root = null;
 let product = null;
+let sceneModule = null; // non-null when a map-kind scene is mounted
 
 export async function mount(container, { slug }) {
   root = container;
   product = null;
+  sceneModule = null;
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try {
     product = await api.getProduct(slug);
@@ -22,10 +34,36 @@ export async function mount(container, { slug }) {
     ]));
     return;
   }
+
+  if (product.kind === 'map') {
+    try {
+      const mod = await import('./map-scene.js');
+      sceneModule = mod;
+      await mod.mount(root, { product });
+      return;
+    } catch (err) {
+      console.error('[product-detail] scene mount failed', err);
+      sceneModule = null;
+      root.innerHTML = '';
+      root.appendChild(el('div', { class: 'empty-state' }, [
+        el('span', { class: 'material-symbols-outlined' }, 'error'),
+        el('div', { class: 'empty-state-title' }, 'Scene failed to load'),
+        el('div', { class: 'empty-state-description' }, err?.message || 'Unknown error')
+      ]));
+      return;
+    }
+  }
+
   render();
 }
 
 export function unmount() {
+  // If we handed off to a scene module, let it tear down its own resources
+  // (map instance, sub-modules, listeners) before we clear the container.
+  if (sceneModule?.unmount) {
+    try { sceneModule.unmount(); } catch (err) { console.error('[product-detail] scene unmount', err); }
+  }
+  sceneModule = null;
   if (root) root.innerHTML = '';
   root = null;
   product = null;

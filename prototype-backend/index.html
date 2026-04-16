@@ -19,14 +19,45 @@
 <body class="pb-body">
   <a href="#app" class="pb-skip-link">Skip to main content</a>
   <header class="pb-topbar">
-    <a href="#/features" class="pb-topbar-title" aria-label="Home">
+    <a href="#/products" class="pb-topbar-title" aria-label="Home">
       <span class="material-symbols-outlined">database</span>
       <span>GIS Server</span>
     </a>
     <nav class="pb-tabs" id="pb-tabs" aria-label="Primary"></nav>
-    <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
-      <span class="material-symbols-outlined">cloud_off</span>
-      <span>mock &middot; localStorage</span>
+    <div class="pb-topbar-right">
+      <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
+        <span class="material-symbols-outlined">cloud_off</span>
+        <span>mock &middot; localStorage</span>
+      </div>
+      <a href="#/settings" class="pb-topbar-gear" id="pb-settings-btn"
+         title="Settings" aria-label="Settings">
+        <span class="material-symbols-outlined">settings</span>
+      </a>
+      <div class="pb-menu-wrap" id="pb-account-wrap">
+        <button type="button" class="pb-topbar-avatar" id="pb-account-btn"
+                aria-haspopup="menu" aria-expanded="false" aria-label="Account">
+          <span aria-hidden="true">DR</span>
+        </button>
+        <div class="pb-menu" role="menu" hidden id="pb-account-menu">
+          <div class="pb-menu-header">
+            <div class="pb-menu-header-name">David Rasner</div>
+            <div class="pb-menu-header-sub">davidrasner5@gmail.com</div>
+          </div>
+          <button type="button" class="pb-menu-item" role="menuitem" data-account-action="profile">
+            <span class="material-symbols-outlined">person</span>
+            <span>Profile</span>
+          </button>
+          <button type="button" class="pb-menu-item" role="menuitem" data-account-action="preferences">
+            <span class="material-symbols-outlined">tune</span>
+            <span>Preferences</span>
+          </button>
+          <div class="pb-menu-sep"></div>
+          <button type="button" class="pb-menu-item" role="menuitem" data-account-action="signout">
+            <span class="material-symbols-outlined">logout</span>
+            <span>Sign out</span>
+          </button>
+        </div>
+      </div>
     </div>
   </header>
 
