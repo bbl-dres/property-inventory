@@ -1,6 +1,6 @@
-# Prototype Backend — GIS Admin Frontend
+# Prototype Backend — GIS Server Frontend
 
-A lightweight, static JS frontend for managing feature layers in a PostGIS-backed REST API (Supabase in the real build; this prototype will use a mock client). Conceptually: a stripped-down ArcGIS Portal Hosted Feature Layers experience — focused on data and schema, not cartography.
+A lightweight, static JS frontend for managing layers in a PostGIS-backed REST API (Supabase in the real build; this prototype will use a mock client). Conceptually: a stripped-down ArcGIS Portal Hosted Feature Layers experience — focused on data and schema, not cartography.
 
 > **Status:** design document. No code yet. MVP scope locked below.
 
@@ -8,7 +8,7 @@ A lightweight, static JS frontend for managing feature layers in a PostGIS-backe
 
 ## Goal
 
-Let a single trusted user **create feature layers, manage their schema, and CRUD their data** from the browser, with a read-only map preview. Power users who know what a column type is — not GIS analysts making pretty maps.
+Let a single trusted user **create layers, manage their schema, and CRUD their data** from the browser, with a read-only map preview. Power users who know what a column type is — not GIS analysts making pretty maps.
 
 ## Non-goals
 
@@ -25,10 +25,10 @@ Ruthlessly small. If it isn't listed here, it isn't in v1.
 
 ### In (Phases 1–4)
 
-1. **Sidebar IA** — Data products, Layers (default landing), Settings as first-class navigation. Default route is `#/features` (the Layers landing).
+1. **Sidebar IA** — Maps & Apps, Layers (default landing), Settings as first-class navigation. Default route is `#/features` (the Layers landing).
 2. **Layers list** — sidebar list of layers, **create**, **delete**. No rename/duplicate.
 3. **Create layer** — name, geometry type (all OGC core types + Multi* variants), **SRID** (4326/2056/3857/21781), optional GeoJSON/CSV upload that infers columns.
-4. **Layer overview** — inline-editable title/description, record count + updated-at in the hero, geometry type, SRID + human name, REST endpoint + curl copy, "Used by" data products, and a **Metadata card** (tags, license, attribution, contact, update frequency, lineage — all inline-editable).
+4. **Layer overview** — inline-editable title/description, record count + updated-at in the hero, geometry type, SRID + human name, REST endpoint + curl copy, "Used by" Maps & Apps, and a **Metadata card** (tags, license, attribution, contact, update frequency, lineage — all inline-editable).
 5. **Schema view** — list columns. **Add column** (now with the expanded PostGIS-aligned type set: `text`, `varchar`, `integer`, `bigint`, `double precision`, `numeric`, `boolean`, `date`, `timestamptz`, `uuid`, `jsonb`) and **edit description** only. Column reorder via drag/keyboard.
 6. **Data grid** — paginated, sort, attribute **filter bar** (case-insensitive, client-side in MVP) with "Showing N of M" counts, inline-edit, delete, side-panel form. `jsonb` renders as inline code; the record form edits jsonb via textarea (validated JSON) and uuid via text input (regex-validated).
 7. **Geometry input** — side-panel textarea accepts **GeoJSON or WKT**. "Copy as WKT" button for existing geometries.
@@ -36,7 +36,7 @@ Ruthlessly small. If it isn't listed here, it isn't in v1.
 9. **Import** — append-only GeoJSON or CSV with column mapping; skip-and-report validation. CSV supports Point/MultiPoint via lat/lon columns; line and polygon variants require GeoJSON.
 10. **Export** — full-layer GeoJSON + CSV download.
 11. **Map preview** — read-only MapLibre render with paint layers for point / line / polygon (Multi-variants render identically).
-12. **Data products** — first-class concept: list, detail, reverse-link from layers.
+12. **Maps & Apps** — first-class concept: list, detail, reverse-link from layers.
 13. **Single-user** — no auth UI. Supabase anon key in the frontend for the prototype.
 
 ### Out (deferred to backlog)
@@ -63,7 +63,7 @@ Four screens, reachable by URL hash. Static site, no build step.
 
 Sidebar list of all layers. This is the default landing screen. The URL route stays `#/features` (and legacy `#/layers*` URLs redirect to `#/features*`) — only the user-facing label says "Layers".
 
-| Name | Title | Type | Features | Updated |
+| Name | Title | Type | Records | Updated |
 |------|-------|------|----------|---------|
 | parcels_2026 | Parcels 2026 | Polygon | 1,284 | 2d ago |
 | inspections | Field inspections | Point | 42 | 1h ago |
@@ -87,7 +87,7 @@ Tabs:
 
 #### a. Overview
 - Title, description (inline-editable).
-- Geometry type, SRID (4326), feature count.
+- Geometry type, SRID (4326), record count.
 - Created / updated timestamps.
 - REST endpoint card: URL + copy button + one `curl` example.
 
@@ -113,7 +113,7 @@ Spreadsheet-style grid.
 - Pagination (50 rows/page), sort by column.
 - Click row → side panel with full form (including a textarea for geometry as GeoJSON).
 - Inline edit for simple cells.
-- **+ New feature:** form with all columns. Geometry pasted as GeoJSON.
+- **+ New record:** form with all columns. Geometry pasted as GeoJSON.
 - Delete row: confirm.
 - Buttons: **Import** (opens import flow), **Export GeoJSON**, **Export CSV**.
 

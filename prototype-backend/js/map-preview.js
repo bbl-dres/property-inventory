@@ -63,7 +63,7 @@ export async function mount(container, { layer: l }) {
   if (!layer || layer.geometry_type === 'Table') {
     root.appendChild(el('div', { class: 'pb-card pb-card--padded' }, [
       el('div', { class: 'empty-state-title' }, 'No map preview'),
-      el('div', { class: 'empty-state-description' }, 'Map preview is only available for spatial features.')
+      el('div', { class: 'empty-state-description' }, 'Map preview is only available for spatial layers.')
     ]));
     return;
   }
@@ -73,7 +73,7 @@ export async function mount(container, { layer: l }) {
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '36px', color: 'var(--grey-500)' } }, 'map'),
       el('div', { class: 'empty-state-title' }, 'Map preview disabled'),
       el('div', { class: 'empty-state-description' },
-        `Map preview disabled for large features (>${MAX_FEATURES.toLocaleString()} records) in MVP.`)
+        `Map preview disabled for large layers (>${MAX_FEATURES.toLocaleString()} records) in MVP.`)
     ]));
     return;
   }
@@ -139,7 +139,7 @@ export async function mount(container, { layer: l }) {
     fc = toFeatureCollection(res.features || []);
   } catch (err) {
     console.error(err);
-    toast(err?.message || 'Failed to load features', 'error');
+    toast(err?.message || 'Failed to load records', 'error');
   }
 
   const setup = () => {

@@ -1,10 +1,10 @@
 // prototype-backend — Data tab (M4 + M5 import)
-// Paginated feature grid with sort, side-panel CRUD form, export, and import modal.
+// Paginated record grid with sort, side-panel CRUD form, export, and import modal.
 
 import * as api from './api.js';
 import { ApiError } from './api.js';
 import {
-  el, toast, confirmModal, downloadBlob, debounce,
+  el, toast, confirmModal, downloadBlob,
   parseGeometry, geometryToWkt, trapFocus
 } from './utils.js';
 import { bus, isAllowed } from './state.js';
@@ -30,6 +30,11 @@ let sidePanelTrapDetach = null;
 let lastFocused = null;
 let loadToken = 0;
 let roleUnsub = null;
+// Pending filter-input debounce timer. Held at module scope so a full
+// re-render (which re-creates the filter input) can cancel any in-flight
+// timeout from the previous input element instead of leaking it — the old
+// closure otherwise fires against a detached DOM node 300ms later.
+let filterDebounceTimer = null;
 // Client-side attribute filter (Phase 3). Case-insensitive partial match
 // across all user columns. For MVP this filters the CURRENT page only after
 // the server returns rows — a real grid would push this down as a query.
@@ -57,6 +62,7 @@ export async function mount(container, { layer: l }) {
 export function unmount() {
   closeSidePanel();
   if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
+  if (filterDebounceTimer) { clearTimeout(filterDebounceTimer); filterDebounceTimer = null; }
   if (root) root.innerHTML = '';
   root = null;
   layer = null;
@@ -134,8 +140,24 @@ function renderLoadingState() {
 }
 
 function tableColumnCount() {
-  // id + user columns + (geom if spatial)
-  return 1 + userColumns().length + (isSpatial() ? 1 : 0);
+  // (geom-type icon if spatial) + id + user columns + (geom-present if spatial)
+  return (isSpatial() ? 1 : 0) + 1 + userColumns().length + (isSpatial() ? 1 : 0);
+}
+
+// Map a GeoJSON geometry type string to the material-symbols icon name used
+// in the leading "Geom" column on spatial layers. Falls back to `help` when
+// the type is missing or unrecognised — that mismatch is precisely what
+// we want to surface to the user via this column.
+function geomTypeIcon(type) {
+  switch (type) {
+    case 'Point':
+    case 'MultiPoint':        return 'location_on';
+    case 'LineString':
+    case 'MultiLineString':   return 'trending_up';
+    case 'Polygon':
+    case 'MultiPolygon':      return 'hexagon';
+    default:                  return 'help';
+  }
 }
 
 // ===== Render =====
@@ -162,19 +184,31 @@ function renderFilterBar() {
     'aria-label': 'Filter rows'
   });
 
-  const apply = debounce(() => {
+  // Module-scope timer (rather than `debounce()` which bakes its own timer
+  // into the returned closure) so that a full re-render of the filter bar
+  // cancels any pending fire from the previous input element.
+  const applyFilterNow = () => {
     filterText = input.value;
     // Re-render table only, not the toolbar (don't steal focus from the input).
-    const tbl = root.querySelector('.pb-data-grid');
+    const tbl = root?.querySelector('.pb-data-grid');
     const parent = tbl?.parentElement;
     if (parent) {
       parent.innerHTML = '';
       parent.appendChild(renderTable());
     }
     // Update count label.
-    const countEl = root.querySelector('.pb-filter-count');
+    const countEl = root?.querySelector('.pb-filter-count');
     if (countEl) countEl.textContent = filterCountLabel();
-  }, 300);
+  };
+  const apply = () => {
+    if (filterDebounceTimer) clearTimeout(filterDebounceTimer);
+    filterDebounceTimer = setTimeout(() => {
+      filterDebounceTimer = null;
+      // Root may have been torn down during the wait.
+      if (!root) return;
+      applyFilterNow();
+    }, 300);
+  };
   input.addEventListener('input', apply);
 
   const clearBtn = el('button', { type: 'button', class: 'btn-tertiary' }, 'Clear');
@@ -195,7 +229,7 @@ function renderFilterBar() {
     class: 'btn-secondary',
     disabled: !hasFilter ? true : false,
     title: hasFilter
-      ? 'Switch to Map tab — the view will fit the filtered features'
+      ? 'Switch to Map tab — the view will fit the filtered records'
       : 'Enter a filter first'
   }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'center_focus_strong'),
@@ -284,11 +318,23 @@ function renderToolbar() {
 
 function renderTable() {
   const userCols = userColumns();
+  const spatial = isSpatial();
 
   const headers = [];
+  if (spatial) {
+    // Geom-type icon column header (narrow, non-sortable). Label kept short
+    // and the material icon doubles as the visual.
+    headers.push(el('th', {
+      style: { width: '48px' },
+      class: 'pb-center',
+      title: 'Geometry type of each record (compared against the layer declaration)'
+    }, [
+      el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'category')
+    ]));
+  }
   headers.push(renderHeaderCell('id', 'id', { width: '140px' }));
   for (const c of userCols) headers.push(renderHeaderCell(c.name, c.name));
-  if (isSpatial()) {
+  if (spatial) {
     headers.push(el('th', { style: { width: '140px' } }, 'geom'));
   }
 
@@ -359,11 +405,31 @@ function renderDataRow(feature, userCols) {
   const tr = el('tr', { dataset: { id: feature.id } });
   tr.addEventListener('click', () => openSidePanel(feature));
 
+  const spatial = isSpatial();
+  if (spatial) {
+    // Narrow first column: icon for the row's ACTUAL geometry type (not the
+    // layer declaration) — a mismatch here is a signal of bad import data.
+    const geomType = feature.geometry?.type || null;
+    const iconName = geomTypeIcon(geomType);
+    const tooltip = geomType
+      ? (geomType === layer.geometry_type
+          ? geomType
+          : `${geomType} (layer declares ${layer.geometry_type})`)
+      : 'No geometry';
+    tr.appendChild(el('td', { class: 'pb-center', title: tooltip }, [
+      el('span', {
+        class: 'material-symbols-outlined pb-muted',
+        style: { fontSize: '18px' },
+        'aria-label': tooltip
+      }, iconName)
+    ]));
+  }
+
   tr.appendChild(el('td', { class: 'pb-name-mono' }, shortId(feature.id)));
   for (const c of userCols) {
     tr.appendChild(el('td', {}, formatCell(feature.properties?.[c.name], c.type)));
   }
-  if (isSpatial()) {
+  if (spatial) {
     tr.appendChild(el('td', {}, [
       feature.geometry
         ? el('span', { class: 'pb-muted', title: 'Geometry present' }, `⬡ ${feature.geometry.type || layer.geometry_type}`)
@@ -409,6 +475,32 @@ async function handleExport(format) {
   } catch (err) {
     toast(err?.message || 'Export failed', 'error');
   }
+}
+
+// Extract the first coordinate pair from a GeoJSON geometry object, in
+// `{ lat, lon }` form. Returns null when the geometry is absent, malformed,
+// or its coords chain doesn't resolve to a `[lon, lat, ...]` array.
+function firstPointFromGeometry(geom) {
+  if (!geom || typeof geom !== 'object') return null;
+  const { type, coordinates: c } = geom;
+  if (!c) return null;
+  let pt = null;
+  try {
+    switch (type) {
+      case 'Point':             pt = c; break;
+      case 'MultiPoint':
+      case 'LineString':        pt = c[0]; break;
+      case 'MultiLineString':
+      case 'Polygon':           pt = c[0]?.[0]; break;
+      case 'MultiPolygon':      pt = c[0]?.[0]?.[0]; break;
+      default:                  pt = null;
+    }
+  } catch { return null; }
+  if (!Array.isArray(pt) || pt.length < 2) return null;
+  const lon = Number(pt[0]);
+  const lat = Number(pt[1]);
+  if (!Number.isFinite(lon) || !Number.isFinite(lat)) return null;
+  return { lat, lon };
 }
 
 // ===== Side panel =====
@@ -469,6 +561,22 @@ function openSidePanel(feature) {
     });
 
     const accepted = GEOMETRY_COMPAT[layer.geometry_type] || [layer.geometry_type];
+
+    // Read-only "Coordinates (first point)" display — gives users immediate
+    // geographic context without having to decode the raw geometry JSON.
+    // Shown as `lat, lon` to 6 decimal places (GeoJSON stores `[lon, lat]`
+    // per spec; the display flip is intentional — humans expect lat-first).
+    const firstPt = firstPointFromGeometry(feature?.geometry);
+    const coordsRow = firstPt
+      ? el('div', { class: 'pb-field-hint', style: { marginBottom: '4px' } }, [
+          'Coordinates (first point): ',
+          el('code', { class: 'pb-code pb-code--inline' },
+            `${firstPt.lat.toFixed(6)}, ${firstPt.lon.toFixed(6)}`)
+        ])
+      : (feature
+          ? el('div', { class: 'pb-field-hint', style: { marginBottom: '4px' } }, 'No geometry')
+          : null);
+
     fieldRows.push(el('div', { class: 'pb-field' }, [
       el('label', {}, [
         'geometry',
@@ -476,6 +584,7 @@ function openSidePanel(feature) {
         el('span', { class: 'pb-badge-type' }, layer.geometry_type)
       ]),
       el('div', { class: 'pb-field-hint', style: { marginBottom: '4px' } }, 'Accepts GeoJSON or WKT'),
+      coordsRow,
       geomInput,
       el('div', { class: 'pb-field-hint' },
         `Geometry type must be one of: ${accepted.join(', ')}.`),
@@ -580,7 +689,7 @@ function openSidePanel(feature) {
           }
           const accepted = GEOMETRY_COMPAT[layer.geometry_type] || [layer.geometry_type];
           if (!accepted.includes(parsed.type)) {
-            throw new Error(`Geometry type "${parsed.type}" not accepted for feature (expects: ${accepted.join(' or ')}).`);
+            throw new Error(`Geometry type "${parsed.type}" not accepted for this layer (expects: ${accepted.join(' or ')}).`);
           }
           geometry = parsed;
         } catch (e) {
@@ -594,6 +703,13 @@ function openSidePanel(feature) {
     saveBtn.disabled = true;
     try {
       if (isEdit) {
+        // NOTE (prototype-only semantics): the mock `updateFeature` shallow-merges
+        // `properties` into the existing JSONB column. PostgREST PATCH on a JSONB
+        // column REPLACES the whole value — so when we swap to the real Supabase
+        // adapter this call must either send the FULL properties object (currently
+        // safe: the side panel renders every non-locked column) OR be rewritten to
+        // go through an RPC that does `properties || $1::jsonb`. See the JSDoc
+        // block on `updateFeature` in js/api.js.
         await api.updateFeature(layer.name, feature.id, { properties, geometry });
         toast('Record saved', 'success');
       } else {

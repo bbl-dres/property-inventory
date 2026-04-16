@@ -1,13 +1,15 @@
 // prototype-backend — hash router + shell controller
 //
 // Routes:
-//   #/features                           -> sidebar(features) + "Select a feature" empty state
+//   #/features                           -> sidebar(features) + "Select a layer" empty state
 //   #/features/:name                     -> sidebar(features) + feature-detail (default tab=schema)
 //   #/features/:name?tab=schema|data|map -> feature-detail (switch tab, no remount)
 //   #/products                           -> gallery, full-width (default route, no sidebar)
 //   #/products/:slug                     -> product-detail, full-width (no sidebar)
-//   #/settings                           -> sidebar(settings) + settings view (Connection)
+//   #/settings                           -> redirects to #/settings/members
 //   #/settings/members                   -> sidebar(settings) + members (formerly Users)
+//   #/settings/connection                -> sidebar(settings) + Connection view
+//   #/settings/preferences               -> sidebar(settings) + Preferences stub
 //
 // Legacy: #/users* redirects to #/settings/members.
 //
@@ -16,7 +18,7 @@
 // `features` and `settings` sections (see SECTIONS_WITH_SIDEBAR).
 //
 // Legacy redirects: `#/layers*` → `#/features*` (kept so existing bookmarks
-// don't break after the Layers→Features rename).
+// don't break; the route path stays `features` even though UI says "Layer").
 
 import { closeModal, el } from './utils.js';
 import * as api from './api.js';
@@ -24,7 +26,6 @@ import { bus, state } from './state.js';
 
 const app = document.getElementById('app');
 const sidebarHost = document.getElementById('pb-object-sidebar');
-const breadcrumb = document.getElementById('pb-breadcrumb');
 const tabsHost = document.getElementById('pb-tabs');
 const layoutGrid = document.getElementById('pb-layout-grid');
 
@@ -40,32 +41,10 @@ const SECTIONS_WITH_SIDEBAR = new Set(['features', 'settings']);
 
 // Primary nav definition — painted once into the topbar.
 const TABS = [
-  { key: 'products', label: 'Data products', icon: 'apps',     href: '#/products' },
-  { key: 'features', label: 'Layers',        icon: 'layers',   href: '#/features' },
-  { key: 'settings', label: 'Settings',      icon: 'settings', href: '#/settings' }
+  { key: 'products', label: 'Maps & Apps', icon: 'apps',     href: '#/products' },
+  { key: 'features', label: 'Layers',      icon: 'layers',   href: '#/features' },
+  { key: 'settings', label: 'Settings',    icon: 'settings', href: '#/settings' }
 ];
-
-// Section label + root href, keyed by route section. Used by `sectionCrumb()`
-// so every view renders a consistent leading crumb.
-const SECTION_INFO = {
-  products: { label: 'Data products', href: '#/products' },
-  features: { label: 'Layers',        href: '#/features' },
-  settings: { label: 'Settings',      href: '#/settings' }
-};
-
-/**
- * Build the always-leading breadcrumb entry for a section. Views call this
- * helper to prefix their crumb trail; consistency beats cleverness here, so
- * the section crumb is shown even when it matches the active tab.
- *
- * @param {string} section - route section key ('features'|'products'|'settings')
- * @param {boolean} [asLink=true] - render as link vs. plain current
- */
-export function sectionCrumb(section, asLink = true) {
-  const info = SECTION_INFO[section];
-  if (!info) return { label: section || '' };
-  return asLink ? { label: info.label, href: info.href } : { label: info.label };
-}
 
 function parseHash() {
   let hash = (location.hash || '').replace(/^#/, '');
@@ -110,7 +89,16 @@ function resolveRoute({ path, query, rawQuery }) {
     if (sub === 'members') {
       return { name: 'settings-members', section: 'settings' };
     }
-    return { name: 'settings', section: 'settings' };
+    if (sub === 'connection') {
+      return { name: 'settings-connection', section: 'settings' };
+    }
+    if (sub === 'preferences') {
+      return { name: 'settings-preferences', section: 'settings' };
+    }
+    // Bare `#/settings` → default to the first sidebar item (Members), matching
+    // the "first sidebar item is the section default" convention also used by
+    // the Features section (see `features-empty` auto-navigate below).
+    return { name: 'redirect', to: '#/settings/members' };
   }
   return { name: 'redirect', to: DEFAULT_ROUTE };
 }
@@ -121,7 +109,11 @@ async function importView(routeName) {
     case 'product-detail': return import('./product-detail.js');
     case 'products-gallery': return import('./products-gallery.js');
     case 'settings-members': return import('./users-view.js');
-    case 'settings': return import('./settings-view.js');
+    case 'settings-connection': return import('./settings-view.js');
+    // `settings-preferences` is a small inline stub (see handleRoute) so it
+    // doesn't need its own module — returning null here would fall through to
+    // the 404 redirect, which is not what we want. Handled explicitly in
+    // handleRoute before importView is called.
     default: return null;
   }
 }
@@ -173,39 +165,9 @@ function applySidebarVisibility(section) {
 }
 
 /**
- * Paint the breadcrumb strip. Every view calls this with its full crumb
- * trail starting with the section crumb — no dedup, no hiding. The first
- * crumb is always the section name, the last is always the current page
- * (bold, non-link). Separator is "›".
- *
- * @param {Array<{label:string, href?:string}>} crumbs
- */
-export function renderBreadcrumb(crumbs) {
-  if (!breadcrumb) return;
-  breadcrumb.innerHTML = '';
-  breadcrumb.hidden = false;
-  breadcrumb.removeAttribute('aria-hidden');
-  if (!crumbs || !crumbs.length) return;
-  crumbs.forEach((c, i) => {
-    if (i > 0) {
-      breadcrumb.appendChild(el('span', { class: 'pb-breadcrumb-sep', 'aria-hidden': 'true' }, '›'));
-    }
-    const isLast = i === crumbs.length - 1;
-    if (c.href && !isLast) {
-      breadcrumb.appendChild(el('a', { href: c.href }, c.label));
-    } else {
-      breadcrumb.appendChild(el('span', {
-        class: 'pb-breadcrumb-current',
-        'aria-current': isLast ? 'page' : undefined
-      }, c.label));
-    }
-  });
-}
-
-/**
  * Small utility to build a standard `.pb-view-header` block. Every view
- * should render this directly under the breadcrumb strip so the page
- * chrome is identical across sections.
+ * should render this as the first node inside its mount container so the
+ * page chrome is identical across sections.
  *
  * @param {object} opts
  * @param {string|Node} opts.title
@@ -305,8 +267,6 @@ async function handleRoute() {
     currentView.params.tab = route.params.tab;
     try { currentView.module.onTabChange?.(route.params.tab); }
     catch (err) { console.error('[router] onTabChange', err); }
-    // Breadcrumb: update tab crumb
-    try { currentView.module.updateBreadcrumb?.(); } catch {}
     await mountSidebar('features', route.params.layerName);
     if (isStale()) return;
     return;
@@ -318,15 +278,24 @@ async function handleRoute() {
   }
   currentView = null;
   closeModal();
-  app.innerHTML = '';
 
-  // Mount sidebar for the section.
+  // Mount sidebar for the section. We intentionally do this BEFORE clearing
+  // `app.innerHTML` so that if a newer navigation has already started (e.g.
+  // the user clicked through the sidebar twice in quick succession), the
+  // stale call's destructive clear is gated behind `isStale()` and cannot
+  // wipe out a newer mount that already painted. Previously the clear ran
+  // synchronously before the first `await`, which was safe within a single
+  // tick but became unsafe once Task 2 added a `#/settings` → members
+  // redirect (an extra hashchange pair per navigation).
   let activeKey = route.params?.layerName || route.params?.slug || null;
   if (route.section === 'settings') {
-    activeKey = route.name === 'settings-members' ? 'members' : 'connection';
+    if (route.name === 'settings-members') activeKey = 'members';
+    else if (route.name === 'settings-connection') activeKey = 'connection';
+    else if (route.name === 'settings-preferences') activeKey = 'preferences';
   }
   await mountSidebar(route.section, activeKey);
   if (isStale()) return;
+  app.innerHTML = '';
 
   // Mount main view.
   if (route.name === 'features-empty') {
@@ -340,7 +309,6 @@ async function handleRoute() {
       }
     } catch {}
     if (isStale()) return;
-    renderBreadcrumb([sectionCrumb('features', false)]);
     const cta = el('button', { type: 'button', class: 'btn-primary' }, [
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
       ' New layer'
@@ -355,6 +323,19 @@ async function handleRoute() {
       description: 'Create your first layer to get started.'
     }));
     app.appendChild(emptyState('layers', 'No layers yet', 'Create your first layer to get started.', cta));
+    return;
+  }
+
+  // Preferences is a tiny placeholder — inline here (mirrors how
+  // `features-empty` is handled above) so we don't spin up a dedicated module
+  // for a "Coming soon" state.
+  if (route.name === 'settings-preferences') {
+    app.appendChild(renderViewHeader({
+      title: 'Preferences',
+      subtitle: 'Coming soon',
+      description: 'Workspace-level defaults (units, theme, notifications) will live here.'
+    }));
+    app.appendChild(emptyState('tune', 'Not implemented yet', 'Preferences are not part of this prototype.'));
     return;
   }
 

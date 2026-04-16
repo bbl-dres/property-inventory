@@ -73,7 +73,7 @@ export function openImportModal(layer, onDone) {
 
 function renderHost(bodyNode) {
   return el('div', {}, [
-    el('div', { class: 'pb-modal-header' }, 'Import features'),
+    el('div', { class: 'pb-modal-header' }, 'Import records'),
     bodyNode
   ]);
 }
@@ -165,10 +165,18 @@ function renderStep1(ctx) {
     renderStep2(ctx);
   });
 
+  // Non-WGS84 SRID warning — the importer does NOT reproject, so a mismatch
+  // between the file CRS and the layer CRS silently produces wrong-place
+  // geometries. Warn prominently on step 1 so the user can convert first.
+  const srid = Number(ctx.layer.srid);
+  const needsSridWarning = Number.isFinite(srid) && srid !== 4326;
+  const sridBanner = needsSridWarning ? renderSridWarningBanner(srid) : null;
+
   setBody(ctx, [
     el('div', { class: 'pb-modal-body pb-import-step' }, [
+      sridBanner,
       el('p', { class: 'pb-field-hint' },
-        `Append records to feature "${ctx.layer.name}" (${ctx.layer.geometry_type}). GeoJSON or CSV; skip-and-report validation.`),
+        `Append records to layer "${ctx.layer.name}" (${ctx.layer.geometry_type}). GeoJSON or CSV; skip-and-report validation.`),
       el('div', { class: 'pb-field' }, [
         el('label', {}, 'Select a file'),
         fileInput,
@@ -176,9 +184,34 @@ function renderStep1(ctx) {
       ]),
       err,
       unsupportedHost
-    ]),
+    ].filter(Boolean)),
     el('div', { class: 'pb-modal-footer' }, [cancelBtn])
   ]);
+}
+
+/**
+ * Dismissible warning banner shown at the top of import step 1 when the
+ * target layer's SRID is anything other than 4326 (WGS 84). The importer
+ * does NOT reproject, so the user needs to know their file must already
+ * be in the layer's CRS.
+ */
+function renderSridWarningBanner(srid) {
+  const dismissBtn = el('button', {
+    type: 'button',
+    class: 'pb-banner-close',
+    'aria-label': 'Dismiss warning'
+  }, [el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'close')]);
+  const banner = el('div', {
+    class: 'pb-banner pb-banner--warn',
+    role: 'status'
+  }, [
+    el('span', { class: 'material-symbols-outlined pb-banner-icon' }, 'warning'),
+    el('div', { class: 'pb-banner-text' },
+      `This layer uses EPSG:${srid}. Ensure your file uses the same coordinate system — the importer will NOT reproject.`),
+    dismissBtn
+  ]);
+  dismissBtn.addEventListener('click', () => banner.remove());
+  return banner;
 }
 
 function renderUnsupportedBlock(ext) {
@@ -282,12 +315,12 @@ function renderStep2(ctx) {
     ]);
   } else if (ctx.source === 'csv' && isLineOrPolyish) {
     geomNote = el('div', { class: 'pb-field-error' },
-      `CSV import not supported for ${gt} features — use GeoJSON.`);
+      `CSV import not supported for ${gt} layers — use GeoJSON.`);
     disableImport = true;
   } else if (ctx.source === 'csv' && isTable) {
-    geomNote = el('div', { class: 'pb-field-hint' }, 'Non-spatial feature — no geometry required.');
+    geomNote = el('div', { class: 'pb-field-hint' }, 'Non-spatial layer — no geometry required.');
   } else if (isTable) {
-    geomNote = el('div', { class: 'pb-field-hint' }, 'Non-spatial feature — no geometry required.');
+    geomNote = el('div', { class: 'pb-field-hint' }, 'Non-spatial layer — no geometry required.');
   }
 
   const err = el('div', { class: 'pb-field-error', style: { display: 'none' } });
@@ -320,7 +353,7 @@ function renderStep2(ctx) {
       latCol = latSelect.value;
       lonCol = lonSelect.value;
       if (!latCol || latCol === '__none' || !lonCol || lonCol === '__none') {
-        err.textContent = 'Select both Latitude and Longitude columns for Point features.';
+        err.textContent = 'Select both Latitude and Longitude columns for Point layers.';
         err.style.display = '';
         return;
       }

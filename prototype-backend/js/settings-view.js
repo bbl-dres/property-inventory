@@ -1,19 +1,22 @@
-// prototype-backend — Settings view (stub)
+// prototype-backend — Settings → Connection view
+//
+// One of the Settings sub-pages (alongside Members and Preferences). Owns its
+// own view-header identity — the title is "Connection", not "Settings", since
+// the Settings section is defined by its sidebar not by a single landing view.
 
 import { el } from './utils.js';
-import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { renderViewHeader } from './app.js';
 import { state, setCurrentRole } from './state.js';
 
 let root = null;
 
 export function mount(container) {
   root = container;
-  renderBreadcrumb([sectionCrumb('settings', false)]);
   root.innerHTML = '';
   root.appendChild(renderViewHeader({
-    title: 'Settings',
-    subtitle: 'Prototype configuration',
-    description: 'Workspace configuration and demo-only role switcher.'
+    title: 'Connection',
+    subtitle: 'Mock · localStorage',
+    description: 'How the prototype reads and writes data. This build uses the browser\'s localStorage as a stand-in for a real backend — the production build would connect to a Supabase Postgres instance.'
   }));
 
   // --- Demo role switcher ---
@@ -28,8 +31,10 @@ export function mount(container) {
   );
   roleSelect.addEventListener('change', () => setCurrentRole(roleSelect.value));
 
+  // Card header is dropped — the view-header already says "Connection", so a
+  // duplicate card title would just repeat it. The card itself is kept as the
+  // visual frame for the kv rows.
   root.appendChild(el('div', { class: 'pb-card pb-card--padded' }, [
-    el('div', { class: 'pb-card-header' }, 'Connection'),
     el('div', { class: 'pb-card-body' }, [
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'Mode'), el('dd', {}, 'Mock (browser localStorage)')]),
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'Endpoint'), el('dd', {}, '—')]),

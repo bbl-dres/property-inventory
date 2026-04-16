@@ -3,17 +3,20 @@
 import { el } from './utils.js';
 
 let root = null;
-let activeKey = 'connection';
+let activeKey = 'members';
 
+// First item wins the default-landing slot (see `resolveRoute` in app.js —
+// `#/settings` redirects to this item's href). Keep Members first unless
+// you're deliberately changing the section default.
 const ITEMS = [
-  { key: 'members',     label: 'Members',     sub: 'Users & roles',    icon: 'group',    href: '#/settings/members' },
-  { key: 'connection',  label: 'Connection',  sub: 'Mock · localStorage', icon: 'storage', href: '#/settings' },
-  { key: 'preferences', label: 'Preferences', sub: 'Coming soon',      icon: 'tune',     href: '#/settings' }
+  { key: 'members',     label: 'Members',     sub: 'Users & roles',       icon: 'group',   href: '#/settings/members' },
+  { key: 'connection',  label: 'Connection',  sub: 'Mock · localStorage', icon: 'storage', href: '#/settings/connection' },
+  { key: 'preferences', label: 'Preferences', sub: 'Coming soon',         icon: 'tune',    href: '#/settings/preferences' }
 ];
 
 export function mount(container, opts = {}) {
   root = container;
-  activeKey = opts.activeKey || 'connection';
+  activeKey = opts.activeKey || 'members';
   render();
 }
 
@@ -23,7 +26,7 @@ export function unmount() {
 }
 
 export function setActive(key) {
-  activeKey = key || 'connection';
+  activeKey = key || 'members';
   render();
 }
 

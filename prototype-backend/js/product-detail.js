@@ -2,7 +2,7 @@
 
 import * as api from './api.js';
 import { el, formatRelativeTime, toast } from './utils.js';
-import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { renderViewHeader } from './app.js';
 
 let root = null;
 let product = null;
@@ -10,7 +10,6 @@ let product = null;
 export async function mount(container, { slug }) {
   root = container;
   product = null;
-  renderBreadcrumb([sectionCrumb('products'), { label: slug }]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try {
     product = await api.getProduct(slug);
@@ -18,15 +17,11 @@ export async function mount(container, { slug }) {
     root.innerHTML = '';
     root.appendChild(el('div', { class: 'empty-state' }, [
       el('span', { class: 'material-symbols-outlined' }, 'error'),
-      el('div', { class: 'empty-state-title' }, 'Product not found'),
+      el('div', { class: 'empty-state-title' }, 'Not found'),
       el('div', { class: 'empty-state-description' }, `"${slug}" does not exist.`)
     ]));
     return;
   }
-  renderBreadcrumb([
-    sectionCrumb('products'),
-    { label: product.name || product.slug }
-  ]);
   render();
 }
 
@@ -84,11 +79,11 @@ function render() {
   const tagChips = (product.tags || []).map((t) => el('span', { class: 'pb-chip pb-chip--muted' }, t));
 
   const featuresCard = el('section', { class: 'pb-card pb-card--padded' }, [
-    el('div', { class: 'pb-card-header' }, 'Features used'),
+    el('div', { class: 'pb-card-header' }, 'Layers used'),
     el('div', { class: 'pb-card-body' }, [
       featureChips.length
         ? el('div', { class: 'pb-chip-row' }, featureChips)
-        : el('div', { class: 'pb-muted' }, 'No features consumed.')
+        : el('div', { class: 'pb-muted' }, 'No layers consumed.')
     ])
   ]);
 

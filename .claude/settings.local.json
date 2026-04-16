@@ -22,7 +22,20 @@
       "Bash(mv data/mock-layers.json data/mock-features.json)",
       "Bash(git -C c:/Users/DavidRasner/Documents/GitHub/property-inventory show HEAD:prototype-backend/css/admin.css)",
       "Bash(grep -c \"pb-view-header\" js/*.js css/admin.css)",
-      "Bash(grep -c \"pb-breadcrumb-strip\" js/*.js css/admin.css)"
+      "Bash(grep -c \"pb-breadcrumb-strip\" js/*.js css/admin.css)",
+      "Bash(grep -n \"innerHTML\\\\s*=\" js/*.js)",
+      "Bash(grep -n \"bus.on\\\\|addEventListener\\\\|setInterval\\\\|setTimeout\" js/*.js)",
+      "Bash(node --check js/schema-editor.js)",
+      "Bash(node --check js/api.js)",
+      "Bash(node --check js/sidebar-features.js)",
+      "Bash(node --check js/feature-detail.js)",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=5000 \"http://localhost:8765/#/settings/members\")",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=10000 \"http://localhost:8765/_test-nav.html\")",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=15000 \"http://localhost:8765/_test-nav.html\")",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=20000 \"http://localhost:8765/_test-nav.html\")",
+      "Bash(pkill -f \"http.server 8765\")",
+      "Bash(\"/c/Program Files \\(x86\\)/Microsoft/Edge/Application/msedge.exe\" --headless --disable-gpu --no-sandbox --dump-dom --virtual-time-budget=20000 \"http://localhost:8766/_test-final.html\")",
+      "Bash(pkill -f \"http.server 8766\")"
     ]
   }
 }

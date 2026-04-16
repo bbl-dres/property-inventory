@@ -1,21 +1,20 @@
-// prototype-backend — Products gallery (#/products)
+// prototype-backend — Maps & Apps gallery (#/products)
 //
-// Visual grid of data product cards. Clicking a card navigates to the
-// product detail view. Replaces the earlier "Select a data product" /
-// "No data products yet" empty states — an empty state is still shown
-// when literally zero products exist.
+// Visual grid of product cards. Clicking a card navigates to the product
+// detail view. Replaces the earlier "Select an item" / "No items yet"
+// empty states — an empty state is still shown when literally zero
+// products exist.
 
 import * as api from './api.js';
-import { el, toast } from './utils.js';
-import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { el } from './utils.js';
+import { renderViewHeader } from './app.js';
 
 let root = null;
 let products = [];
 
 export async function mount(container) {
   root = container;
-  renderBreadcrumb([sectionCrumb('products', false)]);
-  root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading products…</div></div>';
+  root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try { products = await api.listProducts(); }
   catch { products = []; }
   render();
@@ -31,30 +30,82 @@ function render() {
   if (!root) return;
   root.innerHTML = '';
 
+  // "+ New ▾" dropdown — splits creation into two small dedicated modals.
+  // The dropdown pattern scales better than a radio picker inside the modal
+  // as more kinds get added later (dashboard, storymap, embed…).
   const newBtn = el('button', {
     type: 'button',
     class: 'btn-primary',
-    title: 'New data product (coming soon)'
+    'aria-haspopup': 'menu',
+    'aria-expanded': 'false',
+    title: 'New map or app'
   }, [
     el('span', { class: 'material-symbols-outlined', style: { fontSize: '16px' } }, 'add'),
-    ' New data product'
+    ' New ',
+    el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px' } }, 'arrow_drop_down')
   ]);
-  newBtn.addEventListener('click', () => toast('Create product: coming soon', 'info'));
+
+  const refreshList = async () => {
+    try { products = await api.listProducts(); }
+    catch { products = []; }
+    render();
+  };
+
+  const openModalFor = async (kind) => {
+    const mod = await import('./new-product-modal.js');
+    mod.open({ kind, onCreated: refreshList });
+  };
+
+  const menuItem = (icon, label, kind) => {
+    const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
+      el('span', { class: 'material-symbols-outlined' }, icon),
+      el('span', {}, label)
+    ]);
+    b.addEventListener('click', () => { closeMenu(); openModalFor(kind); });
+    return b;
+  };
+
+  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true }, [
+    menuItem('link', 'Register app', 'app'),
+    menuItem('map', 'New map', 'map')
+  ]);
+
+  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
+
+  const closeMenu = () => {
+    menu.hidden = true;
+    newBtn.setAttribute('aria-expanded', 'false');
+    document.removeEventListener('click', onOutsideClick, true);
+    document.removeEventListener('keydown', onEscape);
+  };
+  const openMenu = () => {
+    menu.hidden = false;
+    newBtn.setAttribute('aria-expanded', 'true');
+    document.addEventListener('click', onOutsideClick, true);
+    document.addEventListener('keydown', onEscape);
+  };
+  const onOutsideClick = (e) => { if (!newBtnWrap.contains(e.target)) closeMenu(); };
+  const onEscape = (e) => { if (e.key === 'Escape') { closeMenu(); newBtn.focus(); } };
+
+  newBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.hidden) openMenu(); else closeMenu();
+  });
 
   const count = products.length;
   root.appendChild(renderViewHeader({
-    title: 'Data products',
-    subtitle: `${count} product${count === 1 ? '' : 's'}`,
-    description: 'Downstream apps and dashboards that consume your layers.',
-    actions: newBtn
+    title: 'Maps & Apps',
+    subtitle: `${count} item${count === 1 ? '' : 's'}`,
+    description: 'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.',
+    actions: newBtnWrap
   }));
 
   if (!products.length) {
     root.appendChild(el('div', { class: 'empty-state' }, [
       el('span', { class: 'material-symbols-outlined' }, 'apps'),
-      el('div', { class: 'empty-state-title' }, 'No data products yet'),
+      el('div', { class: 'empty-state-title' }, 'No maps or apps yet'),
       el('div', { class: 'empty-state-description' },
-        'Data products are downstream apps and dashboards that consume your features.')
+        'Maps & Apps are downstream apps, dashboards, and viewers that consume your layers.')
     ]));
     return;
   }
@@ -93,7 +144,7 @@ function renderCard(p) {
       el('p', { class: 'pb-product-card-desc' }, p.description || ''),
       el('div', { class: 'pb-product-card-foot' }, [
         el('span', { class: 'pb-muted', style: { fontSize: '12px' } },
-          `${count} feature${count === 1 ? '' : 's'}`)
+          `${count} layer${count === 1 ? '' : 's'}`)
       ])
     ])
   ]);

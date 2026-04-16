@@ -585,13 +585,46 @@ export async function createFeature(layerName, feature) {
 /**
  * Update a feature by id.
  *
- * IMPORTANT patch semantics (mock vs real adapter):
- *   - This mock SHALLOW-MERGES `patch.properties` into existing properties,
- *     i.e. {a:1,b:2} patched with {b:3} yields {a:1,b:3}.
- *   - PostgREST's PATCH on a JSONB column REPLACES the whole value by default,
- *     so the Supabase adapter must either (a) send a full properties object,
- *     or (b) use `jsonb_merge_patch` via an RPC.
- *   - `geometry` is replaced wholesale in both the mock and the real adapter.
+ * ============================================================================
+ * IMPORTANT — JSONB patch semantics (mock vs real Supabase/PostgREST adapter)
+ * ============================================================================
+ *
+ * MOCK BEHAVIOR (this function):
+ *   Performs a SHALLOW MERGE of `patch.properties` into the existing
+ *   properties object. Example:
+ *       existing = { a: 1, b: 2 }
+ *       patch.properties = { b: 3 }
+ *       result = { a: 1, b: 3 }   // `a` is preserved
+ *
+ * REAL SUPABASE/PostgREST BEHAVIOR (will DIFFER):
+ *   PATCH against a JSONB column REPLACES the entire column value by
+ *   default — there is no built-in merge. Naively swapping this mock for
+ *   a PostgREST call will SILENTLY LOSE any property not present in the
+ *   patch payload.
+ *
+ * MIGRATION REQUIREMENTS — the Supabase adapter MUST do ONE of:
+ *   (a) Read-modify-write: GET the current row, merge client-side, then
+ *       PATCH the full `properties` object back. (Simple; susceptible to
+ *       last-write-wins races.)
+ *   (b) Always send the full `properties` object from the caller (i.e.
+ *       change the contract so callers never send partial patches).
+ *   (c) Use a Postgres RPC that performs the merge in SQL, e.g.
+ *       `UPDATE ... SET properties = properties || $1::jsonb WHERE id = $2`
+ *       or `jsonb_merge_patch` (pg 16+). Preferred for correctness.
+ *
+ * CALLERS THAT RELY ON THE CURRENT SHALLOW-MERGE SHAPE:
+ *   - js/data-grid.js — the side-panel save handler in `openSidePanel()`
+ *     constructs a `properties` map from only the user columns it renders;
+ *     system/unseen columns would be lost if this were a full replace.
+ *     (Currently the side panel renders every non-locked column, so it
+ *     happens to be safe today — but the contract is partial-patch.)
+ *   - Any future caller that constructs a patch from a subset of fields
+ *     (inline-edit cells, bulk scripts, etc.) WILL break on the real
+ *     adapter unless one of (a)/(b)/(c) above is in place.
+ *
+ * `geometry` is always replaced wholesale in both the mock and the real
+ * adapter, so it does not have this problem.
+ * ============================================================================
  */
 export async function updateFeature(layerName, id, patch) {
   await ensureSeeded();
@@ -601,7 +634,7 @@ export async function updateFeature(layerName, id, patch) {
   if (!layer) throw new ApiError(ERR.NOT_FOUND, `Layer "${layerName}" not found`);
   const features = loadJson(FEATURES_KEY(layerName), []);
   const idx = features.findIndex((f) => f.id === id);
-  if (idx === -1) throw new ApiError(ERR.NOT_FOUND, `Feature "${id}" not found`);
+  if (idx === -1) throw new ApiError(ERR.NOT_FOUND, `Record "${id}" not found`);
   const cur = features[idx];
   const next = {
     ...cur,
@@ -623,7 +656,7 @@ export async function deleteFeature(layerName, id) {
   if (!layer) throw new ApiError(ERR.NOT_FOUND, `Layer "${layerName}" not found`);
   const features = loadJson(FEATURES_KEY(layerName), []);
   const idx = features.findIndex((f) => f.id === id);
-  if (idx === -1) throw new ApiError(ERR.NOT_FOUND, `Feature "${id}" not found`);
+  if (idx === -1) throw new ApiError(ERR.NOT_FOUND, `Record "${id}" not found`);
   features.splice(idx, 1);
   saveJson(FEATURES_KEY(layerName), features);
   layer.updated_at = nowIso();
@@ -707,11 +740,11 @@ export async function exportFeatures(layerName, format) {
   throw new ApiError(ERR.INVALID_NAME, `Unsupported export format "${format}"`);
 }
 
-// ===== Data products =====
+// ===== Maps & Apps =====
 //
-// A data product is a downstream app/dashboard that consumes one or more
-// layers. In the real adapter these live in a `products` table; here we
-// keep them in localStorage under `pb:products`.
+// A Maps & Apps item is a downstream app/dashboard/viewer that consumes
+// one or more layers. In the real adapter these live in a `products`
+// table; here we keep them in localStorage under `pb:products`.
 
 export async function listProducts() {
   await ensureSeeded();
@@ -749,7 +782,10 @@ export async function createProduct(product) {
     owner: product.owner || '',
     status: product.status || 'staging',
     last_deployed_at: product.last_deployed_at || now,
-    tags: Array.isArray(product.tags) ? product.tags : []
+    tags: Array.isArray(product.tags) ? product.tags : [],
+    kind: product.kind === 'map' ? 'map' : 'app',
+    basemap: product.basemap || null,
+    view_mode: product.view_mode === '3d' ? '3d' : (product.view_mode === '2d' ? '2d' : null)
   };
   list.push(p);
   saveJson(KEY_PRODUCTS, list);

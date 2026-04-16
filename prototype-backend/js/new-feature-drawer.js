@@ -1,6 +1,6 @@
-// prototype-backend — New feature drawer/modal (was "new layer").
+// prototype-backend — New layer drawer/modal.
 // Replaces the old #/layers/new route. Opened via sidebar "+ New" button.
-// Terminology note: UI says "feature"; internal API still uses `createLayer`.
+// Terminology note: UI says "layer"; internal API still uses `createLayer`.
 
 import * as api from './api.js';
 import { bus } from './state.js';

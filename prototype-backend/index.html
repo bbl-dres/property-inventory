@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>GIS Admin</title>
+  <title>GIS Server</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -19,10 +19,10 @@
 <body class="pb-body">
   <a href="#app" class="pb-skip-link">Skip to main content</a>
   <header class="pb-topbar">
-    <div class="pb-topbar-title">
+    <a href="#/features" class="pb-topbar-title" aria-label="Home">
       <span class="material-symbols-outlined">database</span>
-      <span>GIS Admin</span>
-    </div>
+      <span>GIS Server</span>
+    </a>
     <nav class="pb-tabs" id="pb-tabs" aria-label="Primary"></nav>
     <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
       <span class="material-symbols-outlined">cloud_off</span>
@@ -30,13 +30,20 @@
     </div>
   </header>
 
-  <nav class="pb-breadcrumb-strip" id="pb-breadcrumb" aria-label="Breadcrumb"></nav>
-
   <div class="pb-layout-grid" id="pb-layout-grid">
     <aside class="pb-object-sidebar" id="pb-object-sidebar" aria-label="Object list"></aside>
 
     <main id="app" class="pb-main" tabindex="-1"></main>
   </div>
+
+  <footer class="pb-footer">
+    <div class="pb-footer-version">v0.1.0</div>
+    <div class="pb-footer-links">
+      <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener">Source code</a>
+      <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener">Contact</a>
+      <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener">Legal</a>
+    </div>
+  </footer>
 
   <div id="toast-host" class="pb-toast-host" aria-live="polite" aria-atomic="true"></div>
   <div id="modal-host" class="pb-modal-host"></div>

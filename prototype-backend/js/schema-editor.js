@@ -21,6 +21,13 @@ let dragIdx = -1;
 let dropIndicator = null;
 let keyboardDragIdx = -1;
 
+// Delegation root for drag-handle events. We attach dragstart/dragend/keydown
+// ONCE to the tbody per render (via `wireHandleDelegation`) and resolve the
+// handle from `event.target.closest('.pb-drag-handle')`. Previously
+// `bindHandleDnd` attached three listeners per-handle on every render, which
+// accumulated stale listeners on orphaned DOM nodes after each reorder.
+let delegationRoot = null;
+
 // Keyboard shortcut: "E" toggles edit mode when schema tab is active.
 let keydownHandler = null;
 let roleUnsub = null;
@@ -64,6 +71,7 @@ export function unmount() {
   dragIdx = -1;
   keyboardDragIdx = -1;
   dropIndicator = null;
+  delegationRoot = null;
 }
 
 async function refresh() {
@@ -129,7 +137,7 @@ function render() {
   addBtn.addEventListener('click', openAddColumnModal);
 
   // In view mode we show only the total column count to avoid the confusing
-  // "N users" wording that read as "users of this feature". In edit mode,
+  // "N users" wording that read as "users of this layer". In edit mode,
   // the editable/locked breakdown is genuinely useful (you can only reorder
   // editable ones), so we show it there.
   const toolbarTitle = mode === 'edit'
@@ -155,6 +163,10 @@ function render() {
 
   const tbody = el('tbody', {});
   columns.forEach((c, i) => tbody.appendChild(renderRow(c, i)));
+
+  // Attach drag/keyboard handlers ONCE per render, delegated on the tbody.
+  // Old tbody (with its listeners) is discarded by root.innerHTML reset.
+  if (mode === 'edit') wireHandleDelegation(tbody);
 
   const tableCard = el('div', { class: 'pb-card' }, [
     el('table', { class: 'pb-table pb-schema-table' + (mode === 'edit' ? ' is-edit' : ''), id: 'pb-schema-table' }, [
@@ -182,17 +194,17 @@ function renderRow(column, idx) {
         const h = el('td', { class: 'pb-drag-cell' }, [
           locked
             ? el('span', { class: 'pb-drag-handle is-disabled', title: 'Locked' }, '⋮⋮')
-            : (() => {
-                const g = el('span', {
-                  class: 'pb-drag-handle',
-                  tabindex: '0',
-                  role: 'button',
-                  'aria-label': `Reorder ${column.name}. Press Space to grab, arrow keys to move, Space to drop, Escape to cancel.`,
-                  title: 'Drag to reorder'
-                }, '⋮⋮');
-                bindHandleDnd(g, idx, column.name);
-                return g;
-              })()
+            : el('span', {
+                class: 'pb-drag-handle',
+                tabindex: '0',
+                role: 'button',
+                draggable: 'true',
+                'aria-label': `Reorder ${column.name}. Press Space to grab, arrow keys to move, Space to drop, Escape to cancel.`,
+                title: 'Drag to reorder',
+                // dataset hooks so the delegated handler can resolve the
+                // column's index/name without a closure reference.
+                dataset: { idx: String(idx), col: column.name }
+              }, '⋮⋮')
         ]);
         return h;
       })()
@@ -258,23 +270,45 @@ function renderEditableDescription(column) {
 }
 
 // ===== Drag-and-drop (mouse) =====
+//
+// We use EVENT DELEGATION on the tbody rather than per-handle listeners.
+// Each call to `render()` builds a fresh tbody, so attaching listeners on
+// the tbody attaches them at most once per render (and the old tbody is
+// dropped wholesale, taking its listeners with it). This avoids the stale
+// listener accumulation we hit previously with per-handle `addEventListener`
+// calls, which kept piling up on orphaned DOM nodes after each reorder.
 
-function bindHandleDnd(handleEl, idx, colName) {
-  handleEl.setAttribute('draggable', 'true');
-  handleEl.addEventListener('dragstart', (e) => {
+function wireHandleDelegation(tbody) {
+  delegationRoot = tbody;
+
+  tbody.addEventListener('dragstart', (e) => {
+    const handleEl = e.target.closest('.pb-drag-handle');
+    if (!handleEl || handleEl.classList.contains('is-disabled')) return;
+    const idx = Number(handleEl.dataset.idx);
+    const colName = handleEl.dataset.col || '';
     dragIdx = idx;
-    e.dataTransfer.effectAllowed = 'move';
-    try { e.dataTransfer.setData('text/plain', colName); } catch {}
+    if (e.dataTransfer) {
+      e.dataTransfer.effectAllowed = 'move';
+      try { e.dataTransfer.setData('text/plain', colName); } catch {}
+    }
     handleEl.closest('tr')?.classList.add('is-dragging');
   });
-  handleEl.addEventListener('dragend', () => {
+
+  tbody.addEventListener('dragend', (e) => {
+    const handleEl = e.target.closest('.pb-drag-handle');
+    if (!handleEl) return;
     handleEl.closest('tr')?.classList.remove('is-dragging');
     hideDropIndicator();
     dragIdx = -1;
   });
 
   // Keyboard a11y
-  handleEl.addEventListener('keydown', (e) => {
+  tbody.addEventListener('keydown', (e) => {
+    const handleEl = e.target.closest('.pb-drag-handle');
+    if (!handleEl || handleEl.classList.contains('is-disabled')) return;
+    const idx = Number(handleEl.dataset.idx);
+    const colName = handleEl.dataset.col || '';
+
     if (e.key === ' ' || e.key === 'Enter') {
       e.preventDefault();
       if (keyboardDragIdx === -1) {

@@ -5,7 +5,7 @@
  * from tokens.css — do not redefine them here.
  *
  * Section order (keep in sync):
- *   LAYOUT · TOPBAR + TABS · BREADCRUMB · VIEW HEADER · SIDEBARS · CARDS ·
+ *   LAYOUT · TOPBAR + TABS · VIEW HEADER · SIDEBARS · CARDS ·
  *   FORMS · TABLES & GRIDS · SUBTABS · SIDE PANEL · MODALS · TOASTS ·
  *   CHIPS & BADGES · STATUS / ROLE PILLS · EMPTY & LOADING STATES · UTILITIES
  */
@@ -74,6 +74,16 @@
   gap: var(--space-2);
   font-weight: var(--font-semibold);
   font-size: var(--text-base);
+  color: inherit;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pb-topbar-title:hover { color: var(--grey-100); }
+.pb-topbar-title:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
 }
 
 .pb-topbar-title .material-symbols-outlined { font-size: var(--icon-lg); }
@@ -146,46 +156,46 @@
 }
 .pb-role-chip .material-symbols-outlined { font-size: var(--icon-xs); }
 
-/* ============ BREADCRUMB ============ */
+/* ============ FOOTER ============ */
 
-/* Always visible, one row below the topbar. Even a single-crumb trail is
- * painted — consistency beats cleverness for first-time users. */
-.pb-breadcrumb-strip {
+/* Small shell footer — version on the left, external links on the right.
+ * Flex-shrink: 0 so it never collapses while the layout grid resizes. */
+.pb-footer {
   display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: var(--space-2);
-  font-size: var(--text-sm);
-  color: var(--grey-700);
-  background: var(--white);
-  padding: 0 var(--space-6);
-  border-bottom: 1px solid var(--grey-200);
+  padding: var(--space-1) var(--space-5);
   height: 32px;
   flex-shrink: 0;
-  overflow: hidden;
-  white-space: nowrap;
+  background: var(--grey-100);
+  border-top: 1px solid var(--grey-200);
+  font-size: var(--text-xs);
+  color: var(--grey-600);
 }
 
-.pb-breadcrumb-strip a {
-  color: var(--grey-600);
+.pb-footer-version {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+}
+
+.pb-footer-links {
+  display: flex;
+  gap: var(--space-4);
+}
+
+.pb-footer-links a {
+  color: var(--grey-700);
   text-decoration: none;
 }
-.pb-breadcrumb-strip a:hover { color: var(--grey-900); text-decoration: underline; }
 
-.pb-breadcrumb-sep {
-  color: var(--grey-400);
-  font-size: var(--text-base);
-  line-height: 1;
-}
-
-.pb-breadcrumb-current {
+.pb-footer-links a:hover {
   color: var(--grey-900);
-  font-weight: var(--font-bold);
+  text-decoration: underline;
 }
 
 /* ============ VIEW HEADER ============ */
 
 /* Standard header block at the top of every view content area. Sits
- * directly under the breadcrumb strip. */
+ * directly under the topbar. */
 .pb-view-header {
   display: flex;
   align-items: flex-start;
@@ -219,8 +229,8 @@
 }
 
 .pb-view-description {
-  font-size: var(--text-base);
-  color: var(--grey-700);
+  font-size: var(--text-sm);
+  color: var(--grey-600);
   line-height: var(--leading-normal);
   max-width: 65ch;
   margin-top: var(--space-2);
@@ -284,9 +294,11 @@
 
 .pb-sidebar-search {
   position: relative;
-  padding: var(--space-2) var(--space-3);
+  /* Sidebar search sits at the very top of the sidebar (Phase-2 reorder:
+   * search first, then title+New header, then list). Extra top padding so
+   * the input isn't jammed against the topbar border. */
+  padding: var(--space-3) var(--space-3) var(--space-2);
   flex-shrink: 0;
-  border-bottom: 1px solid var(--grey-100);
 }
 .pb-sidebar-search input {
   width: 100%;
@@ -534,7 +546,7 @@
   border-top: 1px solid var(--grey-100);
 }
 
-/* Feature-detail optional thumbnail (product detail only). */
+/* Layer-detail optional thumbnail (product detail only). */
 .pb-hero-thumb {
   width: 100%;
   max-width: 320px;
@@ -545,7 +557,7 @@
   margin-bottom: var(--space-4);
 }
 
-/* Feature-detail layout wrappers — no visible styling themselves; just
+/* Layer-detail layout wrappers — no visible styling themselves; just
  * spacing hosts for the header + metadata (top) and the REST/Used-by
  * cards (bottom). Subtabs and the tab-host sit between them. */
 .pb-layer-hero,
@@ -558,6 +570,32 @@
 .pb-layer-hero { margin-bottom: var(--space-4); }
 .pb-layer-api { margin-top: var(--space-4); }
 .pb-layer-bottom { margin-top: var(--space-4); }
+
+/* Compact badge row under the layer title: "Polygon · 1,284 records ·
+ * EPSG:2056 (LV95)". Small muted text, single line with middle-dot
+ * separators built into the string. */
+.pb-hero-subtitle {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.pb-hero-meta {
+  font-size: var(--text-sm);
+  color: var(--grey-600);
+}
+.pb-hero-updated {
+  font-size: var(--text-xs);
+  color: var(--grey-500);
+}
+
+/* Wrapper around the subtabs nav + active tab content. Keeps them visually
+ * bound together with no gap between the tab strip and its panel, while
+ * giving the whole group consistent vertical breathing room against the
+ * hero above and the API/bottom sections below. */
+.pb-tabs-wrap {
+  display: flex;
+  flex-direction: column;
+}
 
 /* Metadata grouped sections (ISO 19115 / DCAT). */
 .pb-metadata-card { margin-top: var(--space-3); }
@@ -686,7 +724,9 @@
 .pb-inline-edit { display: block; min-width: 0; }
 
 .pb-inline-value {
-  display: inline-block;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
   padding: 2px var(--space-1);
   border-radius: var(--radius-sm);
   cursor: text;
@@ -697,7 +737,35 @@
 .pb-inline-value:hover { background: var(--grey-50); border-color: var(--grey-200); }
 .pb-inline-value:focus { outline: 2px solid var(--grey-400); outline-offset: 1px; }
 .pb-inline-value.is-placeholder { color: var(--grey-500); font-style: italic; }
-.pb-inline-value--multiline { white-space: pre-wrap; display: block; }
+.pb-inline-value--multiline {
+  display: flex;
+  align-items: flex-start;
+}
+/* Inner text node inside the inline-edit value. Wraps long text while
+ * letting the sibling pencil-icon sit flush on the trailing edge. */
+.pb-inline-value-text {
+  white-space: pre-wrap;
+  min-width: 0;
+  flex: 1;
+}
+
+/* Pencil affordance on inline-editable fields. Hidden by default; revealed
+ * when the user hovers or focuses the value wrapper. Purely visual —
+ * pointer-events: none so clicks fall through to the <span> that already
+ * listens for the enter-edit event. */
+.pb-inline-edit-icon {
+  font-size: 14px;
+  color: var(--grey-500);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  pointer-events: none;
+  flex-shrink: 0;
+}
+.pb-inline-value:hover .pb-inline-edit-icon,
+.pb-inline-value:focus .pb-inline-edit-icon,
+.pb-inline-edit:focus-within .pb-inline-edit-icon {
+  opacity: 1;
+}
 
 .pb-inline-input {
   width: 100%;
@@ -785,6 +853,13 @@
   top: 0;
   z-index: 1;
   background: var(--grey-50);
+  /* Data-grid headers are sortable column names, not structural labels —
+   * drop the overline styling applied by .pb-table th so they read as
+   * regular text. Schema-editor tables keep the uppercase treatment. */
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: var(--text-sm);
+  color: var(--grey-700);
 }
 
 .pb-th-sortable {
@@ -928,7 +1003,7 @@
 /* ============ SUBTABS ============ */
 
 /* Lighter-weight than .pb-tabs: underline-only, small caps, no pill.
- * Used for Schema · Data · Map on the feature detail. */
+ * Used for Schema · Data · Map on the layer detail. */
 .pb-subtabs {
   display: flex;
   gap: var(--space-2);
@@ -1380,6 +1455,44 @@
 .pb-role--editor { background: var(--role-editor-bg); color: var(--role-editor-text); }
 .pb-role--viewer { background: var(--role-viewer-bg); color: var(--role-viewer-text); }
 
+/* Generic dismissible banner (warning / info). Currently used by the
+ * import modal for the non-WGS84 SRID warning; reusable elsewhere. */
+.pb-banner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-2);
+  padding: var(--space-3);
+  margin-bottom: var(--space-3);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  background: var(--grey-50);
+  color: var(--grey-800);
+}
+.pb-banner--warn {
+  background: var(--status-warning-bg);
+  color: var(--status-warning-text);
+  border-color: var(--status-warning);
+}
+.pb-banner-icon {
+  font-size: var(--icon-md);
+  flex-shrink: 0;
+  color: var(--grey-600);
+}
+.pb-banner--warn .pb-banner-icon { color: var(--status-warning); }
+.pb-banner-text { flex: 1; min-width: 0; }
+.pb-banner-close {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  cursor: pointer;
+  padding: 0 var(--space-1);
+  display: inline-flex;
+  align-items: center;
+  opacity: 0.7;
+}
+.pb-banner-close:hover { opacity: 1; }
+
 /* SRID mismatch banner on the Map tab. */
 .pb-srid-banner {
   display: flex;
@@ -1431,6 +1544,56 @@
   gap: var(--space-2);
   min-height: 280px;
   text-align: center;
+}
+
+/* ============ DROPDOWN MENU ============ */
+
+/* Lightweight dropdown anchored to a button. Currently used by the
+ * Maps & Apps gallery "+ New" button. Scale vertically; right-aligned
+ * to the anchor. */
+.pb-menu-wrap {
+  position: relative;
+  display: inline-flex;
+}
+
+.pb-menu {
+  position: absolute;
+  top: calc(100% + var(--space-1));
+  right: 0;
+  z-index: 60;
+  min-width: 200px;
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+  padding: var(--space-1);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pb-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 0;
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  color: var(--grey-900);
+  text-align: left;
+  cursor: pointer;
+  width: 100%;
+}
+.pb-menu-item:hover,
+.pb-menu-item:focus-visible {
+  background: var(--grey-50);
+  outline: none;
+}
+.pb-menu-item .material-symbols-outlined {
+  font-size: var(--icon-md);
+  color: var(--grey-600);
 }
 
 /* ============ UTILITIES ============ */

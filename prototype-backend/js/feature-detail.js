@@ -1,19 +1,29 @@
-// prototype-backend — Feature detail shell (Phase 1 redesign, renamed Phase 4).
+// prototype-backend — Layer detail shell (Phase 1 redesign, renamed Phase 4).
 // Hero (always visible) replaces the Overview tab. Tabs: Schema · Data · Map.
 //
-// "Feature" here is the object class (user-facing name). Internal identifiers
+// "Layer" here is the user-facing object class name. Internal identifiers
 // (`layer`, `layers`) are preserved to keep the API contract stable.
 
 import * as api from './api.js';
 import { el, toast, formatRelativeTime, inlineEditable } from './utils.js';
 import { sridName } from './constants.js';
 import { bus } from './state.js';
-import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { renderViewHeader } from './app.js';
 import * as schemaEditor from './schema-editor.js';
 import * as dataGrid from './data-grid.js';
 import * as mapPreview from './map-preview.js';
 
 const REST_BASE = 'https://<project>.supabase.co/rest/v1';
+
+// Format a SRID into a human-readable label used in the hero badge row.
+// Known codes show the EPSG code + a short CRS alias; unknown codes fall
+// back to the bare "EPSG:<code>" form.
+function formatSrid(srid) {
+  const code = Number(srid);
+  if (code === 4326) return 'EPSG:4326 (WGS 84)';
+  if (code === 2056) return 'EPSG:2056 (LV95)';
+  return `EPSG:${srid}`;
+}
 
 let root = null;
 let currentLayer = null;
@@ -33,7 +43,6 @@ const TABS_SPATIAL = [
   { id: 'map', label: 'Map' }
 ];
 const TABS_TABLE = TABS_SPATIAL.filter((t) => t.id !== 'map');
-const TAB_LABEL = { schema: 'Schema', data: 'Data', map: 'Map' };
 
 export async function mount(container, params) {
   root = container;
@@ -45,7 +54,6 @@ export async function mount(container, params) {
     currentLayer = await api.getLayer(params.layerName);
   } catch (err) {
     root.innerHTML = '';
-    renderBreadcrumb([sectionCrumb('features'), { label: params.layerName }]);
     root.appendChild(el('div', { class: 'empty-state' }, [
       el('span', { class: 'material-symbols-outlined' }, 'error'),
       el('div', { class: 'empty-state-title' }, 'Layer not found'),
@@ -58,14 +66,18 @@ export async function mount(container, params) {
   catch { productsUsing = []; }
 
   renderShell();
-  updateBreadcrumb();
   renderTab();
 
   const refresh = async () => {
     try {
       currentLayer = await api.getLayer(currentLayer.name);
       renderHero();
-    } catch {}
+    } catch (err) {
+      // Bus-driven auto-refresh (schema:changed / data:changed / layer:updated).
+      // Silent catch here meant the user saw no feedback if the refetch failed;
+      // under a real Supabase adapter this would hide genuine network errors.
+      toast(err?.message || 'Failed to refresh layer', 'error');
+    }
   };
   busUnsub.push(bus.on('schema:changed', refresh));
   busUnsub.push(bus.on('data:changed', refresh));
@@ -101,16 +113,6 @@ export function onTabChange(tab) {
   renderTab();
 }
 
-export function updateBreadcrumb() {
-  if (!currentLayer) return;
-  const crumbs = [
-    sectionCrumb('features'),
-    { label: currentLayer.name, href: `#/features/${encodeURIComponent(currentLayer.name)}` },
-    { label: TAB_LABEL[currentTab] || currentTab }
-  ];
-  renderBreadcrumb(crumbs);
-}
-
 // ===== Shell =====
 
 function renderShell() {
@@ -121,6 +123,7 @@ function renderShell() {
 
   const tabs = currentLayer.geometry_type === 'Table' ? TABS_TABLE : TABS_SPATIAL;
   const tabsBar = el('nav', { class: 'pb-subtabs', role: 'tablist', 'aria-label': 'Layer sections' }, tabs.map((t) =>
+
     el('a', {
       href: `#/features/${encodeURIComponent(currentLayer.name)}?tab=${t.id}`,
       class: 'pb-subtab' + (t.id === currentTab ? ' is-active' : ''),
@@ -129,10 +132,9 @@ function renderShell() {
       dataset: { tab: t.id }
     }, t.label)
   ));
-  root.appendChild(tabsBar);
-
   tabHost = el('div', { class: 'pb-tab-host' });
-  root.appendChild(tabHost);
+  const tabsWrap = el('div', { class: 'pb-tabs-wrap' }, [tabsBar, tabHost]);
+  root.appendChild(tabsWrap);
 
   apiHost = el('section', { class: 'pb-layer-api' });
   root.appendChild(apiHost);
@@ -148,7 +150,7 @@ function renderShell() {
 function renderHero() {
   if (!heroHost) return;
   heroHost.innerHTML = '';
-  // `fc` is the record count for this feature — kept the shortened name for
+  // `fc` is the record count for this layer — kept the shortened name for
   // diff-friendliness; display label below says "record(s)".
   const fc = Number(currentLayer.feature_count ?? 0);
 
@@ -214,14 +216,14 @@ function renderHero() {
       ]),
       el('div', { class: 'pb-field-hint', style: { marginTop: '4px' } },
         'Example only — not a live endpoint. Wire up a Supabase/PostgREST project to call these paths.'),
-      el('details', { class: 'pb-details', open: true }, [
+      el('details', { class: 'pb-details' }, [
         el('summary', {}, 'curl examples (reference only)'),
         el('pre', { class: 'pb-code' }, curlExamples)
       ])
     ])
   ]);
 
-  // Used-by card (reverse link to data products).
+  // Used-by card (reverse link to Maps & Apps).
   const usedByChips = productsUsing.map((p) =>
     el('a', { href: `#/products/${encodeURIComponent(p.slug)}`, class: 'pb-chip' }, [
       el('span', { class: 'material-symbols-outlined', style: { fontSize: '14px' } }, 'apps'),
@@ -234,7 +236,7 @@ function renderHero() {
     el('div', { class: 'pb-card-body' }, [
       usedByChips.length
         ? el('div', { class: 'pb-chip-row' }, usedByChips)
-        : el('div', { class: 'pb-muted' }, 'No data products consume this layer yet.')
+        : el('div', { class: 'pb-muted' }, 'No maps or apps consume this layer yet.')
     ])
   ]);
 
@@ -244,13 +246,26 @@ function renderHero() {
     el('span', { class: 'pb-badge' }, currentLayer.geometry_type)
   ]);
 
-  const subtitle = `${fc.toLocaleString()} record${fc === 1 ? '' : 's'} · updated ${formatRelativeTime(currentLayer.updated_at)}`;
+  // Compact badge row under the title: geometry · records · SRID (spatial),
+  // or "Table · N records" for non-spatial layers. Rendered into the
+  // `subtitle` slot so the view-header stacks it directly under the title.
+  // The updated-at timestamp moves to a second subtitle line so we keep that
+  // signal but don't blow up the single-row badge.
+  const isTable = currentLayer.geometry_type === 'Table';
+  const recordsLabel = `${fc.toLocaleString()} record${fc === 1 ? '' : 's'}`;
+  const badgeTokens = isTable
+    ? ['Table', recordsLabel]
+    : [currentLayer.geometry_type, recordsLabel, formatSrid(currentLayer.srid)];
+  const badgeRow = el('div', { class: 'pb-hero-meta' }, badgeTokens.join(' · '));
+  const updatedLine = el('div', { class: 'pb-hero-updated' },
+    `Updated ${formatRelativeTime(currentLayer.updated_at)}`);
+  const subtitleNode = el('div', { class: 'pb-hero-subtitle' }, [badgeRow, updatedLine]);
 
   // Unified view-header replaces the old .pb-hero top block. The REST,
   // Used-by, and Metadata cards still render below as siblings.
   const header = renderViewHeader({
     title: titleNode,
-    subtitle,
+    subtitle: subtitleNode,
     description: descEditor
   });
   heroHost.appendChild(header);
@@ -465,7 +480,15 @@ function renderTab() {
   if (activeChildView?.unmount) { try { activeChildView.unmount(); } catch {} }
   activeChildView = null;
   tabHost.innerHTML = '';
-  updateBreadcrumb();
+
+  // API/Used-by cards and the metadata card live outside `tabHost` so they
+  // persist across tab switches, but conceptually they describe the layer
+  // itself, not the record set. Surface them only on the Schema tab — on
+  // Data and Map the focus is the record-level work, and these cards
+  // compete with it.
+  const showAncillary = currentTab === 'schema';
+  if (apiHost) apiHost.hidden = !showAncillary;
+  if (bottomHost) bottomHost.hidden = !showAncillary;
 
   switch (currentTab) {
     case 'schema':

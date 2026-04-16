@@ -8,7 +8,7 @@
 import * as api from './api.js';
 import { ApiError } from './api.js';
 import { el, toast, openModal, closeModal, confirmModal, formatRelativeTime } from './utils.js';
-import { renderBreadcrumb, renderViewHeader, sectionCrumb } from './app.js';
+import { renderViewHeader } from './app.js';
 import { bus, isAllowed } from './state.js';
 
 const ROLES = ['viewer', 'editor', 'admin'];
@@ -20,7 +20,6 @@ let roleUnsub = null;
 
 export async function mount(container) {
   root = container;
-  renderBreadcrumb([sectionCrumb('settings'), { label: 'Members' }]);
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading users…</div></div>';
   if (roleUnsub) { try { roleUnsub(); } catch {} }
   roleUnsub = bus.on('user:role-changed', () => { if (root) render(); });
@@ -173,7 +172,7 @@ function openInviteModal() {
     el('div', { class: 'pb-field' }, [
       el('label', {}, 'Role'),
       roleSelect,
-      el('div', { class: 'pb-field-hint' }, 'viewer: read-only · editor: can edit features · admin: full access')
+      el('div', { class: 'pb-field-hint' }, 'viewer: read-only · editor: can edit layers · admin: full access')
     ]),
     submitErr
   ]);

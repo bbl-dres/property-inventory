@@ -1,9 +1,9 @@
-// prototype-backend — Features object sidebar (was "Layers").
-// Search + "New feature" + scrollable list. Supports delete via row action.
+// prototype-backend — Layers object sidebar.
+// Search + "New layer" + scrollable list. Supports delete via row action.
 //
 // Note on terminology: internal code still uses `layer` / `layers` identifiers
 // (mock API method names, bus event keys, storage keys) to keep the
-// Supabase-swap contract stable. Only the UI copy says "feature(s)".
+// Supabase-swap contract stable. UI copy says "layer(s)" everywhere.
 
 import * as api from './api.js';
 import { bus, isAllowed } from './state.js';
@@ -86,8 +86,10 @@ function renderShell() {
 
   const list = el('div', { class: 'pb-sidebar-list', id: 'pb-sidebar-features-list' });
 
-  root.appendChild(header);
+  // Phase-2 UX: search is the first interactive element. The title + "New"
+  // header sits *below* the search; the scrollable list goes last.
   root.appendChild(searchBox);
+  root.appendChild(header);
   root.appendChild(list);
 }
 
@@ -97,6 +99,10 @@ async function refresh() {
   } catch (err) {
     console.error(err);
     layers = [];
+    // Surface the failure — auto-refresh paths (boot, bus-driven) otherwise
+    // swallow real network errors silently when the real Supabase adapter
+    // replaces the in-browser mock.
+    toast(err?.message || 'Failed to refresh layers', 'error');
   }
   renderList();
 }

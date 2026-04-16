@@ -605,7 +605,16 @@ export function inlineEditable(opts) {
   const viewClass = 'pb-inline-value' + (multiline ? ' pb-inline-value--multiline' : '');
   const view = el(multiline ? 'div' : 'span', {
     class: viewClass, tabindex: '0', role: 'button', 'aria-label': 'Click to edit'
-  }, value || placeholder || '—');
+  }, [
+    el('span', { class: 'pb-inline-value-text' }, value || placeholder || '—'),
+    // Pencil affordance — purely visual hint that the text is editable.
+    // Revealed on hover/focus of the wrapper via CSS; pointer-events: none
+    // so clicks fall through to the view element (which opens the editor).
+    el('span', {
+      class: 'material-symbols-outlined pb-inline-edit-icon',
+      'aria-hidden': 'true'
+    }, 'edit')
+  ]);
   if (!value) view.classList.add('is-placeholder');
 
   const input = multiline
@@ -635,7 +644,11 @@ export function inlineEditable(opts) {
       toast(err?.message || 'Save failed', 'error');
     }
     editing = false;
-    view.textContent = current || placeholder || '—';
+    // Update the text span but leave the sibling pencil-icon <span> intact
+    // so the hover affordance survives a save round-trip.
+    const textNode = view.querySelector('.pb-inline-value-text');
+    if (textNode) textNode.textContent = current || placeholder || '—';
+    else view.textContent = current || placeholder || '—';
     view.classList.toggle('is-placeholder', !current);
     wrap.innerHTML = '';
     wrap.appendChild(view);
