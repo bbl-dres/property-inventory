@@ -50,20 +50,6 @@
 }
 .pb-skip-link:focus { left: var(--space-2); top: var(--space-2); }
 
-.pb-layout-grid {
-  display: grid;
-  grid-template-columns: 300px 1fr;
-}
-/* Scene viewer mode: reinstate the flex sizing so layout-grid fills the
- * remaining viewport height between topbar and bottom edge. */
-.pb-body--fixed-viewport .pb-layout-grid {
-  flex: 1;
-  min-height: 0;
-}
-
-.pb-layout-grid--no-sidebar { grid-template-columns: 1fr; }
-.pb-layout-grid--no-sidebar .pb-object-sidebar { display: none; }
-
 .pb-main {
   min-width: 0;
   /* Cap content at the same max-width as `.pb-section-nav-inner` so the
@@ -74,8 +60,11 @@
   margin-inline: auto;
 }
 /* Scene viewer re-enables internal scroll so the map + its sub-modules
- * stay pinned while edits happen. */
+ * stay pinned while edits happen. `.pb-main` is now a direct child of
+ * body, so it absorbs the remaining viewport height itself. */
 .pb-body--fixed-viewport .pb-main {
+  flex: 1;
+  min-height: 0;
   overflow: auto;
 }
 
@@ -257,6 +246,29 @@
   outline-offset: -2px;
 }
 
+/* Back link on the right edge of the Settings sub-tab row. Ghost-style,
+ * pushed right with `margin-left: auto` so it sits at the end of the
+ * flex flow regardless of how many sub-tabs exist. */
+.pb-section-nav-back {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: 0 var(--space-3);
+  color: var(--grey-600);
+  text-decoration: none;
+  font-size: var(--text-sm);
+  font-weight: var(--font-medium);
+  white-space: nowrap;
+  cursor: pointer;
+  flex: 0 0 auto;
+}
+.pb-section-nav-back:hover { color: var(--grey-900); background: var(--grey-50); }
+.pb-section-nav-back:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: -2px;
+}
+
 /* Collapse tab labels to icon-only below 900px so the section nav stays single-row. */
 @media (max-width: 900px) {
   .pb-tab-label { display: none; }
@@ -403,34 +415,12 @@
  * negative margins to span edge-to-edge. Give .pb-main consistent padding. */
 .pb-main { padding: var(--space-5) var(--space-6); }
 
-/* ============ SIDEBARS ============ */
+/* ============ ROW / BUTTON HELPERS (formerly sidebar) ============ */
 
-.pb-object-sidebar {
-  background: var(--white);
-  border-right: 1px solid var(--grey-200);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  min-height: 0;
-}
-
-.pb-sidebar-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  border-bottom: 1px solid var(--grey-200);
-  flex-shrink: 0;
-}
-
-.pb-sidebar-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--grey-900);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-}
-
+/* Compact button modifier. Used by the scene viewer's layer-manager
+ * "+ Add ▾" button where the standard .btn-* padding is too generous
+ * for a condensed left panel. Class name is historical — it started life
+ * in the old object sidebars which are now gone. */
 .pb-sidebar-new {
   padding: var(--space-1) var(--space-2);
   font-size: var(--text-xs);
@@ -440,117 +430,26 @@
   min-height: 0;
 }
 
-.pb-sidebar-search {
-  position: relative;
-  /* Sidebar search sits at the very top of the sidebar (Phase-2 reorder:
-   * search first, then title+New header, then list). Extra top padding so
-   * the input isn't jammed against the topbar border. */
-  padding: var(--space-3) var(--space-3) var(--space-2);
-  flex-shrink: 0;
-}
-.pb-sidebar-search input {
-  width: 100%;
-  padding: var(--space-1) var(--space-2) var(--space-1) var(--space-8);
-  border: 1px solid var(--grey-300);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-  background: var(--white);
-  box-sizing: border-box;
-}
-.pb-sidebar-search .material-symbols-outlined {
-  position: absolute;
-  left: var(--space-5); top: 50%;
-  transform: translateY(-50%);
-  color: var(--grey-500);
-  font-size: var(--icon-md);
-  pointer-events: none;
-}
-
-.pb-sidebar-list {
-  flex: 1;
-  overflow-y: auto;
-  padding: var(--space-2) 0;
-}
-
-.pb-sidebar-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
-  text-decoration: none;
-  color: var(--grey-800);
-  border-left: 3px solid transparent;
-  cursor: pointer;
-  position: relative;
-}
-.pb-sidebar-item:hover { background: var(--grey-50); }
-.pb-sidebar-item.is-active {
-  background: var(--grey-100);
-  border-left-color: var(--grey-900);
-}
-
-.pb-sidebar-item-icon {
-  font-size: var(--icon-lg);
-  color: var(--grey-500);
-  flex-shrink: 0;
-}
-
-.pb-sidebar-item-body { flex: 1; min-width: 0; }
-
-.pb-sidebar-item-title {
-  font-size: var(--text-sm);
-  font-weight: var(--font-medium);
-  color: var(--grey-900);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.pb-sidebar-item-sub {
-  font-size: var(--text-xs);
-  color: var(--grey-600);
-  margin-top: 2px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
+/* Inline row-level icon action (e.g., the "delete member" button inside a
+ * table row). 24×24 hit area per WCAG 2.5.8. Hover + focus emphasis
+ * signal destructive intent via `--status-error`. */
 .pb-sidebar-item-action {
   background: transparent;
   border: none;
   cursor: pointer;
   color: var(--grey-500);
-  /* WCAG 2.5.8: min 24×24. 4px padding + 16px icon = 24×24. */
   padding: var(--space-1);
   border-radius: var(--radius-sm);
-  display: none;
+  display: inline-flex;
   align-items: center;
 }
 .pb-sidebar-item-action .material-symbols-outlined { font-size: var(--icon-sm); }
-.pb-sidebar-item:hover .pb-sidebar-item-action,
-.pb-sidebar-item:focus-within .pb-sidebar-item-action { display: inline-flex; }
 .pb-sidebar-item-action:hover { background: var(--grey-200); color: var(--status-error); }
 .pb-sidebar-item-action:focus-visible {
   outline: 2px solid var(--grey-700);
   outline-offset: 1px;
   background: var(--grey-100);
   color: var(--status-error);
-}
-
-.pb-sidebar-empty {
-  padding: var(--space-4);
-  font-size: var(--text-sm);
-  color: var(--grey-500);
-  text-align: center;
-}
-
-.pb-sidebar-item-thumb {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  object-fit: cover;
-  flex-shrink: 0;
-  background: var(--grey-100);
 }
 
 /* ============ CARDS ============ */

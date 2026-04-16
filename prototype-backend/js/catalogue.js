@@ -22,7 +22,7 @@ const SESSION_PREFIX = 'pb:view:';
  * @param {HTMLElement} container
  * @param {object} opts
  * @param {Array<object>} opts.items
- * @param {string} opts.sectionKey             - `'products'` | `'features'`; keys sessionStorage
+ * @param {string} opts.sectionKey             - `'maps'` | `'features'`; keys sessionStorage
  * @param {'gallery'|'list'} [opts.defaultView]
  * @param {string} [opts.searchPlaceholder]
  * @param {(item: object, q: string) => boolean} [opts.matchesQuery]

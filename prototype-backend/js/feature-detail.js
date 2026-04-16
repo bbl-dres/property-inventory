@@ -244,7 +244,7 @@ function renderHero() {
 
   // Used-by card (reverse link to Maps & Apps).
   const usedByChips = productsUsing.map((p) =>
-    el('a', { href: `#/products/${encodeURIComponent(p.slug)}`, class: 'pb-chip' }, [
+    el('a', { href: `#/maps/${encodeURIComponent(p.slug)}`, class: 'pb-chip' }, [
       el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'apps'),
       ' ',
       p.name || p.slug

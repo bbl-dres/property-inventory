@@ -1,8 +1,14 @@
-// prototype-backend — Maps & Apps catalogue (#/products)
+// prototype-backend — Maps & Apps catalogue (#/maps)
 //
-// Gallery + list views of product cards. Clicking a card navigates to the
-// product detail view. Uses the shared `mountCatalogue` primitive from
+// Gallery + list views of map & app cards. Clicking a card navigates to
+// the maps-detail view. Uses the shared `mountCatalogue` primitive from
 // catalogue.js to keep the same shape as the Layers catalogue.
+//
+// Note: the API layer still exposes `listProducts` / `createProduct` etc.
+// The underlying entity is an umbrella type covering both maps (authored
+// scenes) and apps (registered external tools). Only the URL, the route
+// name, and the section key were renamed to `maps` — the data model
+// keeps the `product` name to match the future Supabase table.
 
 import * as api from './api.js';
 import { el, toast, wireMenu, formatRelativeTime } from './utils.js';
@@ -47,7 +53,7 @@ function renderShell() {
 
   catalogueCtl = mountCatalogue(catalogueBody, {
     items: products,
-    sectionKey: 'products',
+    sectionKey: 'maps',
     defaultView: 'gallery',
     searchPlaceholder: 'Search maps & apps…',
     matchesQuery: (p, q) => (p.name || '').toLowerCase().includes(q)
@@ -93,7 +99,7 @@ function buildNewButton() {
         // A new map drops the user straight into the scene viewer so they
         // can start authoring. Registered apps stay on the gallery.
         if (kind === 'map') {
-          location.hash = `#/products/${encodeURIComponent(created.slug)}`;
+          location.hash = `#/maps/${encodeURIComponent(created.slug)}`;
         } else {
           await refreshList();
         }
@@ -118,7 +124,7 @@ function buildNewButton() {
             consumed_layers: [layerName]
           });
           toast(`Created layer "${layerName}" and map "${mapName}"`, 'success');
-          location.hash = `#/products/${encodeURIComponent(created.slug)}`;
+          location.hash = `#/maps/${encodeURIComponent(created.slug)}`;
         } catch (err) {
           toast(`Layer created, but map wrapper failed: ${err?.message || err}`, 'error');
           await refreshList();
@@ -149,7 +155,7 @@ function buildNewButton() {
 }
 
 function renderCard(p) {
-  const href = `#/products/${encodeURIComponent(p.slug)}`;
+  const href = `#/maps/${encodeURIComponent(p.slug)}`;
   const count = (p.consumed_layers || []).length;
 
   const thumb = p.thumbnail
@@ -190,7 +196,7 @@ function renderListHeader() {
 }
 
 function renderListRow(p) {
-  const href = `#/products/${encodeURIComponent(p.slug)}`;
+  const href = `#/maps/${encodeURIComponent(p.slug)}`;
   const layerCount = (p.consumed_layers || []).length;
   const tr = el('tr', { class: 'pb-catalogue-row', dataset: { slug: p.slug } }, [
     el('td', {}, [

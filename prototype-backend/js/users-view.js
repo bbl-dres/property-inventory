@@ -58,10 +58,6 @@ function render() {
 
   const count = users.length;
   root.appendChild(renderViewHeader({
-    breadcrumb: [
-      { label: 'Settings', href: '#/settings' },
-      { label: 'Members' }
-    ],
     title: 'Members',
     subtitle: `${count} member${count === 1 ? '' : 's'}`,
     description: 'Prototype-only IAM — roles are stored but not enforced. The real backend would use Supabase Auth + RLS.',

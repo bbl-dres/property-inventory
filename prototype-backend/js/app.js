@@ -2,8 +2,8 @@
 //
 // Routes:
 //   #/                                   -> redirects to DEFAULT_ROUTE (Maps & Apps)
-//   #/products                           -> products-gallery (Maps & Apps catalogue, full-width)
-//   #/products/:slug                     -> product-detail (or map-scene for kind='map')
+//   #/maps                               -> maps-catalogue (Maps & Apps catalogue, full-width)
+//   #/maps/:slug                         -> maps-detail (or map-scene for kind='map')
 //   #/features                           -> features-catalogue (Layers catalogue, full-width)
 //   #/features/:name                     -> feature-detail (default tab=schema)
 //   #/features/:name?tab=schema|data|map -> feature-detail (switch tab, no remount)
@@ -13,41 +13,45 @@
 //   #/settings/preferences               -> sidebar(settings) + Preferences stub
 //   #/settings/about                     -> sidebar(settings) + About
 //
-// Legacy redirects: `#/layers*` → `#/features*`, `#/users*` → `#/settings/members`.
+// Legacy redirects (kept so old bookmarks don't 404):
+//   `#/layers*`   → `#/features*`
+//   `#/products*` → `#/maps*`
+//   `#/users*`    → `#/settings/members`
 //
 // Primary nav lives in the `.pb-section-nav` band below the topbar (not
-// in the topbar itself). Only `settings` mounts a sidebar — see
-// SECTIONS_WITH_SIDEBAR. Layers and Maps & Apps are full-width catalogues
-// built on `mountCatalogue` (js/catalogue.js).
+// in the topbar itself). The band shows either the primary tabs (Maps &
+// Apps · Layers) or, when in Settings, the Settings sub-tabs (Members,
+// Connection, Preferences, About). No object sidebars — Layers and Maps
+// & Apps are full-width catalogues (js/catalogue.js); Settings is now
+// tab-driven too.
+//
+// Domain note: the underlying data entity is still called `product` in the
+// API layer (`api.listProducts`, `mock-products.json`, `pb:products`
+// storage key). It's an umbrella type that covers both maps (authored
+// scenes) and apps (registered external tools). The URL/section label
+// says `maps` because that matches the primary user action in this
+// section; the internal `product` name is preserved to keep the data
+// model stable when the Supabase adapter lands.
 
 import { closeModal, el, wireMenu } from './utils.js';
 import * as api from './api.js';
 import { bus, state } from './state.js';
 
 const app = document.getElementById('app');
-const sidebarHost = document.getElementById('pb-object-sidebar');
 const tabsHost = document.getElementById('pb-tabs');
-const layoutGrid = document.getElementById('pb-layout-grid');
 
 let currentView = null;
-let currentSidebar = null;
 let currentSection = null;
 let navToken = 0;
 
-const DEFAULT_ROUTE = '#/products';
-
-// Sections that mount a sidebar alongside the main view. Only Settings
-// qualifies now — it's static navigation between 4 config pages. The
-// Layers sidebar was retired in favour of the Layers catalogue (gallery
-// + list) so the IA matches Maps & Apps. Maps & Apps has never had one.
-const SECTIONS_WITH_SIDEBAR = new Set(['settings']);
+const DEFAULT_ROUTE = '#/maps';
 
 // Primary nav definition — painted once into the topbar. Settings is
 // intentionally NOT a primary tab: it lives as a gear icon in the right
 // cluster (next to the account avatar) so the tab row stays focused on
 // "things you work on" (content) rather than workspace configuration.
 const TABS = [
-  { key: 'products', label: 'Maps & Apps', icon: 'apps',     href: '#/products' },
+  { key: 'maps',     label: 'Maps & Apps', icon: 'apps',     href: '#/maps' },
   { key: 'features', label: 'Layers',      icon: 'layers',   href: '#/features' }
 ];
 
@@ -74,6 +78,14 @@ function resolveRoute({ path, query, rawQuery }) {
     return { name: 'redirect', to: openNew ? '#/features' : to, openNewFeature: openNew };
   }
 
+  // Legacy: #/products* → #/maps* (the section was renamed to align with
+  // the UI label; old bookmarks and external links still resolve).
+  if (section === 'products') {
+    const rest = path.slice(1).map(encodeURIComponent).join('/');
+    const q = rawQuery ? `?${rawQuery}` : '';
+    return { name: 'redirect', to: `#/maps${rest ? '/' + rest : ''}${q}` };
+  }
+
   // Legacy: #/users* → #/settings/members
   if (section === 'users') {
     return { name: 'redirect', to: '#/settings/members' };
@@ -85,9 +97,9 @@ function resolveRoute({ path, query, rawQuery }) {
     const tab = query.get('tab') || 'schema';
     return { name: 'feature-detail', section: 'features', params: { layerName: path[1], tab } };
   }
-  if (section === 'products') {
-    if (path.length === 1) return { name: 'products-gallery', section: 'products' };
-    return { name: 'product-detail', section: 'products', params: { slug: path[1] } };
+  if (section === 'maps') {
+    if (path.length === 1) return { name: 'maps-catalogue', section: 'maps' };
+    return { name: 'maps-detail', section: 'maps', params: { slug: path[1] } };
   }
   if (section === 'settings') {
     const sub = path[1];
@@ -113,8 +125,8 @@ async function importView(routeName) {
   switch (routeName) {
     case 'feature-detail': return import('./feature-detail.js');
     case 'features-catalogue': return import('./features-catalogue.js');
-    case 'product-detail': return import('./product-detail.js');
-    case 'products-gallery': return import('./products-gallery.js');
+    case 'maps-detail': return import('./maps-detail.js');
+    case 'maps-catalogue': return import('./maps-catalogue.js');
     case 'settings-members': return import('./users-view.js');
     case 'settings-connection': return import('./settings-view.js');
     // `settings-preferences` is a small inline stub (see handleRoute) so it
@@ -125,21 +137,29 @@ async function importView(routeName) {
   }
 }
 
-async function importSidebar(section) {
-  // Only `settings` mounts a sidebar now. Layers and Maps & Apps run
-  // as full-width catalogues. See SECTIONS_WITH_SIDEBAR above.
-  switch (section) {
-    case 'settings': return import('./sidebar-settings.js');
-    default: return null;
-  }
-}
+// Settings sub-tabs — surface inside the same section-nav band when the
+// current route is under Settings. No sidebar; horizontal tabs in the
+// same slot as primary tabs, swapped in on route match.
+const SETTINGS_TABS = [
+  { key: 'members',     label: 'Members',     href: '#/settings/members',     icon: 'group' },
+  { key: 'connection',  label: 'Connection',  href: '#/settings/connection',  icon: 'storage' },
+  { key: 'preferences', label: 'Preferences', href: '#/settings/preferences', icon: 'tune' },
+  { key: 'about',       label: 'About',       href: '#/settings/about',       icon: 'info' }
+];
 
-function renderTabs(activeSection) {
+function renderTabs(route) {
   if (!tabsHost) return;
-  // Paint once, then just toggle active state on subsequent calls.
-  if (!tabsHost.dataset.painted) {
+  const inSettings = route.section === 'settings';
+  const activeSection = route.section;
+
+  // The container is repainted from scratch whenever we cross the
+  // primary ↔ settings boundary, since the tab set is different. Within
+  // the same set we just toggle the active class.
+  const wantMode = inSettings ? 'settings' : 'primary';
+  if (tabsHost.dataset.mode !== wantMode) {
     tabsHost.innerHTML = '';
-    for (const t of TABS) {
+    const source = inSettings ? SETTINGS_TABS : TABS;
+    for (const t of source) {
       const a = el('a', {
         href: t.href,
         class: 'pb-tab',
@@ -152,30 +172,41 @@ function renderTabs(activeSection) {
       ]);
       tabsHost.appendChild(a);
     }
-    tabsHost.dataset.painted = '1';
+    // In Settings mode, also paint an explicit "Back" link on the right
+    // edge of the tab row so users have a clear way out of the settings
+    // surface. The gear icon already indicates they're here, but tabs
+    // alone don't suggest how to leave.
+    if (inSettings) {
+      const back = el('a', {
+        href: DEFAULT_ROUTE,
+        class: 'pb-section-nav-back',
+        'aria-label': 'Back to main view'
+      }, [
+        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+        el('span', { class: 'pb-tab-label' }, 'Back')
+      ]);
+      tabsHost.appendChild(back);
+    }
+    tabsHost.dataset.mode = wantMode;
   }
+
+  const activeKey = inSettings ? settingsActiveKey(route.name) : activeSection;
   tabsHost.querySelectorAll('.pb-tab').forEach((a) => {
-    a.classList.toggle('pb-tab--active', a.dataset.tab === activeSection);
+    a.classList.toggle('pb-tab--active', a.dataset.tab === activeKey);
   });
-  // Settings gear (right cluster) mirrors tab active state.
+
+  // Settings gear (right cluster) mirrors the "am I in Settings?" state.
   const gear = document.getElementById('pb-settings-btn');
-  if (gear) gear.classList.toggle('is-active', activeSection === 'settings');
+  if (gear) gear.classList.toggle('is-active', inSettings);
 }
 
-function applySidebarVisibility(section) {
-  const hasSidebar = SECTIONS_WITH_SIDEBAR.has(section);
-  if (layoutGrid) {
-    layoutGrid.classList.toggle('pb-layout-grid--no-sidebar', !hasSidebar);
-  }
-  if (sidebarHost) {
-    sidebarHost.hidden = !hasSidebar;
-  }
+function settingsActiveKey(routeName) {
+  if (routeName === 'settings-members') return 'members';
+  if (routeName === 'settings-connection') return 'connection';
+  if (routeName === 'settings-preferences') return 'preferences';
+  if (routeName === 'settings-about') return 'about';
+  return null;
 }
-
-// Section-nav visibility is now driven by CSS: it's hidden only when the
-// body has `.pb-body--fixed-viewport`, which the scene viewer (map creator)
-// toggles in its mount/unmount. Every other route — catalogues, layer
-// detail, app-kind product detail, settings — keeps the nav visible.
 
 /**
  * Small utility to build a standard `.pb-view-header` block. Every view
@@ -232,36 +263,6 @@ function emptyState(icon, title, desc, cta) {
   ].filter(Boolean));
 }
 
-async function mountSidebar(section, activeKey) {
-  // Sections without a sidebar: tear down any current one and bail.
-  if (!SECTIONS_WITH_SIDEBAR.has(section)) {
-    if (currentSidebar?.module?.unmount) {
-      try { currentSidebar.module.unmount(); } catch (e) { console.error(e); }
-    }
-    currentSidebar = null;
-    sidebarHost.innerHTML = '';
-    return;
-  }
-  if (currentSidebar && currentSidebar.section === section) {
-    currentSidebar.module.setActive?.(activeKey);
-    return;
-  }
-  if (currentSidebar?.module?.unmount) {
-    try { currentSidebar.module.unmount(); } catch (e) { console.error(e); }
-  }
-  sidebarHost.innerHTML = '';
-  // Capture the nav token so that if a newer navigation starts during the
-  // `await import(...)` below, we bail rather than paint a stale sidebar
-  // into the shared host. The outer `handleRoute` also checks isStale after
-  // awaiting us, but catching it here avoids a brief wrong-sidebar flash.
-  const tokenAtEntry = navToken;
-  const mod = await importSidebar(section);
-  if (navToken !== tokenAtEntry) return;
-  if (!mod) { currentSidebar = null; return; }
-  currentSidebar = { section, module: mod };
-  mod.mount(sidebarHost, { activeKey });
-}
-
 async function handleRoute() {
   // Monotonic token: any `await` below must re-check that we're still the
   // latest navigation before mutating DOM / mounting, else rapid hashchange
@@ -289,8 +290,7 @@ async function handleRoute() {
 
   if (isStale()) return;
   currentSection = route.section;
-  renderTabs(route.section);
-  applySidebarVisibility(route.section);
+  renderTabs(route);
 
   // Same-feature tab switch — fast path.
   if (
@@ -315,26 +315,6 @@ async function handleRoute() {
   currentView = null;
   closeModal();
 
-  // Mount sidebar for the section. We intentionally do this BEFORE clearing
-  // `app.innerHTML` so that if a newer navigation has already started (e.g.
-  // the user clicked through the sidebar twice in quick succession), the
-  // stale call's destructive clear is gated behind `isStale()` and cannot
-  // wipe out a newer mount that already painted. Previously the clear ran
-  // synchronously before the first `await`, which was safe within a single
-  // tick but became unsafe once Task 2 added a `#/settings` → members
-  // redirect (an extra hashchange pair per navigation).
-  // The only section that still mounts a sidebar is Settings; everything
-  // else no-ops inside mountSidebar. We pick a Settings-sub activeKey and
-  // ignore the rest.
-  let activeKey = null;
-  if (route.section === 'settings') {
-    if (route.name === 'settings-members') activeKey = 'members';
-    else if (route.name === 'settings-connection') activeKey = 'connection';
-    else if (route.name === 'settings-preferences') activeKey = 'preferences';
-    else if (route.name === 'settings-about') activeKey = 'about';
-  }
-  await mountSidebar(route.section, activeKey);
-  if (isStale()) return;
   app.innerHTML = '';
 
   // Mount main view.
@@ -347,10 +327,6 @@ async function handleRoute() {
   // so we don't spin up a dedicated module for a "Coming soon" state.
   if (route.name === 'settings-preferences') {
     app.appendChild(renderViewHeader({
-      breadcrumb: [
-        { label: 'Settings', href: '#/settings' },
-        { label: 'Preferences' }
-      ],
       title: 'Preferences',
       subtitle: 'Coming soon',
       description: 'Workspace-level defaults (units, theme, notifications) will live here.'
@@ -364,10 +340,6 @@ async function handleRoute() {
   // (double chrome at the bottom). Inline here.
   if (route.name === 'settings-about') {
     app.appendChild(renderViewHeader({
-      breadcrumb: [
-        { label: 'Settings', href: '#/settings' },
-        { label: 'About' }
-      ],
       title: 'About',
       subtitle: 'v0.1.0 · prototype',
       description: 'Static JS frontend for a PostGIS-backed REST API (Supabase-compatible). This is a visual mockup — most mutations go to browser localStorage.'

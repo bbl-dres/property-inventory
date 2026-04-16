@@ -14,10 +14,6 @@ export function mount(container) {
   root = container;
   root.innerHTML = '';
   root.appendChild(renderViewHeader({
-    breadcrumb: [
-      { label: 'Settings', href: '#/settings' },
-      { label: 'Connection' }
-    ],
     title: 'Connection',
     subtitle: 'Mock · localStorage',
     description: 'How the prototype reads and writes data. This build uses the browser\'s localStorage as a stand-in for a real backend — the production build would connect to a Supabase Postgres instance.'

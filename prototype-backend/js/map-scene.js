@@ -1,6 +1,6 @@
 // prototype-backend — Map scene authoring view.
 //
-// Mounted by product-detail.js when product.kind === 'map'. Owns the full
+// Mounted by maps-detail.js when product.kind === 'map'. Owns the full
 // main container: renders a view header, a 3-zone layout (left layer
 // manager, centre canvas with floating toolbar + status strip, right
 // inspector drawer), and mounts sub-modules into those hosts.
@@ -215,7 +215,7 @@ function renderShell() {
 
   const header = renderViewHeader({
     breadcrumb: [
-      { label: 'Maps & Apps', href: '#/products' },
+      { label: 'Maps & Apps', href: '#/maps' },
       { label: product.name || product.slug }
     ],
     title: titleHost,

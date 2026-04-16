@@ -1,14 +1,17 @@
-// prototype-backend — Product detail view
+// prototype-backend — Maps & Apps detail view (#/maps/:slug)
 //
 // Branch point:
 //   - product.kind === 'map' → hand off to the scene authoring view
 //     (js/map-scene.js). The scene module owns the full `app` container
 //     while mounted.
-//   - otherwise: render the classic app-detail cards here.
+//   - otherwise (kind === 'app'): render the app-detail cards here.
 //
 // Scene handoff uses dynamic import so the MapLibre-heavy scene module is
 // not loaded when viewing an app-kind product. `unmount()` delegates back
 // to whichever module actually did the mount.
+//
+// Internal nomenclature still uses `product` because the API layer does —
+// see the note at the top of maps-catalogue.js for the rationale.
 
 import * as api from './api.js';
 import { el, formatRelativeTime, toast } from './utils.js';
@@ -42,7 +45,7 @@ export async function mount(container, { slug }) {
       await mod.mount(root, { product });
       return;
     } catch (err) {
-      console.error('[product-detail] scene mount failed', err);
+      console.error('[maps-detail] scene mount failed', err);
       sceneModule = null;
       root.innerHTML = '';
       root.appendChild(el('div', { class: 'empty-state' }, [
@@ -61,7 +64,7 @@ export function unmount() {
   // If we handed off to a scene module, let it tear down its own resources
   // (map instance, sub-modules, listeners) before we clear the container.
   if (sceneModule?.unmount) {
-    try { sceneModule.unmount(); } catch (err) { console.error('[product-detail] scene unmount', err); }
+    try { sceneModule.unmount(); } catch (err) { console.error('[maps-detail] scene unmount', err); }
   }
   sceneModule = null;
   if (root) root.innerHTML = '';
@@ -101,7 +104,7 @@ function render() {
 
   const header = renderViewHeader({
     breadcrumb: [
-      { label: 'Maps & Apps', href: '#/products' },
+      { label: 'Maps & Apps', href: '#/maps' },
       { label: product.name || product.slug }
     ],
     title: titleRow,

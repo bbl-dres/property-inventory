@@ -5,7 +5,7 @@
 // view. The `+ New layer` button opens the existing new-feature-drawer.
 
 import * as api from './api.js';
-import { el, formatRelativeTime } from './utils.js';
+import { el, formatRelativeTime, wireMenu } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { mountCatalogue } from './catalogue.js';
 import { open as openNewFeatureDrawer } from './new-feature-drawer.js';
@@ -66,25 +66,11 @@ function renderShell() {
   if (!root) return;
   root.innerHTML = '';
 
-  const canWrite = isAllowed('write');
-  const newBtn = el('button', {
-    type: 'button',
-    class: 'btn-primary',
-    disabled: !canWrite ? true : false,
-    title: canWrite ? 'New layer' : ROLE_GATED_TITLE
-  }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
-    ' New layer'
-  ]);
-  newBtn.addEventListener('click', () => {
-    openNewFeatureDrawer({ onCreated: refresh });
-  });
-
   root.appendChild(renderViewHeader({
     title: 'Layers',
     subtitle: `${layers.length} layer${layers.length === 1 ? '' : 's'}`,
     description: 'Each layer is a PostGIS table with a geometry column (spatial) or a plain data table (non-spatial). Used by the maps and apps in the section next door.',
-    actions: newBtn
+    actions: buildNewButton()
   }));
 
   catalogueBody = el('div', { class: 'pb-catalogue' });
@@ -105,7 +91,7 @@ function renderShell() {
       icon: 'layers',
       title: 'No layers yet',
       description: 'Create your first layer to start building inventories.',
-      cta: canWrite ? ctaNewLayer() : null
+      cta: isAllowed('write') ? ctaNewLayer() : null
     }
   });
 }
@@ -117,6 +103,43 @@ function ctaNewLayer() {
   ]);
   b.addEventListener('click', () => openNewFeatureDrawer({ onCreated: refresh }));
   return b;
+}
+
+function buildNewButton() {
+  // Dropdown matching the Maps & Apps "+ New ▾" shape for visual
+  // consistency. Single item for now — additional flows (draw, bulk
+  // import) can slot in later without changing the button's chrome.
+  const canWrite = isAllowed('write');
+  const newBtn = el('button', {
+    type: 'button',
+    class: 'btn-primary',
+    disabled: !canWrite ? true : false,
+    title: canWrite ? 'New layer' : ROLE_GATED_TITLE,
+    'aria-haspopup': 'menu',
+    'aria-expanded': 'false'
+  }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
+    ' New ',
+    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'arrow_drop_down')
+  ]);
+
+  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
+  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
+  const menuCtl = wireMenu(newBtn, menu, newBtnWrap);
+
+  const menuItem = (icon, label, handler) => {
+    const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
+      el('span', { class: 'material-symbols-outlined' }, icon),
+      el('span', {}, label)
+    ]);
+    b.addEventListener('click', () => { menuCtl.close(); handler(); });
+    return b;
+  };
+  menu.append(
+    menuItem('layers', 'New layer', () => openNewFeatureDrawer({ onCreated: refresh }))
+  );
+
+  return newBtnWrap;
 }
 
 function sridLabel(code) {
