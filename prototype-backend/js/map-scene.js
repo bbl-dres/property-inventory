@@ -10,7 +10,7 @@
 
 import * as api from './api.js';
 import { el, toast, openModal, closeModal, confirmModal, inlineEditable, wireMenu } from './utils.js';
-import { renderViewHeader } from './app.js';
+import { renderViewHeader, metaLine } from './app.js';
 import { sridName, geomTypeIcon, BRAND_COLOR as BRAND } from './constants.js';
 import * as layerManager from './scene-layer-manager.js';
 import * as editToolbar from './scene-edit-toolbar.js';
@@ -187,6 +187,9 @@ function renderShell() {
   });
   titleHost = el('div', { class: 'pb-title-row' }, [titleEditor]);
 
+  // Subtitle slot is rebuilt on every scene change (see refreshSubtitle).
+  // We swap its inner `metaLine` node rather than mutating text, so the
+  // rendering stays consistent with the other detail views.
   subtitleNode = el('div', { class: 'pb-view-subtitle' }, '');
 
   // Explicit exit. The section-nav (which hosts the shared back link on
@@ -315,7 +318,13 @@ function refreshSubtitle() {
   const n = scene.layers.length;
   const bm = BASEMAPS[scene.basemap]?.label || scene.basemap;
   const saved = scene.dirty ? 'unsaved' : 'saved';
-  subtitleNode.textContent = `Scene · ${n} layer${n === 1 ? '' : 's'} · ${bm} · ${saved}`;
+  subtitleNode.innerHTML = '';
+  subtitleNode.appendChild(metaLine([
+    'Scene',
+    `${n} layer${n === 1 ? '' : 's'}`,
+    bm,
+    saved
+  ]));
 }
 
 function renderFooter() {

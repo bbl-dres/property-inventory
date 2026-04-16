@@ -11,7 +11,7 @@
 // keeps the `product` name to match the future Supabase table.
 
 import * as api from './api.js';
-import { el, formatRelativeTime } from './utils.js';
+import { el, relativeTimeNode, statusPill } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { mountCatalogue } from './catalogue.js';
 import { paintExtentMap } from './extent-map.js';
@@ -57,7 +57,7 @@ function renderShell() {
     items: products,
     sectionKey: 'maps',
     defaultView: 'gallery',
-    searchPlaceholder: 'Search maps & apps…',
+    searchPlaceholder: 'Filter maps & apps…',
     matchesQuery: (p, q) => (p.name || '').toLowerCase().includes(q)
       || (p.slug || '').toLowerCase().includes(q)
       || (p.description || '').toLowerCase().includes(q),
@@ -103,7 +103,7 @@ function renderCard(p) {
     el('div', { class: 'pb-product-card-body' }, [
       el('div', { class: 'pb-product-card-titlebar' }, [
         el('h3', { class: 'pb-product-card-title' }, p.name || p.slug),
-        el('span', { class: `pb-status pb-status--${p.status || 'staging'}` }, p.status || 'staging')
+        statusPill(p.status)
       ]),
       el('p', { class: 'pb-product-card-desc' }, p.description || ''),
       el('div', { class: 'pb-product-card-foot' }, [
@@ -132,14 +132,12 @@ function renderListRow(p) {
     el('td', {}, [
       el('a', { href, class: 'pb-catalogue-row-name' }, p.name || p.slug)
     ]),
-    el('td', {}, [
-      el('span', { class: `pb-status pb-status--${p.status || 'staging'}` }, p.status || 'staging')
-    ]),
+    el('td', {}, [statusPill(p.status)]),
     el('td', {}, p.kind || 'app'),
     el('td', {}, `${layerCount}`),
     el('td', {}, p.owner || el('span', { class: 'pb-muted' }, '—')),
     el('td', {}, p.last_deployed_at
-      ? formatRelativeTime(p.last_deployed_at)
+      ? relativeTimeNode(p.last_deployed_at)
       : el('span', { class: 'pb-muted' }, '—'))
   ]);
   tr.addEventListener('click', (e) => {

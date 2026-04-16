@@ -177,6 +177,72 @@ function bboxToPolygon([w, s, e, n]) {
   };
 }
 
+/**
+ * Build a tiny static SVG thumbnail showing a layer's bbox positioned
+ * against a world frame. Intended for catalogue cards where instantiating
+ * MapLibre per card would be prohibitively expensive (a 30-card grid ×
+ * a GL context each = broken). Returns null when the bbox is invalid so
+ * callers can fall back to a neutral placeholder.
+ *
+ * Frame: [-180, -85, 180, 85] (EPSG:4326, Web-Mercator-ish latitude clip).
+ * Viewport: 200×100 (roughly matches the old thumb aspect ratio).
+ *
+ * @param {[number,number,number,number]|null|undefined} bbox
+ * @returns {SVGElement|null}
+ */
+export function extentThumbnail(bbox) {
+  if (!isValidBbox(bbox)) return null;
+  const [w, s, e, n] = bbox;
+
+  const FRAME_W = 200;
+  const FRAME_H = 100;
+  const LON_MIN = -180, LON_SPAN = 360;
+  const LAT_MAX = 85,   LAT_SPAN = 170;
+
+  const x = ((w - LON_MIN) / LON_SPAN) * FRAME_W;
+  const y = ((LAT_MAX - n) / LAT_SPAN) * FRAME_H;
+  const width  = Math.max(2, ((e - w) / LON_SPAN) * FRAME_W);
+  const height = Math.max(2, ((n - s) / LAT_SPAN) * FRAME_H);
+
+  const SVG_NS = 'http://www.w3.org/2000/svg';
+  const svg = document.createElementNS(SVG_NS, 'svg');
+  svg.setAttribute('viewBox', `0 0 ${FRAME_W} ${FRAME_H}`);
+  svg.setAttribute('preserveAspectRatio', 'xMidYMid slice');
+  svg.setAttribute('aria-hidden', 'true');
+  svg.setAttribute('class', 'pb-extent-thumb');
+
+  const bg = document.createElementNS(SVG_NS, 'rect');
+  bg.setAttribute('x', '0'); bg.setAttribute('y', '0');
+  bg.setAttribute('width', String(FRAME_W));
+  bg.setAttribute('height', String(FRAME_H));
+  bg.setAttribute('fill', '#f1f3f5');
+  svg.appendChild(bg);
+
+  // Equator + prime meridian as faint guides.
+  const mid = document.createElementNS(SVG_NS, 'line');
+  mid.setAttribute('x1', String(FRAME_W / 2)); mid.setAttribute('x2', String(FRAME_W / 2));
+  mid.setAttribute('y1', '0'); mid.setAttribute('y2', String(FRAME_H));
+  mid.setAttribute('stroke', '#e9ecef'); mid.setAttribute('stroke-width', '0.5');
+  svg.appendChild(mid);
+  const eq = document.createElementNS(SVG_NS, 'line');
+  eq.setAttribute('x1', '0'); eq.setAttribute('x2', String(FRAME_W));
+  eq.setAttribute('y1', String(FRAME_H / 2)); eq.setAttribute('y2', String(FRAME_H / 2));
+  eq.setAttribute('stroke', '#e9ecef'); eq.setAttribute('stroke-width', '0.5');
+  svg.appendChild(eq);
+
+  const rect = document.createElementNS(SVG_NS, 'rect');
+  rect.setAttribute('x', String(x)); rect.setAttribute('y', String(y));
+  rect.setAttribute('width',  String(width));
+  rect.setAttribute('height', String(height));
+  rect.setAttribute('fill', BBOX_COLOR);
+  rect.setAttribute('fill-opacity', '0.32');
+  rect.setAttribute('stroke', BBOX_COLOR);
+  rect.setAttribute('stroke-width', '1');
+  svg.appendChild(rect);
+
+  return svg;
+}
+
 function unionBboxFromFeatures(features) {
   let minLon = Infinity, maxLon = -Infinity, minLat = Infinity, maxLat = -Infinity;
   for (const f of features) {

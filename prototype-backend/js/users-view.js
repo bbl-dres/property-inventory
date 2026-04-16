@@ -7,7 +7,7 @@
 
 import * as api from './api.js';
 import { ApiError } from './api.js';
-import { el, toast, openModal, closeModal, confirmModal, formatRelativeTime, submitForm, safeUnsubscribe } from './utils.js';
+import { el, toast, openModal, closeModal, confirmModal, relativeTimeNode, submitForm, safeUnsubscribe } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { bus, isAllowed } from './state.js';
 
@@ -132,7 +132,7 @@ function renderRow(user) {
     el('td', {}, [el('span', { class: 'pb-name-mono' }, user.email)]),
     el('td', {}, user.name || el('span', { class: 'pb-muted' }, '—')),
     el('td', {}, [roleSelect]),
-    el('td', {}, user.last_sign_in_at ? formatRelativeTime(user.last_sign_in_at) : el('span', { class: 'pb-muted' }, 'never')),
+    el('td', {}, user.last_sign_in_at ? relativeTimeNode(user.last_sign_in_at) : el('span', { class: 'pb-muted' }, 'never')),
     el('td', { class: 'pb-row-actions' }, [deleteBtn])
   ]);
 }

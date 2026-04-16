@@ -87,8 +87,8 @@ function render() {
   cachedSearchInput = el('input', {
     type: 'search',
     class: 'pb-scene-search-input',
-    placeholder: 'Search layers…',
-    'aria-label': 'Search layers'
+    placeholder: 'Filter layers in this scene…',
+    'aria-label': 'Filter layers in this scene'
   });
   cachedSearchInput.addEventListener('input', () => {
     searchTerm = cachedSearchInput.value.trim().toLowerCase();

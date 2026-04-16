@@ -5,10 +5,10 @@
 // (`layer`, `layers`) are preserved to keep the API contract stable.
 
 import * as api from './api.js';
-import { el, toast, formatRelativeTime, inlineEditable } from './utils.js';
+import { el, toast, relativeTimeNode, inlineEditable } from './utils.js';
 import { sridName } from './constants.js';
 import { bus } from './state.js';
-import { renderViewHeader } from './app.js';
+import { renderViewHeader, metaStack } from './app.js';
 import * as schemaEditor from './schema-editor.js';
 import * as dataGrid from './data-grid.js';
 import * as mapPreview from './map-preview.js';
@@ -265,20 +265,18 @@ function renderHero() {
     el('span', { class: 'pb-badge' }, currentLayer.geometry_type)
   ]);
 
-  // Compact badge row under the title: geometry · records · SRID (spatial),
-  // or "Table · N records" for non-spatial layers. Rendered into the
-  // `subtitle` slot so the view-header stacks it directly under the title.
-  // The updated-at timestamp moves to a second subtitle line so we keep that
-  // signal but don't blow up the single-row badge.
+  // Subtitle: geometry · records · SRID on the top line, updated-at on a
+  // smaller secondary line. Uses the shared `metaStack` helper so every
+  // detail view in the app renders this region identically.
   const isTable = currentLayer.geometry_type === 'Table';
   const recordsLabel = `${fc.toLocaleString()} record${fc === 1 ? '' : 's'}`;
-  const badgeTokens = isTable
+  const metaTokens = isTable
     ? ['Table', recordsLabel]
     : [currentLayer.geometry_type, recordsLabel, formatSrid(currentLayer.srid)];
-  const badgeRow = el('div', { class: 'pb-hero-meta' }, badgeTokens.join(' · '));
-  const updatedLine = el('div', { class: 'pb-hero-updated' },
-    `Updated ${formatRelativeTime(currentLayer.updated_at)}`);
-  const subtitleNode = el('div', { class: 'pb-hero-subtitle' }, [badgeRow, updatedLine]);
+  const subtitleNode = metaStack({
+    meta: metaTokens,
+    secondary: el('span', {}, ['Updated ', relativeTimeNode(currentLayer.updated_at)])
+  });
 
   // Unified view-header replaces the old .pb-hero top block. The REST,
   // Used-by, and Metadata cards still render below as siblings.
@@ -461,7 +459,7 @@ function renderMetadataCard() {
     kv('Internal name', el('span', { class: 'pb-name-mono' }, currentLayer.name)),
     kv('SRID', srid != null ? String(srid) : '—'),
     kv('CRS', srid != null ? (sridName(srid) || '—') : '—'),
-    kv('Created', formatRelativeTime(currentLayer.created_at))
+    kv('Created', relativeTimeNode(currentLayer.created_at))
   );
 
   return el('section', { class: 'pb-card pb-card--padded pb-metadata-card' }, [

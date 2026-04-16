@@ -229,7 +229,7 @@ function renderRow(column, idx) {
     handle,
     el('td', {}, String(idx + 1)),
     el('td', {}, [el('span', { class: 'pb-name-mono' }, column.name)]),
-    el('td', {}, [el('span', { class: 'pb-badge-type' }, column.type)]),
+    el('td', {}, [el('span', { class: 'pb-badge' }, column.type)]),
     el('td', { class: 'pb-desc-cell' }, [desc]),
     actions
   ].filter(Boolean));

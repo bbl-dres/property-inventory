@@ -14,17 +14,28 @@
 // see the note at the top of maps-catalogue.js for the rationale.
 
 import * as api from './api.js';
-import { el, formatRelativeTime, toast } from './utils.js';
-import { renderViewHeader } from './app.js';
+import { el, relativeTimeNode, statusPill, toast } from './utils.js';
+import { renderViewHeader, metaLine } from './app.js';
+
+// App-kind detail tabs. Kept deliberately shallow (Overview + Activity)
+// so app detail pages share the tabbed shape used by layer detail pages
+// and the scene viewer. Activity is a placeholder today — deploy events
+// and version history will populate it once the adapter lands.
+const TABS = [
+  { id: 'overview', label: 'Overview' },
+  { id: 'activity', label: 'Activity' }
+];
 
 let root = null;
 let product = null;
 let sceneModule = null; // non-null when a map-kind scene is mounted
+let currentTab = 'overview';
 
-export async function mount(container, { slug }) {
+export async function mount(container, { slug, tab }) {
   root = container;
   product = null;
   sceneModule = null;
+  currentTab = TABS.some((t) => t.id === tab) ? tab : 'overview';
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading…</div></div>';
   try {
     product = await api.getProduct(slug);
@@ -88,18 +99,15 @@ function render() {
     openBtn.addEventListener('click', (e) => { e.preventDefault(); toast('No URL set', 'info'); });
   }
 
-  const status = product.status || 'staging';
   const titleRow = el('div', { class: 'pb-title-row' }, [
     el('span', {}, product.name || product.slug),
-    el('span', { class: `pb-status pb-status--${status}` }, status)
+    statusPill(product.status)
   ]);
 
-  const subtitle = el('span', {}, [
+  const subtitle = metaLine([
     el('span', { class: 'pb-name-mono' }, product.slug),
-    ' · ',
     `owner: ${product.owner || '—'}`,
-    ' · ',
-    `last deployed ${formatRelativeTime(product.last_deployed_at)}`
+    el('span', {}, ['last deployed ', relativeTimeNode(product.last_deployed_at)])
   ]);
 
   const header = renderViewHeader({
@@ -138,8 +146,8 @@ function render() {
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'Slug'), el('dd', {}, el('span', { class: 'pb-name-mono' }, product.slug))]),
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'URL'), el('dd', {}, product.url || '—')]),
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'Owner'), el('dd', {}, product.owner || '—')]),
-      el('div', { class: 'pb-kv' }, [el('dt', {}, 'Status'), el('dd', {}, product.status || 'staging')]),
-      el('div', { class: 'pb-kv' }, [el('dt', {}, 'Last deployed'), el('dd', {}, formatRelativeTime(product.last_deployed_at))]),
+      el('div', { class: 'pb-kv' }, [el('dt', {}, 'Status'), el('dd', {}, statusPill(product.status))]),
+      el('div', { class: 'pb-kv' }, [el('dt', {}, 'Last deployed'), el('dd', {}, relativeTimeNode(product.last_deployed_at))]),
       el('div', { class: 'pb-kv' }, [el('dt', {}, 'Tags'), el('dd', {}, tagChips.length ? el('div', { class: 'pb-chip-row' }, tagChips) : '—')])
     ])
   ]);
@@ -148,6 +156,42 @@ function render() {
   if (product.thumbnail) {
     root.appendChild(el('img', { class: 'pb-hero-thumb', src: product.thumbnail, alt: '' }));
   }
-  const grid = el('div', { class: 'pb-card-grid' }, [featuresCard, metaCard]);
-  root.appendChild(grid);
+
+  // Subtab row — shares the `.pb-subtabs` pattern with feature-detail so
+  // app detail and layer detail read the same structurally.
+  const tabsBar = el('nav', { class: 'pb-subtabs', role: 'tablist', 'aria-label': 'App sections' },
+    TABS.map((t) => el('a', {
+      href: `#/maps/${encodeURIComponent(product.slug)}?tab=${t.id}`,
+      class: 'pb-subtab' + (t.id === currentTab ? ' is-active' : ''),
+      role: 'tab',
+      'aria-selected': t.id === currentTab ? 'true' : 'false',
+      dataset: { tab: t.id }
+    }, t.label))
+  );
+
+  const tabHost = el('div', { class: 'pb-tab-host' });
+  root.appendChild(el('div', { class: 'pb-tabs-wrap' }, [tabsBar, tabHost]));
+
+  if (currentTab === 'activity') {
+    tabHost.appendChild(renderActivityTab());
+  } else {
+    tabHost.appendChild(el('div', { class: 'pb-card-grid' }, [featuresCard, metaCard]));
+  }
+}
+
+function renderActivityTab() {
+  // Stub until the adapter surfaces real deploy / incident events. Today
+  // we only have `last_deployed_at` on the product — show that and note
+  // that more signals will land with the real backend.
+  return el('section', { class: 'pb-card pb-card--padded' }, [
+    el('div', { class: 'pb-card-header' }, 'Activity'),
+    el('div', { class: 'pb-card-body' }, [
+      el('div', { class: 'pb-kv' }, [
+        el('dt', {}, 'Last deployed'),
+        el('dd', {}, relativeTimeNode(product.last_deployed_at))
+      ]),
+      el('div', { class: 'pb-muted', style: { marginTop: 'var(--space-3)' } },
+        'Deployment, incident, and version history will surface here once the backend adapter lands.')
+    ])
+  ]);
 }

@@ -627,13 +627,8 @@
 .pb-kv dt { color: var(--grey-600); font-weight: var(--font-medium); }
 .pb-kv dd { margin: 0; color: var(--grey-900); min-width: 0; word-break: break-word; }
 
-/* Product gallery cards. */
-.pb-product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: var(--space-4);
-}
-
+/* Product gallery cards. (Grid is defined once, in the shared rule near
+ * the catalogue block, for both Maps & Apps and Layers.) */
 .pb-product-card {
   background: var(--white);
   border: 1px solid var(--grey-200);
@@ -709,6 +704,79 @@
   border-top: 1px solid var(--grey-100);
 }
 
+/* Layer gallery cards — mirror the product-card chrome for visual parity
+ * between the two catalogues. The thumbnail slot holds either a static
+ * extent-bbox SVG (via `extentThumbnail()`) or a placeholder icon when
+ * no bbox metadata is recorded. */
+.pb-layer-card {
+  background: var(--white);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  color: inherit;
+  text-decoration: none;
+  transition: box-shadow var(--transition-fast), border-color var(--transition-fast);
+}
+.pb-layer-card:hover,
+.pb-layer-card:focus {
+  border-color: var(--grey-400);
+  box-shadow: var(--shadow-md);
+  outline: none;
+}
+.pb-layer-card-thumb {
+  width: 100%;
+  height: 100px;
+  background: var(--grey-100);
+  display: block;
+  overflow: hidden;
+}
+.pb-layer-card-thumb--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--grey-400);
+}
+.pb-layer-card-thumb--placeholder .material-symbols-outlined { font-size: var(--icon-display); }
+.pb-extent-thumb {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+.pb-layer-card-body {
+  padding: var(--space-3) var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+.pb-layer-card-title {
+  font-size: var(--text-base);
+  font-weight: var(--font-semibold);
+  color: var(--grey-900);
+  margin: 0;
+}
+.pb-layer-card-name {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+.pb-layer-card-meta {
+  font-size: var(--text-sm);
+  color: var(--grey-600);
+}
+.pb-layer-card-count {
+  font-size: var(--text-sm);
+  color: var(--grey-700);
+}
+.pb-layer-card-updated {
+  font-size: var(--text-xs);
+  margin-top: auto;
+  padding-top: var(--space-2);
+  border-top: 1px solid var(--grey-100);
+}
+
 /* Layer-detail optional thumbnail (product detail only). */
 .pb-hero-thumb {
   width: 100%;
@@ -735,19 +803,26 @@
 .pb-layer-bottom { margin-top: var(--space-4); }
 
 
-/* Compact badge row under the layer title: "Polygon · 1,284 records ·
- * EPSG:2056 (LV95)". Small muted text, single line with middle-dot
- * separators built into the string. */
-.pb-hero-subtitle {
+/* Subtitle meta helpers — shared by every view-header (catalogue,
+ * detail, scene viewer). `metaLine` builds a dot-separated row; dots
+ * come from `.pb-meta-sep` so alignment stays consistent if a token is
+ * a Node (chip, link, mono span) instead of plain text. `metaStack`
+ * wraps a metaLine + a smaller secondary line (usually an updated-at
+ * timestamp) for views with richer metadata. */
+.pb-meta-line {
+  font-size: var(--text-sm);
+  color: var(--grey-600);
+}
+.pb-meta-sep {
+  color: var(--grey-400);
+  margin: 0 2px;
+}
+.pb-meta-stack {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
-.pb-hero-meta {
-  font-size: var(--text-sm);
-  color: var(--grey-600);
-}
-.pb-hero-updated {
+.pb-meta-secondary {
   font-size: var(--text-xs);
   color: var(--grey-500);
 }
@@ -1604,19 +1679,9 @@
   gap: var(--space-2);
 }
 
-/* Generic key/value badge. */
+/* Neutral type / enum label. Square-ish corners distinguish this from the
+ * pill-shaped `.pb-chip` (tags) and colored `.pb-status` (lifecycle). */
 .pb-badge {
-  display: inline-block;
-  padding: 2px var(--space-2);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-xs);
-  background: var(--grey-100);
-  color: var(--grey-700);
-  font-weight: var(--font-medium);
-}
-
-/* Type badge on schema rows. */
-.pb-badge-type {
   display: inline-block;
   padding: 2px var(--space-2);
   border-radius: var(--radius-sm);
@@ -1694,19 +1759,6 @@
 .pb-status--live     { background: var(--pill-live-bg);     color: var(--pill-live-text); }
 .pb-status--staging  { background: var(--pill-staging-bg);  color: var(--pill-staging-text); }
 .pb-status--archived { background: var(--pill-archived-bg); color: var(--pill-archived-text); }
-
-.pb-role {
-  display: inline-block;
-  padding: 1px var(--space-2);
-  font-size: var(--text-xs);
-  border-radius: var(--radius-full);
-  font-weight: var(--font-medium);
-  text-transform: uppercase;
-  letter-spacing: var(--tracking-wide);
-}
-.pb-role--admin  { background: var(--role-admin-bg);  color: var(--role-admin-text); }
-.pb-role--editor { background: var(--role-editor-bg); color: var(--role-editor-text); }
-.pb-role--viewer { background: var(--role-viewer-bg); color: var(--role-viewer-text); }
 
 /* Generic dismissible banner (warning / info). Currently used by the
  * import modal for the non-WGS84 SRID warning; reusable elsewhere. */
@@ -2504,11 +2556,14 @@
   outline-offset: -2px;
 }
 
-/* Gallery grid — reuses `.pb-product-grid` for Maps & Apps; features-catalogue
- * can use its own tokens on the card class. */
-.pb-catalogue-grid {
+/* Gallery grid — shared by the Maps & Apps and Layers catalogues so they
+ * lay out identically. (Historically there were two grids with different
+ * track sizes — 280px vs 260px — which made the two sections look subtly
+ * inconsistent. Use one track for both.) */
+.pb-catalogue-grid,
+.pb-product-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: var(--space-4);
 }
 

@@ -547,7 +547,7 @@ function openSidePanel(feature) {
       el('label', {}, [
         c.name,
         ' ',
-        el('span', { class: 'pb-badge-type' }, c.type),
+        el('span', { class: 'pb-badge' }, c.type),
         c.type === 'timestamptz' ? el('span', { class: 'pb-field-hint', style: { marginLeft: '6px' } }, '(UTC)') : null
       ]),
       input
@@ -608,7 +608,7 @@ function openSidePanel(feature) {
       el('label', {}, [
         'geometry',
         ' ',
-        el('span', { class: 'pb-badge-type' }, layer.geometry_type)
+        el('span', { class: 'pb-badge' }, layer.geometry_type)
       ]),
       el('div', { class: 'pb-field-hint', style: { marginBottom: '4px' } }, 'Accepts GeoJSON or WKT'),
       coordsRow,

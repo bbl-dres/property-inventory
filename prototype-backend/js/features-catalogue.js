@@ -5,10 +5,10 @@
 // view. The `+ New layer` button opens the existing new-feature-drawer.
 
 import * as api from './api.js';
-import { el, formatRelativeTime } from './utils.js';
+import { el, relativeTimeNode } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { mountCatalogue } from './catalogue.js';
-import { paintExtentMap } from './extent-map.js';
+import { paintExtentMap, extentThumbnail } from './extent-map.js';
 import { open as openNewFeatureDrawer } from './new-feature-drawer.js';
 import { buildNewButton } from './new-button.js';
 import { bus, isAllowed } from './state.js';
@@ -82,7 +82,7 @@ function renderShell() {
     items: layers,
     sectionKey: 'features',
     defaultView: 'gallery',
-    searchPlaceholder: 'Search layers…',
+    searchPlaceholder: 'Filter layers…',
     matchesQuery: (l, q) => (l.name || '').toLowerCase().includes(q)
       || (l.title || '').toLowerCase().includes(q)
       || (l.description || '').toLowerCase().includes(q),
@@ -130,14 +130,22 @@ function renderCard(l) {
     ? ['Table']
     : [l.geometry_type, sridLabel(l.srid)];
 
+  // Thumbnail: prefer a real bbox preview when the layer has one in its
+  // metadata. Falls back to the geometry-type icon so non-spatial tables
+  // (Table kind) still get a card chrome that reads as a layer card.
+  const thumb = extentThumbnail(l.metadata?.bbox);
+  const thumbNode = thumb
+    ? el('div', { class: 'pb-layer-card-thumb' }, [thumb])
+    : el('div', { class: 'pb-layer-card-thumb pb-layer-card-thumb--placeholder' }, [
+        el('span', { class: 'material-symbols-outlined' }, geomTypeIcon(l.geometry_type))
+      ]);
+
   return el('a', {
     href,
     class: 'pb-layer-card',
     'aria-label': l.title || l.name
   }, [
-    el('div', { class: 'pb-layer-card-icon' }, [
-      el('span', { class: 'material-symbols-outlined' }, geomTypeIcon(l.geometry_type))
-    ]),
+    thumbNode,
     el('div', { class: 'pb-layer-card-body' }, [
       el('div', { class: 'pb-layer-card-title' }, l.title || l.name),
       el('div', { class: 'pb-layer-card-name pb-muted' }, l.name),
@@ -146,7 +154,7 @@ function renderCard(l) {
         `${fc.toLocaleString()} record${fc === 1 ? '' : 's'}`),
       l.updated_at
         ? el('div', { class: 'pb-muted pb-layer-card-updated' },
-            `Updated ${formatRelativeTime(l.updated_at)}`)
+            ['Updated ', relativeTimeNode(l.updated_at)])
         : null
     ].filter(Boolean))
   ]);
@@ -172,14 +180,14 @@ function renderListRow(l) {
     ]),
     el('td', {}, l.title || el('span', { class: 'pb-muted' }, '—')),
     el('td', {}, [
-      el('span', { class: 'pb-badge-type' }, l.geometry_type)
+      el('span', { class: 'pb-badge' }, l.geometry_type)
     ]),
     el('td', {}, fc.toLocaleString()),
     el('td', {}, l.geometry_type === 'Table'
       ? el('span', { class: 'pb-muted' }, '—')
       : sridLabel(l.srid)),
     el('td', {}, l.updated_at
-      ? formatRelativeTime(l.updated_at)
+      ? relativeTimeNode(l.updated_at)
       : el('span', { class: 'pb-muted' }, '—'))
   ]);
   tr.addEventListener('click', (e) => {

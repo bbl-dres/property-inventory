@@ -59,6 +59,47 @@ export function formatRelativeTime(iso) {
   return date.toISOString().slice(0, 10);
 }
 
+/**
+ * Wrap a relative-time string in a span whose `title` attribute carries
+ * the full ISO timestamp. "1d ago" answers the common question; the
+ * tooltip provides the precise value when the user needs it (debugging
+ * a sync, diffing two layers, auditing a deploy). Returns the plain
+ * placeholder string when no ISO is available.
+ *
+ * @param {string|null|undefined} iso
+ * @returns {string|Node}
+ */
+export function relativeTimeNode(iso) {
+  if (!iso) return '—';
+  const date = new Date(iso);
+  if (isNaN(date.getTime())) return '—';
+  return el('span', { class: 'pb-reltime', title: date.toISOString() },
+    formatRelativeTime(iso));
+}
+
+/**
+ * Canonical "lifecycle" pill for deployable artifacts (Maps & Apps).
+ * Not used on Layers — layers are data, not deployments, and don't have
+ * a meaningful live/staging/archived axis. The asymmetry is deliberate:
+ * if you find yourself wanting this on a layer, what you actually want
+ * is probably a tag or a "used by" indicator.
+ *
+ * @param {'live'|'staging'|'archived'|string} status
+ * @returns {Node}
+ */
+export function statusPill(status) {
+  const s = status || 'staging';
+  const descriptions = {
+    live: 'Live — deployed and available to end users',
+    staging: 'Staging — available for review, not yet promoted',
+    archived: 'Archived — retired, kept for reference only'
+  };
+  return el('span', {
+    class: `pb-status pb-status--${s}`,
+    title: descriptions[s] || s
+  }, s);
+}
+
 export function validateLayerName(name) {
   if (!name) return { ok: false, error: 'Name is required' };
   if (!LAYER_NAME_RE.test(name)) {

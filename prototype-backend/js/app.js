@@ -99,7 +99,8 @@ function resolveRoute({ path, query, rawQuery }) {
   }
   if (section === 'maps') {
     if (path.length === 1) return { name: 'maps-catalogue', section: 'maps' };
-    return { name: 'maps-detail', section: 'maps', params: { slug: path[1] } };
+    const tab = query.get('tab') || 'overview';
+    return { name: 'maps-detail', section: 'maps', params: { slug: path[1], tab } };
   }
   if (section === 'settings') {
     const sub = path[1];
@@ -147,14 +148,14 @@ const SETTINGS_TABS = [
   { key: 'about',       label: 'About',       href: '#/settings/about',       icon: 'info' }
 ];
 
-/** Where should a Back link on this route point? `null` = no back link
- *  (you're at the root of a catalogue already). Settings exits to the
- *  default route; detail views exit to their section's catalogue. */
+/** Where should a Back link on this route point? `null` = no back link.
+ *  Detail views (feature-detail, maps-detail) already render a breadcrumb
+ *  in the view header whose parent crumb ("Layers" / "Maps & Apps") is
+ *  the back path — a second back link would duplicate that affordance.
+ *  Settings sub-pages use a pure tab-nav with no breadcrumb, so the back
+ *  link is their only exit to the default route. */
 function getBackHref(route) {
-  if (route.name === 'maps-catalogue' || route.name === 'features-catalogue') return null;
   if (route.section === 'settings') return DEFAULT_ROUTE;
-  if (route.name === 'feature-detail') return '#/features';
-  if (route.name === 'maps-detail') return '#/maps';
   return null;
 }
 
@@ -261,6 +262,42 @@ export function renderViewHeader({ breadcrumb, title, subtitle, description, act
     if (list.length) children.push(el('div', { class: 'pb-view-header-actions' }, list));
   }
   return el('header', { class: 'pb-view-header' }, children);
+}
+
+/**
+ * Compose a single-line meta row — items separated by " · ". Use in the
+ * `subtitle` slot of `renderViewHeader` (or anywhere a dot-separated row
+ * of facts belongs). Nullish / empty items are dropped so callers can
+ * pass conditional tokens without pre-filtering.
+ *
+ * @param {Array<string|Node|null|undefined>} items
+ * @returns {Node}
+ */
+export function metaLine(items) {
+  const kept = (items || []).filter((x) => x != null && x !== '');
+  const children = [];
+  kept.forEach((item, i) => {
+    if (i > 0) children.push(el('span', { class: 'pb-meta-sep', 'aria-hidden': 'true' }, ' · '));
+    children.push(typeof item === 'string' ? document.createTextNode(item) : item);
+  });
+  return el('span', { class: 'pb-meta-line' }, children);
+}
+
+/**
+ * Two-row meta block: a `metaLine` on top, a smaller muted secondary line
+ * below (typically an updated-at timestamp). Use in the `subtitle` slot
+ * when a single line can't hold all the relevant facts.
+ *
+ * @param {{ meta: Array<string|Node>, secondary?: string|Node }} opts
+ * @returns {Node}
+ */
+export function metaStack({ meta, secondary } = {}) {
+  const children = [metaLine(meta || [])];
+  if (secondary != null && secondary !== '') {
+    children.push(el('div', { class: 'pb-meta-secondary' },
+      typeof secondary === 'string' ? secondary : secondary));
+  }
+  return el('div', { class: 'pb-meta-stack' }, children);
 }
 
 function emptyState(icon, title, desc, cta) {
