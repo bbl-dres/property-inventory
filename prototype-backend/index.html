@@ -24,26 +24,30 @@
       <span class="material-symbols-outlined">database</span>
       <span>GIS Server</span>
     </a>
-    <div class="pb-topbar-search" id="pb-global-search-wrap">
-      <span class="material-symbols-outlined pb-icon-sm pb-topbar-search-icon" aria-hidden="true">search</span>
-      <input
-        type="search"
-        id="pb-global-search"
-        class="pb-topbar-search-input"
-        placeholder="Search maps, layers, attributes…"
-        autocomplete="off"
-        spellcheck="false"
-        role="combobox"
-        aria-autocomplete="list"
-        aria-expanded="false"
-        aria-controls="pb-global-search-panel"
-      >
-      <div class="pb-topbar-search-panel" id="pb-global-search-panel" role="listbox" hidden></div>
+    <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
+      <span class="material-symbols-outlined">cloud_off</span>
+      <span>mock &middot; localStorage</span>
     </div>
     <div class="pb-topbar-right">
-      <div class="pb-topbar-hint" title="Mock backend using browser localStorage">
-        <span class="material-symbols-outlined">cloud_off</span>
-        <span>mock &middot; localStorage</span>
+      <div class="pb-topbar-search is-collapsed" id="pb-global-search-wrap" role="search">
+        <button type="button" class="pb-topbar-search-trigger" id="pb-global-search-trigger"
+                aria-label="Open search" title="Search">
+          <span class="material-symbols-outlined pb-icon-sm">search</span>
+        </button>
+        <span class="material-symbols-outlined pb-icon-sm pb-topbar-search-icon" aria-hidden="true">search</span>
+        <input
+          type="search"
+          id="pb-global-search"
+          class="pb-topbar-search-input"
+          placeholder="Search maps, layers, attributes…"
+          autocomplete="off"
+          spellcheck="false"
+          role="combobox"
+          aria-autocomplete="list"
+          aria-expanded="false"
+          aria-controls="pb-global-search-panel"
+        >
+        <div class="pb-topbar-search-panel" id="pb-global-search-panel" role="listbox" hidden></div>
       </div>
       <a href="#/settings" class="pb-topbar-gear" id="pb-settings-btn"
          title="Settings" aria-label="Settings">

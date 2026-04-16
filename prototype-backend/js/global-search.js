@@ -71,6 +71,7 @@ export function mountGlobalSearch() {
   const input = document.getElementById('pb-global-search');
   const panel = document.getElementById('pb-global-search-panel');
   const wrap = document.getElementById('pb-global-search-wrap');
+  const trigger = document.getElementById('pb-global-search-trigger');
   if (!input || !panel || !wrap) return;
 
   // Kick off the initial index load so the first keystroke is instant.
@@ -79,6 +80,30 @@ export function mountGlobalSearch() {
   bus.on('layer:deleted',  invalidateIndex);
   bus.on('layer:updated',  invalidateIndex);
   bus.on('schema:changed', invalidateIndex);
+
+  // ---- Collapsed/expanded state -----------------------------------------
+  // The wrap starts in `.is-collapsed` (set in index.html) — only the
+  // trigger icon is visible. Clicking it expands to a full input; click
+  // outside or Escape on an empty input collapses back.
+  const expand = () => {
+    if (wrap.classList.contains('is-expanded')) return;
+    wrap.classList.remove('is-collapsed');
+    wrap.classList.add('is-expanded');
+    // Focus on next tick so the click event doesn't immediately blur.
+    setTimeout(() => input.focus(), 0);
+  };
+  const collapse = () => {
+    // Don't collapse while the user has something typed — they're mid-task.
+    if (input.value.trim() !== '') return;
+    wrap.classList.remove('is-expanded');
+    wrap.classList.add('is-collapsed');
+    closePanel();
+  };
+  if (trigger) trigger.addEventListener('click', expand);
+  input.addEventListener('blur', () => {
+    // Give click handlers on search results time to run before collapsing.
+    setTimeout(collapse, 120);
+  });
 
   let debounceTimer = null;
   let lastQuery = '';
@@ -137,8 +162,18 @@ export function mountGlobalSearch() {
   function onKeyDown(e) {
     if (e.key === 'Escape') {
       e.preventDefault();
-      if (input.value) { input.value = ''; renderEmpty('Start typing to search.'); }
-      else closePanel();
+      if (input.value) {
+        // First Escape clears the query but keeps the search open.
+        input.value = '';
+        renderEmpty('Start typing to search.');
+      } else {
+        // Second Escape (empty input) closes the panel AND collapses the
+        // wrap back to its icon trigger.
+        closePanel();
+        wrap.classList.remove('is-expanded');
+        wrap.classList.add('is-collapsed');
+        input.blur();
+      }
       return;
     }
     if (e.key === 'ArrowDown') {
@@ -167,6 +202,11 @@ export function mountGlobalSearch() {
     if (!href) return;
     input.value = '';
     closePanel();
+    // Collapse the wrap back to its icon trigger as we navigate away —
+    // the user's done searching and the next view shouldn't inherit an
+    // expanded (but empty) search field.
+    wrap.classList.remove('is-expanded');
+    wrap.classList.add('is-collapsed');
     location.hash = href;
   }
 
