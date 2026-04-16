@@ -157,15 +157,18 @@
 }
 
 /* ===== BASE ===== */
+/* Default to a document-scroll shell — the viewport does NOT pin; the
+ * window scrolls naturally and topbar/tabs scroll away with the content.
+ * Views that need a pinned full-screen canvas (scene viewer) opt in via
+ * `.pb-body--fixed-viewport` — see admin.css. */
 body {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: var(--text-sm);
   line-height: var(--leading-normal);
   display: flex;
   flex-direction: column;
-  height: 100vh;
-  height: 100dvh;
-  overflow: hidden;
+  min-height: 100vh;
+  min-height: 100dvh;
   color: var(--grey-900);
 }
 
