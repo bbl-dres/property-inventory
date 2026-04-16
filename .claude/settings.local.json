@@ -50,7 +50,9 @@
       "Bash(node scripts/rebuild-mock-data.mjs)",
       "Bash(grep -n \"\\\\.innerHTML\\\\s*=\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
       "Bash(grep -n 'target=\"_blank\"' /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
-      "Bash(grep -h \"^export \" \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\property-inventory\\\\prototype-backend\\\\js\"/*.js)"
+      "Bash(grep -h \"^export \" \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\property-inventory\\\\prototype-backend\\\\js\"/*.js)",
+      "Bash(ls \"c:\\\\\\\\Users\\\\\\\\DavidRasner\\\\\\\\Documents\\\\\\\\GitHub\\\\\\\\property-inventory\\\\\\\\prototype-workflows\\\\\\\\docs\\\\\\\\\")",
+      "Bash(awk 'NR==1,/^  <section id=\"create-view-TOBEREMOVED\">$/{next} /^  <!-- Workflows dashboard/{flag=1} flag' prototype-workflows/wireframes/index.html)"
     ]
   }
 }

@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title data-i18n="app.title">Liegenschaften Inventar BBL</title>
+    <meta name="description" content="Liegenschaften Inventar des Bundesamtes für Bauten und Logistik (BBL) – Gebäude, Grundstücke und Bodenabdeckungen der Schweizerischen Eidgenossenschaft.">
+
+    <link rel="preconnect" href="https://unpkg.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.swisstopo.admin.ch">
+    <link rel="preconnect" href="https://prod-swisstopoch-hcms-sdweb.imgix.net" crossorigin>
+    <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
+
+    <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/styles.css">
+
+    <script defer src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
+</head>
+<body>
+    <!-- Fullscreen image lightbox -->
+    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Bildansicht">
+        <div class="lightbox-backdrop"></div>
+        <div class="lightbox-toolbar">
+            <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
+            <span class="lightbox-filename" id="lightbox-filename"></span>
+            <div class="lightbox-actions">
+                <button class="lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
+                    <span class="material-symbols-outlined">download</span>
+                </button>
+                <button class="lightbox-action-btn" id="lightbox-close" title="Schliessen">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+        </div>
+        <img class="lightbox-image" id="lightbox-image" alt="" draggable="false">
+        <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
+            <span class="material-symbols-outlined">chevron_left</span>
+        </button>
+        <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
+            <span class="material-symbols-outlined">chevron_right</span>
+        </button>
+    </div>
+
+    <!-- Loading overlay (shown during initial data fetch) -->
+    <div id="loading-overlay" class="loading-overlay">
+        <div class="loading-spinner"></div>
+        <div class="loading-text" data-i18n="loading.data">Daten werden geladen...</div>
+    </div>
+
+    <!-- Layer info modal -->
+    <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
+        <div class="layer-info-modal-content">
+            <button class="layer-info-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+            <div id="layer-info-content" class="layer-info-body">
+                <div class="layer-info-loading" data-i18n="loading.info">Lade Informationen...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Skip link for keyboard navigation -->
+    <a href="#main" class="skip-link" data-i18n="skip.main">Zum Hauptinhalt springen</a>
+
+    <header id="header" role="banner">
+        <div class="header-main">
+            <div id="logo-area">
+                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" data-i18n-alt="app.logo.flag_alt" alt="Schweizer Flagge" width="30" height="30">
+                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" data-i18n-alt="app.logo.text_alt" alt="Schweizerische Eidgenossenschaft" width="300" height="18">
+                <div class="logo-divider"></div>
+                <div id="logo-title">
+                    <strong data-i18n="app.logo.org">Bundesamt für Bauten und Logistik BBL</strong>
+                    <span class="logo-subtitle"><br><span data-i18n="app.logo.subtitle">Liegenschaften Inventar</span></span>
+                </div>
+            </div>
+
+            <div id="search-area" role="search">
+                <div id="search-wrapper">
+                    <div id="search-container">
+                        <button id="search-icon-btn" data-i18n-aria-label="header.search.start" aria-label="Suche starten" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">search</span>
+                        </button>
+                        <input type="search" id="search-input" data-i18n-placeholder="header.search.placeholder" placeholder="Suche nach Objekten, Orten oder Karten" aria-label="Suchbegriff eingeben" autocomplete="off">
+                        <button id="search-clear-btn" data-i18n-title="header.search.clear" data-i18n-aria-label="header.search.clear" title="Suche löschen" aria-label="Suche löschen" type="button">
+                            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                        </button>
+                        <div id="search-spinner" class="spinner" role="status" data-i18n-aria-label="header.search.loading" aria-label="Suche läuft"></div>
+                    </div>
+                    <div id="search-results" role="listbox" data-i18n-aria-label="header.search.results" aria-label="Suchergebnisse"></div>
+                </div>
+
+                <div class="view-toggle" role="tablist" aria-label="Ansicht wählen">
+                    <button class="view-toggle-btn active" data-view="map" data-i18n-title="view.map" data-i18n-aria-label="view.map.title" title="Karte" aria-label="Kartenansicht" role="tab" aria-selected="true">
+                        <span class="material-symbols-outlined" aria-hidden="true">map</span>
+                        <span class="view-label" data-i18n="view.map">Karte</span>
+                    </button>
+                    <button class="view-toggle-btn" data-view="gallery" data-i18n-title="view.gallery" data-i18n-aria-label="view.gallery.title" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
+                        <span class="view-label" data-i18n="view.gallery">Galerie</span>
+                    </button>
+                </div>
+            </div>
+
+            <div id="header-right">
+                <button class="header-btn" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
+                    <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+                    <span data-i18n="header.filter">Filter</span>
+                </button>
+                <div id="lang-selector">
+                    <button id="lang-btn" class="header-btn" data-i18n-title="header.lang" data-i18n-aria-label="header.lang" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                        <span id="lang-current">DE</span>
+                    </button>
+                    <div id="lang-dropdown" class="lang-dropdown" role="menu">
+                        <button class="lang-option active" data-lang="de" role="menuitem">DE</button>
+                        <button class="lang-option" data-lang="fr" role="menuitem">FR</button>
+                        <button class="lang-option" data-lang="it" role="menuitem">IT</button>
+                        <button class="lang-option" data-lang="en" role="menuitem">EN</button>
+                    </div>
+                </div>
+            </div>
+            <button id="hamburger-btn" class="hamburger-btn" aria-label="Menü öffnen" aria-expanded="false">
+                <span class="material-symbols-outlined">menu</span>
+            </button>
+        </div>
+
+    </header>
+
+    <!-- Mobile hamburger menu (slide-in from right) -->
+    <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
+    <nav id="mobile-menu" class="mobile-menu" aria-label="Hauptmenü">
+        <div class="mobile-menu-header">
+            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
+                <span class="material-symbols-outlined">close</span>
+            </button>
+        </div>
+        <div class="mobile-menu-body">
+            <!-- View toggle -->
+            <div class="mobile-menu-view-toggle" id="mobile-view-toggle">
+                <button class="mobile-view-btn active" data-view="map">
+                    <span class="material-symbols-outlined">map</span>
+                    <span data-i18n="view.map">Karte</span>
+                </button>
+                <button class="mobile-view-btn" data-view="gallery">
+                    <span class="material-symbols-outlined">grid_view</span>
+                    <span data-i18n="view.gallery">Galerie</span>
+                </button>
+            </div>
+            <!-- Filter button -->
+            <button class="mobile-menu-item" id="mobile-filter-btn">
+                <span class="material-symbols-outlined">tune</span>
+                <span data-i18n="header.filter">Filter</span>
+                <span class="material-symbols-outlined mobile-menu-arrow">chevron_right</span>
+            </button>
+            <!-- Language selector -->
+            <div class="mobile-menu-lang">
+                <span class="material-symbols-outlined">language</span>
+                <div class="mobile-lang-pills" id="mobile-lang-pills">
+                    <button class="mobile-lang-pill active" data-lang="de">DE</button>
+                    <button class="mobile-lang-pill" data-lang="fr">FR</button>
+                    <button class="mobile-lang-pill" data-lang="it">IT</button>
+                    <button class="mobile-lang-pill" data-lang="en">EN</button>
+                </div>
+            </div>
+            <div class="mobile-menu-divider"></div>
+            <!-- Layer toggles (populated from accordion via JS) -->
+            <div id="mobile-layers-section"></div>
+            <!-- External layers + Geokatalog -->
+            <div id="mobile-external-section">
+                <div class="mobile-layers-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
+                <div id="mobile-external-layers-list" class="mobile-external-layers-list">
+                    <div class="mobile-external-empty" data-i18n="accordion.layers.external.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                </div>
+            </div>
+            <div class="mobile-menu-divider"></div>
+            <!-- Footer links -->
+            <div class="mobile-menu-links">
+                <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+                <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
+                <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+                <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
+                <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
+            </div>
+        </div>
+    </nav>
+
+    <main id="main">
+        <div class="main-content">
+            <div id="map-view" class="active">
+            <div id="map">
+            <!-- Style Switcher (inside map for correct positioning) -->
+            <div class="style-switcher" id="style-switcher">
+                <div class="style-switcher-panel" id="style-panel">
+                    <button class="style-option active" data-style="positron" data-i18n-title="map.style.light" title="Light">
+                        <img id="thumb-positron" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Light">
+                        <span data-i18n="map.style.light">Light</span>
+                    </button>
+                    <button class="style-option" data-style="voyager" data-i18n-title="map.style.standard" title="Standard">
+                        <img id="thumb-voyager" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Standard">
+                        <span data-i18n="map.style.standard">Standard</span>
+                    </button>
+                    <button class="style-option" data-style="swissimage" data-i18n-title="map.style.aerial" title="Luftbild">
+                        <img id="thumb-swissimage" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Luftbild">
+                        <span data-i18n="map.style.aerial">Luftbild</span>
+                    </button>
+                    <button class="style-option" data-style="dark-matter" data-i18n-title="map.style.dark" title="Dark">
+                        <img id="thumb-dark-matter" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Dark">
+                        <span data-i18n="map.style.dark">Dark</span>
+                    </button>
+                </div>
+                <button class="style-switcher-btn" id="style-switcher-btn" data-i18n-title="map.style.title" title="Hintergrund wechseln">
+                    <img id="current-style-thumb" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Aktueller Stil">
+                    <span data-i18n="map.style.label">Hintergrund</span>
+                </button>
+            </div>
+
+            <!-- Toast notification container (inside #map so it doesn't overlap table) -->
+            <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+
+            <!-- Measure Distance Display (inside #map for correct positioning) -->
+            <div id="measure-distance-display" class="measure-distance-display">
+                <div class="measure-distance-header">
+                    <span class="material-symbols-outlined">straighten</span>
+                    <span data-i18n="measure.title">Distanz messen</span>
+                    <button id="measure-distance-close" class="measure-distance-close" data-i18n-title="modal.close" title="Schliessen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+                <div class="measure-distance-info" data-i18n="measure.info">
+                    Klicken Sie auf die Karte, um einen Pfad zu zeichnen.
+                </div>
+                <div class="measure-distance-result" id="measure-distance-result">
+                    <div class="measure-result-row">
+                        <span class="measure-result-label" data-i18n="measure.distance">Gesamtdistanz:</span>
+                        <span class="measure-result-value" id="measure-total-distance">0 m</span>
+                    </div>
+                    <div class="measure-result-row" id="measure-area-row" style="display: none;">
+                        <span class="measure-result-label" data-i18n="measure.area">Fläche:</span>
+                        <span class="measure-result-value" id="measure-total-area">0 m²</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table toggle button (inside #map for correct positioning) -->
+            <button id="tbl-toggle" class="tbl-toggle" data-i18n-title="table.toggle.title" data-i18n-aria-label="table.toggle.title" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden">
+                <span class="material-symbols-outlined">expand_more</span>
+                <span class="tbl-toggle-label" data-i18n="table.toggle">Tabelle</span>
+            </button>
+            </div>
+            
+            <div id="accordion-wrapper">
+            <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
+                <div class="accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span data-i18n="accordion.draw">Zeichnen & Messen auf der Karte</span>
+                    </button>
+                    <div class="accordion-content" data-i18n="accordion.draw.desc">
+                        Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="print-accordion-item">
+                    <button class="accordion-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span data-i18n="accordion.print">Karte drucken</span>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="print-form">
+                            <div class="print-form-row">
+                                <label for="print-orientation" data-i18n="accordion.print.format">Format</label>
+                                <select id="print-orientation" class="custom-select print-select">
+                                    <option value="landscape-a4" selected data-i18n="format.a4_landscape">A4 Querformat</option>
+                                    <option value="portrait-a4" data-i18n="format.a4_portrait">A4 Hochformat</option>
+                                    <option value="landscape-a3" data-i18n="format.a3_landscape">A3 Querformat</option>
+                                    <option value="portrait-a3" data-i18n="format.a3_portrait">A3 Hochformat</option>
+                                    <option value="landscape-a2" data-i18n="format.a2_landscape">A2 Querformat</option>
+                                    <option value="portrait-a2" data-i18n="format.a2_portrait">A2 Hochformat</option>
+                                    <option value="landscape-a1" data-i18n="format.a1_landscape">A1 Querformat</option>
+                                    <option value="portrait-a1" data-i18n="format.a1_portrait">A1 Hochformat</option>
+                                    <option value="landscape-a0" data-i18n="format.a0_landscape">A0 Querformat</option>
+                                    <option value="portrait-a0" data-i18n="format.a0_portrait">A0 Hochformat</option>
+                                </select>
+                            </div>
+                            <div class="print-form-row">
+                                <label for="print-scale" data-i18n="accordion.print.scale">Massstab</label>
+                                <select id="print-scale" class="custom-select print-select">
+                                    <option value="auto" selected data-i18n="accordion.print.scale.auto">Automatisch</option>
+                                    <option value="500">1:500</option>
+                                    <option value="1000">1:1'000</option>
+                                    <option value="2500">1:2'500</option>
+                                    <option value="5000">1:5'000</option>
+                                    <option value="10000">1:10'000</option>
+                                    <option value="25000">1:25'000</option>
+                                    <option value="50000">1:50'000</option>
+                                    <option value="100000">1:100'000</option>
+                                </select>
+                            </div>
+                            <div class="print-form-row">
+                                <label for="print-dpi" data-i18n="print.dpi">Auflösung</label>
+                                <select id="print-dpi" class="custom-select print-select">
+                                    <option value="150" data-i18n="print.dpi.fast">150 DPI (schnell)</option>
+                                    <option value="300" selected data-i18n="print.dpi.standard">300 DPI (Standard)</option>
+                                </select>
+                            </div>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-legend" checked> <span data-i18n="accordion.print.legend">Legende anzeigen</span>
+                            </label>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-title" checked> <span data-i18n="accordion.print.title_date">Titel und Datum</span>
+                            </label>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-labels" checked> <span data-i18n="print.labels">Gebäudebeschriftung</span>
+                            </label>
+                            <button class="print-btn" id="print-generate-btn">
+                                <span class="material-symbols-outlined">picture_as_pdf</span>
+                                <span data-i18n="accordion.print.button">PDF erstellen</span>
+                            </button>
+                            <div class="print-progress" id="print-progress" style="display: none;">
+                                <div class="print-progress-bar"><div class="print-progress-fill" id="print-progress-fill"></div></div>
+                                <div class="print-progress-text" id="print-progress-text"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="geokatalog-accordion">
+                    <button class="accordion-header geokatalog-header" aria-expanded="false">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                        <span data-i18n="accordion.catalog">Geokatalog</span>
+                        <span class="geokatalog-theme-switch" data-i18n="accordion.catalog.theme">Thema wechseln</span>
+                    </button>
+                    <div class="accordion-content geokatalog-content">
+                        <div id="geokatalog-tree" class="geokatalog-tree">
+                            <div class="geokatalog-loading" data-i18n="loading.catalog">Lade Katalog...</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="accordion-item" id="active-layers-accordion">
+                    <button class="accordion-header active" aria-expanded="true">
+                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span data-i18n="accordion.layers">Dargestellte Karten</span>
+                    </button>
+                    <div class="accordion-content show">
+                        <div class="active-layers-list">
+                            <div class="layer-group">
+                                <div class="layer-group-label" data-i18n="accordion.layers.internal">Interne Karten</div>
+                                <div class="active-layer-item" data-internal-layer="buildings">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                                <div class="active-layer-item" data-internal-layer="landcovers">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" title="Bodenabdeckung ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="landcovers" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                                <div class="active-layer-item" data-internal-layer="parcels">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
+                                    <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
+                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="layer-group">
+                                <div class="layer-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
+                                <div id="external-layers-list">
+                                    <div class="active-layers-empty" data-i18n="accordion.layers.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+            
+            <div id="menu-toggle">
+                <span class="material-symbols-outlined">expand_less</span>
+                <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
+            </div>
+            </div><!-- /#accordion-wrapper -->
+
+            <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                <div id="info-header">
+                    <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
+                    <div id="info-header-actions">
+                        <button id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                        <button id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                        <button id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                    </div>
+                </div>
+                <div id="info-preview-image" role="img" data-i18n-aria-label="info.preview" aria-label="Vorschaubild des Objekts"></div>
+                <div id="info-body"></div>
+            </aside>
+
+            <!-- Map Context Menu (Right-Click) -->
+            <div id="map-context-menu" class="map-context-menu">
+                <div class="context-menu-item context-menu-coords" id="context-menu-coords" data-i18n-title="map.context.copy" title="Klicken zum Kopieren">
+                    <span id="context-menu-coords-text">47.37623, 8.53048</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-share">
+                    <span data-i18n="map.context.share">Teilen</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-measure">
+                    <span id="context-menu-measure-text" data-i18n="map.context.measure">Distanz messen</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-print" style="display: none;">
+                    <span data-i18n="map.context.print">Drucken</span>
+                </div>
+                <div class="context-menu-item" id="context-menu-report">
+                    <span data-i18n="map.context.report">Problem melden</span>
+                </div>
+            </div>
+
+            <!-- Resize handle between map and table -->
+            <div id="tbl-resize-handle" class="tbl-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
+
+            <!-- Table panel (below map) -->
+            <div id="table-panel" class="table-panel">
+                <div class="list-table-container">
+                    <!-- Toolbar -->
+                    <div class="toolbar">
+                        <div class="table-tabs" role="tablist">
+                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="table.tab.buildings">Gebäude</button>
+                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="table.tab.parcels">Grundstücke</button>
+                            <button class="table-tab" data-table-tab="landcovers" role="tab" aria-selected="false" data-i18n="table.tab.landcovers">Bodenabdeckung</button>
+                        </div>
+                        <div class="toolbar-search list-toolbar-search">
+                            <span class="material-symbols-outlined">search</span>
+                            <input type="text" id="list-search-input" data-i18n-placeholder="table.search" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
+                            <button class="toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div class="filter-pills" id="filter-pills"></div>
+                        <div class="toolbar-actions">
+                            <!-- Export Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="export-dropdown-btn">
+                                    <span class="material-symbols-outlined">download</span>
+                                    Export
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu" id="export-dropdown-menu">
+                                    <div class="dropdown-menu-header" data-i18n="export.all">Alle exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all" data-i18n="export.format.excel">Excel (.xlsx)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
+                                    <div class="dropdown-menu-header" id="export-filtered-header" data-i18n="export.filtered">Gefiltert exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered" data-i18n="export.format.excel">Excel (.xlsx)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
+                                </div>
+                            </div>
+                            <!-- Columns Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="columns-dropdown-btn">
+                                    <span class="material-symbols-outlined">view_column</span>
+                                    Spalten
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
+                                    <div class="dropdown-menu-header" data-i18n="columns.header">Spalten anzeigen</div>
+                                    <div class="dropdown-menu-toggle-row">
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-all" data-i18n="columns.all">Alle</button>
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-none" data-i18n="columns.none">Keine</button>
+                                    </div>
+                                    <div class="columns-search">
+                                        <span class="material-symbols-outlined">search</span>
+                                        <input type="text" id="columns-search-input" data-i18n-placeholder="columns.search" placeholder="Spalte suchen..." aria-label="Spalte suchen">
+                                        <button class="toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                            <span class="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                    <!-- Building columns (shown when Gebäude tab active) -->
+                                    <div class="columns-list" id="columns-list" data-columns-tab="buildings">
+                                        <!-- Sorted to match DATAMODEL.json -->
+                                        <div class="columns-group-label" data-i18n="columns.group.master">Stammdaten</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_buch"> Buchungskreis (bbl_buch)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_we"> Wirtschaftseinheit (bbl_we)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_obj"> Teilobjekt (bbl_obj)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
+                                        <!-- Adresse -->
+                                        <div class="columns-group-label" data-i18n="columns.group.address">Adresse</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_land"> Land (adr_land)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_reg"> Region (adr_reg)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_ort"> Ort (adr_ort)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_plz"> PLZ (adr_plz)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_str"> Strasse (adr_str)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-adr_hsnr"> Hausnummer (adr_hsnr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adr_conct"> Adresse (adr_conct)</label>
+                                        <!-- Koordinaten -->
+                                        <div class="columns-group-label" data-i18n="columns.group.coords">Koordinaten</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lat"> WGS84 Lat (wgs84_lat)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-wgs84_lon"> WGS84 Lon (wgs84_lon)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_e"> LV95 E (lv95_e)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lv95_n"> LV95 N (lv95_n)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-egm_elev"> Höhe (egm_elev)</label>
+                                        <!-- Stammdaten 2 -->
+                                        <div class="columns-group-label" data-i18n="columns.group.master2">Stammdaten 2</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_eigen"> Art Eigentum (bbl_eigen)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_ostr"> Objektstrategie (bbl_ostr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_mietm"> Mietmodell (bbl_mietm)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bjahr"> Baujahr (bbl_bjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_vjahr"> Verkaufsjahr (bbl_vjahr)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_port"> Teilportfolio (bbl_port)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_port2"> Portfoliogruppe (bbl_port2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_awrt"> Anschaffungswert (bbl_awrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_bwrt"> Buchwert (bbl_bwrt)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_gbda1"> Objektart 1 (bbl_gbda1)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_gbda2"> Objektart 2 (bbl_gbda2)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_ovtw"> Verantwortlich (bbl_ovtw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
+                                        <!-- Amtliche Vermessung -->
+                                        <div class="columns-group-label" data-i18n="columns.group.survey">Amtliche Vermessung</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egid"> EGID (av_egid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egrid"> EGRID (av_egrid)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gem"> Gemeindename (bfs_gem)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gemnr"> Gemeindenr. (bfs_gemnr)</label>
+                                        <!-- Bauzone -->
+                                        <div class="columns-group-label" data-i18n="columns.group.zone">Bauzone</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_zbez"> Bauzone (av_zbez)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_znut"> Nutzung (av_znut)</label>
+                                        <!-- Denkmalschutz -->
+                                        <div class="columns-group-label" data-i18n="columns.group.heritage">Denkmalschutz</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_hist"> Hist. Ausstattung (bbl_hist)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_arch"> Archivwürdigkeit (bbl_arch)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_kat"> KGS Kategorie (kgs_kat)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_nr"> KGS Nummer (kgs_nr)</label>
+                                        <!-- Sonstiges -->
+                                        <div class="columns-group-label" data-i18n="columns.group.other">Sonstiges</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
+                                        <!-- Flächen -->
+                                        <div class="columns-group-label" data-i18n="columns.group.areas">Flächen (SIA 416/380)</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gf"> GF (garea_gf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfo"> GF oberird. (garea_gfo)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gfu"> GF unterird. (garea_gfu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_acu"> GF Genauigkeit (garea_acu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-garea_ngf"> NGF (garea_ngf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nf"> NF (garea_nf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_hnf"> HNF (garea_hnf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_nnf"> NNF (garea_nnf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ff"> FF (garea_ff)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vf"> VF (garea_vf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_vmf"> VMF (garea_vmf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_ebf"> EBF (garea_ebf)</label>
+                                        <!-- Volumen / Geschosse -->
+                                        <div class="columns-group-label" data-i18n="columns.group.volumes">Volumen / Geschosse</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gv"> GV (gvol_gv)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvo"> GV oberird. (gvol_gvo)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_gvu"> GV unterird. (gvol_gvu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gvol_acu"> GV Genauigkeit (gvol_acu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-gastw"> Geschosse (gastw)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_og"> Gesch. oberird. (gastw_og)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_ug"> Gesch. unterird. (gastw_ug)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-gastw_acu"> Gesch. Genauigkeit (gastw_acu)</label>
+                                        <!-- Grundstück -->
+                                        <div class="columns-group-label" data-i18n="columns.group.land">Grundstück</div>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_ggf"> GGF (larea_ggf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_gsf"> GSF (larea_gsf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_uf"> UF (larea_uf)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-larea_acu"> GSF Genauigkeit (larea_acu)</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-etl_ts"> ETL Zeitstempel (etl_ts)</label>
+                                    </div>
+                                    <!-- Parcel columns (shown when Grundstücke tab active) -->
+                                    <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> <span data-i18n="col.parcel.id">ID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> <span data-i18n="col.parcel.plot">Grundstück-Nr.</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> <span data-i18n="col.parcel.municipality">Gemeinde</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> <span data-i18n="col.parcel.canton">Kanton</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> <span data-i18n="col.parcel.area">Fläche</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
+                                    </div>
+                                    <div class="columns-list" id="landcover-columns-list" data-columns-tab="landcovers" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-bbl_id"> Grundstück ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-geb_id"> Gebäude ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_type"> Typ</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-lc_area"> Fläche</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_stat"> AV Status</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-av_egid"> EGID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_egrid"> EGRID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lat"> Lat</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lon"> Lon</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_e"> LV95 E</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_n"> LV95 N</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid"> FID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid_src"> FID Quelle</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-objectid"> OBJECTID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-etl_ts"> ETL</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Buildings table -->
+                    <div class="table-tab-content active" id="buildings-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="base-table list-table" id="list-table">
+                                <thead>
+                                    <tr id="list-table-header-row"></tr>
+                                </thead>
+                                <tbody id="list-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="list-pagination">
+                            <div class="pagination-info" id="list-pagination-info" aria-live="polite">
+                                0 von 0 Objekte
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="list-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="list-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="list-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Parcels table -->
+                    <div class="table-tab-content" id="parcels-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="base-table list-table" id="parcels-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-parcel-id"><span data-i18n="col.parcel.id">ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-plot"><span data-i18n="col.parcel.plot">Grundstück-Nr.</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-name"><span data-i18n="col.parcel.name">Bezeichnung</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-municipality"><span data-i18n="col.parcel.municipality">Gemeinde</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-canton"><span data-i18n="col.parcel.canton">Kanton</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-area"><span data-i18n="col.parcel.area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-zone"><span data-i18n="col.parcel.zone">Nutzungszone</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-ownership"><span data-i18n="col.parcel.ownership">Eigentum</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="parcels-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="parcels-pagination">
+                            <div class="pagination-info" id="parcels-pagination-info" aria-live="polite">
+                                0 von 0 Grundstücke
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="parcels-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="parcels-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="parcels-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="parcels-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-tab-content" id="landcovers-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="base-table list-table" id="landcovers-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-lc-bbl_id"><span data-i18n="col.lc.bbl_id">Grundstück ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-geb_id"><span data-i18n="col.lc.geb_id">Gebäude ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_type"><span data-i18n="col.lc.av_type">Typ</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lc_area"><span data-i18n="col.lc.lc_area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_stat"><span data-i18n="col.lc.av_stat">AV Status</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_egid">EGID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-av_egrid">EGRID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-wgs84_lat">Lat <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-wgs84_lon">Lon <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lv95_e">LV95 E <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-lv95_n">LV95 N <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-fid">FID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-fid_src"><span data-i18n="col.lc.fid_src">FID Quelle</span> <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-objectid">OBJECTID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-lc-etl_ts">ETL <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="landcovers-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="landcovers-pagination">
+                            <div class="pagination-info" id="landcovers-pagination-info" aria-live="polite">
+                                0 von 0 Bodenabdeckungen
+                            </div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="landcovers-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="landcovers-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="landcovers-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="landcovers-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="gallery-view">
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+
+        <div id="api-docs-view">
+            <div class="api-docs-nav">
+                <div class="detail-header-inner">
+                    <div class="breadcrumb">
+                        <span class="material-symbols-outlined">public</span>
+                        <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
+                        <span>></span>
+                        <span class="current" data-i18n="api.breadcrumb">API Dokumentation</span>
+                    </div>
+                    <div class="detail-header-actions">
+                        <button class="btn-back" id="btn-back-api">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            <span data-i18n="detail.back">Zurück</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="api-docs-content">
+                <div class="api-docs-header">
+                    <h1>BBL GIS IMMO — API Dokumentation</h1>
+                    <p class="api-docs-subtitle">REST API für den programmatischen Zugriff auf das Immobilienportfolio des Bundes</p>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Übersicht</h2>
+                    <p>Die BBL GIS IMMO API bietet lesenden Zugriff auf die Gebäude- und Grundstücksdaten des Bundesimmobilienportfolios. Alle Endpunkte liefern GeoJSON-kompatible Antworten.</p>
+                    <div class="api-docs-card">
+                        <div class="api-docs-row"><span class="api-docs-label">Base URL :</span><code>https://api.bbl-immo.admin.ch/v1</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Format :</span><code>GeoJSON (application/geo+json)</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Authentifizierung :</span><code>API-Key via Header X-API-Key</code></div>
+                        <div class="api-docs-row"><span class="api-docs-label">Rate Limit :</span><code>100 Anfragen / Minute</code></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Endpunkte</h2>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings</code></div>
+                        <p>Alle Gebäude als GeoJSON FeatureCollection. Unterstützt Filter via Query-Parameter.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Parameter</div>
+                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land (z.B. <code>CH</code>, <code>DE</code>)</span></div>
+                            <div class="api-docs-row"><code>adr_reg</code><span>Filterung nach Region/Kanton (z.B. <code>BE</code>)</span></div>
+                            <div class="api-docs-row"><code>bbl_stat</code><span>Filterung nach Status (z.B. <code>Aktiv</code>)</span></div>
+                            <div class="api-docs-row"><code>bbl_eigen</code><span>Filterung nach Eigentumsart</span></div>
+                            <div class="api-docs-row"><code>bbl_port</code><span>Filterung nach Teilportfolio</span></div>
+                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
+                            <div class="api-docs-row"><code>offset</code><span>Pagination Offset</span></div>
+                        </div>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Beispiel</div>
+                            <pre><code>GET /v1/buildings?adr_land=CH&amp;adr_reg=BE&amp;limit=10
+
+HTTP/1.1 200 OK
+Content-Type: application/geo+json
+
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "1000/4840/AF",
+        "bbl_bez": "Bundeshaus West",
+        "bbl_stat": "Aktiv",
+        "adr_land": "CH",
+        "adr_ort": "Bern",
+        ...
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [7.4441, 46.9465]
+      }
+    }
+  ]
+}</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings/{bbl_id}</code></div>
+                        <p>Einzelnes Gebäude nach BBL-ID. Gibt ein einzelnes GeoJSON Feature zurück.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Beispiel</div>
+                            <pre><code>GET /v1/buildings/1000%2F4840%2FAF</code></pre>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels</code></div>
+                        <p>Alle Grundstücke als GeoJSON FeatureCollection mit Polygon-Geometrie.</p>
+                        <div class="api-docs-card">
+                            <div class="api-docs-overline">Parameter</div>
+                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land</span></div>
+                            <div class="api-docs-row"><code>bfs_gemnr</code><span>Filterung nach BFS Gemeindenummer</span></div>
+                            <div class="api-docs-row"><code>bbl_we</code><span>Filterung nach Wirtschaftseinheit</span></div>
+                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
+                        </div>
+                    </div>
+
+                    <div class="api-docs-endpoint">
+                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels/{bbl_id}</code></div>
+                        <p>Einzelnes Grundstück nach BBL-ID.</p>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Datenmodell</h2>
+                    <p>Die API liefert Attribute gemäss dem BBL GIS IMMO Datenmodell. Alle Feldnamen sind Shapefile-kompatibel (max. 10 Zeichen).</p>
+                    <div class="api-docs-card">
+                        <div class="api-docs-overline">Building — 67 Attribute</div>
+                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID (Buchungskreis/WE/Teilobjekt)</span></div>
+                        <div class="api-docs-row"><code>bbl_bez</code><span>Objektbezeichnung</span></div>
+                        <div class="api-docs-row"><code>bbl_stat</code><span>Status (Aktiv, Verkauft, ...)</span></div>
+                        <div class="api-docs-row"><code>adr_conct</code><span>Verkettete Adresse</span></div>
+                        <div class="api-docs-row"><code>wgs84_lat</code><span>WGS84 Breitengrad</span></div>
+                        <div class="api-docs-row"><code>wgs84_lon</code><span>WGS84 Längengrad</span></div>
+                        <div class="api-docs-row"><code>av_egid</code><span>FK — Eidg. Gebäudeidentifikator (CH)</span></div>
+                        <div class="api-docs-row"><code>garea_gf</code><span>Geschossfläche GF in m² (SIA 416)</span></div>
+                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
+                    </div>
+                    <div class="api-docs-card">
+                        <div class="api-docs-overline">Parcel — 43 Attribute</div>
+                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID</span></div>
+                        <div class="api-docs-row"><code>av_egrid</code><span>FK — Eidg. Grundstücksidentifikator (CH)</span></div>
+                        <div class="api-docs-row"><code>larea_gsf</code><span>Grundstücksfläche GSF in m² (SIA 416)</span></div>
+                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <h2>Fehler</h2>
+                    <div class="api-docs-card">
+                        <div class="api-docs-row"><code>400</code><span>Ungültige Parameter</span></div>
+                        <div class="api-docs-row"><code>401</code><span>Fehlender oder ungültiger API-Key</span></div>
+                        <div class="api-docs-row"><code>404</code><span>Objekt nicht gefunden</span></div>
+                        <div class="api-docs-row"><code>429</code><span>Rate Limit überschritten</span></div>
+                        <div class="api-docs-row"><code>500</code><span>Interner Serverfehler</span></div>
+                    </div>
+                </div>
+
+                <div class="api-docs-section">
+                    <p class="api-docs-notice">Diese API ist ein Platzhalter für zukünftige Entwicklung. Kontakt: <a href="mailto:immobilien@bbl.admin.ch">immobilien@bbl.admin.ch</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div id="detail-view">
+            <div class="detail-content detail-single-col">
+
+                <!-- Breadcrumb + Back -->
+                <div class="detail-header">
+                    <div class="detail-header-inner">
+                        <div class="breadcrumb" id="detail-breadcrumb">
+                            <span class="material-symbols-outlined">public</span>
+                            <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
+                            <span>></span>
+                            <a href="#" id="breadcrumb-country-link" data-action="navigateWithLandFilter"><span id="breadcrumb-country">–</span></a>
+                            <span>></span>
+                            <a href="#" id="breadcrumb-city-link" data-action="navigateWithOrtFilter"><span id="breadcrumb-city">–</span></a>
+                            <span>></span>
+                            <span id="breadcrumb-we">–</span>
+                            <span>></span>
+                            <span class="current" id="breadcrumb-tobj">–</span>
+                        </div>
+                        <div class="detail-header-actions">
+                            <button class="btn-back" id="btn-back">
+                                <span class="material-symbols-outlined">arrow_back</span>
+                                <span data-i18n="detail.back">Zurück</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto Gallery (always visible, above tabs) -->
+                <div class="carousel" id="detail-carousel" role="region" aria-roledescription="Bildkarussell" aria-label="Gebäudebilder">
+                    <div class="carousel-image" id="carousel-image"></div>
+                    <button class="carousel-btn prev" data-action="carouselPrev" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
+                    <button class="carousel-btn next" data-action="carouselNext" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
+                    <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Bild auswählen"></div>
+                </div>
+
+                <!-- Tabs (inside content, scrollable) -->
+                <div class="detail-tabs-inline" role="tablist" aria-label="Detailansicht Tabs">
+                    <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0" data-i18n="detail.tab.overview">Übersicht</button>
+                    <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1" data-i18n="detail.tab.measurements">Bemessungen</button>
+                </div>
+
+                <!-- ===== Tab: Übersicht ===== -->
+                <div class="tab-content active" data-content="overview">
+
+                    <div class="detail-overline" data-i18n="columns.group.master">Stammdaten</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_stat">Status</span><span class="detail-value" id="detail-status">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bez">Bezeichnung</span><span class="detail-value" id="detail-name">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_id">ID</span><span class="detail-value" id="detail-id">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_gbda1">Objektart 1</span><span class="detail-value" id="detail-objektart1">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_gbda2">Objektart 2</span><span class="detail-value" id="detail-objektart2">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_eigen">Art Eigentum</span><span class="detail-value" id="detail-eigentum">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_ostr">Objektstrategie</span><span class="detail-value" id="detail-ostr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_mietm">Mietmodell</span><span class="detail-value" id="detail-mietmodell">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_port">Teilportfolio</span><span class="detail-value" id="detail-teilportfolio">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_port2">Portfoliogruppe</span><span class="detail-value" id="detail-teilportfolio-gruppe">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bjahr">Baujahr</span><span class="detail-value" id="detail-baujahr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_vjahr">Verkaufsjahr</span><span class="detail-value" id="detail-vjahr">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_awrt">Anschaffungswert</span><span class="detail-value" id="detail-awrt">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bwrt">Buchwert</span><span class="detail-value" id="detail-bwrt">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.contacts">Kontakte</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_ovtw">Verantwortlich</span><span class="detail-value" id="detail-ovtw">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_pvtw">Portfoliomanager</span><span class="detail-value" id="detail-pvtw">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.location">Standort</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.wgs84">WGS84</span><span class="detail-value" id="detail-wgs84">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.lv95">LV95</span><span class="detail-value" id="detail-lv95">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.egm_elev">EGM Höhe</span><span class="detail-value" id="detail-elev">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label">Google Maps</span><span class="detail-value"><a id="detail-link-gmaps" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Google Street View</span><span class="detail-value"><a id="detail-link-streetview" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div class="mini-map-wrapper">
+                            <div class="mini-map-header" id="mini-map-address">–</div>
+                            <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                        </div>
+                        <table class="address-table">
+                            <thead>
+                                <tr>
+                                    <th data-i18n="col.adr_land">Land</th>
+                                    <th data-i18n="col.adr_reg">Region</th>
+                                    <th data-i18n="col.adr_ort">Ort</th>
+                                    <th data-i18n="col.adr_plz">PLZ</th>
+                                    <th data-i18n="col.adr_str">Strasse</th>
+                                    <th data-i18n="col.adr_hsnr">Nr.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td id="detail-country">–</td>
+                                    <td id="detail-region">–</td>
+                                    <td id="detail-city">–</td>
+                                    <td id="detail-plz">–</td>
+                                    <td id="detail-street">–</td>
+                                    <td id="detail-housenumber">–</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="columns.group.survey">Amtliche Vermessung</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_egid">EGID</span><span class="detail-value" id="detail-egid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_egrid">EGRID</span><span class="detail-value" id="detail-egrid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bfs_gem">Gemeindename</span><span class="detail-value" id="detail-bfs-gem">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bfs_gemnr">Gemeindenr.</span><span class="detail-value" id="detail-bfs-gemnr">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.gwr">BFS Gebäude und Wohnregister GWR</span><span class="detail-value"><a id="detail-link-geoadmin-gwr" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.oereb">Kataster der öffentlich-rechtlichen Eigentumsbeschränkungen ÖREB</span><span class="detail-value"><a id="detail-link-geoadmin-oereb" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="columns.group.zone">Bauzone</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_zbez">Bauzone</span><span class="detail-value" id="detail-zbez">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_znut">Nutzung</span><span class="detail-value" id="detail-znut">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.bauzonen">Bauzonen Schweiz</span><span class="detail-value"><a id="detail-link-bauzonen" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="columns.group.heritage">Denkmalschutz</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_hist">Hist. Ausstattung</span><span class="detail-value" id="detail-hist">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_arch">Archivwürdigkeit</span><span class="detail-value" id="detail-arch">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.kgs_kat">KGS Kategorie</span><span class="detail-value" id="detail-kgs-kat">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.kgs_nr">KGS Nummer</span><span class="detail-value" id="detail-kgs-nr">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.kgs">KGS Inventar</span><span class="detail-value"><a id="detail-link-kgs" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="columns.group.other">Sonstiges</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.objectid">OBJECTID</span><span class="detail-value" id="detail-objectid">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.etl_ts">ETL Zeitstempel</span><span class="detail-value" id="detail-etl-ts">–</span></div>
+                    </div>
+
+                </div><!-- /tab overview -->
+
+                <!-- ===== Tab: Bemessungen ===== -->
+                <div class="tab-content" data-content="measurements">
+
+                    <div class="detail-overline" data-i18n="detail.section.areas_sia416">Flächen (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gf">Geschossfläche GF</span><span class="detail-value" id="detail-garea-gf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gfo">GF Oberirdisch</span><span class="detail-value" id="detail-garea-gfo">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gfu">GF Unterirdisch</span><span class="detail-value" id="detail-garea-gfu">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-garea-acu">–</span></div>
+                        <div class="detail-grid-spacer"></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ngf">Netto-Geschossfl. NGF</span><span class="detail-value" id="detail-garea-ngf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nf">Nutzfläche NF</span><span class="detail-value" id="detail-garea-nf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_hnf">Hauptnutzfläche HNF</span><span class="detail-value" id="detail-garea-hnf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nnf">Nebennutzfläche NNF</span><span class="detail-value" id="detail-garea-nnf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ff">Funktionsfläche FF</span><span class="detail-value" id="detail-garea-ff">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vf">Verkehrsfläche VF</span><span class="detail-value" id="detail-garea-vf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vmf">Vermietbare Fl. VMF</span><span class="detail-value" id="detail-garea-vmf">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.ebf_sia380">Energiebezugsfläche (SIA 380)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ebf">Energiebezugsfl. EBF</span><span class="detail-value" id="detail-garea-ebf">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.volumes_sia416">Volumen (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gv">Gebäudevolumen GV</span><span class="detail-value" id="detail-gvol-gv">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gvo">GV Oberirdisch</span><span class="detail-value" id="detail-gvol-gvo">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gvu">GV Unterirdisch</span><span class="detail-value" id="detail-gvol-gvu">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-gvol-acu">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.floors">Geschosse</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw">Anzahl Total</span><span class="detail-value" id="detail-geschosse">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw_og">Oberirdisch</span><span class="detail-value" id="detail-geschosse-og">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw_ug">Unterirdisch</span><span class="detail-value" id="detail-geschosse-ug">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-geschosse-acu">–</span></div>
+                    </div>
+
+                    <div class="detail-overline" data-i18n="detail.section.land_sia416">Grundstück (SIA 416)</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_ggf">Gebäudegrundfläche GGF</span><span class="detail-value" id="detail-larea-ggf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_gsf">Grundstücksfläche GSF</span><span class="detail-value" id="detail-larea-gsf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_uf">Umgebungsfläche UF</span><span class="detail-value" id="detail-larea-uf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-larea-acu">–</span></div>
+                    </div>
+
+                </div><!-- /tab measurements -->
+
+            </div>
+        </div>
+
+        </div><!-- /.main-content -->
+
+        <!-- Filter Drawer -->
+        <aside id="filter-panel" role="complementary" aria-label="Filter">
+            <div class="filter-panel-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
+            <div class="panel-header filter-panel-header">
+                <span class="filter-panel-title">
+                    <span class="material-symbols-outlined">filter_list</span>
+                    <span data-i18n="filter.title">Filter</span>
+                </span>
+                <div class="filter-panel-actions">
+                    <button class="filter-panel-btn" id="drawer-reset-btn" data-i18n-title="filter.reset" title="Zurücksetzen">
+                        <span class="material-symbols-outlined">replay</span>
+                    </button>
+                    <button class="filter-panel-btn" id="drawer-close-btn" data-i18n-title="modal.close" title="Schliessen">
+                        <span class="material-symbols-outlined">close</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filter Search -->
+            <div class="filter-search">
+                <span class="material-symbols-outlined">search</span>
+                <input type="text" id="filter-search-input" data-i18n-placeholder="filter.search" placeholder="Filter suchen..." aria-label="Filter suchen">
+                <button class="toolbar-search-clear" id="filter-search-clear" type="button" aria-label="Suche löschen" hidden>
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+
+            <!-- Filter Content -->
+            <div class="filter-panel-content" id="drawer-filter-content">
+                <div class="filter-section open" data-filter="status">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.status">Status (bbl_stat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-status-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="eigentum">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.eigentum">Art Eigentum (bbl_eigen)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-eigentum-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="strategie">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.strategie">Objektstrategie (bbl_ostr)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-strategie-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="mietmodell">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.mietmodell">Mietmodell (bbl_mietm)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-mietmodell-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="teilportfolio">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.teilportfolio">Teilportfolio (bbl_port)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-teilportfolio-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="portfoliogruppe">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.portfoliogruppe">Portfoliogruppe (bbl_port2)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-portfoliogruppe-options"></div>
+                </div>
+                <div class="filter-section open" data-filter="gebaeudeart">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.gebaeudeart">Gebäudeart (bbl_gbda1)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-gebaeudeart-options"></div>
+                </div>
+                <div class="filter-section" data-filter="land">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.land">Land (adr_land)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-land-options"></div>
+                </div>
+                <div class="filter-section" data-filter="region">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.region">Region (adr_reg)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-region-options"></div>
+                </div>
+                <div class="filter-section" data-filter="ort">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.ort">Ort (adr_ort)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-ort-options"></div>
+                </div>
+                <div class="filter-section" data-filter="gemeinde">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.gemeinde">Gemeinde (bfs_gem)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-gemeinde-options"></div>
+                </div>
+                <div class="filter-section" data-filter="kgskat">
+                    <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.kgskat">KGS Kategorie (kgs_kat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
+                    <div class="filter-section-content" id="filter-kgskat-options"></div>
+                </div>
+            </div>
+
+        </aside>
+    </main>
+
+    <footer id="footer">
+        <div id="coordinates" data-i18n="map.coordinates.default">WGS 84 | Koordinaten: --</div>
+        <div id="footer-links">
+            <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+            <a href="#" id="footer-api-link" data-i18n="footer.api">API</a>
+            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
+            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
+            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
+        </div>
+    </footer>
+
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.183.0/build/three.module.js",
+            "three/examples/jsm/": "https://cdn.jsdelivr.net/npm/three@0.183.0/examples/jsm/",
+            "3d-tiles-renderer": "https://cdn.jsdelivr.net/npm/3d-tiles-renderer@0.4.21/build/index.three.js"
+        }
+    }
+    </script>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>

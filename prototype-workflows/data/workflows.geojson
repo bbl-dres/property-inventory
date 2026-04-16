@@ -1,0 +1,97 @@
+{
+  "type": "FeatureCollection",
+  "_comment": "CR locations for map display. State drives the marker color. Mirrors data/workflows.json.",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.4425, 46.9470] },
+      "properties": {
+        "cr_id": "cr_20260416_0007",
+        "state": "approval",
+        "entity": "building",
+        "operation": "create",
+        "title": "Bundesgasse 3, Bern",
+        "requester": "u.meier",
+        "age": "vor 2 h"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.4400, 46.9520] },
+      "properties": {
+        "cr_id": "cr_20260416_0006",
+        "state": "approval",
+        "entity": "building",
+        "operation": "mutate",
+        "title": "BBL-01287 · Eigentum geändert",
+        "requester": "a.dubois",
+        "age": "vor 1 T"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.2470, 47.1367] },
+      "properties": {
+        "cr_id": "cr_20260416_0005",
+        "state": "review",
+        "entity": "parcel",
+        "operation": "create",
+        "title": "Parzelle 4012, Biel",
+        "requester": "s.rossi",
+        "age": "vor 4 h"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.3072, 47.0502] },
+      "properties": {
+        "cr_id": "cr_20260414_0012",
+        "state": "draft",
+        "entity": "building",
+        "operation": "create",
+        "title": "Luzern Postgasse",
+        "requester": "me",
+        "age": "vor 2 T"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5417, 47.3769] },
+      "properties": {
+        "cr_id": "cr_20260413_0008",
+        "state": "approval",
+        "entity": "building",
+        "operation": "mutate",
+        "title": "BBL-00921 · Adresse korrigiert",
+        "requester": "me",
+        "age": "vor 3 T"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [7.6306, 46.7580] },
+      "properties": {
+        "cr_id": "cr_20260410_0004",
+        "state": "applied",
+        "entity": "building",
+        "operation": "create",
+        "title": "Thun Bahnhofstr. 14",
+        "requester": "r.huber",
+        "age": "vor 5 T"
+      }
+    },
+    {
+      "type": "Feature",
+      "geometry": { "type": "Point", "coordinates": [8.5300, 47.3800] },
+      "properties": {
+        "cr_id": "cr_20260409_0002",
+        "state": "rejected",
+        "entity": "parcel",
+        "operation": "create",
+        "title": "Parzelle 2018, Zürich",
+        "requester": "p.weber",
+        "age": "vor 6 T"
+      }
+    }
+  ]
+}

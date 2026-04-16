@@ -1,0 +1,756 @@
+{
+  "type": "FeatureCollection",
+  "name": "BBL_GIS_IMMO_Parcel",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/4840/01",
+        "bbl_buch": "1000",
+        "bbl_we": "4840",
+        "bbl_obj": "01",
+        "bbl_bez": "Bundesplatz Parzelle A",
+        "bbl_port": "Verwaltungsgebäude",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 35000000.0,
+        "bbl_bwrt": 12000000.0,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "BE",
+        "adr_ort": "Bern",
+        "adr_plz": "3003",
+        "adr_str": "Bundesplatz",
+        "adr_hsnr": "3",
+        "adr_conct": "Bundesplatz 3 3003 Bern",
+        "wgs84_lat": 46.9465,
+        "wgs84_lon": 7.4441,
+        "lv95_e": 2600416.2,
+        "lv95_n": 1199490.6,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH938391457759",
+        "bfs_gem": "Bern",
+        "bfs_gemnr": "351",
+        "av_nr": "1001",
+        "larea_ggf": 3200.0,
+        "larea_gsf": 5100.0,
+        "larea_uf": 1900.0,
+        "larea_buf": 1200.0,
+        "larea_uuf": 700.0,
+        "larea_acu": "AV",
+        "larea_ver": 3800.0,
+        "larea_gre": 1300.0,
+        "av_zbez": "Verwaltungszone",
+        "av_znut": "Zone für öffentliche Nutzung",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 1,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4435,
+              46.946
+            ],
+            [
+              7.4447,
+              46.946
+            ],
+            [
+              7.4447,
+              46.947
+            ],
+            [
+              7.4435,
+              46.947
+            ],
+            [
+              7.4435,
+              46.946
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/5210/01",
+        "bbl_buch": "1000",
+        "bbl_we": "5210",
+        "bbl_obj": "01",
+        "bbl_bez": "Diplomatenviertel Lot 41",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 18000000.0,
+        "bbl_bwrt": 5000000.0,
+        "bbl_hgart": false,
+        "adr_land": "DE",
+        "adr_reg": "Berlin",
+        "adr_ort": "Berlin",
+        "adr_plz": "10557",
+        "adr_str": "Otto-von-Bismarck-Allee",
+        "adr_hsnr": "4A",
+        "adr_conct": "Otto-von-Bismarck-Allee 4A 10557 Berlin",
+        "wgs84_lat": 52.52,
+        "wgs84_lon": 13.3695,
+        "lv95_e": null,
+        "lv95_n": null,
+        "egm_elev": null,
+        "av_stat": null,
+        "av_egrid": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "av_nr": null,
+        "larea_ggf": 1400.0,
+        "larea_gsf": 1800.0,
+        "larea_uf": 400.0,
+        "larea_buf": 300.0,
+        "larea_uuf": 100.0,
+        "larea_acu": "Geschätzt",
+        "larea_ver": 1500.0,
+        "larea_gre": 300.0,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 2,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              13.3688,
+              52.5194
+            ],
+            [
+              13.3702,
+              52.5194
+            ],
+            [
+              13.3702,
+              52.5206
+            ],
+            [
+              13.3688,
+              52.5206
+            ],
+            [
+              13.3688,
+              52.5194
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/3120/01",
+        "bbl_buch": "1000",
+        "bbl_we": "3120",
+        "bbl_obj": "01",
+        "bbl_bez": "Industriegebiet Lagerstrasse",
+        "bbl_port": "Lager / Logistik",
+        "bbl_mietm": "Kostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 22000000.0,
+        "bbl_bwrt": 8500000.0,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "ZH",
+        "adr_ort": "Zürich",
+        "adr_plz": "8004",
+        "adr_str": "Lagerstrasse",
+        "adr_hsnr": "107",
+        "adr_conct": "Lagerstrasse 107 8004 Zürich",
+        "wgs84_lat": 47.3769,
+        "wgs84_lon": 8.532,
+        "lv95_e": 2682571.5,
+        "lv95_n": 1247915.3,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH672819345012",
+        "bfs_gem": "Zürich",
+        "bfs_gemnr": "261",
+        "av_nr": "2045",
+        "larea_ggf": 6500.0,
+        "larea_gsf": 12500.0,
+        "larea_uf": 6000.0,
+        "larea_buf": 4000.0,
+        "larea_uuf": 2000.0,
+        "larea_acu": "AV",
+        "larea_ver": 9500.0,
+        "larea_gre": 3000.0,
+        "av_zbez": "Industriezone",
+        "av_znut": "Industrie- und Gewerbezone",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 3,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.531,
+              47.376
+            ],
+            [
+              8.533,
+              47.376
+            ],
+            [
+              8.533,
+              47.3778
+            ],
+            [
+              8.531,
+              47.3778
+            ],
+            [
+              8.531,
+              47.376
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/5320/01",
+        "bbl_buch": "1000",
+        "bbl_we": "5320",
+        "bbl_obj": "01",
+        "bbl_bez": "Third Avenue Lot",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": null,
+        "bbl_eigen": "Miete",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "US",
+        "adr_reg": "NY",
+        "adr_ort": "New York",
+        "adr_plz": "10022",
+        "adr_str": "633 Third Avenue",
+        "adr_hsnr": "633",
+        "adr_conct": "633 Third Avenue 633 10022 New York",
+        "wgs84_lat": 40.7528,
+        "wgs84_lon": -73.9712,
+        "lv95_e": null,
+        "lv95_n": null,
+        "egm_elev": null,
+        "av_stat": null,
+        "av_egrid": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "av_nr": null,
+        "larea_ggf": null,
+        "larea_gsf": null,
+        "larea_uf": null,
+        "larea_buf": null,
+        "larea_uuf": null,
+        "larea_acu": null,
+        "larea_ver": null,
+        "larea_gre": null,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 4,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -73.972,
+              40.7522
+            ],
+            [
+              -73.9704,
+              40.7522
+            ],
+            [
+              -73.9704,
+              40.7534
+            ],
+            [
+              -73.972,
+              40.7534
+            ],
+            [
+              -73.972,
+              40.7522
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/4100/01",
+        "bbl_buch": "1000",
+        "bbl_we": "4100",
+        "bbl_obj": "01",
+        "bbl_bez": "Varembé Parzelle",
+        "bbl_port": "Ausbildung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 15000000.0,
+        "bbl_bwrt": 4500000.0,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "GE",
+        "adr_ort": "Genf",
+        "adr_plz": "1211",
+        "adr_str": "Rue de Varembé",
+        "adr_hsnr": "9",
+        "adr_conct": "Rue de Varembé 9 1211 Genf",
+        "wgs84_lat": 46.2044,
+        "wgs84_lon": 6.1432,
+        "lv95_e": 2500016.2,
+        "lv95_n": 1117821.0,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH456789123456",
+        "bfs_gem": "Genève",
+        "bfs_gemnr": "6621",
+        "av_nr": "3021",
+        "larea_ggf": 2200.0,
+        "larea_gsf": 4500.0,
+        "larea_uf": 2300.0,
+        "larea_buf": 1500.0,
+        "larea_uuf": 800.0,
+        "larea_acu": "AV",
+        "larea_ver": 3000.0,
+        "larea_gre": 1500.0,
+        "av_zbez": "Zone mixte",
+        "av_znut": "Mischzone Wohnen/Arbeiten",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 5,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              6.1422,
+              46.2038
+            ],
+            [
+              6.1442,
+              46.2038
+            ],
+            [
+              6.1442,
+              46.205
+            ],
+            [
+              6.1422,
+              46.205
+            ],
+            [
+              6.1422,
+              46.2038
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/5410/01",
+        "bbl_buch": "1000",
+        "bbl_we": "5410",
+        "bbl_obj": "01",
+        "bbl_bez": "Minami-Azabu Lot",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 60000000.0,
+        "bbl_bwrt": 15000000.0,
+        "bbl_hgart": false,
+        "adr_land": "JP",
+        "adr_reg": "Tokyo",
+        "adr_ort": "Minato-ku",
+        "adr_plz": "106-8589",
+        "adr_str": "Minami-Azabu",
+        "adr_hsnr": "5-9-12",
+        "adr_conct": "Minami-Azabu 5-9-12 106-8589 Minato-ku",
+        "wgs84_lat": 35.652,
+        "wgs84_lon": 139.735,
+        "lv95_e": null,
+        "lv95_n": null,
+        "egm_elev": null,
+        "av_stat": null,
+        "av_egrid": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "av_nr": null,
+        "larea_ggf": 1200.0,
+        "larea_gsf": 2100.0,
+        "larea_uf": 900.0,
+        "larea_buf": 600.0,
+        "larea_uuf": 300.0,
+        "larea_acu": "Geschätzt",
+        "larea_ver": 1500.0,
+        "larea_gre": 600.0,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 6,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              139.734,
+              35.6514
+            ],
+            [
+              139.736,
+              35.6514
+            ],
+            [
+              139.736,
+              35.6526
+            ],
+            [
+              139.734,
+              35.6526
+            ],
+            [
+              139.734,
+              35.6514
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/2800/01",
+        "bbl_buch": "1000",
+        "bbl_we": "2800",
+        "bbl_obj": "01",
+        "bbl_bez": "Aeschenvorstadt 36 Parzelle",
+        "bbl_port": "Wohnliegenschaft",
+        "bbl_mietm": "Marktmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 3200000.0,
+        "bbl_bwrt": 800000.0,
+        "bbl_hgart": true,
+        "adr_land": "CH",
+        "adr_reg": "BS",
+        "adr_ort": "Basel",
+        "adr_plz": "4051",
+        "adr_str": "Aeschenvorstadt",
+        "adr_hsnr": "36",
+        "adr_conct": "Aeschenvorstadt 36 4051 Basel",
+        "wgs84_lat": 47.5596,
+        "wgs84_lon": 7.5886,
+        "lv95_e": 2611287.9,
+        "lv95_n": 1267665.0,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH789012345678",
+        "bfs_gem": "Basel",
+        "bfs_gemnr": "2701",
+        "av_nr": "456",
+        "larea_ggf": 380.0,
+        "larea_gsf": 520.0,
+        "larea_uf": 140.0,
+        "larea_buf": 100.0,
+        "larea_uuf": 40.0,
+        "larea_acu": "AV",
+        "larea_ver": 420.0,
+        "larea_gre": 100.0,
+        "av_zbez": "Wohnzone W3",
+        "av_znut": "Wohnzone",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 7,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.5878,
+              47.559
+            ],
+            [
+              7.5894,
+              47.559
+            ],
+            [
+              7.5894,
+              47.5602
+            ],
+            [
+              7.5878,
+              47.5602
+            ],
+            [
+              7.5878,
+              47.559
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/5510/01",
+        "bbl_buch": "1000",
+        "bbl_we": "5510",
+        "bbl_obj": "01",
+        "bbl_bez": "Setor de Embaixadas Sul Lote 44",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 8000000.0,
+        "bbl_bwrt": 2000000.0,
+        "bbl_hgart": false,
+        "adr_land": "BR",
+        "adr_reg": "DF",
+        "adr_ort": "Brasília",
+        "adr_plz": "70443-900",
+        "adr_str": "SES Av. das Nações",
+        "adr_hsnr": "Lote 44",
+        "adr_conct": "SES Av. das Nações Lote 44 70443-900 Brasília",
+        "wgs84_lat": -15.7942,
+        "wgs84_lon": -47.8825,
+        "lv95_e": null,
+        "lv95_n": null,
+        "egm_elev": null,
+        "av_stat": null,
+        "av_egrid": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "av_nr": null,
+        "larea_ggf": null,
+        "larea_gsf": null,
+        "larea_uf": null,
+        "larea_buf": null,
+        "larea_uuf": null,
+        "larea_acu": null,
+        "larea_ver": null,
+        "larea_gre": null,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 8,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.8835,
+              -15.795
+            ],
+            [
+              -47.8815,
+              -15.795
+            ],
+            [
+              -47.8815,
+              -15.7934
+            ],
+            [
+              -47.8835,
+              -15.7934
+            ],
+            [
+              -47.8835,
+              -15.795
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "1000/1950/01",
+        "bbl_buch": "1000",
+        "bbl_we": "1950",
+        "bbl_obj": "01",
+        "bbl_bez": "Via Industria Parzelle",
+        "bbl_port": "Infrastruktur IT",
+        "bbl_mietm": "Kostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": 12000000.0,
+        "bbl_bwrt": 3000000.0,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "TI",
+        "adr_ort": "Lugano",
+        "adr_plz": "6900",
+        "adr_str": "Via Industria",
+        "adr_hsnr": "12",
+        "adr_conct": "Via Industria 12 6900 Lugano",
+        "wgs84_lat": 46.0037,
+        "wgs84_lon": 8.9512,
+        "lv95_e": 2717168.7,
+        "lv95_n": 1095811.6,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH345678901234",
+        "bfs_gem": "Lugano",
+        "bfs_gemnr": "5192",
+        "av_nr": "789",
+        "larea_ggf": 1500.0,
+        "larea_gsf": 3200.0,
+        "larea_uf": 1700.0,
+        "larea_buf": 1200.0,
+        "larea_uuf": 500.0,
+        "larea_acu": "AV",
+        "larea_ver": 2200.0,
+        "larea_gre": 1000.0,
+        "av_zbez": "Arbeitszone",
+        "av_znut": "Arbeitszone",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 9,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.9502,
+              46.0031
+            ],
+            [
+              8.9522,
+              46.0031
+            ],
+            [
+              8.9522,
+              46.0043
+            ],
+            [
+              8.9502,
+              46.0043
+            ],
+            [
+              8.9502,
+              46.0031
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Verkauft",
+        "bbl_id": "1000/4850/01",
+        "bbl_buch": "1000",
+        "bbl_we": "4850",
+        "bbl_obj": "01",
+        "bbl_bez": "Bollwerk 15 Parzelle",
+        "bbl_port": "Verwaltungsgebäude",
+        "bbl_mietm": null,
+        "bbl_eigen": "Verkauft",
+        "bbl_awrt": 4500000.0,
+        "bbl_bwrt": 0.0,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "BE",
+        "adr_ort": "Bern",
+        "adr_plz": "3014",
+        "adr_str": "Bollwerk",
+        "adr_hsnr": "15",
+        "adr_conct": "Bollwerk 15 3014 Bern",
+        "wgs84_lat": 46.951,
+        "wgs84_lon": 7.4388,
+        "lv95_e": 2600012.7,
+        "lv95_n": 1199990.8,
+        "egm_elev": null,
+        "av_stat": "Gültig",
+        "av_egrid": "CH111222333444",
+        "bfs_gem": "Bern",
+        "bfs_gemnr": "351",
+        "av_nr": "1102",
+        "larea_ggf": 750.0,
+        "larea_gsf": 1100.0,
+        "larea_uf": 350.0,
+        "larea_buf": 250.0,
+        "larea_uuf": 100.0,
+        "larea_acu": "AV",
+        "larea_ver": 900.0,
+        "larea_gre": 200.0,
+        "av_zbez": "Mischzone",
+        "av_znut": "Mischzone Wohnen/Arbeiten",
+        "fid": null,
+        "fid_src": null,
+        "objectid": 10,
+        "etl_ts": "2026-03-18T06:00:00Z"
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.438,
+              46.9504
+            ],
+            [
+              7.4396,
+              46.9504
+            ],
+            [
+              7.4396,
+              46.9516
+            ],
+            [
+              7.438,
+              46.9516
+            ],
+            [
+              7.438,
+              46.9504
+            ]
+          ]
+        ]
+      }
+    }
+  ]
+}
