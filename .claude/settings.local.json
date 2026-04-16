@@ -47,7 +47,10 @@
       "Bash(node -e ' *)",
       "Bash(node scripts/rebuild-mock-data.js)",
       "Bash(mv scripts/rebuild-mock-data.js scripts/rebuild-mock-data.mjs)",
-      "Bash(node scripts/rebuild-mock-data.mjs)"
+      "Bash(node scripts/rebuild-mock-data.mjs)",
+      "Bash(grep -n \"\\\\.innerHTML\\\\s*=\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(grep -n 'target=\"_blank\"' /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(grep -h \"^export \" \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\property-inventory\\\\prototype-backend\\\\js\"/*.js)"
     ]
   }
 }

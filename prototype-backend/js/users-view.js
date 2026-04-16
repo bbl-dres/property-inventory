@@ -7,7 +7,7 @@
 
 import * as api from './api.js';
 import { ApiError } from './api.js';
-import { el, toast, openModal, closeModal, confirmModal, formatRelativeTime } from './utils.js';
+import { el, toast, openModal, closeModal, confirmModal, formatRelativeTime, submitForm, safeUnsubscribe } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { bus, isAllowed } from './state.js';
 
@@ -21,13 +21,13 @@ let roleUnsub = null;
 export async function mount(container) {
   root = container;
   root.innerHTML = '<div class="loading-state"><div class="loading-spinner"></div><div class="loading-text">Loading users…</div></div>';
-  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   roleUnsub = bus.on('user:role-changed', () => { if (root) render(); });
   await refresh();
 }
 
 export function unmount() {
-  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   if (root) root.innerHTML = '';
   root = null;
   users = [];
@@ -213,15 +213,8 @@ function openInviteModal() {
   });
   cancelBtn.addEventListener('click', () => closeModal());
 
-  // Submit button lives in the modal footer, outside the form — browsers
-  // won't associate it with the form automatically. Bridge the click to a
-  // submit event (matches the pattern in new-product-modal.js).
-  submitBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    form.requestSubmit
-      ? form.requestSubmit()
-      : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-  });
+  // Submit button lives outside the form (modal footer) — bridge the click.
+  submitBtn.addEventListener('click', (e) => { e.preventDefault(); submitForm(form); });
 
   openModal(el('div', {}, [
     el('div', { class: 'pb-modal-header' }, 'Invite user'),

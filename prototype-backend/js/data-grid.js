@@ -5,7 +5,7 @@ import * as api from './api.js';
 import { ApiError } from './api.js';
 import {
   el, toast, confirmModal, downloadBlob,
-  parseGeometry, geometryToWkt, trapFocus
+  parseGeometry, geometryToWkt, trapFocus, safeUnsubscribe, wireMenu
 } from './utils.js';
 import { bus, isAllowed } from './state.js';
 import { openImportModal } from './import-modal.js';
@@ -13,7 +13,8 @@ import { GEOMETRY_COMPAT, geomTypeIcon } from './constants.js';
 
 const ROLE_GATED_TITLE = 'Requires editor or admin role';
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE_OPTIONS = [25, 50, 100];
+const DEFAULT_PAGE_SIZE = 50;
 
 let root = null;
 let layer = null;
@@ -22,6 +23,7 @@ let layer = null;
 let rows = [];
 let total = 0;
 let page = 1; // 1-based
+let pageSize = DEFAULT_PAGE_SIZE;
 let sort = null; // { column, direction }
 let loading = false;
 let sidePanel = null;
@@ -41,7 +43,7 @@ let filterDebounceTimer = null;
 // TODO(v1.1): push filter to API as PostgREST 'ilike' or CQL
 let filterText = '';
 
-export async function mount(container, { layer: l }) {
+export async function mount(container, { layer: l, focusFeatureId } = {}) {
   // Refetch to pick up fresh schema — tabs share the layer object but the
   // Schema tab may have added columns before the user switched here.
   try { l = await api.getLayer(l.name); } catch {}
@@ -50,18 +52,33 @@ export async function mount(container, { layer: l }) {
   rows = [];
   total = 0;
   page = 1;
+  pageSize = DEFAULT_PAGE_SIZE;
   sort = null;
   loadToken = 0;
   render();
   // Re-render toolbar buttons when role changes so disabled state updates live.
-  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   roleUnsub = bus.on('user:role-changed', () => { if (root) render(); });
   await loadPage();
+  // If we were mounted with a focus hint (user clicked "Open in Data" from
+  // a map popup), look the record up and open its side panel. Fetched
+  // directly rather than paged through — for the prototype scale (≤100
+  // records per layer) this is cheap. TODO(v1.1): page-aware navigation.
+  if (focusFeatureId != null) {
+    try {
+      const all = await api.listFeatures(layer.name, { limit: -1 });
+      const match = (all.features || []).find((f) => f.id === focusFeatureId);
+      if (match) openSidePanel(match);
+      else toast(`Record not found in ${layer.title || layer.name}`, 'info');
+    } catch (err) {
+      toast(err?.message || 'Failed to open record', 'error');
+    }
+  }
 }
 
 export function unmount() {
   closeSidePanel();
-  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   if (filterDebounceTimer) { clearTimeout(filterDebounceTimer); filterDebounceTimer = null; }
   if (root) root.innerHTML = '';
   root = null;
@@ -110,8 +127,8 @@ async function loadPage() {
   loading = true;
   renderLoadingState();
   try {
-    const offset = (page - 1) * PAGE_SIZE;
-    const opts = { limit: PAGE_SIZE, offset };
+    const offset = (page - 1) * pageSize;
+    const opts = { limit: pageSize, offset };
     if (sort) opts.sort = sort;
     const res = await api.listFeatures(layer.name, opts);
     if (isStale()) return;
@@ -153,112 +170,64 @@ function render() {
   if (!root) return;
   root.innerHTML = '';
 
-  root.appendChild(renderFilterBar());
   root.appendChild(renderToolbar());
 
   const card = el('div', { class: 'pb-card pb-data-card' });
   const tableWrap = el('div', { class: 'pb-data-scroll' }, [renderTable()]);
   card.appendChild(tableWrap);
   root.appendChild(card);
+
+  root.appendChild(renderFooter());
 }
 
-function renderFilterBar() {
-  const input = el('input', {
-    type: 'search',
-    class: 'pb-filter-input',
-    placeholder: 'Filter… (case-insensitive, across all columns)',
-    value: filterText,
-    'aria-label': 'Filter rows'
-  });
+/** Single toolbar row: search (left) + primary actions (right). */
+function renderToolbar() {
+  const canWrite = isAllowed('write');
 
-  // Module-scope timer (rather than `debounce()` which bakes its own timer
-  // into the returned closure) so that a full re-render of the filter bar
-  // cancels any pending fire from the previous input element.
-  const applyFilterNow = () => {
-    filterText = input.value;
-    // Re-render table only, not the toolbar (don't steal focus from the input).
+  // --- Search input ---
+  // `type=search` renders a native clear affordance, so we don't ship an
+  // explicit Clear button. Placeholder is just "Search table…" — the old
+  // "case-insensitive, across all columns" hint read as API documentation.
+  const searchInput = el('input', {
+    type: 'search',
+    class: 'pb-grid-search',
+    placeholder: 'Search table…',
+    value: filterText,
+    'aria-label': 'Search rows'
+  });
+  const applySearchNow = () => {
+    filterText = searchInput.value;
     const tbl = root?.querySelector('.pb-data-grid');
     const parent = tbl?.parentElement;
-    if (parent) {
-      parent.innerHTML = '';
-      parent.appendChild(renderTable());
-    }
-    // Update count label.
-    const countEl = root?.querySelector('.pb-filter-count');
-    if (countEl) countEl.textContent = filterCountLabel();
+    if (parent) { parent.innerHTML = ''; parent.appendChild(renderTable()); }
+    // Footer shows the row-count label — keep it in sync.
+    const countEl = root?.querySelector('.pb-grid-footer-count');
+    if (countEl) countEl.textContent = countLabel();
   };
-  const apply = () => {
+  // Module-scope debounce timer (see top-of-file comment).
+  const debouncedApply = () => {
     if (filterDebounceTimer) clearTimeout(filterDebounceTimer);
     filterDebounceTimer = setTimeout(() => {
       filterDebounceTimer = null;
-      // Root may have been torn down during the wait.
       if (!root) return;
-      applyFilterNow();
+      applySearchNow();
     }, 300);
   };
-  input.addEventListener('input', apply);
+  searchInput.addEventListener('input', debouncedApply);
 
-  const clearBtn = el('button', { type: 'button', class: 'btn-tertiary' }, 'Clear');
-  clearBtn.addEventListener('click', () => {
-    input.value = '';
-    filterText = '';
-    apply();
-    input.focus();
-  });
-
-  // Zoom-to-filter — emits a bus event with the filtered feature ids. The
-  // map-preview caches the latest set and applies a fitBounds on next mount
-  // (or immediately, if the Map tab is already active in a split view).
-  // Disabled when there is no active filter to zoom to.
-  const hasFilter = !!filterText.trim();
-  const zoomBtn = el('button', {
-    type: 'button',
-    class: 'btn-secondary',
-    disabled: !hasFilter ? true : false,
-    title: hasFilter
-      ? 'Switch to Map tab — the view will fit the filtered records'
-      : 'Enter a filter first'
-  }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'center_focus_strong'),
-    ' Zoom to filter'
+  const searchWrap = el('div', { class: 'pb-grid-search-wrap' }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm pb-grid-search-icon' }, 'search'),
+    searchInput
   ]);
-  zoomBtn.addEventListener('click', () => {
-    const ids = filteredRows().map((f) => f.id).filter(Boolean);
-    bus.emit('map:zoomToFilter', ids);
-    toast(ids.length
-      ? `Map will fit ${ids.length} filtered record${ids.length === 1 ? '' : 's'} on next open.`
-      : 'No filtered records to zoom to.',
-      ids.length ? 'success' : 'info');
-  });
 
-  return el('div', { class: 'pb-toolbar pb-filter-bar' }, [
-    el('span', { class: 'material-symbols-outlined', style: { fontSize: '18px', color: 'var(--grey-500)' } }, 'filter_alt'),
-    input,
-    clearBtn,
-    isSpatial() ? zoomBtn : null,
-    el('div', { style: { flex: '1' } }),
-    el('span', { class: 'pb-muted pb-filter-count' }, filterCountLabel())
-  ].filter(Boolean));
-}
-
-function filterCountLabel() {
-  const shown = filteredRows().length;
-  if (!filterText.trim()) return `${total.toLocaleString()} total`;
-  return `Showing ${shown.toLocaleString()} of ${total.toLocaleString()}`;
-}
-
-function renderToolbar() {
-  const pages = Math.max(1, Math.ceil(total / PAGE_SIZE));
-
-  const canWrite = isAllowed('write');
-
+  // --- Primary actions ---
   const newBtn = el('button', {
     type: 'button',
     class: 'btn-primary',
     disabled: !canWrite ? true : false,
     title: canWrite ? '' : ROLE_GATED_TITLE
   }, [
-    el('span', { class: 'material-symbols-outlined pb-icon-md' }, 'add'),
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'add'),
     ' New record'
   ]);
   newBtn.addEventListener('click', () => openSidePanel(null));
@@ -276,30 +245,89 @@ function renderToolbar() {
     });
   });
 
-  const exportGeoBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Export GeoJSON');
-  exportGeoBtn.addEventListener('click', () => handleExport('geojson'));
+  // --- Export dropdown ---
+  const exportBtn = el('button', {
+    type: 'button',
+    class: 'btn-secondary',
+    'aria-haspopup': 'menu',
+    'aria-expanded': 'false'
+  }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'file_download'),
+    ' Export ',
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_drop_down')
+  ]);
+  const exportMenu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
+  const exportWrap = el('div', { class: 'pb-menu-wrap' }, [exportBtn, exportMenu]);
+  const exportCtl = wireMenu(exportBtn, exportMenu, exportWrap);
+  const exportItem = (icon, label, fmt) => {
+    const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
+      el('span', { class: 'material-symbols-outlined' }, icon),
+      el('span', {}, label)
+    ]);
+    b.addEventListener('click', () => { exportCtl.close(); handleExport(fmt); });
+    return b;
+  };
+  exportMenu.append(
+    exportItem('data_object', 'GeoJSON', 'geojson'),
+    exportItem('table_rows',  'CSV',     'csv')
+  );
 
-  const exportCsvBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Export CSV');
-  exportCsvBtn.addEventListener('click', () => handleExport('csv'));
+  return el('div', { class: 'pb-toolbar pb-grid-toolbar' }, [
+    searchWrap,
+    el('div', { style: { flex: '1' } }),
+    el('div', { class: 'pb-grid-actions' }, [newBtn, importBtn, exportWrap])
+  ]);
+}
 
-  const prevBtn = el('button', { type: 'button', class: 'btn-tertiary', disabled: page <= 1 }, 'Prev');
+function countLabel() {
+  if (!total) return '0 records';
+  if (filterText.trim()) {
+    const shown = filteredRows().length;
+    return `${shown.toLocaleString()} of ${total.toLocaleString()} records (filtered)`;
+  }
+  const start = (page - 1) * pageSize + 1;
+  const end = Math.min(page * pageSize, total);
+  return `${start.toLocaleString()}–${end.toLocaleString()} of ${total.toLocaleString()} records`;
+}
+
+/** Footer: count label (left), pagination (center), rows-per-page (right). */
+function renderFooter() {
+  const pages = Math.max(1, Math.ceil(total / pageSize));
+
+  const prevBtn = el('button', { type: 'button', class: 'pb-grid-page-btn', disabled: page <= 1, 'aria-label': 'Previous page' }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'chevron_left')
+  ]);
   prevBtn.addEventListener('click', () => { if (page > 1) { page--; loadPage(); } });
 
-  const nextBtn = el('button', { type: 'button', class: 'btn-tertiary', disabled: page >= pages }, 'Next');
+  const nextBtn = el('button', { type: 'button', class: 'pb-grid-page-btn', disabled: page >= pages, 'aria-label': 'Next page' }, [
+    el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'chevron_right')
+  ]);
   nextBtn.addEventListener('click', () => { if (page < pages) { page++; loadPage(); } });
 
-  return el('div', { class: 'pb-toolbar pb-data-toolbar' }, [
-    newBtn,
-    importBtn,
-    exportGeoBtn,
-    exportCsvBtn,
-    el('div', { style: { flex: '1' } }),
-    el('div', { class: 'pb-pagination' }, [
+  const pageSizeSelect = el('select', { class: 'pb-grid-pagesize', 'aria-label': 'Rows per page' },
+    PAGE_SIZE_OPTIONS.map((n) =>
+      el('option', { value: String(n), selected: n === pageSize ? true : undefined }, String(n))
+    )
+  );
+  pageSizeSelect.addEventListener('change', () => {
+    const next = Number(pageSizeSelect.value) || DEFAULT_PAGE_SIZE;
+    if (next === pageSize) return;
+    pageSize = next;
+    page = 1;
+    loadPage();
+  });
+
+  return el('div', { class: 'pb-grid-footer' }, [
+    el('span', { class: 'pb-muted pb-grid-footer-count' }, countLabel()),
+    el('div', { class: 'pb-grid-pager' }, [
       prevBtn,
-      el('span', { class: 'pb-muted' }, `Page ${page} of ${pages}`),
+      el('span', { class: 'pb-muted pb-grid-page-label' }, `Page ${page} of ${pages}`),
       nextBtn
     ]),
-    el('div', { class: 'pb-muted pb-rowcount' }, `${total.toLocaleString()} row${total === 1 ? '' : 's'}`)
+    el('label', { class: 'pb-grid-footer-pagesize' }, [
+      el('span', { class: 'pb-muted' }, 'Rows per page:'),
+      pageSizeSelect
+    ])
   ]);
 }
 
@@ -367,11 +395,24 @@ function renderTable() {
 function renderHeaderCell(label, colKey, styleOpts = {}) {
   const isSorted = sort && sort.column === colKey;
   const dir = isSorted ? sort.direction : null;
-  const arrow = dir === 'asc' ? '▲' : dir === 'desc' ? '▼' : '';
+  // Dual-arrow indicator — both directions always rendered; the active one
+  // is highlighted via a class. Communicates "sortable" on every header
+  // instead of only hinting when the user has already sorted a column.
+  const indicator = el('span', {
+    class: 'pb-sort-indicator' + (isSorted ? ` is-sorted is-${dir}` : ''),
+    'aria-hidden': 'true'
+  }, [
+    el('span', { class: 'pb-sort-arrow pb-sort-arrow--up' }, '▲'),
+    el('span', { class: 'pb-sort-arrow pb-sort-arrow--down' }, '▼')
+  ]);
   const th = el('th', {
     class: 'pb-th-sortable' + (isSorted ? ' is-sorted' : ''),
-    style: styleOpts
-  }, [label, arrow ? ' ' + arrow : '']);
+    style: styleOpts,
+    'aria-sort': isSorted ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'
+  }, [
+    el('span', { class: 'pb-th-label' }, label),
+    indicator
+  ]);
   th.addEventListener('click', () => toggleSort(colKey));
   return th;
 }
@@ -703,8 +744,10 @@ function openSidePanel(feature) {
         toast('Record created', 'success');
       }
       bus.emit('data:changed');
-      closeSidePanel();
+      // Refresh the grid BEFORE dismissing the panel so the user never sees
+      // the freshly-edited record disappear for a blink while the reload runs.
       await loadPage();
+      closeSidePanel();
     } catch (err) {
       const msg = err instanceof ApiError ? `${err.code}: ${err.message}` : (err?.message || 'Save failed');
       errEl.textContent = msg;
@@ -726,8 +769,8 @@ function openSidePanel(feature) {
         await api.deleteFeature(layer.name, feature.id);
         toast('Record deleted', 'success');
         bus.emit('data:changed');
-        closeSidePanel();
         await loadPage();
+        closeSidePanel();
       } catch (err) {
         toast(err?.message || 'Delete failed', 'error');
       }

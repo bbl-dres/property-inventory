@@ -9,7 +9,7 @@
 // brief at docs/ for the wired-vs-mocked matrix.
 
 import * as api from './api.js';
-import { el, toast, openModal, closeModal, confirmModal, inlineEditable } from './utils.js';
+import { el, toast, openModal, closeModal, confirmModal, inlineEditable, wireMenu } from './utils.js';
 import { renderViewHeader } from './app.js';
 import { sridName, geomTypeIcon, BRAND_COLOR as BRAND } from './constants.js';
 import * as layerManager from './scene-layer-manager.js';
@@ -281,33 +281,7 @@ function menuItem(icon, label, handler) {
   return b;
 }
 
-/** Simple open/close wiring for a .pb-menu anchored next to a button.
- * Returns `{ close, open }` so menu-item handlers can drive it cleanly
- * (and the outside-click listener gets detached on close). */
-function wireMenu(button, menu, wrap) {
-  let onOutside = null;
-  let onEscape = null;
-  const close = () => {
-    menu.hidden = true;
-    button.setAttribute('aria-expanded', 'false');
-    if (onOutside) document.removeEventListener('click', onOutside, true);
-    if (onEscape) document.removeEventListener('keydown', onEscape);
-    onOutside = onEscape = null;
-  };
-  const open = () => {
-    menu.hidden = false;
-    button.setAttribute('aria-expanded', 'true');
-    onOutside = (e) => { if (!wrap.contains(e.target)) close(); };
-    onEscape = (e) => { if (e.key === 'Escape') { close(); button.focus(); } };
-    document.addEventListener('click', onOutside, true);
-    document.addEventListener('keydown', onEscape);
-  };
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.hidden) open(); else close();
-  });
-  return { close, open };
-}
+/** `wireMenu()` moved to utils.js — imported at the top of this module. */
 
 function toolLabel(id) {
   const map = {

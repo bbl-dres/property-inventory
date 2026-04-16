@@ -67,6 +67,69 @@ export function validateLayerName(name) {
   return { ok: true };
 }
 
+// ===== Small cross-cutting helpers =====
+
+/**
+ * Trigger a form's submit event from outside the form. Needed when a
+ * submit button lives in a separate container (e.g., modal footer) and so
+ * can't rely on the native `type=submit` association.
+ */
+export function submitForm(form) {
+  if (!form) return;
+  if (typeof form.requestSubmit === 'function') form.requestSubmit();
+  else form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
+}
+
+/**
+ * Call a bus-unsubscribe (or any cleanup fn) swallowing errors. Returns
+ * `null` so callers can reassign the slot to null in the same line:
+ *   roleUnsub = safeUnsubscribe(roleUnsub);
+ */
+export function safeUnsubscribe(unsub) {
+  if (typeof unsub === 'function') {
+    try { unsub(); } catch {}
+  }
+  return null;
+}
+
+/**
+ * Wire a trigger button to a popover-style menu. Standard behaviour:
+ * click the trigger to toggle, Escape or an outside click closes the
+ * menu, focus returns to the trigger on Escape. The menu's visibility
+ * is driven by the HTML `hidden` attribute (admin.css has a global
+ * `[hidden]` rule so `display` in component CSS won't leak through).
+ *
+ * @param {HTMLElement} btn - trigger button (gets aria-expanded toggled)
+ * @param {HTMLElement} menu - menu element to show/hide
+ * @param {HTMLElement} [wrap] - ancestor used for outside-click detection;
+ *   defaults to the trigger's parentElement
+ * @returns {{ open: () => void, close: () => void }}
+ */
+export function wireMenu(btn, menu, wrap) {
+  const outer = wrap || btn.parentElement;
+  let onDocClick = null;
+  let onEsc = null;
+  const close = () => {
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+    if (onDocClick) { document.removeEventListener('click', onDocClick, true); onDocClick = null; }
+    if (onEsc) { document.removeEventListener('keydown', onEsc); onEsc = null; }
+  };
+  const open = () => {
+    menu.hidden = false;
+    btn.setAttribute('aria-expanded', 'true');
+    onDocClick = (e) => { if (!outer.contains(e.target)) close(); };
+    onEsc = (e) => { if (e.key === 'Escape') { close(); try { btn.focus(); } catch {} } };
+    document.addEventListener('click', onDocClick, true);
+    document.addEventListener('keydown', onEsc);
+  };
+  btn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    if (menu.hidden) open(); else close();
+  });
+  return { open, close };
+}
+
 // ===== Modal =====
 
 let activeModal = null;

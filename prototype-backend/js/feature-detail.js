@@ -36,6 +36,9 @@ let usedByHost = null;
 let activeChildView = null;
 let busUnsub = [];
 let productsUsing = [];
+// Id of a feature the user clicked on the Map tab; consumed once by the
+// next Data-tab mount to auto-open its side panel. See bus listener below.
+let pendingFocusId = null;
 
 const TABS_SPATIAL = [
   { id: 'schema', label: 'Schema' },
@@ -82,6 +85,21 @@ export async function mount(container, params) {
   busUnsub.push(bus.on('schema:changed', refresh));
   busUnsub.push(bus.on('data:changed', refresh));
   busUnsub.push(bus.on('layer:updated', refresh));
+
+  // Map tab emits `map:featureFocus` when the user clicks "Open in Data"
+  // in a popup. We stash the id and navigate to the Data tab — the
+  // next `renderTab('data')` consumes and clears it, handing it to the
+  // data grid to open the side panel.
+  busUnsub.push(bus.on('map:featureFocus', (featureId) => {
+    if (!currentLayer) return;
+    pendingFocusId = featureId;
+    if (currentTab === 'data') {
+      // Already on Data — remount so the grid picks up the focus hint.
+      renderTab();
+    } else {
+      location.hash = `#/features/${encodeURIComponent(currentLayer.name)}?tab=data`;
+    }
+  }));
 }
 
 export function unmount() {
@@ -97,6 +115,7 @@ export function unmount() {
   bottomHost = null;
   usedByHost = null;
   productsUsing = [];
+  pendingFocusId = null;
 }
 
 export function onTabChange(tab) {
@@ -499,10 +518,16 @@ function renderTab() {
       schemaEditor.mount(tabHost, { layer: currentLayer });
       activeChildView = schemaEditor;
       break;
-    case 'data':
-      dataGrid.mount(tabHost, { layer: currentLayer });
+    case 'data': {
+      // `pendingFocusId` is set by a `map:featureFocus` emit from the Map
+      // tab. We hand it to the grid once and clear it, so a subsequent
+      // tab switch doesn't re-focus the same record.
+      const focusId = pendingFocusId;
+      pendingFocusId = null;
+      dataGrid.mount(tabHost, { layer: currentLayer, focusFeatureId: focusId });
       activeChildView = dataGrid;
       break;
+    }
     case 'map':
       mapPreview.mount(tabHost, { layer: currentLayer });
       activeChildView = mapPreview;

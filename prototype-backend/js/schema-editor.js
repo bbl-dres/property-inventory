@@ -5,7 +5,7 @@
 
 import * as api from './api.js';
 import { ApiError } from './api.js';
-import { el, toast, openModal, closeModal } from './utils.js';
+import { el, toast, openModal, closeModal, safeUnsubscribe } from './utils.js';
 import { bus, isAllowed } from './state.js';
 import { COLUMN_NAME_RE, COLUMN_TYPES as TYPES } from './constants.js';
 
@@ -52,7 +52,7 @@ export async function mount(container, { layer: l }) {
   };
   document.addEventListener('keydown', keydownHandler);
 
-  if (roleUnsub) { try { roleUnsub(); } catch {} }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   roleUnsub = bus.on('user:role-changed', () => {
     // Force viewers out of edit mode and re-render with disabled affordances.
     if (!isAllowed('write')) mode = 'view';
@@ -63,7 +63,7 @@ export async function mount(container, { layer: l }) {
 export function unmount() {
   if (keydownHandler) document.removeEventListener('keydown', keydownHandler);
   keydownHandler = null;
-  if (roleUnsub) { try { roleUnsub(); } catch {} roleUnsub = null; }
+  roleUnsub = safeUnsubscribe(roleUnsub);
   if (root) root.innerHTML = '';
   root = null;
   layer = null;

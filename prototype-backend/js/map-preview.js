@@ -3,7 +3,7 @@
 // Guards against large layers (>5000 features) with a placeholder.
 
 import * as api from './api.js';
-import { el, toast, escHtml } from './utils.js';
+import { el, toast } from './utils.js';
 import { bus } from './state.js';
 import { sridName, BRAND_COLOR as BRAND } from './constants.js';
 
@@ -329,11 +329,33 @@ function attachInteractions(popup) {
     if (!hits || !hits.length) return;
     const f = hits[0];
     const id = f.id ?? f.properties?.__id;
-    if (id != null) {
+    if (id == null) return;
+    // Popup content: id + an explicit "Open in Data" link. Emitting
+    // `map:featureFocus` is gated behind the link click so a casual map
+    // click doesn't pull the user out of the Map tab. The event is consumed
+    // by feature-detail, which switches to the Data tab and asks the grid
+    // to open the side panel for this record.
+    const openLink = el('a', {
+      href: '#',
+      class: 'pb-popup-open',
+      role: 'button',
+      'data-action': 'map-popup-open'
+    }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-xs' }, 'open_in_new'),
+      ' Open in Data'
+    ]);
+    openLink.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      popup.remove();
       bus.emit('map:featureFocus', id);
-      popup.setLngLat(e.lngLat)
-        .setHTML(`<div style="font-family: var(--font-mono, monospace); font-size: 12px;">id: ${escHtml(String(id))}</div>`)
-        .addTo(map);
-    }
+    });
+    const content = el('div', { class: 'pb-popup-content' }, [
+      el('div', { class: 'pb-popup-id' }, [
+        el('span', { class: 'pb-muted' }, 'id: '),
+        el('code', {}, String(id))
+      ]),
+      openLink
+    ]);
+    popup.setLngLat(e.lngLat).setDOMContent(content).addTo(map);
   });
 }

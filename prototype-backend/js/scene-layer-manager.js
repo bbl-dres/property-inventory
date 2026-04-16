@@ -12,7 +12,7 @@
 // Every interactive control either toasts "coming soon" or calls a
 // callback provided by map-scene.js. No direct map/api access here.
 
-import { el, toast } from './utils.js';
+import { el, toast, wireMenu } from './utils.js';
 import { geomTypeIcon } from './constants.js';
 
 const BASEMAPS = [
@@ -252,32 +252,5 @@ function menuItem(icon, label, onClick) {
 }
 
 /**
- * Wire open/close behavior onto a trigger button + .pb-menu pair.
- * Returns `{ close }` so callers (menu items) can programmatically close
- * the menu while ensuring the document-level click/Esc listeners are
- * detached cleanly.
+ * `wireMenu()` moved to utils.js — imported at the top of this module.
  */
-function wireMenu(button, menu, wrap) {
-  let onOutside = null;
-  let onEscape = null;
-  const close = () => {
-    menu.hidden = true;
-    button.setAttribute('aria-expanded', 'false');
-    if (onOutside) document.removeEventListener('click', onOutside, true);
-    if (onEscape) document.removeEventListener('keydown', onEscape);
-    onOutside = onEscape = null;
-  };
-  const open = () => {
-    menu.hidden = false;
-    button.setAttribute('aria-expanded', 'true');
-    onOutside = (e) => { if (!wrap.contains(e.target)) close(); };
-    onEscape = (e) => { if (e.key === 'Escape') { close(); button.focus(); } };
-    document.addEventListener('click', onOutside, true);
-    document.addEventListener('keydown', onEscape);
-  };
-  button.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.hidden) open(); else close();
-  });
-  return { close, open };
-}

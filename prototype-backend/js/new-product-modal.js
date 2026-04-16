@@ -10,7 +10,7 @@
 // authoring UI.
 
 import * as api from './api.js';
-import { el, toast, openModal, closeModal } from './utils.js';
+import { el, toast, openModal, closeModal, submitForm } from './utils.js';
 
 function slugify(s) {
   return String(s || '')
@@ -55,15 +55,9 @@ export function open({ kind = 'app', onCreated } = {}) {
 
   const form = el('form', { class: 'pb-form', novalidate: true }, fields);
 
-  // The submit button lives in the modal footer (outside the form), so the
-  // native `type=submit` → form-submit association doesn't fire. Bridge it
-  // with an explicit click handler that re-dispatches the submit event.
-  submitBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    form.requestSubmit
-      ? form.requestSubmit()
-      : form.dispatchEvent(new Event('submit', { cancelable: true, bubbles: true }));
-  });
+  // Submit button lives outside the form (in the modal footer), so the
+  // native submit association doesn't fire. `submitForm` bridges it.
+  submitBtn.addEventListener('click', (e) => { e.preventDefault(); submitForm(form); });
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();

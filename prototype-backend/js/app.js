@@ -20,7 +20,7 @@
 // Legacy redirects: `#/layers*` → `#/features*` (kept so existing bookmarks
 // don't break; the route path stays `features` even though UI says "Layer").
 
-import { closeModal, el } from './utils.js';
+import { closeModal, el, wireMenu } from './utils.js';
 import * as api from './api.js';
 import { bus, state } from './state.js';
 
@@ -245,7 +245,13 @@ async function mountSidebar(section, activeKey) {
     try { currentSidebar.module.unmount(); } catch (e) { console.error(e); }
   }
   sidebarHost.innerHTML = '';
+  // Capture the nav token so that if a newer navigation starts during the
+  // `await import(...)` below, we bail rather than paint a stale sidebar
+  // into the shared host. The outer `handleRoute` also checks isStale after
+  // awaiting us, but catching it here avoids a brief wrong-sidebar flash.
+  const tokenAtEntry = navToken;
   const mod = await importSidebar(section);
+  if (navToken !== tokenAtEntry) return;
   if (!mod) { currentSidebar = null; return; }
   currentSidebar = { section, module: mod };
   mod.mount(sidebarHost, { activeKey });
@@ -489,35 +495,16 @@ function wireAccountMenu() {
   const wrap = document.getElementById('pb-account-wrap');
   if (!btn || !menu || !wrap) return;
 
-  const openMenu = () => {
-    menu.hidden = false;
-    btn.setAttribute('aria-expanded', 'true');
-    document.addEventListener('click', onOutside, true);
-    document.addEventListener('keydown', onEsc);
-  };
-  const closeMenu = () => {
-    menu.hidden = true;
-    btn.setAttribute('aria-expanded', 'false');
-    document.removeEventListener('click', onOutside, true);
-    document.removeEventListener('keydown', onEsc);
-  };
-  const onOutside = (e) => { if (!wrap.contains(e.target)) closeMenu(); };
-  const onEsc = (e) => { if (e.key === 'Escape') { closeMenu(); btn.focus(); } };
-
-  btn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.hidden) openMenu(); else closeMenu();
-  });
+  const ctl = wireMenu(btn, menu, wrap);
 
   menu.addEventListener('click', (e) => {
     const item = e.target.closest('[data-account-action]');
     if (!item) return;
-    closeMenu();
+    ctl.close();
     // All account actions are mocked for now. Prototype-only — no auth.
+    // Sign-out is distinct from "not implemented yet" — the prototype has
+    // no auth to sign out of, so "coming soon" would imply users are stuck.
     const action = item.dataset.accountAction;
-    // Sign-out is a distinct concept from "not implemented yet" — the
-    // prototype has no auth to sign out of. Calling it "coming soon" would
-    // imply users are stuck in the app. Own the honest copy.
     const msg = action === 'signout'
       ? 'Sign out is not available in this prototype — reload the page to reset.'
       : `${ { profile: 'Profile', preferences: 'Preferences' }[action] || 'Action' } — coming soon`;

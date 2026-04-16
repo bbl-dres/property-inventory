@@ -683,6 +683,11 @@
 .pb-layer-api { margin-top: var(--space-4); }
 .pb-layer-bottom { margin-top: var(--space-4); }
 
+/* The layer hero is an "object identity" band — description should own the
+ * full available width rather than wrapping at the 65ch readable cap used
+ * by generic view descriptions (gallery, settings, etc.). */
+.pb-layer-hero .pb-view-description { max-width: none; }
+
 /* Compact badge row under the layer title: "Polygon · 1,284 records ·
  * EPSG:2056 (LV95)". Small muted text, single line with middle-dot
  * separators built into the string. */
@@ -955,8 +960,52 @@
   color: var(--grey-700);
 }
 
-/* Data grid (sticky header, scrollable). */
-.pb-data-toolbar { flex-wrap: wrap; }
+/* ============ DATA GRID ============ */
+
+/* Single-row toolbar: search left, actions right. */
+.pb-grid-toolbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding-bottom: var(--space-2);
+}
+
+.pb-grid-search-wrap {
+  position: relative;
+  flex: 0 1 360px;
+  min-width: 220px;
+}
+.pb-grid-search-icon {
+  position: absolute;
+  left: var(--space-2);
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--grey-500);
+  pointer-events: none;
+}
+.pb-grid-search {
+  width: 100%;
+  padding: var(--space-1) var(--space-3) var(--space-1) calc(var(--space-2) + var(--icon-sm) + var(--space-2));
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-sm);
+  background: var(--white);
+}
+.pb-grid-search:focus-visible {
+  outline: 2px solid var(--primary-red);
+  outline-offset: 1px;
+  border-color: var(--grey-400);
+}
+
+.pb-grid-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+}
+
+/* Sticky scrollable table area. */
 .pb-data-card { overflow: hidden; }
 .pb-data-scroll { overflow-x: auto; max-width: 100%; }
 .pb-data-grid { min-width: 100%; }
@@ -983,13 +1032,74 @@
 .pb-th-sortable.is-sorted { color: var(--grey-900); }
 .pb-data-grid tbody tr { cursor: pointer; }
 
-.pb-pagination {
+/* Header cell label + dual-arrow sort indicator. */
+.pb-th-label { margin-right: var(--space-1); }
+.pb-sort-indicator {
+  display: inline-flex;
+  flex-direction: column;
+  line-height: 0.7;
+  font-size: 9px;
+  vertical-align: middle;
+  color: var(--grey-400);
+}
+.pb-sort-arrow--up   { margin-bottom: 1px; }
+.pb-sort-arrow--down { margin-top: 1px; }
+/* When the column is the active sort, highlight the matching direction and
+ * mute the opposite one so the indicator reads as "currently ascending" or
+ * "currently descending" at a glance. */
+.pb-sort-indicator.is-sorted.is-asc  .pb-sort-arrow--up,
+.pb-sort-indicator.is-sorted.is-desc .pb-sort-arrow--down {
+  color: var(--grey-900);
+}
+.pb-sort-indicator.is-sorted.is-asc  .pb-sort-arrow--down,
+.pb-sort-indicator.is-sorted.is-desc .pb-sort-arrow--up {
+  color: var(--grey-300);
+}
+
+/* Footer row: count (left), pager (center), rows-per-page (right). */
+.pb-grid-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-1);
+  flex-wrap: wrap;
+  font-size: var(--text-xs);
+}
+.pb-grid-footer-count { white-space: nowrap; }
+.pb-grid-pager {
   display: flex;
   align-items: center;
   gap: var(--space-2);
 }
-
-.pb-rowcount { font-size: var(--text-xs); }
+.pb-grid-page-btn {
+  background: transparent;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--grey-700);
+  padding: 0;
+}
+.pb-grid-page-btn:hover:not(:disabled) { background: var(--grey-50); color: var(--grey-900); }
+.pb-grid-page-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pb-grid-page-label { font-variant-numeric: tabular-nums; }
+.pb-grid-footer-pagesize {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.pb-grid-pagesize {
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font-size: var(--text-xs);
+}
 
 /* Schema table. */
 .pb-schema-table .pb-desc-cell {
@@ -1072,23 +1182,6 @@
   font-size: var(--icon-md);
   pointer-events: none;
 }
-
-.pb-filter-bar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-2);
-  padding-bottom: var(--space-2);
-}
-
-.pb-filter-input {
-  flex: 0 1 360px;
-  padding: var(--space-1) var(--space-3);
-  border: 1px solid var(--grey-300);
-  border-radius: var(--radius-sm);
-  font-size: var(--text-sm);
-}
-
-.pb-filter-count { font-size: var(--text-xs); }
 
 /* Schema toolbar / edit-mode affordances. */
 .pb-schema-toolbar { align-items: center; }
@@ -2300,6 +2393,42 @@
 .pb-icon-md  { font-size: var(--icon-md); }
 .pb-icon-lg  { font-size: var(--icon-lg); }
 .pb-icon-2xl { font-size: var(--icon-2xl); }
+
+/* ============ MAP POPUPS ============ */
+
+/* MapLibre popup body (injected via setDOMContent). Keeps the content
+ * compact and makes the "Open in Data" link feel like a button. */
+.pb-popup-content {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--text-xs);
+  min-width: 160px;
+}
+.pb-popup-id {
+  font-family: var(--font-mono, ui-monospace, SFMono-Regular, monospace);
+  color: var(--grey-800);
+}
+.pb-popup-id code {
+  background: var(--grey-100);
+  padding: 1px var(--space-1);
+  border-radius: var(--radius-sm);
+  word-break: break-all;
+}
+.pb-popup-open {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  color: var(--grey-900);
+  text-decoration: none;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
+  background: var(--grey-100);
+  font-weight: var(--font-medium);
+}
+.pb-popup-open:hover {
+  background: var(--grey-200);
+}
 
 /* ============ UTILITIES ============ */
 

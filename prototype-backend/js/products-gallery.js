@@ -6,7 +6,7 @@
 // products exist.
 
 import * as api from './api.js';
-import { el } from './utils.js';
+import { el, toast, wireMenu } from './utils.js';
 import { renderViewHeader } from './app.js';
 
 let root = null;
@@ -98,42 +98,23 @@ function render() {
     });
   };
 
+  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true });
+  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
+  const menuCtl = wireMenu(newBtn, menu, newBtnWrap);
+
   const menuItem = (icon, label, handler) => {
     const b = el('button', { type: 'button', class: 'pb-menu-item', role: 'menuitem' }, [
       el('span', { class: 'material-symbols-outlined' }, icon),
       el('span', {}, label)
     ]);
-    b.addEventListener('click', () => { closeMenu(); handler(); });
+    b.addEventListener('click', () => { menuCtl.close(); handler(); });
     return b;
   };
-
-  const menu = el('div', { class: 'pb-menu', role: 'menu', hidden: true }, [
-    menuItem('link',         'Register app',       () => openModalFor('app')),
-    menuItem('map',          'New map',            () => openModalFor('map')),
-    menuItem('upload_file',  'New map from data',  openNewMapFromData)
-  ]);
-
-  const newBtnWrap = el('div', { class: 'pb-menu-wrap' }, [newBtn, menu]);
-
-  const closeMenu = () => {
-    menu.hidden = true;
-    newBtn.setAttribute('aria-expanded', 'false');
-    document.removeEventListener('click', onOutsideClick, true);
-    document.removeEventListener('keydown', onEscape);
-  };
-  const openMenu = () => {
-    menu.hidden = false;
-    newBtn.setAttribute('aria-expanded', 'true');
-    document.addEventListener('click', onOutsideClick, true);
-    document.addEventListener('keydown', onEscape);
-  };
-  const onOutsideClick = (e) => { if (!newBtnWrap.contains(e.target)) closeMenu(); };
-  const onEscape = (e) => { if (e.key === 'Escape') { closeMenu(); newBtn.focus(); } };
-
-  newBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (menu.hidden) openMenu(); else closeMenu();
-  });
+  menu.append(
+    menuItem('link',        'Register app',      () => openModalFor('app')),
+    menuItem('map',         'New map',           () => openModalFor('map')),
+    menuItem('upload_file', 'New map from data', openNewMapFromData)
+  );
 
   const count = products.length;
   root.appendChild(renderViewHeader({
