@@ -41,7 +41,13 @@
       "Bash(grep -o \"class: '[^']*'\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
       "Bash(grep -n \"location_on\\\\|polyline\\\\|square\\\\|polygon\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
       "Bash(grep \"import.*schema-editor\\\\|import.*data-grid\\\\|import.*map-preview\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
-      "Bash(grep -n \"import.*slugify\\\\|function.*slugify\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)"
+      "Bash(grep -n \"import.*slugify\\\\|function.*slugify\" /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
+      "Bash(node -e \"['buildings','parcels','landcovers'].forEach\\(n => { const j = JSON.parse\\(require\\('fs'\\).readFileSync\\('c:/Users/DavidRasner/Documents/GitHub/property-inventory/data/' + n + '.geojson'\\)\\); console.log\\(n, j.features.length, 'features, geom:', j.features[0]?.geometry?.type\\); }\\);\")",
+      "Bash(node -e 'const j = JSON.parse\\(require\\('\\\\''fs'\\\\''\\).readFileSync\\('\\\\''c:/Users/DavidRasner/Documents/GitHub/green-inventory/data/[838147959] 1602.GR_Mühlestrasse 2+4+6+8Grünflächenpflege.geojson'\\\\''\\)\\); console.log\\('\\\\''green features:'\\\\'', j.features.length, '\\\\''first geom:'\\\\'', j.features[0]?.geometry?.type\\); console.log\\('\\\\''sample props:'\\\\'', JSON.stringify\\(j.features[0]?.properties, null, 2\\).slice\\(0, 500\\)\\);')",
+      "Bash(node -e ' *)",
+      "Bash(node scripts/rebuild-mock-data.js)",
+      "Bash(mv scripts/rebuild-mock-data.js scripts/rebuild-mock-data.mjs)",
+      "Bash(node scripts/rebuild-mock-data.mjs)"
     ]
   }
 }

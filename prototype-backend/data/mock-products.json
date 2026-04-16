@@ -1,16 +1,46 @@
 {
   "products": [
     {
-      "slug": "property-viewer",
-      "name": "Property viewer",
-      "description": "Public-facing map that lets citizens browse parcels and see who owns them.",
-      "url": "https://property-viewer.example.ch",
-      "thumbnail": "./assets/images/property-viewer.svg",
-      "consumed_layers": ["parcels_2026"],
-      "owner": "GIS team",
+      "slug": "property-inventory",
+      "name": "Property Inventory",
+      "description": "Real-estate portfolio viewer — map, list, and gallery views with tabbed property detail (measurements, documents, costs, contracts, contacts, facilities). SIA 416/380 compliant.",
+      "url": "https://bbl-dres.github.io/property-inventory/",
+      "thumbnail": "./assets/images/property-inventory.jpg",
+      "consumed_layers": [
+        "parcels",
+        "buildings",
+        "landcovers"
+      ],
+      "owner": "BBL GIS team",
       "status": "live",
-      "last_deployed_at": "2026-04-10T12:00:00Z",
-      "tags": ["public", "map"]
+      "last_deployed_at": "2026-04-12T14:00:00Z",
+      "tags": [
+        "public",
+        "app"
+      ],
+      "kind": "app",
+      "basemap": null,
+      "view_mode": null
+    },
+    {
+      "slug": "green-inventory",
+      "name": "Green Inventory",
+      "description": "Urban green-space inventory with care profiles, maintenance planning, and field-survey workflows. Built around interactive maps and task management for landscape teams.",
+      "url": "https://bbl-dres.github.io/green-inventory/",
+      "thumbnail": "./assets/images/green-inventory.jpg",
+      "consumed_layers": [
+        "green_areas"
+      ],
+      "owner": "BBL Facilities",
+      "status": "staging",
+      "last_deployed_at": "2026-04-08T10:00:00Z",
+      "tags": [
+        "internal",
+        "app"
+      ],
+      "kind": "app",
+      "basemap": null,
+      "view_mode": null
     },
     {
       "slug": "field-inspection-app",
@@ -18,11 +48,17 @@
       "description": "Mobile tool inspectors use to log on-site visits. Writes back to the inspections layer.",
       "url": "https://inspections.example.ch",
       "thumbnail": "./assets/images/field-inspection-app.svg",
-      "consumed_layers": ["inspections", "parcels_2026"],
+      "consumed_layers": [
+        "inspections",
+        "parcels"
+      ],
       "owner": "Facilities",
       "status": "staging",
       "last_deployed_at": "2026-04-14T09:30:00Z",
-      "tags": ["internal", "mobile"]
+      "tags": [
+        "internal",
+        "mobile"
+      ]
     }
   ]
 }

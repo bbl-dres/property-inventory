@@ -82,8 +82,12 @@ const KEY_USERS = 'pb:users';
 const FEATURES_KEY = (name) => `pb:features:${name}`;
 const DESCRIPTIONS_KEY = (name) => `pb:descriptions:${name}`;
 const COLUMN_ORDER_KEY = (name) => `pb:column_order:${name}`;
-const SEED_FLAG = 'pb:seeded';
-const SEED_PRODUCTS_FLAG = 'pb:seeded_products';
+// Seed-flag versioning: bump the `:vN` suffix whenever the shape of the
+// seed data in data/mock-*.json changes meaningfully. Existing users will
+// pick up the new data on next load without needing a manual localStorage
+// wipe. `v2` — swapped in real property-inventory + green-inventory data.
+const SEED_FLAG = 'pb:seeded:v2';
+const SEED_PRODUCTS_FLAG = 'pb:seeded_products:v2';
 const SEED_USERS_FLAG = 'pb:seeded_users';
 
 const VALID_ROLES = ['viewer', 'editor', 'admin'];

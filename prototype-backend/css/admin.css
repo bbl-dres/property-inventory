@@ -1684,9 +1684,6 @@
   flex-direction: column;
   gap: 2px;
 }
-/* `display: flex` above would otherwise win over the user-agent
- * `[hidden] { display: none }` rule, so the menu rendered open by default. */
-.pb-menu[hidden] { display: none; }
 
 .pb-menu-item {
   display: flex;
@@ -2305,6 +2302,20 @@
 .pb-icon-2xl { font-size: var(--icon-2xl); }
 
 /* ============ UTILITIES ============ */
+
+/* Defensive: make the `hidden` HTML attribute bulletproof against later
+ * rules that set `display`. This exact pattern has bitten us three times
+ * now (menu dropdown, field group, scene empty state). Keep it once
+ * globally so component authors don't need per-class `[hidden]` overrides. */
+[hidden] { display: none !important; }
+
+/* Button classes are used on both `<button>` and `<a>` (for navigation-
+ * flavoured actions like "Open external"). Anchors carry a default
+ * underline that breaks the button look. */
+a.btn-primary,
+a.btn-secondary,
+a.btn-tertiary,
+a.btn-danger { text-decoration: none; }
 
 .pb-muted { color: var(--grey-500); }
 .pb-center { text-align: center; }
