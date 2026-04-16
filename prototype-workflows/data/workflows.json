@@ -11,7 +11,7 @@
     {
       "id": "data",
       "order": 2,
-      "label": "Stammdaten",
+      "label": "Daten erfassen",
       "actor_role": "requester"
     },
     {

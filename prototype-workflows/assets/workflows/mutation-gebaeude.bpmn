@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL"
+                  xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI"
+                  xmlns:dc="http://www.omg.org/spec/DD/20100524/DC"
+                  xmlns:di="http://www.omg.org/spec/DD/20100524/DI"
+                  id="Defs_MutationGebaeude"
+                  targetNamespace="http://bbl.admin.ch/workflow">
+  <bpmn:process id="MutationGebaeude" name="Gebäude ändern" isExecutable="false">
+    <bpmn:startEvent id="Start" name="Antrag erstellt">
+      <bpmn:outgoing>Flow_S_E</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:userTask id="Erfassen" name="Objekt wählen &amp;&#10;Änderungen erfassen">
+      <bpmn:incoming>Flow_S_E</bpmn:incoming>
+      <bpmn:outgoing>Flow_E_P</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:userTask id="Pruefung" name="Prüfung&#10;(Data Steward)">
+      <bpmn:incoming>Flow_E_P</bpmn:incoming>
+      <bpmn:outgoing>Flow_P_G1</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="G1" name="Freigegeben?">
+      <bpmn:incoming>Flow_P_G1</bpmn:incoming>
+      <bpmn:outgoing>Flow_G1_F</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G1_Rej</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:userTask id="Freigabe" name="Freigabe&#10;(Approver)">
+      <bpmn:incoming>Flow_G1_F</bpmn:incoming>
+      <bpmn:outgoing>Flow_F_G2</bpmn:outgoing>
+    </bpmn:userTask>
+    <bpmn:exclusiveGateway id="G2" name="Freigegeben?">
+      <bpmn:incoming>Flow_F_G2</bpmn:incoming>
+      <bpmn:outgoing>Flow_G2_A</bpmn:outgoing>
+      <bpmn:outgoing>Flow_G2_Rej</bpmn:outgoing>
+    </bpmn:exclusiveGateway>
+    <bpmn:serviceTask id="Anwenden" name="Änderung&#10;anwenden">
+      <bpmn:incoming>Flow_G2_A</bpmn:incoming>
+      <bpmn:outgoing>Flow_A_End</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:endEvent id="EndOk" name="Abgeschlossen">
+      <bpmn:incoming>Flow_A_End</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:endEvent id="EndRej" name="Abgelehnt">
+      <bpmn:incoming>Flow_G1_Rej</bpmn:incoming>
+      <bpmn:incoming>Flow_G2_Rej</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_S_E"   sourceRef="Start"     targetRef="Erfassen"/>
+    <bpmn:sequenceFlow id="Flow_E_P"   sourceRef="Erfassen"  targetRef="Pruefung"/>
+    <bpmn:sequenceFlow id="Flow_P_G1"  sourceRef="Pruefung"  targetRef="G1"/>
+    <bpmn:sequenceFlow id="Flow_G1_F"  name="Ja"   sourceRef="G1" targetRef="Freigabe"/>
+    <bpmn:sequenceFlow id="Flow_G1_Rej" name="Nein" sourceRef="G1" targetRef="EndRej"/>
+    <bpmn:sequenceFlow id="Flow_F_G2"  sourceRef="Freigabe"  targetRef="G2"/>
+    <bpmn:sequenceFlow id="Flow_G2_A"  name="Ja"   sourceRef="G2" targetRef="Anwenden"/>
+    <bpmn:sequenceFlow id="Flow_G2_Rej" name="Nein" sourceRef="G2" targetRef="EndRej"/>
+    <bpmn:sequenceFlow id="Flow_A_End" sourceRef="Anwenden"  targetRef="EndOk"/>
+  </bpmn:process>
+
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="MutationGebaeude">
+      <bpmndi:BPMNShape id="Start_di" bpmnElement="Start">
+        <dc:Bounds x="100" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="82" y="155" width="72" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Erfassen_di" bpmnElement="Erfassen">
+        <dc:Bounds x="190" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Pruefung_di" bpmnElement="Pruefung">
+        <dc:Bounds x="340" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G1_di" bpmnElement="G1" isMarkerVisible="true">
+        <dc:Bounds x="490" y="105" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="478" y="75" width="74" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Freigabe_di" bpmnElement="Freigabe">
+        <dc:Bounds x="590" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="G2_di" bpmnElement="G2" isMarkerVisible="true">
+        <dc:Bounds x="740" y="105" width="50" height="50"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="728" y="75" width="74" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Anwenden_di" bpmnElement="Anwenden">
+        <dc:Bounds x="840" y="90" width="100" height="80"/>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndOk_di" bpmnElement="EndOk">
+        <dc:Bounds x="990" y="112" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="970" y="155" width="80" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="EndRej_di" bpmnElement="EndRej">
+        <dc:Bounds x="497" y="262" width="36" height="36"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="487" y="305" width="56" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNEdge id="Flow_S_E_di" bpmnElement="Flow_S_E">
+        <di:waypoint x="136" y="130"/>
+        <di:waypoint x="190" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_E_P_di" bpmnElement="Flow_E_P">
+        <di:waypoint x="290" y="130"/>
+        <di:waypoint x="340" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_P_G1_di" bpmnElement="Flow_P_G1">
+        <di:waypoint x="440" y="130"/>
+        <di:waypoint x="490" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G1_F_di" bpmnElement="Flow_G1_F">
+        <di:waypoint x="540" y="130"/>
+        <di:waypoint x="590" y="130"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="555" y="112" width="12" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G1_Rej_di" bpmnElement="Flow_G1_Rej">
+        <di:waypoint x="515" y="155"/>
+        <di:waypoint x="515" y="262"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="520" y="195" width="25" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_F_G2_di" bpmnElement="Flow_F_G2">
+        <di:waypoint x="690" y="130"/>
+        <di:waypoint x="740" y="130"/>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G2_A_di" bpmnElement="Flow_G2_A">
+        <di:waypoint x="790" y="130"/>
+        <di:waypoint x="840" y="130"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="805" y="112" width="12" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_G2_Rej_di" bpmnElement="Flow_G2_Rej">
+        <di:waypoint x="765" y="155"/>
+        <di:waypoint x="765" y="240"/>
+        <di:waypoint x="533" y="240"/>
+        <di:waypoint x="533" y="262"/>
+        <bpmndi:BPMNLabel><dc:Bounds x="770" y="195" width="25" height="14"/></bpmndi:BPMNLabel>
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_A_End_di" bpmnElement="Flow_A_End">
+        <di:waypoint x="940" y="130"/>
+        <di:waypoint x="990" y="130"/>
+      </bpmndi:BPMNEdge>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
