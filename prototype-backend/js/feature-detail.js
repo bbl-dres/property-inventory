@@ -8,7 +8,7 @@ import * as api from './api.js';
 import { el, toast, relativeTimeNode, inlineEditable } from './utils.js';
 import { sridName } from './constants.js';
 import { bus } from './state.js';
-import { renderViewHeader, metaStack } from './app.js';
+import { renderViewHeader, metaStack, emptyState } from './app.js';
 import * as schemaEditor from './schema-editor.js';
 import * as dataGrid from './data-grid.js';
 import * as mapPreview from './map-preview.js';
@@ -57,11 +57,16 @@ export async function mount(container, params) {
     currentLayer = await api.getLayer(params.layerName);
   } catch (err) {
     root.innerHTML = '';
-    root.appendChild(el('div', { class: 'empty-state' }, [
-      el('span', { class: 'material-symbols-outlined' }, 'error'),
-      el('div', { class: 'empty-state-title' }, 'Layer not found'),
-      el('div', { class: 'empty-state-description' }, `"${params.layerName}" does not exist.`)
-    ]));
+    const backBtn = el('a', { href: '#/features', class: 'btn-primary' }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+      ' All layers'
+    ]);
+    root.appendChild(emptyState(
+      'error',
+      'Layer not found',
+      `"${params.layerName}" does not exist. It may have been deleted, or the URL is mistyped.`,
+      backBtn
+    ));
     return;
   }
 

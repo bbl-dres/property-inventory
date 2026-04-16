@@ -41,7 +41,8 @@ See full plan in project history. Short summary:
 - `js/api.js` — mock client, load-bearing contract (see §3).
 - `js/sidebar-features.js`, `js/new-feature-drawer.js`, `js/feature-detail.js`, `js/schema-editor.js`, `js/data-grid.js`, `js/map-preview.js` — one view/tab each. `mount(root, params)` + `unmount()`. (Renamed from `sidebar-layers.js` / `new-layer-drawer.js` / `layer-detail.js` in Phase 4.)
 - `js/utils.js` — DOM helpers, CSV parser, modal/toast, validators, type inference.
-- `data/mock-features.json` — seed (3 example features, ~5 records each). Was `mock-layers.json`; api.js falls back to the old filename for local dev caches.
+- `data/layers.json` — seed for PostGIS layers (previously `mock-features.json` / `mock-layers.json`).
+- `data/maps.json` — seed for Maps & Apps (previously `mock-products.json`).
 
 ---
 

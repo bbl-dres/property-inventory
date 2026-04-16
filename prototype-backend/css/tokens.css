@@ -353,6 +353,18 @@ input[type="checkbox"] {
   background: var(--grey-100);
 }
 
+/* Destructive action variant — subtle at rest, turns red on hover so the
+ * user gets an explicit confirmation before clicking something dangerous.
+ * Intentionally not red at rest so a grid of delete icons doesn't scream
+ * at the user. */
+.icon-btn--danger {
+  color: var(--grey-500);
+}
+.icon-btn--danger:hover {
+  background: var(--status-error-bg, #fdecec);
+  color: var(--status-error, #c62828);
+}
+
 /* Primary Button */
 .btn-primary {
   background: var(--grey-900);
@@ -482,6 +494,15 @@ input[type="checkbox"] {
   color: var(--grey-600);
   max-width: 400px;
   line-height: var(--leading-normal);
+}
+
+/* Optional action slot under an empty-state block. Gives the user a way
+ * out (back link, retry, create-first-X) so "nothing here" isn't a
+ * dead-end. */
+.empty-state-cta {
+  margin-top: var(--space-4);
+  display: flex;
+  gap: var(--space-2);
 }
 
 .empty-state-action {

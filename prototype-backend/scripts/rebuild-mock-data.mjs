@@ -3,7 +3,7 @@
 //
 // One-shot ingest: takes the REAL property-inventory and green-inventory
 // GeoJSON files from the sibling repos and stamps them into the prototype's
-// mock-features.json + mock-products.json.
+// layers.json + maps.json.
 //
 // Keeps the existing `inspections` (Point) and `contracts` (Table) layers
 // intact so the Field Inspection App staging product continues to work.
@@ -128,8 +128,8 @@ const buildingsGeo  = loadGeo(join(ROOT_DATA, 'buildings.geojson'));
 const parcelsGeo    = loadGeo(join(ROOT_DATA, 'parcels.geojson'));
 const landcoversGeo = loadGeo(join(ROOT_DATA, 'landcovers.geojson'));
 const greenGeo      = loadGeo(join(GREEN_DATA, GREEN_FILE));
-const currentFeats  = loadMock('mock-features.json');
-const currentProds  = loadMock('mock-products.json');
+const currentFeats  = loadMock('layers.json');
+const currentProds  = loadMock('maps.json');
 
 // ---- Layer: buildings (Point) -----------------------------------------
 
@@ -282,7 +282,7 @@ const greenLayer = buildLayer({
   features: greenFeatures
 });
 
-// ---- Assemble new mock-features.json ------------------------------------
+// ---- Assemble new layers.json ------------------------------------
 
 // Preserve existing inspections + contracts layers so the Field Inspection
 // App (staging product) still has something to point at. Patch their
@@ -307,7 +307,7 @@ const nextFeatures = {
   ]
 };
 
-// ---- Assemble new mock-products.json ------------------------------------
+// ---- Assemble new maps.json ------------------------------------
 
 // Replace "property-viewer" with "property-inventory" pointing at the real
 // deployed app URL and consuming the three new real layers. Keep
@@ -349,7 +349,7 @@ const greenInventory = {
 // `parcels_2026` layer was renamed to `parcels` in this rebuild, so the
 // reverse link would break unless we patch it here.
 const fieldAppSrc = currentProds.products.find(p => p.slug === 'field-inspection-app');
-if (!fieldAppSrc) throw new Error('field-inspection-app missing from current mock-products.json');
+if (!fieldAppSrc) throw new Error('field-inspection-app missing from current maps.json');
 const fieldApp = {
   ...fieldAppSrc,
   consumed_layers: (fieldAppSrc.consumed_layers || [])
@@ -379,11 +379,11 @@ const nextProducts = {
 // ---- Write -------------------------------------------------------------
 
 writeFileSync(
-  join(BACKEND_DIR, 'data', 'mock-features.json'),
+  join(BACKEND_DIR, 'data', 'layers.json'),
   JSON.stringify(nextFeatures, null, 2) + '\n'
 );
 writeFileSync(
-  join(BACKEND_DIR, 'data', 'mock-products.json'),
+  join(BACKEND_DIR, 'data', 'maps.json'),
   JSON.stringify(nextProducts, null, 2) + '\n'
 );
 
@@ -393,11 +393,11 @@ const fmtBbox = (b) => b
   ? `[${b[0].toFixed(2)}, ${b[1].toFixed(2)}, ${b[2].toFixed(2)}, ${b[3].toFixed(2)}]`
   : '—';
 
-console.log('--- mock-features.json ---');
+console.log('--- layers.json ---');
 for (const l of nextFeatures.layers) {
   console.log(`  ${l.name.padEnd(18)} ${l.geometry_type.padEnd(10)} ${String(l.features.length).padStart(3)} features  bbox: ${fmtBbox(l.metadata?.bbox)}`);
 }
-console.log('--- mock-products.json ---');
+console.log('--- maps.json ---');
 for (const p of nextProducts.products) {
   console.log(`  ${p.slug.padEnd(22)} ${String(p.status).padEnd(8)} layers=[${(p.consumed_layers || []).join(', ')}]  bbox: ${fmtBbox(p.bbox)}`);
 }

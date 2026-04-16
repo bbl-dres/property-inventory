@@ -255,7 +255,13 @@ export function closeModal() {
 export function confirmModal({ title, message, requireText, confirmLabel = 'Confirm', danger = false }) {
   return new Promise((resolve) => {
     const input = requireText
-      ? el('input', { type: 'text', class: 'pb-confirm-input', autocomplete: 'off' })
+      ? el('input', {
+          type: 'text',
+          class: 'pb-confirm-input',
+          autocomplete: 'off',
+          spellcheck: 'false',
+          'aria-label': `Type ${requireText} to confirm`
+        })
       : null;
 
     const confirmBtn = el('button', {
@@ -268,10 +274,27 @@ export function confirmModal({ title, message, requireText, confirmLabel = 'Conf
 
     const bodyChildren = [el('p', {}, message || '')];
     if (requireText) {
-      bodyChildren.push(el('p', { class: 'pb-field-hint' }, ['Type ', el('code', {}, requireText), ' to confirm.']));
+      // Prominent echo of the required string — its own block, monospace,
+      // bordered. Users shouldn't have to scan prose to find what to type.
+      bodyChildren.push(el('div', { class: 'pb-confirm-echo' }, [
+        el('span', { class: 'pb-confirm-echo-label' }, 'Type to confirm:'),
+        el('code', { class: 'pb-confirm-echo-value' }, requireText)
+      ]));
       bodyChildren.push(el('div', { class: 'pb-field' }, [input]));
-      input.addEventListener('input', () => {
-        confirmBtn.disabled = input.value !== requireText;
+
+      const sync = () => {
+        const match = input.value === requireText;
+        confirmBtn.disabled = !match;
+        input.classList.toggle('is-valid', match);
+      };
+      input.addEventListener('input', sync);
+      // Enter submits when the match is complete — saves a reach to the mouse
+      // after a careful paste. Escape is already wired by openModal().
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !confirmBtn.disabled) {
+          e.preventDefault();
+          confirmBtn.click();
+        }
       });
     }
 
@@ -286,15 +309,25 @@ export function confirmModal({ title, message, requireText, confirmLabel = 'Conf
 
     const { backdrop } = openModal(content);
     backdrop.addEventListener('click', () => { closeModal(); resolve(false); }, { once: true });
+    if (input) setTimeout(() => input.focus(), 0);
   });
 }
 
 // ===== Toast =====
 
+// Per-kind auto-dismiss delays (ms). Success messages confirm an action the
+// user just took — they can disappear fast. Errors need time to read and
+// act on, so they linger. `0` would mean "never auto-dismiss"; we don't use
+// that yet but the code paths support it.
+const TOAST_DURATIONS = { success: 2000, info: 3500, warning: 4500, error: 6000 };
+
 export function toast(message, kind = 'info') {
   const host = document.getElementById('toast-host');
   if (!host) return;
-  const t = el('div', { class: `pb-toast pb-toast--${kind}`, role: 'status' }, [
+  const t = el('div', {
+    class: `pb-toast pb-toast--${kind}`,
+    role: kind === 'error' ? 'alert' : 'status'
+  }, [
     el('span', {}, message),
     el('button', {
       class: 'pb-toast-close',
@@ -304,10 +337,11 @@ export function toast(message, kind = 'info') {
     }, [el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'close')])
   ]);
   host.appendChild(t);
-  const timer = setTimeout(() => t.remove(), 3000);
+  const ms = TOAST_DURATIONS[kind] ?? TOAST_DURATIONS.info;
+  const timer = ms > 0 ? setTimeout(() => t.remove(), ms) : null;
   t.addEventListener('click', (e) => {
     if (e.target.closest('[data-action="toast-dismiss"]')) {
-      clearTimeout(timer);
+      if (timer) clearTimeout(timer);
       t.remove();
     }
   });
@@ -707,13 +741,20 @@ export function inlineEditable(opts) {
   const wrapTag = multiline ? 'div' : 'span';
   const wrap = el(wrapTag, { class: 'pb-inline-edit ' + (className || '') });
   const viewClass = 'pb-inline-value' + (multiline ? ' pb-inline-value--multiline' : '');
+  // aria-label spells out both the primary action and the keyboard paths so
+  // screen-reader users discover what sighted users see via the pencil icon.
+  const REST_ARIA = multiline
+    ? 'Editable. Press Enter or click to edit. Ctrl+Enter to save, Escape to cancel.'
+    : 'Editable. Press Enter or click to edit. Enter to save, Escape to cancel.';
   const view = el(multiline ? 'div' : 'span', {
-    class: viewClass, tabindex: '0', role: 'button', 'aria-label': 'Click to edit'
+    class: viewClass, tabindex: '0', role: 'button',
+    'aria-label': REST_ARIA,
+    title: multiline ? 'Click to edit (Ctrl+Enter to save, Esc to cancel)' : 'Click to edit (Enter to save, Esc to cancel)'
   }, [
     el('span', { class: 'pb-inline-value-text' }, value || placeholder || '—'),
-    // Pencil affordance — purely visual hint that the text is editable.
-    // Revealed on hover/focus of the wrapper via CSS; pointer-events: none
-    // so clicks fall through to the view element (which opens the editor).
+    // Pencil affordance — visible signal that the field is editable. Style
+    // lives in admin.css; `pointer-events: none` so clicks fall through to
+    // the wrapping view (which owns the enter-edit listener).
     el('span', {
       class: 'material-symbols-outlined pb-inline-edit-icon',
       'aria-hidden': 'true'
@@ -727,6 +768,7 @@ export function inlineEditable(opts) {
 
   let current = value || '';
   let editing = false;
+  let saveFlashTimer = null;
 
   function enter() {
     if (editing) return;
@@ -737,13 +779,20 @@ export function inlineEditable(opts) {
     input.focus();
     if (!multiline && input.select) input.select();
   }
+  function flashSaved() {
+    view.classList.add('is-just-saved');
+    if (saveFlashTimer) clearTimeout(saveFlashTimer);
+    saveFlashTimer = setTimeout(() => view.classList.remove('is-just-saved'), 900);
+  }
   async function commit() {
     if (!editing) return;
     const next = input.value.trim();
     if (next === current) { cancel(); return; }
+    let saved = false;
     try {
       await onSave(next);
       current = next;
+      saved = true;
     } catch (err) {
       toast(err?.message || 'Save failed', 'error');
     }
@@ -756,6 +805,7 @@ export function inlineEditable(opts) {
     view.classList.toggle('is-placeholder', !current);
     wrap.innerHTML = '';
     wrap.appendChild(view);
+    if (saved) flashSaved();
   }
   function cancel() {
     editing = false;

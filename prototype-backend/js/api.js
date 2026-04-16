@@ -89,8 +89,10 @@ const COLUMN_ORDER_KEY = (name) => `pb:column_order:${name}`;
 //   v2 — swapped in real property-inventory + green-inventory data
 //   v3 — added `metadata.bbox` per layer and `bbox` per product for the
 //        catalogue Map view
-const SEED_FLAG = 'pb:seeded:v3';
-const SEED_PRODUCTS_FLAG = 'pb:seeded_products:v3';
+// Bump when the seed files change (rename, new records, schema change) so
+// existing users re-seed on next load instead of serving stale localStorage.
+const SEED_FLAG = 'pb:seeded:v4';
+const SEED_PRODUCTS_FLAG = 'pb:seeded_products:v4';
 const SEED_USERS_FLAG = 'pb:seeded_users';
 
 const VALID_ROLES = ['viewer', 'editor', 'admin'];
@@ -177,7 +179,7 @@ let seedPromise = null;
 async function ensureProductsSeeded() {
   if (localStorage.getItem(SEED_PRODUCTS_FLAG)) return;
   try {
-    const pres = await fetch('./data/mock-products.json');
+    const pres = await fetch('./data/maps.json');
     if (pres.ok) {
       const pdata = await pres.json();
       saveJson(KEY_PRODUCTS, Array.isArray(pdata.products) ? pdata.products : []);
@@ -215,12 +217,7 @@ async function ensureSeeded() {
   if (seedPromise) return seedPromise;
   seedPromise = (async () => {
     try {
-      // Prefer the Phase-4 filename; fall back to the legacy one so anyone
-      // running an older checkout (or a cached bundle) still boots.
-      let res = await fetch('./data/mock-features.json').catch(() => null);
-      if (!res || !res.ok) {
-        res = await fetch('./data/mock-layers.json');
-      }
+      const res = await fetch('./data/layers.json');
       if (!res.ok) throw new Error('Seed fetch failed');
       const data = await res.json();
       const layers = [];
@@ -466,6 +463,55 @@ export async function setColumnDescription(layerName, columnName, description) {
   saveJson(DESCRIPTIONS_KEY(layerName), descs);
   layer.updated_at = nowIso();
   writeLayers(layers);
+  return mergeDescriptions(layer);
+}
+
+/**
+ * Drop (delete) an attribute column from a layer. Destructive — wipes the
+ * column from every feature's `properties` bag too, so the grid doesn't
+ * show stale cells after refresh. Locked columns (id, geom) are refused.
+ *
+ * Real adapter: `ALTER TABLE <layer> DROP COLUMN <name>` followed by
+ * `NOTIFY pgrst, 'reload schema'`.
+ */
+export async function dropColumn(layerName, columnName) {
+  await ensureSeeded();
+  await sleep(MOCK_LATENCY_MS);
+  const layers = readLayers();
+  const layer = layers.find((l) => l.name === layerName);
+  if (!layer) throw new ApiError(ERR.NOT_FOUND, `Layer "${layerName}" not found`);
+
+  const col = layer.columns.find((c) => c.name === columnName);
+  if (!col) throw new ApiError(ERR.NOT_FOUND, `Column "${columnName}" not found`);
+  if (col.locked) {
+    throw new ApiError(ERR.INVALID_NAME, `Column "${columnName}" is locked and cannot be dropped`);
+  }
+
+  // Strip the column from the schema.
+  layer.columns = layer.columns.filter((c) => c.name !== columnName);
+  layer.updated_at = nowIso();
+  writeLayers(layers);
+
+  // Strip the description entry if it exists.
+  const descs = loadJson(DESCRIPTIONS_KEY(layerName), {});
+  if (columnName in descs) {
+    delete descs[columnName];
+    saveJson(DESCRIPTIONS_KEY(layerName), descs);
+  }
+
+  // Strip the property from every feature — otherwise the grid shows
+  // stale cells for a column that no longer exists. This is the mock
+  // equivalent of what Postgres does automatically on DROP COLUMN.
+  const features = loadJson(FEATURES_KEY(layerName), []);
+  let touched = false;
+  for (const f of features) {
+    if (f && f.properties && columnName in f.properties) {
+      delete f.properties[columnName];
+      touched = true;
+    }
+  }
+  if (touched) saveJson(FEATURES_KEY(layerName), features);
+
   return mergeDescriptions(layer);
 }
 

@@ -6,6 +6,7 @@ import * as api from './api.js';
 import { el, toast } from './utils.js';
 import { bus } from './state.js';
 import { sridName, BRAND_COLOR as BRAND } from './constants.js';
+import { emptyState } from './app.js';
 
 // sridName may be undefined for codes we don't track; wrap to a safe label.
 function sridLabel(code) {
@@ -59,28 +60,45 @@ export async function mount(container, { layer: l }) {
   isSetup = false;
 
   if (!layer || layer.geometry_type === 'Table') {
-    root.appendChild(el('div', { class: 'pb-card pb-card--padded' }, [
-      el('div', { class: 'empty-state-title' }, 'No map preview'),
-      el('div', { class: 'empty-state-description' }, 'Map preview is only available for spatial layers.')
-    ]));
+    const dataBtn = layer ? el('a', {
+      href: `#/features/${encodeURIComponent(layer.name)}?tab=data`,
+      class: 'btn-primary'
+    }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'table_rows'),
+      ' Open Data tab'
+    ]) : null;
+    root.appendChild(emptyState(
+      'map_off',
+      'No map preview',
+      'This is a non-spatial layer (Table). Use the Data tab to browse the records.',
+      dataBtn
+    ));
     return;
   }
 
   if ((layer.feature_count || 0) > MAX_FEATURES) {
-    root.appendChild(el('div', { class: 'pb-card pb-card--padded pb-map-placeholder' }, [
-      el('span', { class: 'material-symbols-outlined', style: { fontSize: '36px', color: 'var(--grey-500)' } }, 'map'),
-      el('div', { class: 'empty-state-title' }, 'Map preview disabled'),
-      el('div', { class: 'empty-state-description' },
-        `Map preview disabled for large layers (>${MAX_FEATURES.toLocaleString()} records) in MVP.`)
-    ]));
+    const dataBtn = el('a', {
+      href: `#/features/${encodeURIComponent(layer.name)}?tab=data`,
+      class: 'btn-primary'
+    }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'filter_alt'),
+      ' Filter in Data tab'
+    ]);
+    root.appendChild(emptyState(
+      'map',
+      'Too many features to preview',
+      `This layer has ${(layer.feature_count || 0).toLocaleString()} records; the MVP map preview is capped at ${MAX_FEATURES.toLocaleString()}. Narrow the set in the Data tab and re-open the Map tab to preview the filtered selection.`,
+      dataBtn
+    ));
     return;
   }
 
   if (typeof maplibregl === 'undefined') {
-    root.appendChild(el('div', { class: 'pb-card pb-card--padded' }, [
-      el('div', { class: 'empty-state-title' }, 'Map library not loaded'),
-      el('div', { class: 'empty-state-description' }, 'MapLibre GL JS is unavailable.')
-    ]));
+    root.appendChild(emptyState(
+      'error',
+      'Map library not loaded',
+      'MapLibre GL JS is unavailable. Check your network connection and reload the page.'
+    ));
     return;
   }
 

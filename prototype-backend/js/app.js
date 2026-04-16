@@ -26,12 +26,13 @@
 // tab-driven too.
 //
 // Domain note: the underlying data entity is still called `product` in the
-// API layer (`api.listProducts`, `mock-products.json`, `pb:products`
-// storage key). It's an umbrella type that covers both maps (authored
-// scenes) and apps (registered external tools). The URL/section label
-// says `maps` because that matches the primary user action in this
-// section; the internal `product` name is preserved to keep the data
-// model stable when the Supabase adapter lands.
+// API layer (`api.listProducts`, `pb:products` storage key). It's an
+// umbrella type that covers both maps (authored scenes) and apps
+// (registered external tools). The URL/section label says `maps` because
+// that matches the primary user action in this section, and the seed
+// file on disk is `data/maps.json` for the same reason. The internal
+// `product` name is preserved to keep the data model stable when the
+// Supabase adapter lands.
 
 import { closeModal, el, wireMenu } from './utils.js';
 import * as api from './api.js';
@@ -300,12 +301,24 @@ export function metaStack({ meta, secondary } = {}) {
   return el('div', { class: 'pb-meta-stack' }, children);
 }
 
-function emptyState(icon, title, desc, cta) {
+/**
+ * Shared empty-state block. Every view that needs to show "nothing here"
+ * should use this so icon size, typography, spacing, and CTA slot are
+ * identical across the app. Pass a `cta` Node when the user can recover
+ * (a back link, a "retry", a "create first X" button) — dead-end empty
+ * states read as bugs even when the data really is empty.
+ *
+ * @param {string} icon         Material Symbols glyph name
+ * @param {string} title
+ * @param {string} [desc]
+ * @param {Node}   [cta]
+ */
+export function emptyState(icon, title, desc, cta) {
   return el('div', { class: 'empty-state' }, [
     el('span', { class: 'material-symbols-outlined' }, icon),
     el('div', { class: 'empty-state-title' }, title),
     el('div', { class: 'empty-state-description' }, desc || ''),
-    cta || null
+    cta ? el('div', { class: 'empty-state-cta' }, [cta]) : null
   ].filter(Boolean));
 }
 

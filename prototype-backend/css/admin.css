@@ -971,11 +971,22 @@
   cursor: text;
   min-height: 1.4em;
   color: var(--grey-900);
-  border: 1px solid transparent;
+  /* Faint dashed border at rest so the field reads as a fillable slot even
+   * before the user hovers. Border becomes solid on hover/focus to confirm
+   * the hit-target. */
+  border: 1px dashed var(--grey-200);
+  transition: background var(--transition-fast), border-color var(--transition-fast);
 }
-.pb-inline-value:hover { background: var(--grey-50); border-color: var(--grey-200); }
+.pb-inline-value:hover { background: var(--grey-50); border-color: var(--grey-300); border-style: solid; }
 .pb-inline-value:focus { outline: 2px solid var(--grey-400); outline-offset: 1px; }
 .pb-inline-value.is-placeholder { color: var(--grey-500); font-style: italic; }
+/* Green flash for ~900ms after a successful save so the user sees the
+ * change landed. Fades back to the default border state. */
+.pb-inline-value.is-just-saved {
+  background: color-mix(in srgb, var(--status-success, #2f8a4a) 14%, var(--white));
+  border-color: var(--status-success, #2f8a4a);
+  border-style: solid;
+}
 .pb-inline-value--multiline {
   display: flex;
   align-items: flex-start;
@@ -988,15 +999,15 @@
   flex: 1;
 }
 
-/* Pencil affordance on inline-editable fields. Faintly visible by default
- * (was `opacity: 0` but that hid the signal from keyboard users and made
- * the field look read-only to first-timers), fully opaque on hover/focus.
- * `pointer-events: none` so clicks fall through to the <span> that owns
- * the enter-edit listener. */
+/* Pencil affordance on inline-editable fields. Visible at rest (not just
+ * on hover) so first-time users can see the field is editable without
+ * having to hunt for the hit-target. Pairs with the dashed border on the
+ * value for a double-cue. `pointer-events: none` so clicks fall through
+ * to the <span> that owns the enter-edit listener. */
 .pb-inline-edit-icon {
   font-size: var(--icon-xs);
   color: var(--grey-500);
-  opacity: 0.35;
+  opacity: 0.6;
   transition: opacity var(--transition-fast);
   pointer-events: none;
   flex-shrink: 0;
@@ -1154,6 +1165,15 @@
 .pb-th-sortable.is-sorted { color: var(--grey-900); }
 .pb-data-grid tbody tr { cursor: pointer; }
 
+/* Numeric cells right-align with tabular figures so digits line up for
+ * magnitude comparison — standard spreadsheet convention. Applied to both
+ * `<th>` (header label flips right) and `<td>` (value). */
+.pb-cell-num {
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+.pb-cell-num .pb-th-label { margin-left: var(--space-1); margin-right: 0; }
+
 /* Header cell label + dual-arrow sort indicator. */
 .pb-th-label { margin-right: var(--space-1); }
 .pb-sort-indicator {
@@ -1230,6 +1250,9 @@
 }
 .pb-schema-table tbody tr { cursor: default; }
 .pb-schema-table tbody tr:hover td { background: transparent; }
+/* Actions column (delete button in edit mode) — right-align so the icon
+ * sits flush with the column edge instead of orphaned in the middle. */
+.pb-schema-table .pb-actions-cell { text-align: right; padding-right: var(--space-2); }
 
 /* Drag-and-drop affordances. */
 .pb-schema-table.is-edit { position: relative; }
@@ -1521,6 +1544,48 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--space-3);
+}
+
+/* Confirm-to-delete block: prominent echo of the required string so the
+ * user doesn't have to scan the message prose for what to type. Input
+ * flips to a green outline on match to reinforce the "you're ready" state. */
+.pb-confirm-echo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--grey-50);
+  border: 1px solid var(--grey-200);
+  border-radius: var(--radius-sm);
+}
+.pb-confirm-echo-label {
+  font-size: var(--text-xs);
+  color: var(--grey-600);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+}
+.pb-confirm-echo-value {
+  font-family: var(--font-mono);
+  font-size: var(--text-base);
+  color: var(--grey-900);
+  user-select: all;
+}
+.pb-confirm-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: var(--text-sm);
+  box-sizing: border-box;
+}
+.pb-confirm-input:focus-visible {
+  outline: 2px solid var(--grey-700);
+  outline-offset: 1px;
+}
+.pb-confirm-input.is-valid {
+  border-color: var(--status-success, #2f8a4a);
+  background: color-mix(in srgb, var(--status-success, #2f8a4a) 6%, var(--white));
 }
 
 /* Modal size overrides: both import and new-layer drawers need more room
@@ -2530,6 +2595,10 @@
   border-radius: var(--radius-sm);
   overflow: hidden;
   background: var(--white);
+  /* Inside `.pb-catalogue-toolbar` (flex row), push to the far right so
+   * the search keeps its natural left-anchored width and the toggle
+   * anchors to the opposite edge. */
+  margin-left: auto;
 }
 .pb-view-toggle-btn {
   background: transparent;

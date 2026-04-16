@@ -77,6 +77,62 @@
         139.736,
         52.5206
       ]
+    },
+    {
+      "slug": "portfolio-overview-map",
+      "name": "Portfolio overview",
+      "description": "Federal portfolio bird's-eye — parcels, buildings, and land cover in one scene. Authored in the scene viewer for Monday morning portfolio reviews.",
+      "url": null,
+      "thumbnail": null,
+      "consumed_layers": [
+        "parcels",
+        "buildings",
+        "landcovers"
+      ],
+      "owner": "BBL GIS team",
+      "status": "live",
+      "last_deployed_at": "2026-04-15T08:30:00Z",
+      "tags": [
+        "internal",
+        "scene"
+      ],
+      "kind": "map",
+      "basemap": "swisstopo-pixelkarte",
+      "view_mode": "2d",
+      "bbox": [
+        7.4,
+        46.95,
+        7.5,
+        47.0
+      ]
+    },
+    {
+      "slug": "muehlestrasse-site-plan",
+      "name": "Mühlestrasse site plan",
+      "description": "Site-level scene for the Mühlestrasse 2/4/6/8 property — green areas layered over cadastral parcels. Used by facilities to plan on-site visits and maintenance rounds.",
+      "url": null,
+      "thumbnail": null,
+      "consumed_layers": [
+        "green_areas",
+        "parcels"
+      ],
+      "owner": "BBL Facilities",
+      "status": "staging",
+      "last_deployed_at": "2026-04-14T16:45:00Z",
+      "tags": [
+        "internal",
+        "scene",
+        "site"
+      ],
+      "kind": "map",
+      "basemap": "swisstopo-orthofoto",
+      "view_mode": "2d",
+      "bbox": [
+        7.471737250712772,
+        46.97445106564723,
+        7.47455856706586,
+        46.97669908661765
+      ]
     }
   ]
 }

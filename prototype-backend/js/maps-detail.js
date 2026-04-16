@@ -15,7 +15,7 @@
 
 import * as api from './api.js';
 import { el, relativeTimeNode, statusPill, toast } from './utils.js';
-import { renderViewHeader, metaLine } from './app.js';
+import { renderViewHeader, metaLine, emptyState } from './app.js';
 
 // App-kind detail tabs. Kept deliberately shallow (Overview + Activity)
 // so app detail pages share the tabbed shape used by layer detail pages
@@ -41,11 +41,16 @@ export async function mount(container, { slug, tab }) {
     product = await api.getProduct(slug);
   } catch {
     root.innerHTML = '';
-    root.appendChild(el('div', { class: 'empty-state' }, [
-      el('span', { class: 'material-symbols-outlined' }, 'error'),
-      el('div', { class: 'empty-state-title' }, 'Not found'),
-      el('div', { class: 'empty-state-description' }, `"${slug}" does not exist.`)
-    ]));
+    const backBtn = el('a', { href: '#/maps', class: 'btn-primary' }, [
+      el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+      ' Maps & Apps'
+    ]);
+    root.appendChild(emptyState(
+      'error',
+      'Not found',
+      `"${slug}" does not exist. It may have been deleted, or the URL is mistyped.`,
+      backBtn
+    ));
     return;
   }
 
@@ -59,11 +64,16 @@ export async function mount(container, { slug, tab }) {
       console.error('[maps-detail] scene mount failed', err);
       sceneModule = null;
       root.innerHTML = '';
-      root.appendChild(el('div', { class: 'empty-state' }, [
-        el('span', { class: 'material-symbols-outlined' }, 'error'),
-        el('div', { class: 'empty-state-title' }, 'Scene failed to load'),
-        el('div', { class: 'empty-state-description' }, err?.message || 'Unknown error')
-      ]));
+      const backBtn = el('a', { href: '#/maps', class: 'btn-primary' }, [
+        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'arrow_back'),
+        ' Maps & Apps'
+      ]);
+      root.appendChild(emptyState(
+        'error',
+        'Scene failed to load',
+        err?.message || 'Unknown error — try reloading the page.',
+        backBtn
+      ));
       return;
     }
   }

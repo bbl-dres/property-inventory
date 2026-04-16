@@ -348,7 +348,7 @@ function renderTable() {
     ]));
   }
   headers.push(renderHeaderCell('id', 'id', { width: '140px' }));
-  for (const c of userCols) headers.push(renderHeaderCell(c.name, c.name));
+  for (const c of userCols) headers.push(renderHeaderCell(c.name, c.name, {}, { numeric: isNumericType(c.type) }));
   if (spatial) {
     headers.push(el('th', { style: { width: '140px' } }, 'geom'));
   }
@@ -392,7 +392,7 @@ function renderTable() {
   ]);
 }
 
-function renderHeaderCell(label, colKey, styleOpts = {}) {
+function renderHeaderCell(label, colKey, styleOpts = {}, opts = {}) {
   const isSorted = sort && sort.column === colKey;
   const dir = isSorted ? sort.direction : null;
   // Dual-arrow indicator — both directions always rendered; the active one
@@ -405,8 +405,11 @@ function renderHeaderCell(label, colKey, styleOpts = {}) {
     el('span', { class: 'pb-sort-arrow pb-sort-arrow--up' }, '▲'),
     el('span', { class: 'pb-sort-arrow pb-sort-arrow--down' }, '▼')
   ]);
+  const classes = ['pb-th-sortable'];
+  if (isSorted) classes.push('is-sorted');
+  if (opts.numeric) classes.push('pb-cell-num');
   const th = el('th', {
-    class: 'pb-th-sortable' + (isSorted ? ' is-sorted' : ''),
+    class: classes.join(' '),
     style: styleOpts,
     'aria-sort': isSorted ? (dir === 'asc' ? 'ascending' : 'descending') : 'none'
   }, [
@@ -454,7 +457,8 @@ function renderDataRow(feature, userCols) {
 
   tr.appendChild(el('td', { class: 'pb-name-mono' }, shortId(feature.id)));
   for (const c of userCols) {
-    tr.appendChild(el('td', {}, formatCell(feature.properties?.[c.name], c.type)));
+    const cls = isNumericType(c.type) ? 'pb-cell-num' : null;
+    tr.appendChild(el('td', cls ? { class: cls } : {}, formatCell(feature.properties?.[c.name], c.type)));
   }
   if (spatial) {
     tr.appendChild(el('td', {}, [
@@ -802,6 +806,13 @@ function baseType(t) {
   if (!t) return 'text';
   if (/^varchar\(/i.test(t)) return 'varchar';
   return t;
+}
+
+// Numeric types right-align in the grid — the spreadsheet convention the eye
+// expects when comparing magnitudes. Strings stay left-aligned.
+function isNumericType(t) {
+  const b = baseType(t);
+  return b === 'integer' || b === 'bigint' || b === 'numeric' || b === 'double precision' || b === 'real' || b === 'smallint';
 }
 
 function buildInputForColumn(column, value) {

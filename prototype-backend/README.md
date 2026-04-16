@@ -165,7 +165,8 @@ prototype-backend/
 │   ├── map-preview.js       ← Map tab
 │   └── utils.js
 └── data/
-    └── mock-features.json   ← seed for the mock API (was mock-layers.json)
+    ├── layers.json          ← seed for PostGIS layers (was mock-features.json)
+    └── maps.json            ← seed for Maps & Apps (was mock-products.json)
 ```
 
 ## Open questions (resolve before coding)

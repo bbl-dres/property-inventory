@@ -154,11 +154,21 @@ export function mountCatalogue(container, opts) {
     }
 
     if (!rows.length) {
+      const clearBtn = el('button', { type: 'button', class: 'btn-secondary' }, [
+        el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'close'),
+        ' Clear filter'
+      ]);
+      clearBtn.addEventListener('click', () => {
+        query = '';
+        if (searchInput) { searchInput.value = ''; searchInput.focus(); }
+        renderBodyOnly();
+      });
       return el('div', { class: 'empty-state pb-catalogue-empty' }, [
         el('span', { class: 'material-symbols-outlined' }, 'search_off'),
         el('div', { class: 'empty-state-title' }, 'No matches'),
         el('div', { class: 'empty-state-description' },
-          `Nothing matched "${query.trim()}". Clear the search to see all ${items.length} items.`)
+          `Nothing matched "${query.trim()}". Clear the filter to see all ${items.length} items.`),
+        el('div', { class: 'empty-state-cta' }, [clearBtn])
       ]);
     }
 

@@ -1,11 +1,12 @@
 // prototype-backend — Schema tab
 // View/Edit toggle. In edit mode: descriptions inline-editable, drag handle
-// reorder (native HTML5 DnD), "+ Add column" visible. Locked columns stay
-// at top and are NOT draggable.
+// reorder (native HTML5 DnD), "+ Add column" visible, per-row delete icon
+// (gated behind a type-to-confirm modal). Locked columns stay at top, are
+// NOT draggable, and cannot be deleted.
 
 import * as api from './api.js';
 import { ApiError } from './api.js';
-import { el, toast, openModal, closeModal, safeUnsubscribe } from './utils.js';
+import { el, toast, openModal, closeModal, confirmModal, safeUnsubscribe } from './utils.js';
 import { bus, isAllowed } from './state.js';
 import { COLUMN_NAME_RE, COLUMN_TYPES as TYPES } from './constants.js';
 
@@ -144,15 +145,16 @@ function render() {
     ? `${columns.length} columns · ${editableCount} editable · ${lockedCount} locked`
     : `${columns.length} column${columns.length === 1 ? '' : 's'}`;
 
-  // "Add column" is additive and non-destructive — show it in both view
-  // and edit mode so users don't have to enter edit mode just to append a
-  // new column. "Edit schema" is only needed for description edits and
-  // reordering, which *do* modify existing columns.
+  // "+ Add column" lives behind edit mode along with reorder + delete.
+  // Schema changes are treated as a single "editing the schema" mode — the
+  // user explicitly enters it and commits (or exits). Keeps the resting
+  // view read-only, which is the safer default for a production-minded
+  // schema tool.
   const toolbar = el('div', { class: 'pb-toolbar pb-schema-toolbar' }, [
     el('div', { class: 'pb-toolbar-title' }, toolbarTitle),
     editingPill,
     el('div', { style: { flex: '1' } }),
-    addBtn,
+    mode === 'edit' ? addBtn : null,
     toggleBtn
   ].filter(Boolean));
 
@@ -218,9 +220,24 @@ function renderRow(column, idx) {
     ? (column.description || el('span', { class: 'pb-muted' }, '—'))
     : (editing ? renderEditableDescription(column) : (column.description || el('span', { class: 'pb-muted' }, '—')));
 
-  const actions = locked
-    ? el('td', {}, [el('span', { class: 'pb-muted' }, '(locked)')])
-    : el('td', {}, editing ? [] : []);
+  let actions;
+  if (locked) {
+    actions = el('td', {}, [el('span', { class: 'pb-muted' }, '(locked)')]);
+  } else if (editing) {
+    // Delete is destructive (drops the column + wipes it from every row).
+    // Gate behind a type-to-confirm modal so a misclick can't nuke a
+    // column. Only surfaced in edit mode — rest state is read-only.
+    const delBtn = el('button', {
+      type: 'button',
+      class: 'icon-btn icon-btn--danger',
+      'aria-label': `Delete column ${column.name}`,
+      title: `Delete column "${column.name}"`
+    }, [el('span', { class: 'material-symbols-outlined pb-icon-sm' }, 'delete')]);
+    delBtn.addEventListener('click', () => deleteColumnFlow(column));
+    actions = el('td', { class: 'pb-actions-cell' }, [delBtn]);
+  } else {
+    actions = el('td', {}, []);
+  }
 
   const tr = el('tr', {
     dataset: { col: column.name, idx: String(idx) },
@@ -422,6 +439,28 @@ function announce(msg) {
   if (live) { live.textContent = ''; setTimeout(() => { live.textContent = msg; }, 20); }
 }
 
+// ===== Delete column flow =====
+
+async function deleteColumnFlow(column) {
+  const ok = await confirmModal({
+    title: `Delete column "${column.name}"?`,
+    message: `This permanently drops the column from the schema and wipes its values from every record in this layer. This cannot be undone.`,
+    requireText: column.name,
+    confirmLabel: 'Delete column',
+    danger: true
+  });
+  if (!ok) return;
+  try {
+    await api.dropColumn(layer.name, column.name);
+    toast(`Column "${column.name}" deleted`, 'success');
+    bus.emit('schema:changed');
+    await refresh();
+  } catch (err) {
+    const msg = err instanceof ApiError ? `${err.code}: ${err.message}` : (err?.message || 'Failed to delete column');
+    toast(msg, 'error');
+  }
+}
+
 // ===== Add column modal =====
 
 function openAddColumnModal() {
@@ -444,7 +483,11 @@ function openAddColumnModal() {
   nameInput.addEventListener('input', validateName);
 
   const cancelBtn = el('button', { type: 'button', class: 'btn-secondary' }, 'Cancel');
-  const submitBtn = el('button', { type: 'submit', class: 'btn-primary' }, 'Add column');
+  // The submit button lives in the modal footer (outside the <form>), so
+  // `type="submit"` alone won't wire up — clicking would do nothing. Use
+  // `type="button"` and bridge to the form via `requestSubmit()` so both
+  // the button click and Enter-in-field paths fire the same handler.
+  const submitBtn = el('button', { type: 'button', class: 'btn-primary' }, 'Add column');
 
   const form = el('form', { class: 'pb-form', novalidate: true }, [
     el('div', { class: 'pb-field' }, [
@@ -455,8 +498,12 @@ function openAddColumnModal() {
     ]),
     el('div', { class: 'pb-field' }, [el('label', {}, 'Type'), typeSelect]),
     el('div', { class: 'pb-field' }, [el('label', {}, 'Description'), descInput]),
-    submitErr
+    submitErr,
+    // Hidden submit so pressing Enter inside any field triggers form submit
+    // (default browser behavior for implicit submission).
+    el('button', { type: 'submit', style: { display: 'none' } }, '')
   ]);
+  submitBtn.addEventListener('click', () => form.requestSubmit());
 
   form.addEventListener('submit', async (e) => {
     e.preventDefault();
