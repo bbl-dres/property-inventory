@@ -35,10 +35,6 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 **OSM Height Enrichment:** https://bbl-dres.github.io/property-inventory/osm-height
 
 <p align="center">
-  <img src="assets/images/preview1.jpg" width="90%"/>
-</p>
-
-<p align="center">
   <img src="assets/images/preview2.jpg" width="45%" style="vertical-align: top;"/>
   <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
 </p>
