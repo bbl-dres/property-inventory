@@ -23,6 +23,11 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 
 **Prototype with Tabs Views:** https://bbl-dres.github.io/property-inventory/prototype-tabs
 
+<p align="center">
+  <img src="assets/images/preview2.jpg" width="45%" style="vertical-align: top;"/>
+  <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
+</p>
+
 **CR Workflows Prototype:** https://bbl-dres.github.io/property-inventory/prototype-workflows
 
 <p align="center">
@@ -31,13 +36,8 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 
 **GIS Server Prototype:** https://bbl-dres.github.io/property-inventory/prototype-backend
 
-
 **OSM Height Enrichment:** https://bbl-dres.github.io/property-inventory/osm-height
 
-<p align="center">
-  <img src="assets/images/preview2.jpg" width="45%" style="vertical-align: top;"/>
-  <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
-</p>
 
 ## Features
 
