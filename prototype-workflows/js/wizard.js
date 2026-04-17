@@ -207,12 +207,17 @@ function clearLabels() {
   labelMarkers.forEach(m => m.remove());
   labelMarkers = [];
 }
-function addMapLabel(key, value, lngLat, cls, anchor) {
-  if (!lngLat || !wizardMap) return;
-  const el = document.createElement('div');
-  el.className = 'wf-map-label ' + (cls || '');
-  el.innerHTML = '<span class="lbl-key">' + key + '</span> = ' + value;
-  const marker = new maplibregl.Marker({ element: el, anchor: anchor || 'center' })
+function addMapLabels(items, lngLat) {
+  if (!lngLat || !wizardMap || !items.length) return;
+  const wrap = document.createElement('div');
+  wrap.className = 'wf-map-labels';
+  items.forEach(function (item) {
+    var row = document.createElement('div');
+    row.className = 'wf-map-label ' + (item.cls || '');
+    row.innerHTML = '<span class="lbl-key">' + item.key + '</span> = ' + item.value;
+    wrap.appendChild(row);
+  });
+  var marker = new maplibregl.Marker({ element: wrap, anchor: 'center' })
     .setLngLat(lngLat)
     .addTo(wizardMap);
   labelMarkers.push(marker);
@@ -225,6 +230,14 @@ function addMapLabel(key, value, lngLat, cls, anchor) {
 const BUILDING_FOOTPRINT_LAYER = 'ch.swisstopo.vec25-gebaeude'; // VECTOR25 Gebäude (swisstopo), Switzerland-wide
 async function highlightFeaturesAt(lngLat) {
   if (!wizardMap) return;
+  // Immediately clear old highlights while new API calls are in flight
+  clearLabels();
+  var empty = { type: 'FeatureCollection', features: [] };
+  var bClr = wizardMap.getSource('hlBuilding');
+  var pClr = wizardMap.getSource('hlParcel');
+  if (bClr) bClr.setData(empty);
+  if (pClr) pClr.setData(empty);
+
   const point = { lng: lngLat[0], lat: lngLat[1] };
   const [bldg, cad, gwr] = await Promise.all([
     swisstopoIdentify('VECTOR25 Gebäude', point, BUILDING_FOOTPRINT_LAYER),
@@ -248,36 +261,22 @@ async function highlightFeaturesAt(lngLat) {
     const bPoly = firstPolygonFeature(bldgFeatures);
     const cPoly = firstPolygonFeature(cadFeatures);
 
-    // Compute label positions — use polygon centers when available,
-    // otherwise offset from click point to avoid overlapping the marker.
-    var egidPos  = bPoly ? polygonLabelPoint(bPoly.geometry, null) : null;
-    var egridPos = cPoly ? polygonLabelPoint(cPoly.geometry, null) : null;
-    var fallbackN = [lngLat[0], lngLat[1] + 0.00018]; // ~20 m north
-    var fallbackS = [lngLat[0], lngLat[1] - 0.00018]; // ~20 m south
-    if (!egidPos)  egidPos  = fallbackN;
-    if (!egridPos) egridPos = fallbackS;
+    // Place the grouped label at the parcel center (larger polygon),
+    // fall back to building center, then to an offset from the marker.
+    var labelPos = cPoly ? polygonLabelPoint(cPoly.geometry, null) : null;
+    if (!labelPos) labelPos = bPoly ? polygonLabelPoint(bPoly.geometry, null) : null;
+    if (!labelPos) labelPos = [lngLat[0], lngLat[1] + 0.00015];
 
-    // If both positions are very close, nudge apart vertically
-    if (egid && egrid && Math.abs(egidPos[1] - egridPos[1]) < 0.00012) {
-      var mid = (egidPos[1] + egridPos[1]) / 2;
-      egidPos  = [egidPos[0],  mid + 0.00010];
-      egridPos = [egridPos[0], mid - 0.00010];
-    }
-
-    // EGID (building): red label, anchored at bottom → sits above the point
-    if (egid) {
-      addMapLabel('EGID', egid, egidPos, 'building', 'bottom');
-    }
-    // EGRID (parcel): blue label, anchored at top → hangs below the point
-    if (egrid) {
-      addMapLabel('EGRID', egrid, egridPos, 'parcel', 'top');
-    }
+    var items = [];
+    if (egid)  items.push({ key: 'EGID',  value: egid,  cls: 'building' });
+    if (egrid) items.push({ key: 'EGRID', value: egrid, cls: 'parcel' });
+    addMapLabels(items, labelPos);
   }
 
-  if (wizardMap.loaded()) {
+  if (wizardMap.loaded() && wizardMap.getSource('hlBuilding')) {
     applyHighlights();
   } else {
-    wizardMap.once('load', applyHighlights);
+    wizardMap.once('idle', applyHighlights);
   }
 }
 
@@ -356,6 +355,16 @@ function wireSearchClear(inputId, clearId, onClear) {
 }
 wireSearchClear('q', 'qClear', () => {
   results.classList.remove('open');
+  clearLabels();
+  if (wizardMarker) { wizardMarker.remove(); wizardMarker = null; }
+  if (wizardMap) {
+    var empty = { type: 'FeatureCollection', features: [] };
+    var bSrc = wizardMap.getSource('hlBuilding');
+    var pSrc = wizardMap.getSource('hlParcel');
+    if (bSrc) bSrc.setData(empty);
+    if (pSrc) pSrc.setData(empty);
+    wizardMap.flyTo({ center: [8.23, 46.8], zoom: 7.3, duration: 600 });
+  }
 });
 wireSearchClear('crFilter', 'crFilterClear');
 q.addEventListener('focus', () => { if (results.children.length && q.value.trim().length >= 2) results.classList.add('open'); });

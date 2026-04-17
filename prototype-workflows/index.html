@@ -357,7 +357,8 @@
     position: relative; overflow: hidden;
   }
   /* Map header — review mode only: address label + Google Maps link above the map */
-  /* Map labels (EGID / EGRID) placed at polygon poles of inaccessibility */
+  /* Map labels (EGID / EGRID) — grouped column at polygon center */
+  .wf-map-labels { display: flex; flex-direction: column; gap: 3px; align-items: flex-start; pointer-events: none; }
   .wf-map-label {
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 8px;

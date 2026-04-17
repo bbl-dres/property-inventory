@@ -111,7 +111,15 @@ function resetWizard() {
   const comment = document.querySelector('.wf-dash-workflow .wf-comment');
   if (comment) comment.value = '';
   if (wizardMarker) { wizardMarker.remove(); wizardMarker = null; }
-  if (wizardMap) wizardMap.jumpTo({ center: [8.23, 46.8], zoom: 7.3 });
+  clearLabels();
+  if (wizardMap) {
+    var empty = { type: 'FeatureCollection', features: [] };
+    var bSrc = wizardMap.getSource('hlBuilding');
+    var pSrc = wizardMap.getSource('hlParcel');
+    if (bSrc) bSrc.setData(empty);
+    if (pSrc) pSrc.setData(empty);
+    wizardMap.jumpTo({ center: [8.23, 46.8], zoom: 7.3 });
+  }
 }
 
 function enterCreate(entity, fromEnriched) {
