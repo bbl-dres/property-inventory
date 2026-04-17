@@ -14,29 +14,46 @@ Interactive GIS web application mockup for visualizing and managing a real estat
 > **This is an unofficial mockup for demonstration purposes only.**
 > All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
 
-**Simple Version:** https://bbl-dres.github.io/property-inventory/
+## Prototypes
+
+### Main App — Simple Version
+Read-only property inventory with map, list, and gallery views.
+
+https://bbl-dres.github.io/property-inventory/
 
 <p align="center">
   <img src="assets/images/preview6.jpg" width="45%" style="vertical-align: top;"/>
   <img src="assets/images/preview7.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
-**Prototype with Tabs Views:** https://bbl-dres.github.io/property-inventory/prototype-tabs
+### Tabs Views
+Alternative layout using tabbed navigation for map, list, gallery, and detail views.
+
+https://bbl-dres.github.io/property-inventory/prototype-tabs
 
 <p align="center">
   <img src="assets/images/preview2.jpg" width="45%" style="vertical-align: top;"/>
   <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
-**CR Workflows Prototype:** https://bbl-dres.github.io/property-inventory/prototype-workflows
+### CR Workflows
+Write operations (create, mutate, delete) with a four-eyes approval workflow and swisstopo API integration.
+
+https://bbl-dres.github.io/property-inventory/prototype-workflows
 
 <p align="center">
   <img src="assets/images/preview12.jpg" width="90%"/>
 </p>
 
-**GIS Server Prototype:** https://bbl-dres.github.io/property-inventory/prototype-backend
+### GIS Server
+Lightweight frontend for managing layers, schemas, and feature data in a PostGIS-backed REST API.
 
-**OSM Height Enrichment:** https://bbl-dres.github.io/property-inventory/osm-height
+https://bbl-dres.github.io/property-inventory/prototype-backend
+
+### OSM Height Enrichment
+Browser-only tool that enriches OpenStreetMap buildings with accurate heights from Swiss elevation data.
+
+https://bbl-dres.github.io/property-inventory/osm-height
 
 
 ## Features
