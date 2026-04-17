@@ -1,23 +1,23 @@
 {
   "type": "FeatureCollection",
-  "_comment": "CR locations for map display. State drives the marker color. Mirrors data/workflows.json.",
+  "_comment": "CR locations for map display. Coordinates geocoded via swisstopo SearchServer (WGS84). Mirrors data/workflows.json.",
   "features": [
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [7.4425, 46.9470] },
+      "geometry": { "type": "Point", "coordinates": [7.44153, 46.94631] },
       "properties": {
         "cr_id": "cr_20260416_0007",
         "state": "approval",
         "entity": "building",
         "operation": "create",
-        "title": "Bundesgasse 3, Bern",
+        "title": "Bundesgasse 3, 3011 Bern",
         "requester": "u.meier",
         "age": "vor 2 h"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [7.4400, 46.9520] },
+      "geometry": { "type": "Point", "coordinates": [7.43117, 46.94228] },
       "properties": {
         "cr_id": "cr_20260416_0006",
         "state": "approval",
@@ -30,33 +30,33 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [7.2470, 47.1367] },
+      "geometry": { "type": "Point", "coordinates": [7.24811, 47.13499] },
       "properties": {
         "cr_id": "cr_20260416_0005",
         "state": "review",
         "entity": "parcel",
         "operation": "create",
-        "title": "Parzelle 4012, Biel",
+        "title": "Parzelle 4012, Biel/Bienne",
         "requester": "s.rossi",
         "age": "vor 4 h"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [8.3072, 47.0502] },
+      "geometry": { "type": "Point", "coordinates": [8.30857, 47.04584] },
       "properties": {
         "cr_id": "cr_20260414_0012",
         "state": "draft",
         "entity": "building",
         "operation": "create",
-        "title": "Luzern Postgasse",
+        "title": "Bundesplatz 14, 6003 Luzern",
         "requester": "me",
         "age": "vor 2 T"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [8.5417, 47.3769] },
+      "geometry": { "type": "Point", "coordinates": [8.53164, 47.37374] },
       "properties": {
         "cr_id": "cr_20260413_0008",
         "state": "approval",
@@ -69,20 +69,20 @@
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [7.6306, 46.7580] },
+      "geometry": { "type": "Point", "coordinates": [7.63011, 46.75630] },
       "properties": {
         "cr_id": "cr_20260410_0004",
         "state": "applied",
         "entity": "building",
         "operation": "create",
-        "title": "Thun Bahnhofstr. 14",
+        "title": "Bahnhofstrasse 1, 3600 Thun",
         "requester": "r.huber",
         "age": "vor 5 T"
       }
     },
     {
       "type": "Feature",
-      "geometry": { "type": "Point", "coordinates": [8.5300, 47.3800] },
+      "geometry": { "type": "Point", "coordinates": [8.53362, 47.37642] },
       "properties": {
         "cr_id": "cr_20260409_0002",
         "state": "rejected",

@@ -52,7 +52,17 @@
       "Bash(grep -n 'target=\"_blank\"' /c/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-backend/js/*.js)",
       "Bash(grep -h \"^export \" \"c:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\property-inventory\\\\prototype-backend\\\\js\"/*.js)",
       "Bash(ls \"c:\\\\\\\\Users\\\\\\\\DavidRasner\\\\\\\\Documents\\\\\\\\GitHub\\\\\\\\property-inventory\\\\\\\\prototype-workflows\\\\\\\\docs\\\\\\\\\")",
-      "Bash(awk 'NR==1,/^  <section id=\"create-view-TOBEREMOVED\">$/{next} /^  <!-- Workflows dashboard/{flag=1} flag' prototype-workflows/wireframes/index.html)"
+      "Bash(awk 'NR==1,/^  <section id=\"create-view-TOBEREMOVED\">$/{next} /^  <!-- Workflows dashboard/{flag=1} flag' prototype-workflows/wireframes/index.html)",
+      "Bash(head -n 1500 index.html)",
+      "Bash(printf '<script src=\"../js/map.js\"></script>\\\\n<script src=\"../js/workflows.js\"></script>\\\\n<script src=\"../js/wizard.js\"></script>\\\\n')",
+      "Bash(tail -n +2615 index.html)",
+      "Bash(mv index.html.new index.html)",
+      "Bash(node --check js/workflows.js)",
+      "Bash(node --check \"C:/Users/DavidRasner/Documents/GitHub/property-inventory/prototype-workflows/js/workflows.js\")",
+      "Bash(node --check \"C:\\\\Users\\\\DavidRasner\\\\Documents\\\\GitHub\\\\property-inventory\\\\prototype-workflows\\\\js\\\\wizard.js\")",
+      "Bash(grep -n \"\\\\.\\\\./\" index.html js/*.js)",
+      "Bash(node --check wizard.js)",
+      "Bash(node --check workflows.js)"
     ]
   }
 }

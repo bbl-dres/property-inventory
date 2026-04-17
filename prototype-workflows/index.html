@@ -8,8 +8,8 @@
 <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/diagram-js.css">
 <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/bpmn-js.css">
 <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/bpmn-font/css/bpmn.css">
-<link rel="stylesheet" href="../css/tokens.css">
-<link rel="stylesheet" href="../css/styles.css">
+<link rel="stylesheet" href="css/tokens.css">
+<link rel="stylesheet" href="css/styles.css">
 <script src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
 <script src="https://unpkg.com/bpmn-js@17.11.1/dist/bpmn-navigated-viewer.production.min.js"></script>
 <script src="https://unpkg.com/polylabel@2.0.0/polylabel.min.js"></script>
@@ -362,16 +362,15 @@
     display: inline-flex; align-items: center; gap: 4px;
     padding: 3px 8px;
     background: var(--white);
-    border: 1px solid var(--grey-300);
+    border: 1.5px solid var(--grey-300);
     border-radius: var(--radius-sm);
     box-shadow: 0 2px 8px rgba(0,0,0,0.15);
     font-size: 11px; font-family: var(--font-mono);
-    color: var(--grey-900); white-space: nowrap;
-    pointer-events: none;
+    white-space: nowrap; pointer-events: none;
   }
-  .wf-map-label .material-symbols-outlined { font-size: 14px; color: var(--status-active); }
-  .wf-map-label.building { border-color: var(--primary-red); }
-  .wf-map-label.parcel   { border-color: var(--interactive-blue); }
+  .wf-map-label .lbl-key { font-weight: 700; }
+  .wf-map-label.building { border-color: #c00; color: #c00; }
+  .wf-map-label.parcel   { border-color: #005ea8; color: #005ea8; }
 
   /* Standort card — search overlay on map, inline edit toggle */
   .wf-standort-body { padding: 0 !important; position: relative; overflow: hidden; }
@@ -392,44 +391,38 @@
     top: auto; bottom: 44px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.18);
   }
-  /* Default: hide both action groups until mode resolved */
-  .wf-standort-card .wf-review-actions,
+  /* Default: hide edit actions until mode resolved */
   .wf-standort-card .wf-edit-actions { display: none; gap: var(--space-3); align-items: center; }
-  /* Edit mode (new CR): overlay is always visible, no Bearbeiten / Confirm buttons */
+  /* Edit mode (new CR): overlay always visible */
   body.wf-mode-edit .wf-search-overlay { display: block; }
-  /* Review mode: review actions shown by default; overlay & edit actions only when inline-editing */
-  body.wf-mode-review .wf-standort-card:not(.wf-is-editing) .wf-review-actions { display: flex; }
+  /* Review mode: overlay & edit actions only when inline-editing */
   body.wf-mode-review .wf-standort-card.wf-is-editing .wf-edit-actions { display: flex; }
   body.wf-mode-review .wf-standort-card.wf-is-editing .wf-search-overlay { display: block; }
+  /* Map footer shows as flex row in review mode */
+  body.wf-mode-review .wf-map-footer.wf-review-only { display: flex; }
   /* Confirm button picks up a green accent */
   .wf-edit-confirm { color: var(--status-active); }
 
-  /* Legacy map header — kept only for styling compatibility; no longer used */
-  .wf-map-header {
+  /* Map footer bar — review mode: address + Google Maps link below the map */
+  .wf-map-footer {
     display: flex; align-items: center; gap: var(--space-2);
     padding: var(--space-3) var(--space-4);
-    background: var(--white);
-    border-bottom: 1px solid var(--grey-200);
+    background: var(--grey-50);
+    border-top: 1px solid var(--grey-200);
     font-size: var(--text-sm);
   }
-  body.wf-mode-review .wf-map-header.wf-review-only { display: flex; }
-  .wf-map-header .material-symbols-outlined {
+  .wf-map-footer .material-symbols-outlined {
     font-size: var(--icon-md); color: var(--grey-500); flex-shrink: 0;
   }
-  .wf-map-header .address {
+  .wf-map-footer .address {
     flex: 1; color: var(--grey-900); font-weight: var(--font-medium);
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   }
-  .wf-map-header a {
+  .wf-map-footer a {
     color: var(--interactive-blue); text-decoration: none;
     font-size: var(--text-sm); white-space: nowrap; flex-shrink: 0;
   }
-  .wf-map-header a:hover { text-decoration: underline; }
-  .wf-map-header .wf-summary-edit { flex-shrink: 0; }
-  /* When the map header is present (review mode), the map's border-top is redundant */
-  body.wf-mode-review .wf-map-preview {
-    margin-top: 0; border-top: none; border-radius: 0 0 var(--radius-sm) var(--radius-sm);
-  }
+  .wf-map-footer a:hover { text-decoration: underline; }
   .wf-derived .k { color: var(--grey-600); font-size: var(--text-xs); min-width: 110px; }
   .wf-derived .v { flex: 1; font-weight: var(--font-medium); color: var(--grey-900); }
   .wf-derived.empty { background: var(--white); }
@@ -486,6 +479,7 @@
   .wf-summary-grid .v.empty { color: var(--grey-500); font-style: italic; font-weight: var(--font-normal); }
 
   /* Submission info box */
+  .wf-submit-info {
     background: #eef4ff; border: 1px solid #c7d8ff;
     border-radius: var(--radius-md); padding: var(--space-4);
     margin-bottom: var(--space-4); max-width: 900px;
@@ -501,6 +495,9 @@
     min-height: var(--touch-target-min);
   }
   .btn-submit:hover { background: #256d29; }
+
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
 
   /* --- CR Review view --- */
   .wf-review-state {
@@ -521,6 +518,19 @@
   .wf-check.pass .material-symbols-outlined { color: var(--status-active); }
   .wf-check.warn .material-symbols-outlined { color: var(--status-warning); }
   .wf-check.fail .material-symbols-outlined { color: var(--status-error); }
+  .wf-diff { display: grid; grid-template-columns: 1fr; gap: 0; }
+  .wf-diff-row { display: grid; grid-template-columns: minmax(120px, 1fr) 2fr 1fr; gap: var(--space-3); padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--grey-100); align-items: baseline; }
+  .wf-diff-row:last-child { border-bottom: none; }
+  .wf-diff .values { display: flex; align-items: baseline; gap: var(--space-2); flex-wrap: wrap; }
+  .wf-diff .arrow { color: var(--grey-400); font-size: var(--text-xs); }
+  .wf-diff .src.ok::before { content: 'Verifiziert'; font-size: 10px; font-weight: var(--font-semibold); color: var(--status-active); }
+  .wf-diff .src.warn::before { content: 'Warnung'; font-size: 10px; font-weight: var(--font-semibold); color: var(--status-warning); }
+  .wf-diff .src.err::before { content: 'Manuell'; font-size: 10px; font-weight: var(--font-semibold); color: var(--status-error); }
+  .wf-check { display: flex; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-sm); margin-bottom: var(--space-1); }
+  .wf-check .check-body { flex: 1; }
+  .wf-check .check-body strong { display: block; font-size: var(--text-sm); color: var(--grey-900); }
+  .wf-check .check-body small { font-size: var(--text-xs); color: var(--grey-600); }
+  .wf-diff-empty, .wf-checks-empty { padding: var(--space-3); color: var(--grey-500); font-size: var(--text-sm); }
 
   /* Comment + decision */
   .wf-comment {
@@ -826,6 +836,38 @@
   .wf-state.applied   { background: var(--status-active-bg); color: var(--status-active-text); }
   .wf-state.rejected  { background: var(--status-error-bg); color: var(--status-error-text); }
 
+  /* --- Toast notifications --- */
+  .wf-toast-container { position: fixed; bottom: var(--space-4); right: var(--space-4); z-index: 10000; display: flex; flex-direction: column-reverse; gap: var(--space-2); pointer-events: none; }
+  .wf-toast { pointer-events: auto; display: flex; align-items: center; gap: var(--space-2); padding: var(--space-3) var(--space-4); border-radius: var(--radius-md); font-size: var(--text-sm); color: var(--white); box-shadow: 0 4px 16px rgba(0,0,0,0.18); animation: wf-toast-in 0.3s ease; min-width: 280px; max-width: 440px; }
+  .wf-toast.success { background: var(--status-active); }
+  .wf-toast.error { background: var(--status-error); }
+  .wf-toast.warn { background: #e65100; }
+  .wf-toast.info { background: var(--interactive-blue); }
+  .wf-toast .material-symbols-outlined { font-size: 20px; flex-shrink: 0; }
+  .wf-toast.fade-out { animation: wf-toast-out 0.3s ease forwards; }
+  @keyframes wf-toast-in { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+  @keyframes wf-toast-out { from { opacity: 1; } to { opacity: 0; transform: translateY(-8px); } }
+
+
+  /* --- Building picker modal --- */
+  .wf-picker-overlay { position: fixed; inset: 0; z-index: 9000; background: rgba(0,0,0,0.4); display: flex; align-items: center; justify-content: center; }
+  .wf-picker-overlay[hidden] { display: none; }
+  .wf-picker { background: var(--white); border-radius: var(--radius-md); box-shadow: 0 8px 32px rgba(0,0,0,0.2); width: 480px; max-width: 90vw; max-height: 80vh; overflow: hidden; display: flex; flex-direction: column; }
+  .wf-picker-head { padding: var(--space-4); border-bottom: 1px solid var(--grey-200); display: flex; align-items: center; justify-content: space-between; }
+  .wf-picker-head h3 { margin: 0; font-size: var(--text-lg); }
+  .wf-picker-body { padding: 0; overflow-y: auto; flex: 1; }
+  .wf-picker-item { padding: var(--space-3) var(--space-4); border-bottom: 1px solid var(--grey-100); cursor: pointer; display: flex; align-items: center; gap: var(--space-3); }
+  .wf-picker-item:hover { background: var(--grey-50); }
+  .wf-picker-item .material-symbols-outlined { color: var(--grey-500); font-size: 20px; }
+  .wf-picker-item .picker-title { font-weight: var(--font-medium); color: var(--grey-900); }
+  .wf-picker-item .picker-sub { font-size: var(--text-xs); color: var(--grey-500); }
+
+  /* Lock phases 3+4 during edit mode */
+  .wf-mode-edit .wf-phase[data-phase="3"],
+  .wf-mode-edit .wf-phase[data-phase="4"] { opacity: 0.35; pointer-events: none; }
+  .wf-mode-edit .wf-phase[data-phase="3"] .wf-phase-head,
+  .wf-mode-edit .wf-phase[data-phase="4"] .wf-phase-head { cursor: default; }
+
   /* Responsive polish — keep the 900px card readable as viewport shrinks */
   @media (max-width: 1200px) {
     .wf-steps-aside { padding: var(--space-5) var(--space-3); }
@@ -896,9 +938,9 @@
       </button>
 
       <div id="lang-selector">
-        <button id="lang-btn" class="header-btn" title="Sprache wählen" aria-haspopup="true">
+        <button class="header-btn" id="lang-btn" title="Sprache" aria-label="Sprache wählen">
           <span class="material-symbols-outlined" aria-hidden="true">language</span>
-          <span id="lang-current">DE</span>
+          <span>DE</span>
         </button>
       </div>
     </div>
@@ -910,6 +952,7 @@
 </header>
 
 <main class="wf-main">
+  <h1 class="sr-only">Liegenschaften Inventar — Workflows</h1>
   <!-- STATE 1: Map view with both entry points -->
   <section id="map-view">
     <div id="mapCanvas"></div>
@@ -936,8 +979,8 @@
 
     <div class="wf-ctx" id="mapCtx" role="menu">
       <div class="wf-ctx-coords" id="ctxCoords">47.37623, 8.53048</div>
-      <div class="wf-ctx-item" data-action="create" data-entity="building" data-enriched="1">Neues Gebäude hier erfassen</div>
-      <div class="wf-ctx-item" data-action="create" data-entity="parcel" data-enriched="1">Neues Grundstück hier erfassen</div>
+      <div class="wf-ctx-item" role="menuitem" tabindex="-1" data-action="create" data-entity="building" data-enriched="1">Neues Gebäude hier erfassen</div>
+      <div class="wf-ctx-item" role="menuitem" tabindex="-1" data-action="create" data-entity="parcel" data-enriched="1">Neues Grundstück hier erfassen</div>
     </div>
   </section>
 
@@ -961,21 +1004,21 @@
           Dokumentation
         </button>
         <div class="wf-new-wrap">
-          <button class="btn-primary" id="newWfBtn" aria-haspopup="true">
+          <button class="btn-primary" id="newWfBtn" aria-haspopup="true" aria-expanded="false">
             <span class="material-symbols-outlined">add</span>
             Neuer Workflow
             <span class="material-symbols-outlined" style="font-size:16px; margin-left:4px;">expand_more</span>
           </button>
           <div class="wf-new-pop" id="newWfPop" role="menu">
             <div class="wf-new-section">Neu erfassen</div>
-            <div class="wf-new-item" data-action="create" data-entity="building">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-action="create" data-entity="building">
               <div class="wf-new-icon"><span class="material-symbols-outlined">apartment</span></div>
               <div>
                 <div class="wf-new-label">Neues Gebäude</div>
                 <div class="wf-new-sub">Mit Adresssuche starten</div>
               </div>
             </div>
-            <div class="wf-new-item" data-action="create" data-entity="parcel">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-action="create" data-entity="parcel">
               <div class="wf-new-icon"><span class="material-symbols-outlined">crop_square</span></div>
               <div>
                 <div class="wf-new-label">Neues Grundstück</div>
@@ -985,14 +1028,14 @@
 
             <div class="wf-new-sep"></div>
             <div class="wf-new-section">Mutation</div>
-            <div class="wf-new-item" data-wf-todo="mutate-building">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-action="mutate" data-entity="building">
               <div class="wf-new-icon mutate"><span class="material-symbols-outlined">edit</span></div>
               <div>
                 <div class="wf-new-label">Gebäude ändern</div>
                 <div class="wf-new-sub">Bestehendes Objekt auswählen</div>
               </div>
             </div>
-            <div class="wf-new-item" data-wf-todo="mutate-parcel">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-action="mutate" data-entity="parcel">
               <div class="wf-new-icon mutate"><span class="material-symbols-outlined">edit</span></div>
               <div>
                 <div class="wf-new-label">Grundstück ändern</div>
@@ -1002,14 +1045,14 @@
 
             <div class="wf-new-sep"></div>
             <div class="wf-new-section">Löschung</div>
-            <div class="wf-new-item" data-wf-todo="delete-building">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-wf-todo="delete-building">
               <div class="wf-new-icon delete"><span class="material-symbols-outlined">delete</span></div>
               <div>
                 <div class="wf-new-label">Gebäude entfernen</div>
                 <div class="wf-new-sub">Stilllegen oder löschen</div>
               </div>
             </div>
-            <div class="wf-new-item" data-wf-todo="delete-parcel">
+            <div class="wf-new-item" role="menuitem" tabindex="-1" data-wf-todo="delete-parcel">
               <div class="wf-new-icon delete"><span class="material-symbols-outlined">delete</span></div>
               <div>
                 <div class="wf-new-label">Grundstück entfernen</div>
@@ -1205,10 +1248,10 @@
             <div class="wf-summary-body">
               <textarea class="wf-comment" id="stampComment" placeholder="Begründung, Rückfrage oder Bemerkung…"></textarea>
               <div class="wf-decision-row" id="stampDecision">
-                <button class="btn-reject" onclick="alert('Antrag abgelehnt (Demo)')">
+                <button class="btn-reject" data-decision="reject">
                   <span class="material-symbols-outlined">close</span>Ablehnen
                 </button>
-                <button class="btn-approve" onclick="alert('Antrag freigegeben (Demo)')">
+                <button class="btn-approve" data-decision="approve">
                   <span class="material-symbols-outlined">check</span>Freigeben
                 </button>
               </div>
@@ -1228,13 +1271,11 @@
           <div class="wf-step-content active" data-step="1">
             <div class="wf-summary-section wf-standort-card" id="standortCard">
               <div class="wf-summary-head">
-                <h3>Adresse suchen</h3>
-                <div class="wf-standort-actions wf-review-actions">
-                  <button class="wf-summary-edit" data-standort-edit title="Standort korrigieren">
-                    <span class="material-symbols-outlined" style="font-size: 14px;">edit</span>Bearbeiten
-                  </button>
-                  <a href="#" target="_blank" rel="noopener" id="mapExternalLink">auf Google Maps ansehen</a>
-                </div>
+                <h3>Standort</h3>
+                <button class="wf-summary-edit wf-review-only" data-standort-edit title="Standort korrigieren">
+                  <span class="material-symbols-outlined" style="font-size: 14px;">edit</span>Bearbeiten
+                </button>
+                <!-- Inline-edit actions (review mode, after clicking Bearbeiten) -->
                 <div class="wf-standort-actions wf-edit-actions">
                   <button class="wf-summary-edit wf-edit-cancel" data-standort-cancel>
                     <span class="material-symbols-outlined" style="font-size: 14px;">close</span>Abbrechen
@@ -1245,7 +1286,6 @@
                 </div>
               </div>
               <div class="wf-summary-body wf-standort-body">
-                <div class="wf-map-preview" id="wizardMap"></div>
                 <div class="wf-search-wrap wf-search-overlay">
                   <span class="material-symbols-outlined wf-search-icon">search</span>
                   <input class="wf-inp" id="q" placeholder="Adresse, PLZ oder Ort suchen…" autocomplete="off">
@@ -1254,6 +1294,12 @@
                   </button>
                   <div class="wf-results" id="results"></div>
                 </div>
+                <div class="wf-map-preview" id="wizardMap"></div>
+              </div>
+              <div class="wf-map-footer wf-review-only" id="mapHeader">
+                <span class="material-symbols-outlined">location_on</span>
+                <span class="address" id="mapAddress">—</span>
+                <a href="#" target="_blank" rel="noopener noreferrer" id="mapExternalLink">auf Google Maps ansehen</a>
               </div>
             </div>
           </div>
@@ -1401,6 +1447,20 @@
               </div></div>
             </div>
 
+            <div class="wf-summary-section wf-review-only" id="diffSection" hidden>
+              <div class="wf-summary-head"><h3>Änderungen (Diff)</h3></div>
+              <div class="wf-summary-body">
+                <div class="wf-diff" id="diffList"></div>
+              </div>
+            </div>
+
+            <div class="wf-summary-section wf-review-only" id="checksSection" hidden>
+              <div class="wf-summary-head"><h3>Qualitätsprüfungen</h3></div>
+              <div class="wf-summary-body">
+                <div id="checksList"></div>
+              </div>
+            </div>
+
             <div class="wf-summary-section">
               <div class="wf-summary-head"><h3>Bemerkung an Prüfer (optional)</h3></div>
               <div class="wf-summary-body">
@@ -1410,11 +1470,11 @@
 
             <!-- Review-only: decision buttons (Ablehnen / Freigeben) -->
             <div class="wf-decision-row wf-review-only">
-              <button class="btn-reject" onclick="alert('CR → REJECTED (Demo)')">
+              <button class="btn-reject" data-decision="reject">
                 <span class="material-symbols-outlined">close</span>
                 Ablehnen
               </button>
-              <button class="btn-approve" onclick="alert('CR → APPROVED → APPLIED (Demo)')">
+              <button class="btn-approve" data-decision="approve">
                 <span class="material-symbols-outlined">check</span>
                 Freigeben
               </button>
@@ -1498,1119 +1558,18 @@
   </aside>
 </main>
 
-<script>
-  // ===== MapLibre: Carto Positron (light grey) — same default as the parent prototype =====
-  const bgMap = new maplibregl.Map({
-    container: 'mapCanvas',
-    style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-    center: [8.23, 46.8],
-    zoom: 7.3,
-    minZoom: 6,
-    maxZoom: 19,
-    canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true }
-  });
-
-  bgMap.on('error', (e) => console.warn('MapLibre:', e && e.error ? e.error.message : e));
-  bgMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-  window.addEventListener('resize', () => bgMap.resize());
-
-  // ===== Data layers: portfolio buildings + parcels + workflow CRs =====
-  // Color palettes (match tokens.css status colors)
-  const WF_COLORS = {
-    draft:     '#9ca3af',  // grey
-    review:    '#ef6c00',  // orange
-    approval:  '#1976d2',  // blue
-    applied:   '#2e7d32',  // green
-    rejected:  '#d32f2f'   // red
-  };
-  const BLDG_STATUS_COLORS = [
-    'match', ['get', 'bbl_stat'],
-    'Aktiv',         '#2e7d32',
-    'In Renovation', '#ef6c00',
-    'In Planung',    '#1976d2',
-    'Verkauft',      '#6C757D',
-    '#6C757D'
-  ];
-  const CR_STATE_COLORS = [
-    'match', ['get', 'state'],
-    'draft',    WF_COLORS.draft,
-    'review',   WF_COLORS.review,
-    'approval', WF_COLORS.approval,
-    'applied',  WF_COLORS.applied,
-    'rejected', WF_COLORS.rejected,
-    '#9ca3af'
-  ];
-
-  // ===== Data-driven CR table =====
-  const CURRENT_USER = 'me';
-  const STATE_DISPLAY = {
-    draft:    { label: 'Entwurf',     cls: 'draft',     icon: 'edit_note' },
-    review:   { label: 'Eingereicht', cls: 'submitted', icon: 'send' },
-    approval: { label: 'In Prüfung',  cls: 'review',    icon: 'hourglass_top' },
-    applied:  { label: 'Angewendet',  cls: 'applied',   icon: 'check_circle' },
-    rejected: { label: 'Abgelehnt',   cls: 'rejected',  icon: 'cancel' }
-  };
-  const ENTITY_LABELS = { building: 'Gebäude', parcel: 'Grundstück' };
-  const OP_LABELS     = { create: 'Neu', mutate: 'Mutation', delete: 'Löschung' };
-
-  function actorCell(actor) {
-    if (!actor || !actor.user) return '<td>—</td>';
-    if (actor.user === CURRENT_USER) return '<td class="me">Sie</td>';
-    return '<td>' + actor.user + '</td>';
-  }
-
-  function renderCRTable(crs) {
-    const tbody = document.getElementById('crTableBody');
-    if (!tbody) return;
-    if (!crs || !crs.length) {
-      tbody.innerHTML = '<tr><td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--grey-500);">Keine Workflows</td></tr>';
-      return;
-    }
-    tbody.innerHTML = crs.map(cr => {
-      const s = STATE_DISPLAY[cr.state] || STATE_DISPLAY.draft;
-      const entity = ENTITY_LABELS[cr.entity] || cr.entity;
-      const op = OP_LABELS[cr.operation] || cr.operation;
-      const subtitle = cr.id + (cr.subtitle ? ' · ' + cr.subtitle : '');
-      const actors = cr.actors || {};
-      return (
-        '<tr data-action="review" data-cr="' + cr.id + '">' +
-          '<td><span class="wf-state ' + s.cls + '"><span class="material-symbols-outlined">' + s.icon + '</span>' + s.label + '</span></td>' +
-          '<td class="title">' + cr.title + '<small>' + subtitle + '</small></td>' +
-          '<td>' + entity + ' · ' + op + '</td>' +
-          actorCell(actors.requester) +
-          actorCell(actors.steward) +
-          actorCell(actors.approver) +
-          '<td class="age">' + (cr.age || '—') + '</td>' +
-        '</tr>'
-      );
-    }).join('');
-  }
-
-  // ----- URL state: ?cr=<id> or ?new=<entity> -----
-  function setUrl(params) {
-    const url = new URL(window.location);
-    ['cr', 'new'].forEach(k => url.searchParams.delete(k));
-    Object.entries(params || {}).forEach(([k, v]) => { if (v) url.searchParams.set(k, v); });
-    window.history.replaceState({}, '', url);
-  }
-  function getUrl() {
-    const url = new URL(window.location);
-    return { cr: url.searchParams.get('cr'), neu: url.searchParams.get('new') };
-  }
-
-  // Fetch + render — then apply any pending URL state
-  fetch('../data/workflows.json')
-    .then(r => r.json())
-    .then(data => {
-      window.WORKFLOWS = data;
-      renderCRTable(data.crs);
-      // Deep-link: open a specific CR or a new create flow
-      const u = getUrl();
-      if (u.cr) {
-        const cr = data.crs.find(c => c.id === u.cr);
-        if (cr) enterCRDetail(cr.title, cr.id);
-      } else if (u.neu === 'building' || u.neu === 'parcel') {
-        enterCreate(u.neu, false);
-      }
-    })
-    .catch(err => {
-      console.warn('workflows.json failed:', err);
-      const tbody = document.getElementById('crTableBody');
-      if (tbody) tbody.innerHTML = '<tr><td colspan="7" style="padding: var(--space-6); text-align: center; color: var(--status-error-text);">Workflows konnten nicht geladen werden</td></tr>';
-    });
-
-  bgMap.on('load', async () => {
-    // Parcels (polygons) — muted fill behind buildings
-    try {
-      const parcels = await fetch('../data/parcels.geojson').then(r => r.json());
-      bgMap.addSource('parcels', { type: 'geojson', data: parcels });
-      bgMap.addLayer({
-        id: 'parcels-fill', type: 'fill', source: 'parcels',
-        paint: { 'fill-color': '#6C757D', 'fill-opacity': 0.08 }
-      });
-      bgMap.addLayer({
-        id: 'parcels-outline', type: 'line', source: 'parcels',
-        paint: { 'line-color': '#6C757D', 'line-width': 1, 'line-opacity': 0.4 }
-      });
-    } catch (err) { console.warn('parcels failed:', err); }
-
-    // Buildings (points) — colored by bbl_stat
-    try {
-      const buildings = await fetch('../data/buildings.geojson').then(r => r.json());
-      bgMap.addSource('buildings', { type: 'geojson', data: buildings });
-      bgMap.addLayer({
-        id: 'buildings-circles', type: 'circle', source: 'buildings',
-        paint: {
-          'circle-radius': 6,
-          'circle-color': BLDG_STATUS_COLORS,
-          'circle-stroke-color': '#fff',
-          'circle-stroke-width': 1.5,
-          'circle-opacity': 0.9
-        }
-      });
-    } catch (err) { console.warn('buildings failed:', err); }
-
-    // Workflows (CR points) — colored by state, larger + pulsing ring
-    try {
-      const workflows = await fetch('../data/workflows.geojson').then(r => r.json());
-      bgMap.addSource('workflows', { type: 'geojson', data: workflows });
-      bgMap.addLayer({
-        id: 'workflows-ring', type: 'circle', source: 'workflows',
-        paint: {
-          'circle-radius': 14,
-          'circle-color': CR_STATE_COLORS,
-          'circle-opacity': 0.18
-        }
-      });
-      bgMap.addLayer({
-        id: 'workflows-dots', type: 'circle', source: 'workflows',
-        paint: {
-          'circle-radius': 7,
-          'circle-color': CR_STATE_COLORS,
-          'circle-stroke-color': '#fff',
-          'circle-stroke-width': 2
-        }
-      });
-
-      // Click on a workflow point → open its detail pane
-      bgMap.on('click', 'workflows-dots', (e) => {
-        const f = e.features && e.features[0];
-        if (!f) return;
-        const p = f.properties;
-        enterCRDetail(p.title, p.cr_id);
-      });
-      bgMap.on('mouseenter', 'workflows-dots', () => { bgMap.getCanvas().style.cursor = 'pointer'; });
-      bgMap.on('mouseleave', 'workflows-dots', () => { bgMap.getCanvas().style.cursor = ''; });
-    } catch (err) { console.warn('workflows failed:', err); }
-  });
-
-  // ===== State management =====
-  const body = document.body;
-
-  function closeAllMenus() {
-    ctx.classList.remove('open');
-    pin.classList.remove('shown');
-    const nwp = document.getElementById('newWfPop');
-    if (nwp) nwp.classList.remove('open');
-  }
-
-  function clearAllStates() {
-    body.classList.remove('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-dash-docs-active', 'wf-mode-edit', 'wf-mode-review', 'wf-phase-1', 'wf-phase-2', 'wf-phase-3', 'wf-phase-4');
-  }
-
-  function resetWizard() {
-    const q = document.getElementById('q');
-    if (q) q.value = '';
-    // Clear every tagged input/select/textarea so a new workflow doesn't inherit stale values
-    document.querySelectorAll('.wf-dash-workflow [data-field]').forEach(el => {
-      if (el.tagName === 'SELECT') el.selectedIndex = 0;
-      else el.value = '';
-    });
-    const comment = document.querySelector('.wf-dash-workflow .wf-comment');
-    if (comment) comment.value = '';
-    if (wizardMarker) { wizardMarker.remove(); wizardMarker = null; }
-    if (wizardMap) wizardMap.jumpTo({ center: [8.23, 46.8], zoom: 7.3 });
-  }
-
-  function enterCreate(entity, fromEnriched) {
-    clearAllStates();
-    resetWizard();
-    body.classList.add('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-mode-edit');
-    setBodyPhaseClass(2);
-    setUrl({ 'new': entity });
-
-    const title = entity === 'parcel' ? 'Neues Grundstück' : 'Neues Gebäude';
-    crumbCurrent.textContent = title + (fromEnriched ? ' · aus Karte' : '');
-    crumbSep.hidden = false;
-    crumbCurrent.hidden = false;
-
-    if (fromEnriched) {
-      const q = document.getElementById('q');
-      const gP = lastEnrichment && lastEnrichment.gwr;
-      const street = gP && (gP.strname_deinr || gP.strname) || '';
-      const plz    = gP && (gP.dplz4 || gP.plz) || '';
-      const ort    = gP && (gP.ggdename || gP.gdename) || '';
-      const parts  = [street, [plz, ort].filter(Boolean).join(' ')].filter(Boolean);
-      q.value = parts.length ? parts.join(', ') : 'Bundesgasse 3, 3003 Bern';
-    }
-    setEditPhases();
-    renderNewWorkflowMeta(entity);
-    showStep(1);
-    setTimeout(() => {
-      ensureWizardMap();
-      if (fromEnriched) {
-        pickAddress();
-        // If we have the right-click lngLat captured, highlight there too
-        if (lastRightClickLngLat) highlightFeaturesAt([lastRightClickLngLat.lng, lastRightClickLngLat.lat]);
-      }
-    }, 50);
-    closeAllMenus();
-  }
-
-  function exitCreate() {
-    body.classList.remove('wf-dash-workflow-active', 'wf-mode-edit');
-    crumbSep.hidden = true;
-    crumbCurrent.hidden = true;
-    if (crumbState) crumbState.hidden = true;
-    resetWizard();
-    setUrl({});
-  }
-
-  function enterDashboard() {
-    clearAllStates();
-    body.classList.add('wf-dashboard-active');
-    closeAllMenus();
-  }
-
-  function exitDashboard() {
-    clearAllStates();
-    crumbSep.hidden = true;
-    crumbCurrent.hidden = true;
-    if (crumbState) crumbState.hidden = true;
-    resetWizard();
-    setUrl({});
-    setTimeout(() => bgMap.resize(), 50);
-  }
-
-  // CR detail pane inside the dashboard (breadcrumb-navigated)
-  const crumbSep = document.getElementById('crumbSep');
-  const crumbCurrent = document.getElementById('crumbCurrent');
-  const crumbState = document.getElementById('crumbState');
-  const crumbRoot = document.getElementById('crumbRoot');
-
-  function enterCRDetail(title, crId) {
-    body.classList.remove('wf-mode-edit');
-    body.classList.add('wf-dashboard-active', 'wf-dash-workflow-active', 'wf-mode-review');
-    setUrl({ cr: crId });
-    // Look up full CR in the loaded workflows data
-    const cr = window.WORKFLOWS && window.WORKFLOWS.crs.find(c => c.id === crId);
-    renderCR(cr, title);
-    crumbCurrent.textContent = (cr && cr.title) || title;
-    crumbSep.hidden = false;
-    crumbCurrent.hidden = false;
-    if (cr && crumbState) {
-      const s = STATE_DISPLAY[cr.state] || STATE_DISPLAY.draft;
-      crumbState.textContent = s.label;
-      crumbState.hidden = false;
-    }
-    setReviewPhases(cr);
-    showStep(1);
-    setTimeout(() => ensureWizardMap(), 50);
-  }
-
-  // ----- helpers -----
-  function kv(label, value) {
-    const isEmpty = (value === null || value === undefined || value === '' || value === '—');
-    const display = isEmpty ? '—' : value;
-    return '<div><div class="k">' + label + '</div><div class="v' + (isEmpty ? ' empty' : '') + '">' + display + '</div></div>';
-  }
-  function fmtDateTime(iso) {
-    if (!iso) return '';
-    const d = new Date(iso);
-    if (isNaN(d)) return '';
-    return d.toLocaleDateString('de-CH') + ', ' + d.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
-  }
-  function fmtActor(actor) {
-    if (!actor || !actor.user) return '—';
-    const name = actor.user === CURRENT_USER ? 'Sie' : actor.user;
-    const ts = actor.at ? ' · ' + fmtDateTime(actor.at) : '';
-    if (actor.decision === 'approve') return name + ' · freigegeben' + ts;
-    if (actor.decision === 'reject')  return name + ' · abgelehnt' + ts;
-    return name;
-  }
-
-  // Populate the whole review pane from a CR record
-  function renderCR(cr, fallbackTitle) {
-    const a = (cr && cr.actors) || {};
-    const entity = cr ? (ENTITY_LABELS[cr.entity] || cr.entity) : '';
-    const op = cr ? (OP_LABELS[cr.operation] || cr.operation) : '';
-    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
-    setVal('metaRequester', fmtActor(a.requester));
-    setVal('metaSteward',   fmtActor(a.steward));
-    setVal('metaApprover',  fmtActor(a.approver));
-    setVal('metaType',      (op && entity) ? (op + ' · ' + entity) : '');
-
-    const data = (cr && cr.data) || {};
-    const st = data.standort || {}, sm = data.stammdaten || {}, pt = data.portfolio || {};
-
-    // Populate the SAME edit-mode inputs used for Erfassung; in review mode CSS
-    // renders them read-only. One DOM, two modes.
-    const fieldValues = Object.assign({}, sm, pt);
-    document.querySelectorAll('.wf-dash-workflow [data-field]').forEach(el => {
-      const key = el.dataset.field;
-      if (!(key in fieldValues)) return;
-      const v = fieldValues[key];
-      el.value = (v === null || v === undefined) ? '' : String(v);
-    });
-
-    // Map header (review-only): address label + Google Maps link
-    const mapAddress = document.getElementById('mapAddress');
-    const mapExtLink = document.getElementById('mapExternalLink');
-    if (mapAddress) mapAddress.textContent = st.adresse || '—';
-    if (mapExtLink && st.lngLat && Array.isArray(st.lngLat)) {
-      mapExtLink.href = 'https://www.google.com/maps?q=' + st.lngLat[1] + ',' + st.lngLat[0];
-    }
-
-    // Recenter the wizard map on the CR's coordinates + drop a marker
-    if (st.lngLat && Array.isArray(st.lngLat)) {
-      setTimeout(() => {
-        ensureWizardMap();
-        if (wizardMarker) wizardMarker.remove();
-        wizardMarker = new maplibregl.Marker({ color: '#c00' }).setLngLat(st.lngLat).addTo(wizardMap);
-        wizardMap.flyTo({ center: st.lngLat, zoom: 17, duration: 600 });
-      }, 50);
-    }
-
-    // Step 4 summary grids
-    const sumStandort = document.getElementById('summaryStandort');
-    if (sumStandort) sumStandort.innerHTML =
-      kv('Adresse', st.adresse) + kv('Koordinaten (LV95)', st.koordinaten) +
-      kv('EGID', st.egid) + kv('EGRID', st.egrid) +
-      kv('BFS Gemeinde', st.bfs_gemeinde) + kv('Bauzone', st.bauzone);
-    const sumStammdaten = document.getElementById('summaryStammdaten');
-    if (sumStammdaten) sumStammdaten.innerHTML =
-      kv('Objektbezeichnung', sm.bez) + kv('Wirtschaftseinheit', sm.we) +
-      kv('Gebäudeart', sm.gebaeudeart) + kv('Eigentum', sm.eigentum) +
-      kv('Status', sm.status) + kv('Baujahr', sm.baujahr);
-    const sumPortfolio = document.getElementById('summaryPortfolio');
-    if (sumPortfolio) sumPortfolio.innerHTML =
-      kv('Teilportfolio', pt.teilportfolio) + kv('Mietmodell', pt.mietmodell) +
-      kv('Objektverantwortliche', pt.ovtw) + kv('Portfoliomanager', pt.pvtw) +
-      kv('Anschaffungswert', pt.awrt) + kv('Buchwert', pt.bwrt);
-  }
-
-  // Phase sidebar states differ between new (edit) and existing (review) CRs
-  function setEditPhases() {
-    const phases = document.querySelectorAll('.wf-dash-workflow .wf-phase');
-    phases.forEach(p => {
-      p.classList.remove('active', 'done');
-      const num = p.querySelector('.wf-phase-num');
-      if (num) num.innerHTML = p.dataset.phase;
-    });
-    // Phase 1 "Workflow starten" is informational (metadata); the active work is phase 2 "Daten erfassen"
-    const second = document.querySelector('.wf-dash-workflow .wf-phase[data-phase="2"]');
-    if (second) second.classList.add('active');
-  }
-
-  // For a NEW workflow: populate the Workflow-Informationen meta box
-  function renderNewWorkflowMeta(entity) {
-    const setVal = (id, v) => { const el = document.getElementById(id); if (el) el.value = v || ''; };
-    const now = new Date();
-    const nowStr = now.toLocaleDateString('de-CH') + ', ' + now.toLocaleTimeString('de-CH', { hour: '2-digit', minute: '2-digit' });
-    const entLabel = entity === 'parcel' ? 'Grundstück' : 'Gebäude';
-    setVal('metaRequester', 'Sie · ' + nowStr);
-    setVal('metaSteward',   '— noch nicht zugewiesen');
-    setVal('metaApprover',  '— noch nicht zugewiesen');
-    setVal('metaType',      'Neu · ' + entLabel);
-  }
-  // Apply a body class wf-phase-1 / 2 / 3 reflecting which phase is currently expanded
-  function setBodyPhaseClass(idx) {
-    body.classList.remove('wf-phase-1', 'wf-phase-2', 'wf-phase-3', 'wf-phase-4');
-    if (idx >= 1 && idx <= 4) body.classList.add('wf-phase-' + idx);
-  }
-
-  // Populate the Prüfung view (phase 3): show both Data Steward and Approver stamps.
-  function renderStamp(cr) {
-    const actorEl = document.getElementById('stampActor');
-    const decisionEl = document.getElementById('stampDecision');
-    const desc = document.getElementById('stampDesc');
-    if (!actorEl) return;
-    const a = (cr && cr.actors) || {};
-
-    function stampRow(role, actor) {
-      if (!actor || !actor.user) {
-        return '<div class="wf-stamp-actor"><span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">Ausstehend</div><div class="desc">' + role + ' noch nicht zugewiesen.</div></div></div>';
-      }
-      const isMe = actor.user === CURRENT_USER;
-      const name = isMe ? 'Sie' : actor.user;
-      const ts = actor.at ? ' · ' + fmtDateTime(actor.at) : '';
-      if (actor.decision === 'approve') {
-        return '<div class="wf-stamp-actor pass"><span class="material-symbols-outlined">check_circle</span><div class="info"><div class="name">' + name + ' · freigegeben</div><div class="desc">' + role + ts + '</div></div></div>';
-      }
-      if (actor.decision === 'reject') {
-        return '<div class="wf-stamp-actor fail"><span class="material-symbols-outlined">cancel</span><div class="info"><div class="name">' + name + ' · abgelehnt</div><div class="desc">' + role + ts + (actor.comment ? ' · ' + actor.comment : '') + '</div></div></div>';
-      }
-      return '<div class="wf-stamp-actor"><span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">' + name + '</div><div class="desc">' + role + ' · Entscheid ausstehend</div></div></div>';
-    }
-
-    if (desc) desc.textContent = 'Zwei unabhängige Freigaben: zuerst der Data Steward, dann der Approver (4-Augen-Prinzip).';
-    actorEl.outerHTML = '<div id="stampActor" class="wf-stamp-list">' + stampRow('Data Steward', a.steward) + stampRow('Approver', a.approver) + '</div>';
-
-    // Show decision buttons only when the current user is the next actor AND no decision yet
-    const nextPending = !a.steward || !a.steward.decision ? a.steward :
-                       (!a.approver || !a.approver.decision ? a.approver : null);
-    const showButtons = nextPending && nextPending.user === CURRENT_USER;
-    if (decisionEl) decisionEl.style.display = showButtons ? 'flex' : 'none';
-  }
-
-  // Populate the Abschluss view (phase 4): applied info or still-pending note.
-  function renderAbschluss(cr) {
-    const actorEl = document.getElementById('abschlussActor');
-    const desc = document.getElementById('abschlussDesc');
-    if (!actorEl) return;
-    if (cr && cr.state === 'applied') {
-      actorEl.className = 'wf-stamp-actor pass';
-      actorEl.innerHTML = '<span class="material-symbols-outlined">check_circle</span><div class="info"><div class="name">Angewendet</div><div class="desc">' + (cr.applied_at ? new Date(cr.applied_at).toLocaleDateString('de-CH') : 'System') + '</div></div>';
-      if (desc) desc.textContent = 'Der Antrag wurde freigegeben und auf das Portfolio angewendet.';
-    } else if (cr && cr.state === 'rejected') {
-      actorEl.className = 'wf-stamp-actor fail';
-      actorEl.innerHTML = '<span class="material-symbols-outlined">cancel</span><div class="info"><div class="name">Abgelehnt</div><div class="desc">Wird nicht auf das Portfolio angewendet.</div></div>';
-      if (desc) desc.textContent = 'Der Antrag wurde abgelehnt.';
-    } else {
-      actorEl.className = 'wf-stamp-actor';
-      actorEl.innerHTML = '<span class="material-symbols-outlined">hourglass_top</span><div class="info"><div class="name">Noch offen</div><div class="desc">Wird nach Freigabe automatisch angewendet.</div></div>';
-      if (desc) desc.textContent = 'Der Workflow ist noch nicht abgeschlossen.';
-    }
-  }
-
-    // Given the CR's current state, compute which phase is active and which are done
-  function setReviewPhases(cr) {
-    // state → "active phase index"
-    // phases: 1 Workflow starten, 2 Stammdaten, 3 Prüfung, 4 Abschluss
-    const state = cr ? cr.state : 'approval';
-    let activeIdx;
-    if (state === 'draft')         activeIdx = 2;
-    else if (state === 'review')   activeIdx = 3;
-    else if (state === 'approval') activeIdx = 3;
-    else if (state === 'applied')  activeIdx = 4;
-    else if (state === 'rejected') activeIdx = 3;
-    else                           activeIdx = 3;
-
-    document.querySelectorAll('.wf-dash-workflow .wf-phase').forEach(p => {
-      p.classList.remove('active', 'done');
-      const num = p.querySelector('.wf-phase-num');
-      const idx = parseInt(p.dataset.phase);
-      if (idx < activeIdx) {
-        p.classList.add('done');
-        if (num) num.innerHTML = '<span class="material-symbols-outlined">check</span>';
-      } else if (idx === activeIdx) {
-        p.classList.add('active');
-        if (num) num.innerHTML = idx;
-      } else {
-        if (num) num.innerHTML = idx;
-      }
-    });
-    setBodyPhaseClass(activeIdx);
-    if (activeIdx === 3) renderStamp(cr);
-    if (activeIdx === 4) renderAbschluss(cr);
-  }
-
-  function exitCRDetail() {
-    body.classList.remove('wf-dash-workflow-active', 'wf-mode-review');
-    crumbSep.hidden = true;
-    crumbCurrent.hidden = true;
-    if (crumbState) crumbState.hidden = true;
-    setUrl({});
-  }
-
-  crumbRoot.addEventListener('click', () => {
-    if (body.classList.contains('wf-mode-review')) exitCRDetail();
-    else if (body.classList.contains('wf-mode-edit')) exitCreate();
-  });
-
-  // Delegated action handling
-  document.addEventListener('click', (e) => {
-    const createEl = e.target.closest('[data-action="create"]');
-    if (createEl) {
-      enterCreate(createEl.dataset.entity, createEl.dataset.enriched === '1');
-      return;
-    }
-    const reviewEl = e.target.closest('[data-action="review"]');
-    if (reviewEl) {
-      // Read the CR title from the row's .title cell (or fall back to CR id)
-      const titleCell = reviewEl.querySelector('td.title');
-      const title = titleCell ? titleCell.childNodes[0].textContent.trim() : (reviewEl.dataset.cr || 'CR');
-      enterCRDetail(title, reviewEl.dataset.cr);
-    }
-  });
-
-  // ===== Header: Workflows toggle (opens dashboard view) =====
-  const wfBtn = document.getElementById('workflowsBtn');
-  wfBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    if (body.classList.contains('wf-dashboard-active')) {
-      exitDashboard();
-    } else {
-      enterDashboard();
-    }
-  });
-
-  // ===== Dashboard: Zurück button =====
-  document.getElementById('dashBackBtn').addEventListener('click', exitDashboard);
-
-  // ===== Dokumentation pane (BPMN viewer) =====
-  let bpmnViewer = null;
-  function ensureBpmnViewer() {
-    if (bpmnViewer) return bpmnViewer;
-    if (typeof BpmnJS === 'undefined') { console.warn('bpmn-js not loaded'); return null; }
-    // NavigatedViewer variant already bundles wheel-zoom + drag-pan
-    bpmnViewer = new BpmnJS({ container: '#bpmnCanvas' });
-    return bpmnViewer;
-  }
-  function bpmnZoom(step) {
-    if (!bpmnViewer) return;
-    try {
-      const c = bpmnViewer.get('canvas');
-      const current = c.zoom();
-      c.zoom(Math.max(0.2, Math.min(4, current + step)));
-    } catch (e) { console.warn(e); }
-  }
-  function bpmnZoomFit() {
-    if (!bpmnViewer) return;
-    try { bpmnViewer.get('canvas').zoom('fit-viewport'); } catch (e) {}
-  }
-  function loadBpmn(file, label) {
-    const wrap = document.getElementById('bpmnWrap');
-    const placeholder = document.getElementById('bpmnPlaceholder');
-    const title = document.getElementById('docsTitle');
-    const desc = document.getElementById('docsDesc');
-    if (title) title.textContent = label || 'Workflow';
-    if (!file) {
-      if (desc) desc.textContent = 'Noch nicht dokumentiert.';
-      if (placeholder) placeholder.textContent = 'Kein Diagramm verfügbar';
-      if (wrap) wrap.classList.add('no-bpmn');
-      return;
-    }
-    if (desc) desc.textContent = 'BPMN-Prozessdiagramm.';
-    if (wrap) wrap.classList.remove('no-bpmn');
-    const v = ensureBpmnViewer();
-    if (!v) {
-      if (placeholder) placeholder.textContent = 'BPMN-Viewer konnte nicht geladen werden.';
-      if (wrap) wrap.classList.add('no-bpmn');
-      return;
-    }
-    fetch('../assets/workflows/' + file)
-      .then(r => r.text())
-      .then(xml => v.importXML(xml))
-      .then(() => { try { v.get('canvas').zoom('fit-viewport'); } catch(e) {} })
-      .catch(err => {
-        console.warn('BPMN load failed:', err);
-        if (placeholder) placeholder.textContent = 'BPMN-Datei konnte nicht geladen werden.';
-        if (wrap) wrap.classList.add('no-bpmn');
-      });
-  }
-  document.getElementById('dashDocsBtn').addEventListener('click', () => {
-    const active = body.classList.toggle('wf-dash-docs-active');
-    if (active) {
-      // Load the currently selected item
-      const selected = document.querySelector('.wf-docs-item.active') || document.querySelector('.wf-docs-item');
-      if (selected) loadBpmn(selected.dataset.bpmn, selected.dataset.label);
-    }
-  });
-  document.getElementById('docsList').addEventListener('click', (e) => {
-    const item = e.target.closest('.wf-docs-item');
-    if (!item) return;
-    document.querySelectorAll('.wf-docs-item').forEach(el => el.classList.remove('active'));
-    item.classList.add('active');
-    loadBpmn(item.dataset.bpmn, item.dataset.label);
-  });
-
-  // Zoom buttons (for keyboard / non-mouse users)
-  const zIn = document.getElementById('bpmnZoomIn');
-  const zOut = document.getElementById('bpmnZoomOut');
-  const zFit = document.getElementById('bpmnZoomFit');
-  if (zIn)  zIn.addEventListener('click',  () => bpmnZoom(0.2));
-  if (zOut) zOut.addEventListener('click', () => bpmnZoom(-0.2));
-  if (zFit) zFit.addEventListener('click', bpmnZoomFit);
-
-  // ===== Dashboard: "Neuer Workflow" popover =====
-  const newWfBtn = document.getElementById('newWfBtn');
-  const newWfPop = document.getElementById('newWfPop');
-  newWfBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    newWfPop.classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    if (!newWfPop.contains(e.target) && !newWfBtn.contains(e.target)) {
-      newWfPop.classList.remove('open');
-    }
-  });
-
-  // Mutate / delete placeholders — route later to picker + wizard
-  document.addEventListener('click', (e) => {
-    const todo = e.target.closest('[data-wf-todo]');
-    if (!todo) return;
-    newWfPop.classList.remove('open');
-    const map = {
-      'mutate-building':  'Mutation Gebäude — nächster Schritt: Objektauswahl (per Karte oder Liste)',
-      'mutate-parcel':    'Mutation Grundstück — nächster Schritt: Grundstücksauswahl',
-      'delete-building':  'Löschung Gebäude — Soft-Delete (Status → Stillgelegt) oder Hard-Delete',
-      'delete-parcel':    'Löschung Grundstück — Soft-Delete oder Hard-Delete'
-    };
-    alert(map[todo.dataset.wfTodo] || 'Noch nicht implementiert');
-  });
-
-  // ===== Filter panel toggle =====
-  const fpBtn = document.getElementById('filter-panel-btn');
-  const fp = document.getElementById('filter-panel');
-  fpBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    fp.classList.toggle('open');
-    fpBtn.classList.toggle('panel-open', fp.classList.contains('open'));
-  });
-
-  // ===== Map context menu =====
-  const mapView = document.getElementById('map-view');
-  const ctx = document.getElementById('mapCtx');
-  const pin = document.getElementById('pin');
-  const coordsEl = document.getElementById('ctxCoords');
-
-  // ===== swisstopo API query logger =====
-  const apiLog = document.getElementById('apiLog');
-  const apiLogTab = document.getElementById('apiLogTab');
-  const apiLogBody = document.getElementById('apiLogBody');
-  const apiLogBadge = document.getElementById('apiLogBadge');
-  const apiLogClear = document.getElementById('apiLogClear');
-  let apiLogCount = 0;
-  function logApi(label, url, result) {
-    apiLogCount++;
-    if (apiLogBadge) { apiLogBadge.textContent = apiLogCount; apiLogBadge.hidden = false; }
-    if (apiLogBody.querySelector('.wf-api-empty')) apiLogBody.innerHTML = '';
-    const entry = document.createElement('div');
-    entry.className = 'wf-api-entry';
-    const ok = result && !result.error;
-    let summary = '';
-    try {
-      if (result && result.results) summary = result.results.length + ' Feature(s)';
-      if (result && result.error) summary = 'Fehler: ' + result.error;
-    } catch(e){}
-    entry.innerHTML =
-      '<span class="tag ' + (ok ? 'ok' : (result ? 'err' : '')) + '">' + label + '</span>' +
-      '<a class="url" href="' + url + '" target="_blank" rel="noopener">' + url.replace(/^https?:\/\/[^\/]+/, '') + '</a>' +
-      (summary ? '<div class="summary">' + summary + '</div>' : '');
-    apiLogBody.prepend(entry);
-    console.log('[swisstopo]', label, url, result);
-  }
-  if (apiLogTab) apiLogTab.addEventListener('click', () => {
-    const open = apiLog.dataset.open === '1';
-    apiLog.dataset.open = open ? '0' : '1';
-    apiLogTab.setAttribute('aria-expanded', open ? 'false' : 'true');
-  });
-  if (apiLogClear) apiLogClear.addEventListener('click', () => {
-    apiLogBody.innerHTML = '<div class="wf-api-empty">Rechtsklick auf die Karte — Abfragen erscheinen hier.</div>';
-    apiLogCount = 0; apiLogBadge.hidden = true;
-  });
-
-  // swisstopo identify helper (WGS84 lngLat → layer features). Optional tolerance in pixels.
-  async function swisstopoIdentify(label, lngLat, layerId, tolerance) {
-    const delta = 0.0005; // ~50 m
-    const url = new URL('https://api3.geo.admin.ch/rest/services/api/MapServer/identify');
-    url.searchParams.set('geometry', lngLat.lng + ',' + lngLat.lat);
-    url.searchParams.set('geometryType', 'esriGeometryPoint');
-    url.searchParams.set('geometryFormat', 'geojson');
-    url.searchParams.set('imageDisplay', '256,256,96');
-    url.searchParams.set('mapExtent',
-      (lngLat.lng - delta) + ',' + (lngLat.lat - delta) + ',' +
-      (lngLat.lng + delta) + ',' + (lngLat.lat + delta));
-    url.searchParams.set('tolerance', String(tolerance || 10));
-    url.searchParams.set('layers', 'all:' + layerId);
-    url.searchParams.set('returnGeometry', 'true');
-    url.searchParams.set('sr', '4326');
-    url.searchParams.set('lang', 'de');
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      logApi(label, url.toString(), data);
-      return data;
-    } catch (err) {
-      logApi(label, url.toString(), { error: err.message });
-      return null;
-    }
-  }
-
-  function fmtM2(v) {
-    if (v === null || v === undefined || v === '') return null;
-    const n = parseFloat(v);
-    if (isNaN(n)) return null;
-    return n.toLocaleString('de-CH', { maximumFractionDigits: 0 }) + ' m²';
-  }
-
-  // Latest enrichment captured on right-click (consumed when entering Create)
-  let lastEnrichment = null;
-  let lastRightClickLngLat = null;
-
-  function showCtx(point, lngLat) {
-    pin.style.left = point.x + 'px';
-    pin.style.top  = point.y + 'px';
-    pin.classList.add('shown');
-
-    const menuW = 260, menuH = 120;
-    const rect = mapView.getBoundingClientRect();
-    const left = Math.min(point.x, rect.width  - menuW - 8);
-    const top  = Math.min(point.y, rect.height - menuH - 8);
-    ctx.style.left = left + 'px';
-    ctx.style.top  = top + 'px';
-
-    coordsEl.textContent = lngLat.lat.toFixed(5) + ', ' + lngLat.lng.toFixed(5);
-    lastRightClickLngLat = { lng: lngLat.lng, lat: lngLat.lat };
-    lastEnrichment = null;
-    ctx.classList.add('open');
-
-    // Eager fetch: stash nearest address + cadastre so the Create form can prefill instantly.
-    Promise.all([
-      swisstopoIdentify('GWR',      lngLat, 'ch.bfs.gebaeude_wohnungs_register'),
-      swisstopoIdentify('Kataster', lngLat, 'ch.kantone.cadastralwebmap-farbe')
-    ]).then(([gwr, cad]) => {
-      const gFeat = gwr && gwr.results && gwr.results[0];
-      const cFeat = cad && cad.results && cad.results[0];
-      const gP = gFeat ? (gFeat.properties || gFeat.attributes || {}) : null;
-      const cP = cFeat ? (cFeat.properties || cFeat.attributes || {}) : null;
-      lastEnrichment = { gwr: gP, cadastre: cP };
-    });
-  }
-
-  // Right-click on the MapLibre map → context menu at canvas point + lngLat
-  bgMap.on('contextmenu', (e) => {
-    e.preventDefault();
-    showCtx(e.point, e.lngLat);
-  });
-
-  // Close context menu on outside click + on map drag
-  document.addEventListener('click', (e) => {
-    if (!ctx.contains(e.target)) {
-      ctx.classList.remove('open'); pin.classList.remove('shown');
-    }
-  });
-  bgMap.on('movestart', () => {
-    ctx.classList.remove('open'); pin.classList.remove('shown');
-  });
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && ctx.classList.contains('open')) {
-      ctx.classList.remove('open'); pin.classList.remove('shown');
-    }
-  });
-
-  // ===== Wizard Step 1: address search + mini MapLibre map =====
-  const q = document.getElementById('q');
-  const results = document.getElementById('results');
-
-  // Lazily-initialised wizard map (Create pane)
-  let wizardMap = null;
-  let wizardMarker = null;
-  function ensureWizardMap() {
-    if (wizardMap) { wizardMap.resize(); return; }
-    wizardMap = new maplibregl.Map({
-      container: 'wizardMap',
-      style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
-      center: [8.23, 46.8],
-      zoom: 7.3,
-      canvasContextAttributes: { antialias: true }
-    });
-    wizardMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
-    wizardMap.on('load', () => {
-      // Empty highlight sources for building footprint + parcel polygon
-      const empty = { type: 'FeatureCollection', features: [] };
-      wizardMap.addSource('hlParcel',   { type: 'geojson', data: empty });
-      wizardMap.addSource('hlBuilding', { type: 'geojson', data: empty });
-      wizardMap.addLayer({
-        id: 'hlParcelFill', type: 'fill', source: 'hlParcel',
-        paint: { 'fill-color': '#005ea8', 'fill-opacity': 0.08 }
-      });
-      wizardMap.addLayer({
-        id: 'hlParcelLine', type: 'line', source: 'hlParcel',
-        paint: { 'line-color': '#005ea8', 'line-width': 2 }
-      });
-      wizardMap.addLayer({
-        id: 'hlBuildingFill', type: 'fill', source: 'hlBuilding',
-        paint: { 'fill-color': '#c00', 'fill-opacity': 0.25 }
-      });
-      wizardMap.addLayer({
-        id: 'hlBuildingLine', type: 'line', source: 'hlBuilding',
-        paint: { 'line-color': '#c00', 'line-width': 2 }
-      });
-    });
-  }
-
-  // ---- polygon label placement (pole of inaccessibility via polylabel) ----
-  function ringArea(ring) {
-    let a = 0;
-    for (let i = 0, n = ring.length; i < n - 1; i++) {
-      a += (ring[i+1][0] - ring[i][0]) * (ring[i+1][1] + ring[i][1]);
-    }
-    return Math.abs(a / 2);
-  }
-  function polygonLabelPoint(geometry, fallback) {
-    if (!geometry) return fallback || null;
-    if (geometry.type === 'Point') return geometry.coordinates;
-    if (typeof polylabel !== 'function') return fallback || null;
-    if (geometry.type === 'Polygon') {
-      try { return polylabel(geometry.coordinates, 1e-5); } catch (e) { return fallback || null; }
-    }
-    if (geometry.type === 'MultiPolygon') {
-      // Pick the largest polygon by outer-ring area, then run polylabel on it
-      let biggest = geometry.coordinates[0];
-      let biggestA = ringArea(biggest[0]);
-      for (let i = 1; i < geometry.coordinates.length; i++) {
-        const a = ringArea(geometry.coordinates[i][0]);
-        if (a > biggestA) { biggestA = a; biggest = geometry.coordinates[i]; }
-      }
-      try { return polylabel(biggest, 1e-5); } catch (e) { return fallback || null; }
-    }
-    return fallback || null;
-  }
-
-  // ---- map label markers ----
-  let labelMarkers = [];
-  function clearLabels() {
-    labelMarkers.forEach(m => m.remove());
-    labelMarkers = [];
-  }
-  function addMapLabel(text, lngLat, cls) {
-    if (!lngLat || !wizardMap) return;
-    const el = document.createElement('div');
-    el.className = 'wf-map-label ' + (cls || '');
-    el.innerHTML = '<span class="material-symbols-outlined">check_circle</span><span>' + text + '</span>';
-    const marker = new maplibregl.Marker({ element: el, anchor: 'center' })
-      .setLngLat(lngLat)
-      .addTo(wizardMap);
-    labelMarkers.push(marker);
-  }
-
-  // Three parallel identify calls at the picked location:
-  //   - VECTOR25 Gebäude (swisstopo) → polygon footprint (highlight)
-  //   - ÖREB / cadastral webmap → parcel polygon + EGRID (highlight + verify)
-  //   - GWR → EGID + building attrs (verify)
-  const BUILDING_FOOTPRINT_LAYER = 'ch.swisstopo.vec25-gebaeude'; // VECTOR25 Gebäude (swisstopo), Switzerland-wide
-  async function highlightFeaturesAt(lngLat) {
-    if (!wizardMap) return;
-    const point = { lng: lngLat[0], lat: lngLat[1] };
-    const [bldg, cad, gwr] = await Promise.all([
-      swisstopoIdentify('VECTOR25 Gebäude', point, BUILDING_FOOTPRINT_LAYER),
-      swisstopoIdentify('Kataster',          point, 'ch.kantone.cadastralwebmap-farbe'),
-      swisstopoIdentify('GWR',               point, 'ch.bfs.gebaeude_wohnungs_register')
-    ]);
-    const bldgFeatures = (bldg && bldg.results) || [];
-    const cadFeatures  = (cad  && cad.results)  || [];
-    const bSrc = wizardMap.getSource('hlBuilding');
-    const pSrc = wizardMap.getSource('hlParcel');
-    if (bSrc) bSrc.setData({ type: 'FeatureCollection', features: bldgFeatures });
-    if (pSrc) pSrc.setData({ type: 'FeatureCollection', features: cadFeatures });
-
-    // EGID + EGRID both come from GWR (point feature at the building entrance).
-    // Cadastre polygon is used only to position the EGRID label.
-    const gP = gwr && gwr.results && gwr.results[0] && (gwr.results[0].properties || gwr.results[0].attributes);
-    const egid  = gP && gP.egid  ? String(gP.egid)  : null;
-    const egrid = gP && (gP.egrid || gP.egris_egrid) ? String(gP.egrid || gP.egris_egrid) : null;
-
-    // Place map labels at each polygon's pole of inaccessibility.
-    // swisstopo identify can mix Point/Polygon features in one result set (e.g. parcel-number
-    // labelpoints alongside the boundary polygon). Pick the first Polygon/MultiPolygon.
-    clearLabels();
-    const bPoly = firstPolygonFeature(bldgFeatures);
-    const cPoly = firstPolygonFeature(cadFeatures);
-    console.debug('[label] building feature:', bPoly && bPoly.geometry && bPoly.geometry.type, 'of', bldgFeatures.length);
-    console.debug('[label] parcel feature:',   cPoly && cPoly.geometry && cPoly.geometry.type, 'of', cadFeatures.length);
-    if (egid) {
-      const labelAt = polygonLabelPoint(bPoly && bPoly.geometry, lngLat);
-      addMapLabel('EGID ' + egid, labelAt, 'building');
-    }
-    if (egrid) {
-      const labelAt = polygonLabelPoint(cPoly && cPoly.geometry, lngLat);
-      addMapLabel('EGRID ' + egrid, labelAt, 'parcel');
-    }
-  }
-
-  function firstPolygonFeature(features) {
-    if (!features) return null;
-    for (const f of features) {
-      const t = f && f.geometry && f.geometry.type;
-      if (t === 'Polygon' || t === 'MultiPolygon') return f;
-    }
-    return null;
-  }
-
-  // ===== swisstopo SearchServer — live address search =====
-  let searchDebounce = null;
-  async function swisstopoSearch(query) {
-    const url = new URL('https://api3.geo.admin.ch/rest/services/api/SearchServer');
-    url.searchParams.set('type', 'locations');
-    url.searchParams.set('origins', 'address,gazetteer');
-    url.searchParams.set('searchText', query);
-    url.searchParams.set('sr', '4326');
-    url.searchParams.set('limit', '8');
-    url.searchParams.set('lang', 'de');
-    try {
-      const res = await fetch(url);
-      const data = await res.json();
-      logApi('Search', url.toString(), data);
-      return data.results || [];
-    } catch (err) {
-      logApi('Search', url.toString(), { error: err.message });
-      return [];
-    }
-  }
-  function renderSearchResults(items) {
-    if (!items.length) {
-      results.innerHTML = '<div style="padding: var(--space-2) var(--space-3); color: var(--grey-500); font-size: var(--text-xs);">Keine Treffer</div>';
-      results.classList.add('open');
-      return;
-    }
-    results.innerHTML = items.map(r => {
-      // r.attrs.label contains HTML with <b> highlights. Keep them, escape the rest? The API already sanitises.
-      return '<div data-pick data-lat="' + r.attrs.lat + '" data-lon="' + r.attrs.lon + '">' + r.attrs.label + '</div>';
-    }).join('');
-    results.classList.add('open');
-  }
-  q.addEventListener('input', () => {
-    clearTimeout(searchDebounce);
-    const query = q.value.trim();
-    const clearBtn = document.getElementById('qClear');
-    if (clearBtn) clearBtn.classList.toggle('visible', q.value.length > 0);
-    if (typeof clearLabels === 'function') clearLabels();
-    if (query.length < 2) { results.classList.remove('open'); return; }
-    searchDebounce = setTimeout(async () => {
-      const items = await swisstopoSearch(query);
-      renderSearchResults(items);
-    }, 300);
-  });
-
-  // Clear-button wiring (reusable for any search input + clear button)
-  function wireSearchClear(inputId, clearId, onClear) {
-    const input = document.getElementById(inputId);
-    const clearBtn = document.getElementById(clearId);
-    if (!input || !clearBtn) return;
-    input.addEventListener('input', () => {
-      clearBtn.classList.toggle('visible', input.value.length > 0);
-    });
-    clearBtn.addEventListener('click', () => {
-      input.value = '';
-      clearBtn.classList.remove('visible');
-      input.focus();
-      // Fire input event so any listeners react to the clear
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      if (onClear) onClear();
-    });
-  }
-  wireSearchClear('q', 'qClear', () => {
-    results.classList.remove('open');
-  });
-  wireSearchClear('crFilter', 'crFilterClear');
-  q.addEventListener('focus', () => { if (results.children.length && q.value.trim().length >= 2) results.classList.add('open'); });
-  document.addEventListener('click', (e) => {
-    if (!e.target.closest('.wf-search-wrap')) results.classList.remove('open');
-  });
-  // Delegated click on results (works across rebuilds)
-  results.addEventListener('click', (e) => {
-    const el = e.target.closest('[data-pick]');
-    if (!el) return;
-    // Strip HTML for the text input
-    const tmp = document.createElement('div'); tmp.innerHTML = el.innerHTML;
-    q.value = tmp.textContent || '';
-    results.classList.remove('open');
-    const lat = parseFloat(el.dataset.lat);
-    const lon = parseFloat(el.dataset.lon);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      pickAddress([lon, lat]);
-      highlightFeaturesAt([lon, lat]);
-    }
-  });
-
-  // ===== Wizard navigation (steps 1 → 4) =====
-  const STEPS = {
-    1: { title: 'Standort',              desc: 'Adresse suchen oder Punkt auf der Karte wählen. Identifikatoren werden automatisch aus swisstopo ermittelt.' },
-    2: { title: 'Stammdaten',            desc: 'Objektbezeichnung, Klassifizierung und Zeitdaten.' },
-    3: { title: 'Portfolio & Merkmale',  desc: 'Portfolio-Zuordnung, Zuständigkeiten und Finanzdaten.' },
-    4: { title: 'Prüfen & Einreichen',   desc: 'Daten prüfen und Auftrag zur 4-Augen-Prüfung einreichen.' }
-  };
-  let currentStep = 1;
-  const stepTitle = document.getElementById('stepTitle');
-  const stepDesc = document.getElementById('stepDesc');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  const contentEl = document.querySelector('.wf-dash-workflow .wf-content');
-
-  function showStep(n) {
-    currentStep = n;
-    document.querySelectorAll('.wf-dash-workflow .wf-step-content').forEach(el => {
-      el.classList.toggle('active', parseInt(el.dataset.step) === n);
-    });
-    // Sub-steps in the Entwurf phase reflect form progress
-    document.querySelectorAll('#stepSidebar .wf-sub').forEach(el => {
-      const s = parseInt(el.dataset.step);
-      if (!s) return;
-      el.classList.toggle('active', s === n);
-      el.classList.toggle('done', s < n);
-      const icon = el.querySelector('.wf-sub-status');
-      if (icon) {
-        icon.textContent = s < n ? 'check_circle' : (s === n ? 'radio_button_checked' : 'radio_button_unchecked');
-      }
-    });
-    stepTitle.textContent = STEPS[n].title;
-    stepDesc.textContent = STEPS[n].desc;
-    prevBtn.disabled = n === 1;
-    if (n === 4) {
-      nextBtn.className = 'btn-submit';
-      nextBtn.innerHTML = '<span class="material-symbols-outlined">send</span>Einreichen';
-    } else {
-      nextBtn.className = 'btn-primary';
-      nextBtn.innerHTML = 'Weiter<span class="material-symbols-outlined">chevron_right</span>';
-    }
-    if (contentEl) contentEl.scrollTop = 0;
-  }
-
-  prevBtn.addEventListener('click', () => { if (currentStep > 1) showStep(currentStep - 1); });
-  nextBtn.addEventListener('click', () => {
-    if (currentStep < 4) {
-      showStep(currentStep + 1);
-    } else {
-      alert('Auftrag eingereicht · CR angelegt, Status SUBMITTED\n→ Benachrichtigung an Data Steward');
-      exitCreate();
-      showStep(1);
-    }
-  });
-
-  document.getElementById('stepSidebar').addEventListener('click', (e) => {
-    const s = e.target.closest('.wf-sub');
-    if (s && s.dataset.step) { showStep(parseInt(s.dataset.step)); return; }
-    const phaseHead = e.target.closest('.wf-phase-head');
-    if (phaseHead) {
-      const phaseEl = phaseHead.closest('.wf-phase');
-      if (!phaseEl || phaseEl.classList.contains('active')) return;
-      document.querySelectorAll('#stepSidebar .wf-phase').forEach(p => p.classList.remove('active'));
-      phaseEl.classList.add('active');
-      const idx = parseInt(phaseEl.dataset.phase);
-      setBodyPhaseClass(idx);
-      const crId = new URL(window.location).searchParams.get('cr');
-      const cr = window.WORKFLOWS && window.WORKFLOWS.crs.find(c => c.id === crId);
-      if (idx === 2) showStep(1);
-      else if (idx === 3) renderStamp(cr);
-      else if (idx === 4) renderAbschluss(cr);
-    }
-  });
-
-  // Section "Bearbeiten" buttons (review mode) — would launch a Mutation workflow for that section
-  document.addEventListener('click', (e) => {
-    const btn = e.target.closest('[data-edit-section]');
-    if (btn) {
-      const section = btn.dataset.editSection;
-      alert('Änderungsantrag "' + section + '" starten (Demo) — würde einen Mutation-Workflow für diesen Abschnitt anlegen.');
-    }
-  });
-
-  // Standort card inline edit (Bearbeiten / Bestätigen / Abbrechen)
-  document.addEventListener('click', (e) => {
-    const card = document.getElementById('standortCard');
-    if (!card) return;
-    if (e.target.closest('[data-standort-edit]'))   { card.classList.add('wf-is-editing'); return; }
-    if (e.target.closest('[data-standort-confirm]')) { card.classList.remove('wf-is-editing'); alert('Neuer Standort bestätigt (Demo) — würde einen Mutation-Workflow speichern.'); return; }
-    if (e.target.closest('[data-standort-cancel]'))  { card.classList.remove('wf-is-editing'); return; }
-  });
-
-  // "Bearbeiten" jump-back buttons inside the Step 4 summary
-  document.addEventListener('click', (e) => {
-    const jumper = e.target.closest('[data-goto]');
-    if (jumper && body.classList.contains('wf-dash-workflow-active')) {
-      showStep(parseInt(jumper.dataset.goto));
-    }
-  });
-
-  function pickAddress(coords) {
-    ensureWizardMap();
-    const lngLat = coords || [7.4425, 46.9470]; // default: Bundesgasse 3, Bern
-    if (wizardMarker) wizardMarker.remove();
-    wizardMarker = new maplibregl.Marker({ color: '#c00' }).setLngLat(lngLat).addTo(wizardMap);
-    wizardMap.flyTo({ center: lngLat, zoom: 17, duration: 900 });
-  }
-</script>
+<div class="wf-picker-overlay" id="pickerOverlay" hidden>
+  <div class="wf-picker">
+    <div class="wf-picker-head">
+      <h3 id="pickerTitle">Objekt auswählen</h3>
+      <button class="btn-icon" id="pickerClose" aria-label="Schliessen"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="wf-picker-body" id="pickerBody"></div>
+  </div>
+</div>
+<div class="wf-toast-container" id="toastContainer"></div>
+<script src="js/map.js"></script>
+<script src="js/workflows.js"></script>
+<script src="js/wizard.js"></script>
 </body>
 </html>

@@ -33,7 +33,7 @@
       "state": "approval",
       "entity": "building",
       "operation": "create",
-      "title": "Bundesgasse 3, Bern",
+      "title": "Bundesgasse 3, 3011 Bern",
       "target_bbl_id": null,
       "actors": {
         "requester": {
@@ -129,15 +129,15 @@
       "subtitle": "1 Qualitätswarnung",
       "data": {
         "standort": {
-          "adresse": "Bundesgasse 3, 3003 Bern",
+          "adresse": "Bundesgasse 3, 3011 Bern",
           "koordinaten": "2'600'950 / 1'199'800",
           "egid": "150404927",
           "egrid": "CH123456789012",
           "bfs_gemeinde": "Bern (351)",
           "bauzone": "Kernzone K3",
           "lngLat": [
-            7.4425,
-            46.947
+            7.44153,
+            46.94631
           ]
         },
         "stammdaten": {
@@ -210,15 +210,15 @@
       "subtitle": "2 Felder",
       "data": {
         "standort": {
-          "adresse": "BBL-01287 · Belpstrasse 48, 3007 Bern",
+          "adresse": "Belpstrasse 48, 3007 Bern",
           "koordinaten": "2'600'120 / 1'198'540",
           "egid": "150402311",
           "egrid": "CH123456700000",
           "bfs_gemeinde": "Bern (351)",
           "bauzone": "Arbeitszone A2",
           "lngLat": [
-            7.44,
-            46.952
+            7.43117,
+            46.94228
           ]
         },
         "stammdaten": {
@@ -250,7 +250,7 @@
       "state": "review",
       "entity": "parcel",
       "operation": "create",
-      "title": "Parzelle 4012, Biel",
+      "title": "Parzelle 4012, Biel/Bienne",
       "actors": {
         "requester": {
           "user": "s.rossi",
@@ -268,15 +268,15 @@
       "subtitle": "",
       "data": {
         "standort": {
-          "adresse": "Parzelle 4012, 2502 Biel/Bienne",
+          "adresse": "Zentralstrasse 60, 2502 Biel/Bienne",
           "koordinaten": "2'587'650 / 1'220'310",
           "egid": "—",
           "egrid": "CH987654321012",
           "bfs_gemeinde": "Biel/Bienne (371)",
           "bauzone": "Wohnzone W3",
           "lngLat": [
-            7.247,
-            47.1367
+            7.24811,
+            47.13499
           ]
         },
         "stammdaten": {
@@ -308,7 +308,7 @@
       "state": "draft",
       "entity": "building",
       "operation": "create",
-      "title": "Luzern Postgasse",
+      "title": "Bundesplatz 14, 6003 Luzern",
       "actors": {
         "requester": {
           "user": "me",
@@ -319,19 +319,19 @@
       "subtitle": "(Entwurf)",
       "data": {
         "standort": {
-          "adresse": "Luzern Postgasse",
+          "adresse": "Bundesplatz 14, 6003 Luzern",
           "koordinaten": "—",
           "egid": "—",
           "egrid": "—",
           "bfs_gemeinde": "Luzern (1061)",
           "bauzone": "—",
           "lngLat": [
-            8.3072,
-            47.0502
+            8.30857,
+            47.04584
           ]
         },
         "stammdaten": {
-          "bez": "Luzern Postgasse",
+          "bez": "Bundesplatz 14",
           "we": "—",
           "teilobjekt": "—",
           "buchungskreis": "—",
@@ -381,15 +381,15 @@
       "subtitle": "",
       "data": {
         "standort": {
-          "adresse": "Zürichstrasse 14, 8050 Zürich",
+          "adresse": "Kasernenstrasse 1, 8004 Zürich",
           "koordinaten": "2'683'500 / 1'250'100",
           "egid": "300123456",
           "egrid": "CH555666777000",
           "bfs_gemeinde": "Zürich (261)",
           "bauzone": "Zentrumszone",
           "lngLat": [
-            8.5417,
-            47.3769
+            8.53164,
+            47.37374
           ]
         },
         "stammdaten": {
@@ -421,7 +421,7 @@
       "state": "applied",
       "entity": "building",
       "operation": "create",
-      "title": "Thun Bahnhofstr. 14",
+      "title": "Bahnhofstrasse 1, 3600 Thun",
       "actors": {
         "requester": {
           "user": "r.huber",
@@ -443,19 +443,19 @@
       "subtitle": "",
       "data": {
         "standort": {
-          "adresse": "Thun Bahnhofstr. 14, 3600 Thun",
+          "adresse": "Bahnhofstrasse 1, 3600 Thun",
           "koordinaten": "2'614'100 / 1'177'250",
           "egid": "150888123",
           "egrid": "CH111222333444",
           "bfs_gemeinde": "Thun (942)",
           "bauzone": "Kernzone K2",
           "lngLat": [
-            7.6306,
-            46.758
+            7.63011,
+            46.7563
           ]
         },
         "stammdaten": {
-          "bez": "Thun Bahnhofstr. 14",
+          "bez": "Bahnhofstrasse 1",
           "we": "WE-14004",
           "teilobjekt": "01",
           "buchungskreis": "BBL",
@@ -500,15 +500,15 @@
       "subtitle": "„EGRID inkonsistent\"",
       "data": {
         "standort": {
-          "adresse": "Parzelle 2018, 8001 Zürich",
+          "adresse": "Militärstrasse 10, 8004 Zürich",
           "koordinaten": "—",
           "egid": "—",
           "egrid": "—",
           "bfs_gemeinde": "Zürich (261)",
           "bauzone": "—",
           "lngLat": [
-            8.53,
-            47.38
+            8.53362,
+            47.37642
           ]
         },
         "stammdaten": {
