@@ -460,7 +460,6 @@ function populateMobileAccordion() {
   if (!container) return;
 
   var items = [
-    { icon: 'draw', i18n: 'accordion.draw' },
     { icon: 'print', i18n: 'accordion.print' },
     { icon: 'layers', i18n: 'accordion.catalog' }
   ];

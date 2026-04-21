@@ -101,28 +101,21 @@ Then open http://localhost:8000
 ## Project Structure
 
 ```
-gis-immo/
-├── index.html                    # HTML structure
-├── js/
-│   └── app.js                    # Application logic (2,800 lines)
-├── css/
-│   └── main.css                  # Styles & design system (3,400 lines)
-├── data/
-│   ├── buildings.geojson         # Core portfolio data (10+ buildings)
-│   ├── area-measurements.json    # SIA 416 area measurements
-│   ├── documents.json            # Plans, certificates, permits
-│   ├── contacts.json             # Personnel & stakeholders
-│   ├── contracts.json            # Service agreements
-│   ├── costs.json                # Operational expenses
-│   └── assets.json               # Equipment inventory
-├── assets/
-│   └── images/                   # Preview screenshots
-├── documentation/
-│   ├── CLAUDE.md                 # Development guide
-│   ├── DATAMODEL.md              # Complete entity schema
-│   └── DESIGNGUIDE.md            # Design system & components
+property-inventory/
+├── index.html                    # Main app entry (loads assets from prototype-main/)
 ├── README.md
-└── LICENSE
+├── LICENSE
+├── assets/
+│   └── images/                   # Preview screenshots (used by README)
+├── prototype-main/               # Main app assets
+│   ├── js/                       # Application logic
+│   ├── css/                      # Styles & design system
+│   ├── data/                     # buildings.geojson, i18n.json, parcels, landcovers
+│   └── docs/                     # DATAMODEL.md, DESIGNGUIDE.md, etc.
+├── prototype-tabs/               # Tabbed detail view + AI portfolio agent
+├── prototype-workflows/          # CR workflows with four-eyes approval
+├── prototype-backend/            # PostGIS-backed REST API frontend
+└── osm-height/                   # OSM building height enrichment tool
 ```
 
 ## Deployment

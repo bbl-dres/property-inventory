@@ -57,18 +57,9 @@ function initTablePanel() {
   const panel = document.getElementById('table-panel');
   const handle = document.getElementById('tbl-resize-handle');
 
-  // Table visibility: check URL param first, then auto-decide by viewport size
+  // Table visibility: hidden by default on every screen size; URL param ?table=open opts in.
   var urlParams = new URLSearchParams(window.location.search);
-  var tableParam = urlParams.get('table');
-  var showTable;
-  if (tableParam === 'open') {
-    showTable = true;
-  } else if (tableParam === 'closed') {
-    showTable = false;
-  } else {
-    // Default: show only on large screens
-    showTable = window.innerWidth > 1024 && window.innerHeight > 800;
-  }
+  var showTable = urlParams.get('table') === 'open';
 
   if (!showTable) {
     state.tableOpen = false;
@@ -175,9 +166,9 @@ function loadAllData() {
   showLoadingOverlay('Daten werden geladen...');
 
   Promise.all([
-    fetchWithErrorHandling('data/buildings.geojson'),
-    fetchWithErrorHandling('data/parcels.geojson'),
-    fetchWithErrorHandling('data/landcovers.geojson')
+    fetchWithErrorHandling('prototype-main/data/buildings.geojson'),
+    fetchWithErrorHandling('prototype-main/data/parcels.geojson'),
+    fetchWithErrorHandling('prototype-main/data/landcovers.geojson')
   ])
     .then(function(results) {
       state.buildingsData = results[0];

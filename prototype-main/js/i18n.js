@@ -103,9 +103,9 @@ function persistLang(lang) {
 
 function loadAllTranslations() {
   if (allTranslations) return Promise.resolve(); // already loaded
-  return fetch('data/i18n.json')
+  return fetch('prototype-main/data/i18n.json')
     .then(function(res) {
-      if (!res.ok) throw new Error('Failed to load data/i18n.json');
+      if (!res.ok) throw new Error('Failed to load prototype-main/data/i18n.json');
       return res.json();
     })
     .then(function(data) {

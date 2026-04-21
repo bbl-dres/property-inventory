@@ -15,8 +15,8 @@
 
     <link href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-    <link rel="stylesheet" href="css/tokens.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="prototype-main/css/tokens.css">
+    <link rel="stylesheet" href="prototype-main/css/styles.css">
 
     <script defer src="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.js"></script>
 </head>
@@ -254,16 +254,6 @@
             
             <div id="accordion-wrapper">
             <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
-                <div class="accordion-item">
-                    <button class="accordion-header" aria-expanded="false">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span data-i18n="accordion.draw">Zeichnen & Messen auf der Karte</span>
-                    </button>
-                    <div class="accordion-content" data-i18n="accordion.draw.desc">
-                        Zeichnen Sie Punkte, Linien und Polygone direkt auf der Karte. Messen Sie Distanzen in Metern oder Kilometern und berechnen Sie Flächen in Quadratmetern.
-                    </div>
-                </div>
-
                 <div class="accordion-item" id="print-accordion-item">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
@@ -1188,6 +1178,6 @@ Content-Type: application/geo+json
         }
     }
     </script>
-    <script type="module" src="js/app.js"></script>
+    <script type="module" src="prototype-main/js/app.js"></script>
 </body>
 </html>

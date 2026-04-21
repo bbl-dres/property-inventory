@@ -41,7 +41,7 @@ export const state = {
   previousView: 'map',
   galleryViewDirty: false,
   listViewDirty: false,
-  tableOpen: true,
+  tableOpen: false,
   activeTableTab: 'buildings',
 
   // Pagination - buildings
