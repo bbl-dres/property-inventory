@@ -125,18 +125,6 @@ gis-immo/
 └── LICENSE
 ```
 
-## Swiss Standards
-
-This application incorporates Swiss building and property standards:
-
-| Standard | Description |
-|----------|-------------|
-| SIA 416 | Building area measurements (BGF, NGF, EBF) |
-| SIA 380/1 | Energy reference area |
-| EGID | Federal Building Identifier |
-| EGRID | Federal Property Identifier |
-| SN 506 511 | Building cost classification |
-
 ## Deployment
 
 **GitHub Pages:** Push to `main` deploys automatically.
