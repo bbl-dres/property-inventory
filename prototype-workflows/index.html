@@ -377,7 +377,7 @@
   .wf-standort-body { padding: 0 !important; position: relative; overflow: hidden; }
   .wf-standort-body .wf-map-preview { margin-top: 0; height: 580px; border-radius: 0; }
   .wf-search-overlay {
-    position: absolute; bottom: var(--space-16); left: 50%;
+    position: absolute; top: var(--space-16); left: 50%;
     transform: translateX(-50%);
     width: min(520px, calc(100% - 40px));
     z-index: 5; display: none;
@@ -389,7 +389,6 @@
     border-color: transparent;
   }
   .wf-search-overlay .wf-results {
-    top: auto; bottom: 44px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.18);
   }
   /* Default: hide edit actions until mode resolved */
