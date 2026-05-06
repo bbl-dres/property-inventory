@@ -4,6 +4,8 @@ Add accurate building heights to OpenStreetMap using Swiss open government eleva
 
 ## Quick start
 
+- Web App: https://bbl-dres.github.io/property-inventory/osm-height
+
 ```bash
 # Option A: Open directly
 open index.html
