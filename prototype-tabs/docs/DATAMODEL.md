@@ -174,6 +174,26 @@ erDiagram
     }
 ```
 
+#### Entity Overview
+
+| Entity | Description |
+|--------|-------------|
+| **Site** (Standort) *[Preview]* | A logical grouping of buildings, such as a campus, property, or land parcel. Buildings belong to exactly one site. |
+| **Parcel** (Parzelle) | A land plot on which a building sits, stored as polygon geometry and linked to buildings via `buildingId`. |
+| **Building** (Gebäude) | The core entity representing a physical structure in the portfolio. |
+| **Address** (Adresse) | The physical location of a building. A building can have multiple addresses (e.g., corner buildings with entrances on different streets). |
+| **Floor** (Geschoss) | A level within a building. Spaces belong to exactly one floor. |
+| **Space** (Raum) | A room or area within a floor; the smallest spatial unit, used for tracking occupancy, climate control, and area measurements. |
+| **Area Measurement** (Bemessung) | Floor areas, volumes, and other quantitative measurements for buildings, floors, spaces, or sites. |
+| **Operational Measurement** (Betriebsmessung) *[Preview]* | Resource consumption (energy, water, waste) and emissions data for buildings; enables ESG reporting and carbon footprint calculations. |
+| **Document** (Dokument) | Files and records associated with a building, such as floor plans, certificates, permits, and technical documentation. |
+| **Contact** (Kontakt) | Persons associated with a building, such as property managers, caretakers, or portfolio managers. |
+| **Asset** (Ausstattung) | Technical equipment, installations, and building components that require maintenance or tracking. |
+| **Contract** (Vertrag) | Service agreements, maintenance contracts, and other contractual arrangements associated with a building. |
+| **Cost** (Kosten) | Operating expenses, utility costs, and other recurring costs, typically categorized using standard cost group codes. |
+| **Certificate** (Zertifikat) *[Preview]* | Building certifications (LEED, BREEAM, Minergie, etc.) with associated levels and validity periods. |
+| **Valuation** (Bewertung) *[Preview]* | Property valuations including market value, book value, and appraisal data. |
+
 ### 2.2 Entity Hierarchy
 
 Entities are organized into functional groups:
