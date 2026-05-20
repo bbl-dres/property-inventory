@@ -166,9 +166,9 @@ function loadAllData() {
   showLoadingOverlay('Daten werden geladen...');
 
   Promise.all([
-    fetchWithErrorHandling('prototype-main/data/buildings.geojson'),
-    fetchWithErrorHandling('prototype-main/data/parcels.geojson'),
-    fetchWithErrorHandling('prototype-main/data/landcovers.geojson')
+    fetchWithErrorHandling('data/buildings.geojson'),
+    fetchWithErrorHandling('data/parcels.geojson'),
+    fetchWithErrorHandling('data/landcovers.geojson')
   ])
     .then(function(results) {
       state.buildingsData = results[0];
