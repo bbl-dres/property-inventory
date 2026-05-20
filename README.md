@@ -24,6 +24,8 @@ Interactive GIS web application mockup for visualizing and managing a real estat
   <img src="assets/images/preview7.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
+---
+
 **Tabs Views** — Tabbed detail view with structured property sections and an AI agent for portfolio queries.
 - Link: https://bbl-dres.github.io/property-inventory/prototype-tabs
 
@@ -32,6 +34,8 @@ Interactive GIS web application mockup for visualizing and managing a real estat
   <img src="assets/images/preview3.jpg" width="45%" style="vertical-align: top;"/>
 </p>
 
+---
+
 **CR Workflows** — Write operations (create, mutate, delete) with a four-eyes approval workflow and swisstopo API integration.
 - Link: https://bbl-dres.github.io/property-inventory/prototype-workflows
 
@@ -39,8 +43,12 @@ Interactive GIS web application mockup for visualizing and managing a real estat
   <img src="assets/images/preview12.jpg" width="90%"/>
 </p>
 
+---
+
 **GIS Server** — Lightweight frontend for managing layers, schemas, and feature data in a PostGIS-backed REST API.
 - Link: https://bbl-dres.github.io/property-inventory/prototype-backend
+
+---
 
 **OSM Height Enrichment** — Browser-only tool that enriches OpenStreetMap buildings with accurate heights from Swiss elevation data.
 - Link: https://bbl-dres.github.io/property-inventory/osm-height
