@@ -185,32 +185,16 @@ function populateDetailView(building) {
 
 let collapsibleSectionsInitialized = false;
 
-// i18n keys of sections that should be collapsed by default
-const collapsedByDefault = [
-  'columns.group.survey',
-  'columns.group.zone',
-  'columns.group.heritage',
-  'columns.group.other'
-];
-
 function initCollapsibleSections() {
   if (collapsibleSectionsInitialized) return;
   collapsibleSectionsInitialized = true;
 
   document.querySelectorAll('#detail-view .detail-overline').forEach(function(overline) {
-    // Add chevron icon
     var chevron = document.createElement('span');
     chevron.className = 'material-symbols-outlined detail-overline-chevron';
     chevron.textContent = 'expand_more';
     overline.appendChild(chevron);
 
-    // Collapse sections that should be collapsed by default
-    var i18nKey = overline.getAttribute('data-i18n');
-    if (i18nKey && collapsedByDefault.indexOf(i18nKey) !== -1) {
-      overline.classList.add('collapsed');
-    }
-
-    // Toggle on click
     overline.addEventListener('click', function() {
       this.classList.toggle('collapsed');
     });

@@ -43,7 +43,9 @@ export const mapStyles = {
           type: 'raster',
           tiles: ['https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg'],
           tileSize: 256,
+          minzoom: 8,
           maxzoom: 20,
+          bounds: [5.95, 45.81, 10.49, 47.81],
           attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
         }
       },

@@ -27,138 +27,69 @@ export function addSwisstopoLayer(layerId, title, silent) {
     return;
   }
 
-  // Cancel any pending fetch for this layer
-  if (state.pendingLayerFetches[layerId]) {
-    state.pendingLayerFetches[layerId].abort();
-    delete state.pendingLayerFetches[layerId];
+  const sourceId = 'swisstopo-' + layerId;
+  const mapLayerId = 'swisstopo-layer-' + layerId;
+  const tileUrl = 'https://wms.geo.admin.ch/?' +
+    'SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap' +
+    '&LAYERS=' + layerId +
+    '&CRS=EPSG:3857' +
+    '&BBOX={bbox-epsg-3857}' +
+    '&WIDTH=256&HEIGHT=256' +
+    '&FORMAT=image/png' +
+    '&TRANSPARENT=true';
+  const maxZoom = 19;
+
+  try {
+    state.map.addSource(sourceId, {
+      type: 'raster',
+      tiles: [tileUrl],
+      tileSize: 256,
+      maxzoom: maxZoom,
+      attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
+    });
+
+    let beforeLayer = null;
+    if (state.map.getLayer(identifyHighlightLayerId)) {
+      beforeLayer = identifyHighlightLayerId;
+    } else if (state.map.getLayer('parcels-fill')) {
+      beforeLayer = 'parcels-fill';
+    } else if (state.map.getLayer('buildings-clusters')) {
+      beforeLayer = 'buildings-clusters';
+    } else if (state.map.getLayer('buildings-points')) {
+      beforeLayer = 'buildings-points';
+    }
+
+    state.map.addLayer({
+      id: mapLayerId,
+      type: 'raster',
+      source: sourceId,
+      paint: {
+        'raster-opacity': 0.7
+      }
+    }, beforeLayer);
+  } catch (e) {
+    console.error('Fehler beim Hinzufügen des Layers zur Karte:', e);
+    if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.layer.addFailed', {title: title || layerId}) });
+    return;
   }
 
-  // Create AbortController for this fetch
-  const abortController = new AbortController();
-  state.pendingLayerFetches[layerId] = abortController;
+  state.activeSwisstopoLayers.push({
+    id: layerId,
+    title: title || layerId,
+    sourceId: sourceId,
+    mapLayerId: mapLayerId,
+    tileUrl: tileUrl,
+    maxZoom: maxZoom,
+    visible: true
+  });
 
-  // Show loading toast
-  if (!silent) showToast({ type: 'info', title: t('swisstopo.loading'), message: t('swisstopo.loading.metadata'), duration: 2000 });
+  renderActiveLayersList();
+  updateUrlWithLayers();
 
-  // Fetch layer metadata to get correct format and timestamp
-  fetch('https://api3.geo.admin.ch/rest/services/api/MapServer/' + layerId + '?lang=de', { signal: abortController.signal })
-    .then(function(response) {
-      if (!response.ok) throw new Error('Layer-Metadaten nicht verfügbar');
-      return response.json();
-    })
-    .then(function(metadata) {
-      // Clean up pending fetch reference
-      delete state.pendingLayerFetches[layerId];
-
-      // Check if layer was removed while fetching
-      if (!state.pendingLayerFetches.hasOwnProperty(layerId) && state.activeSwisstopoLayers.find(function(l) { return l.id === layerId; })) {
-        return; // Layer was removed during fetch
-      }
-
-      const sourceId = 'swisstopo-' + layerId;
-      const mapLayerId = 'swisstopo-layer-' + layerId;
-      let tileUrl;
-      let maxZoom = 18;
-
-      // Check if layer supports WMTS (has format specified)
-      if (metadata.format) {
-        // Use WMTS (faster, pre-rendered tiles)
-        const tileFormat = metadata.format.replace('image/', '');
-        let timestamp = 'current';
-        if (metadata.timestamps && metadata.timestamps.length > 0) {
-          timestamp = metadata.timestamps[0];
-        }
-        tileUrl = 'https://wmts.geo.admin.ch/1.0.0/' + layerId + '/default/' + timestamp + '/3857/{z}/{x}/{y}.' + tileFormat;
-
-        if (metadata.maxScale) {
-          maxZoom = Math.min(22, Math.max(0, Math.round(18 - Math.log2(metadata.maxScale / 500))));
-        }
-      } else {
-        // Fall back to WMS (supports all layers with on-the-fly reprojection)
-        tileUrl = 'https://wms.geo.admin.ch/?' +
-          'SERVICE=WMS&VERSION=1.3.0&REQUEST=GetMap' +
-          '&LAYERS=' + layerId +
-          '&CRS=EPSG:3857' +
-          '&BBOX={bbox-epsg-3857}' +
-          '&WIDTH=256&HEIGHT=256' +
-          '&FORMAT=image/png' +
-          '&TRANSPARENT=true';
-        maxZoom = 19; // WMS typically supports higher zoom
-      }
-
-      try {
-        // Add raster source
-        state.map.addSource(sourceId, {
-          type: 'raster',
-          tiles: [tileUrl],
-          tileSize: 256,
-          maxzoom: maxZoom,
-          attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
-        });
-
-        // Find the layer to insert before (below highlight layer, parcels, and points)
-        let beforeLayer = null;
-        if (state.map.getLayer(identifyHighlightLayerId)) {
-          beforeLayer = identifyHighlightLayerId;
-        } else if (state.map.getLayer('parcels-fill')) {
-          beforeLayer = 'parcels-fill';
-        } else if (state.map.getLayer('buildings-clusters')) {
-          beforeLayer = 'buildings-clusters';
-        } else if (state.map.getLayer('buildings-points')) {
-          beforeLayer = 'buildings-points';
-        }
-
-        // Add raster layer
-        state.map.addLayer({
-          id: mapLayerId,
-          type: 'raster',
-          source: sourceId,
-          paint: {
-            'raster-opacity': 0.7
-          }
-        }, beforeLayer);
-      } catch (e) {
-        console.error('Fehler beim Hinzufügen des Layers zur Karte:', e);
-        if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.layer.addFailed', {title: title || layerId}) });
-        return;
-      }
-
-      // Track the layer (including tileUrl, maxZoom, and visibility for re-adding after style change)
-      state.activeSwisstopoLayers.push({
-        id: layerId,
-        title: title || layerId,
-        sourceId: sourceId,
-        mapLayerId: mapLayerId,
-        tileUrl: tileUrl,
-        maxZoom: maxZoom,
-        visible: true
-      });
-
-      // Update the UI and URL
-      renderActiveLayersList();
-      updateUrlWithLayers();
-
-      if (!silent) showToast({ type: 'success', title: t('swisstopo.layer.added'), message: t('swisstopo.layer.addedMessage', {title: title || layerId}) });
-    })
-    .catch(function(e) {
-      // Clean up pending fetch reference
-      delete state.pendingLayerFetches[layerId];
-
-      // Ignore abort errors (user cancelled)
-      if (e.name === 'AbortError') return;
-
-      console.error('Fehler beim Hinzufügen des Layers:', e);
-      if (!silent) showToast({ type: 'error', title: t('swisstopo.error'), message: t('swisstopo.layer.loadFailed', {title: title || layerId}) });
-    });
+  if (!silent) showToast({ type: 'success', title: t('swisstopo.layer.added'), message: t('swisstopo.layer.addedMessage', {title: title || layerId}) });
 }
 
 export function removeSwisstopoLayer(layerId) {
-  // Cancel any pending fetch for this layer
-  if (state.pendingLayerFetches[layerId]) {
-    state.pendingLayerFetches[layerId].abort();
-    delete state.pendingLayerFetches[layerId];
-  }
-
   const layerIndex = state.activeSwisstopoLayers.findIndex(function(l) { return l.id === layerId; });
   if (layerIndex === -1) return;
 

@@ -72,7 +72,6 @@ export const state = {
 
   // Swisstopo
   activeSwisstopoLayers: [],
-  pendingLayerFetches: {},
   identifiedFeaturePopup: null,
   geokatalogLoaded: false,
 
