@@ -8,13 +8,13 @@
 [![MapLibre GL JS](https://img.shields.io/badge/MapLibre_GL_JS-v5.19-396CB2?logo=maplibre&logoColor=white)](https://maplibre.org/)
 [![No Build Tools](https://img.shields.io/badge/build-none_%F0%9F%8E%89-brightgreen)](#tech-stack)
 
-Interactive GIS web application mockup for visualizing and managing a real estate portfolio. Features map, list, and gallery views with Mapbox GL JS.
-
 > [!CAUTION]
 > **This is an unofficial mockup for demonstration purposes only.**
 > All data is fictional. Not all features are fully functional. This project serves as a visual and conceptual prototype — it is not intended for production use.
 
-## Prototypes
+Interactive GIS web application mockup for visualizing and managing a real estate portfolio. Features map, list, and gallery views with Mapbox GL JS.
+
+## Prototypes / Preview
 
 **Main App** — Read-only property inventory with map, list, and gallery views.
 - Link: https://bbl-dres.github.io/property-inventory/
