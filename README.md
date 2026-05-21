@@ -16,7 +16,9 @@ Interactive GIS web-app mockups for visualising and managing a real-estate portf
 
 ## Prototypes
 
-**Main App** — Read-only property inventory with map, list, and gallery views.
+### Main App
+
+Read-only property inventory with map, list, and gallery views.
 - Live app: https://bbl-dres.github.io/property-inventory/prototype-main/
 - Source code: [`prototype-main/`](prototype-main/)
 
@@ -27,7 +29,9 @@ Interactive GIS web-app mockups for visualising and managing a real-estate portf
 
 ---
 
-**Tabs Views** — Tabbed detail view with structured property sections and an AI agent for portfolio queries.
+### Tabs Views
+
+Tabbed detail view with structured property sections and an AI agent for portfolio queries.
 - Live app: https://bbl-dres.github.io/property-inventory/prototype-tabs/
 - Source code: [`prototype-tabs/`](prototype-tabs/)
 
@@ -38,7 +42,9 @@ Interactive GIS web-app mockups for visualising and managing a real-estate portf
 
 ---
 
-**CR Workflows** — Write operations (create, mutate, delete) with a four-eyes approval workflow and swisstopo API integration.
+### CR Workflows
+
+Write operations (create, mutate, delete) with a four-eyes approval workflow and swisstopo API integration.
 - Live app: https://bbl-dres.github.io/property-inventory/prototype-workflows/
 - Source code: [`prototype-workflows/`](prototype-workflows/)
 
@@ -48,13 +54,17 @@ Interactive GIS web-app mockups for visualising and managing a real-estate portf
 
 ---
 
-**GIS Server** — Lightweight frontend for managing layers, schemas, and feature data in a PostGIS-backed REST API.
+### GIS Server
+
+Lightweight frontend for managing layers, schemas, and feature data in a PostGIS-backed REST API.
 - Live app: https://bbl-dres.github.io/property-inventory/prototype-backend/
 - Source code: [`prototype-backend/`](prototype-backend/)
 
 ---
 
-**OSM Height Enrichment** — Browser-only tool that enriches OpenStreetMap buildings with accurate heights from Swiss elevation data.
+### OSM Height Enrichment
+
+Browser-only tool that enriches OpenStreetMap buildings with accurate heights from Swiss elevation data.
 - Live app: https://bbl-dres.github.io/property-inventory/osm-height/
 - Source code: [`osm-height/`](osm-height/)
 
