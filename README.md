@@ -8,11 +8,11 @@
 [![MapLibre GL JS](https://img.shields.io/badge/MapLibre_GL_JS-v5.19-396CB2?logo=maplibre&logoColor=white)](https://maplibre.org/)
 [![No Build Tools](https://img.shields.io/badge/build-none_%F0%9F%8E%89-brightgreen)](#running)
 
-Interactive GIS web-app mockups for visualising and managing a real-estate portfolio. The repo holds **five independent prototypes**, each in its own folder with its own README.
-
 > [!CAUTION]
 > **Unofficial mockup for demonstration purposes only.**
 > All data is fictional. Not all features are fully functional. This project is a visual and conceptual prototype — not intended for production use.
+
+Interactive GIS web-app mockups for visualising and managing a real-estate portfolio. The repo holds **five independent prototypes**, each in its own folder with its own README.
 
 ## Prototypes
 
