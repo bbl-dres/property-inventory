@@ -19,8 +19,8 @@ approval workflows, GIS data management, and building-height enrichment.
 **Main app:** https://bbl-dres.github.io/property-inventory/
 
 <p align="center">
-  <img src="assets/images/preview-6.jpg" alt="Property Inventory map with building table" width="49%"/>
-  <img src="assets/images/preview-7.jpg" alt="Property Inventory 3D map with selected property overlays" width="49%"/>
+  <img src="assets/images/preview-6.jpg" alt="Property Inventory map with building table" width="49%" align="top"/>
+  <img src="assets/images/preview-7.jpg" alt="Property Inventory 3D map with selected property overlays" width="49%" align="top"/>
 </p>
 
 The repository root opens the read-only property inventory.
