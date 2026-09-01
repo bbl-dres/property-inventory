@@ -5,14 +5,14 @@
 [![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-2ea44f?logo=github&logoColor=white)](https://bbl-dres.github.io/property-inventory/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
-Five browser prototypes for exploring real-estate portfolio search, detail views,
-approval workflows, GIS data management, and building-height enrichment.
-
 > [!CAUTION]
 > **Unofficial prototypes for demonstration purposes only.** Portfolio records and
 > workflows are fictional mock content. The height-enrichment tool queries public
 > OpenStreetMap and Swiss elevation services, so its results depend on upstream data.
 > The tools are incomplete and are not intended for production use.
+
+Five browser prototypes for exploring real-estate portfolio search, detail views,
+approval workflows, GIS data management, and building-height enrichment.
 
 ## Demo
 
