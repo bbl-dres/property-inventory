@@ -510,10 +510,76 @@ function populateMobileAccordion() {
   });
 }
 
+// ===== API DOCS (Swagger UI, loaded on first open) =====
+// The 1.5 MB Swagger UI bundle is only fetched when the API page is opened.
+let swaggerAssetsPromise = null;
+let swaggerInitialized = false;
+
+function loadScriptOnce(src) {
+  return new Promise(function(resolve, reject) {
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = function() { resolve(); };
+    s.onerror = function() { reject(new Error('Failed to load ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+
+function loadStylesheet(href) {
+  if (document.querySelector('link[href="' + href + '"]')) return;
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = href;
+  l.onerror = function() { console.warn('[api] stylesheet failed to load:', href); };
+  document.head.appendChild(l);
+}
+
+export function initApiDocs() {
+  if (swaggerInitialized) return;
+  const host = document.getElementById('swagger-ui');
+  if (!host) return;
+
+  if (!swaggerAssetsPromise) {
+    host.innerHTML = '<div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('api.loading') + '</span></div>';
+    loadStylesheet('vendor/swagger-ui/swagger-ui.css');
+    swaggerAssetsPromise = window.SwaggerUIBundle
+      ? Promise.resolve()
+      : loadScriptOnce('vendor/swagger-ui/swagger-ui-bundle.js');
+  }
+
+  swaggerAssetsPromise
+    .then(function() {
+      if (swaggerInitialized) return;
+      if (typeof window.SwaggerUIBundle !== 'function') throw new Error('SwaggerUIBundle not available');
+      swaggerInitialized = true;
+      window.SwaggerUIBundle({
+        url: 'data/swagger.json',
+        dom_id: '#swagger-ui',
+        deepLinking: false,          // the app owns the URL (view/id/filters)
+        docExpansion: 'list',
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 2,
+        displayRequestDuration: false,
+        supportedSubmitMethods: [],  // mock API: no "Try it out"
+        showExtensions: true,
+        showCommonExtensions: true
+      });
+    })
+    .catch(function(err) {
+      console.error('[api] Swagger UI failed:', err);
+      swaggerAssetsPromise = null;
+      swaggerInitialized = false;
+      host.innerHTML = '<div class="api-docs-error"><span>' + t('api.error') + '</span>' +
+        '<button type="button" class="geokatalog-retry" data-action="retryApiDocs">' + t('error.retry') + '</button></div>';
+    });
+}
+
 // ===== FOOTER API LINK =====
-function showApiDocsView() {
+export function showApiDocsView() {
   state.previousView = state.currentView !== 'detail' ? state.currentView : state.previousView;
   state.currentView = 'api-docs';
+  setViewInURL('api-docs');
   document.getElementById('map-view').classList.remove('active');
   document.getElementById('gallery-view').classList.remove('active');
   document.getElementById('detail-view').classList.remove('active');
@@ -523,6 +589,7 @@ function showApiDocsView() {
   var styleSwitcher = document.getElementById('style-switcher');
   if (styleSwitcher) styleSwitcher.classList.remove('visible');
   window.scrollTo(0, 0);
+  initApiDocs();
 }
 
 function initFooterApiLink() {
@@ -827,6 +894,8 @@ function initPopstate() {
         showDetailView(buildingId, tab);
       } else if (view === 'gallery') {
         switchView('gallery');
+      } else if (view === 'api-docs') {
+        showApiDocsView();
       } else {
         switchView('map');
       }

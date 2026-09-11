@@ -5,7 +5,7 @@ import { state } from './state.js';
 import { fetchWithErrorHandling } from './utils.js';
 import {
   showError, showWarning, getViewFromURL, getBuildingIdFromURL, getTabFromURL,
-  switchView, showDetailView, initUI
+  switchView, showDetailView, showApiDocsView, initApiDocs, initUI
 } from './ui.js';
 import {
   getFiltersFromURL, applyFilters, initFilterOptions,
@@ -273,6 +273,8 @@ function restoreViewFromUrl() {
   } else if (initialView === 'gallery') {
     switchView('gallery');
     renderGalleryView();
+  } else if (initialView === 'api-docs') {
+    showApiDocsView();
   } else {
     const styleSwitcher = document.getElementById('style-switcher');
     if (styleSwitcher) {
@@ -396,6 +398,7 @@ function boot() {
     removeSwisstopoLayer: function(el) { removeSwisstopoLayer(el.dataset.layerId); },
     showLayerInfo: function(el) { showLayerInfo(el.dataset.layerId); },
     retryGeokatalog: function() { loadGeokatalog(); },
+    retryApiDocs: function() { initApiDocs(); },
     searchLocal: function(el) { handleSearchClick('local', el.dataset.id); },
     searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), null, null, el.dataset.bbox || null, el.dataset.origin || ''); },
     searchLayer: function(el) { handleSearchClick('layer', el.dataset.layerId, null, null, null, el.dataset.title); }

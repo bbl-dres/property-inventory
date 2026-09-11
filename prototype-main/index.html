@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title data-i18n="app.title">Liegenschaften Inventar BBL</title>
     <meta name="description" content="Liegenschaften Inventar des Bundesamtes für Bauten und Logistik (BBL) – Gebäude, Grundstücke und Bodenabdeckungen der Schweizerischen Eidgenossenschaft.">
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path fill='%23c00' d='M3 21V7l9-4 9 4v14h-7v-5h-4v5H3zm6-8h2v-2H9v2zm0-4h2V7H9v2zm4 4h2v-2h-2v2zm0-4h2V7h-2v2z'/></svg>">
+    <!-- No favicon: an empty data URI suppresses the browser's /favicon.ico request -->
+    <link rel="icon" href="data:,">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -767,131 +768,13 @@
             </div>
             <div class="api-docs-content">
                 <div class="api-docs-header">
-                    <h1>BBL GIS IMMO — API Dokumentation</h1>
-                    <p class="api-docs-subtitle">REST API für den programmatischen Zugriff auf das Immobilienportfolio des Bundes</p>
+                    <h1 data-i18n="api.title">BBL GIS IMMO API</h1>
+                    <p class="api-docs-subtitle" data-i18n="api.subtitle">Interaktive API-Dokumentation (OpenAPI 3.0). Diese API ist ein Platzhalter für zukünftige Entwicklung – die dokumentierten Endpunkte sind nicht erreichbar.</p>
+                    <p class="api-docs-links"><a href="data/swagger.json" target="_blank" rel="noopener" data-i18n="api.spec_link">OpenAPI-Spezifikation (swagger.json)</a></p>
                 </div>
-
-                <div class="api-docs-section">
-                    <h2>Übersicht</h2>
-                    <p>Die BBL GIS IMMO API bietet lesenden Zugriff auf die Gebäude- und Grundstücksdaten des Bundesimmobilienportfolios. Alle Endpunkte liefern GeoJSON-kompatible Antworten.</p>
-                    <div class="api-docs-card">
-                        <div class="api-docs-row"><span class="api-docs-label">Base URL :</span><code>https://api.bbl-immo.admin.ch/v1</code></div>
-                        <div class="api-docs-row"><span class="api-docs-label">Format :</span><code>GeoJSON (application/geo+json)</code></div>
-                        <div class="api-docs-row"><span class="api-docs-label">Authentifizierung :</span><code>API-Key via Header X-API-Key</code></div>
-                        <div class="api-docs-row"><span class="api-docs-label">Rate Limit :</span><code>100 Anfragen / Minute</code></div>
-                    </div>
-                </div>
-
-                <div class="api-docs-section">
-                    <h2>Endpunkte</h2>
-
-                    <div class="api-docs-endpoint">
-                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings</code></div>
-                        <p>Alle Gebäude als GeoJSON FeatureCollection. Unterstützt Filter via Query-Parameter.</p>
-                        <div class="api-docs-card">
-                            <div class="api-docs-overline">Parameter</div>
-                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land (z.B. <code>CH</code>, <code>DE</code>)</span></div>
-                            <div class="api-docs-row"><code>adr_reg</code><span>Filterung nach Region/Kanton (z.B. <code>BE</code>)</span></div>
-                            <div class="api-docs-row"><code>bbl_stat</code><span>Filterung nach Status (z.B. <code>Aktiv</code>)</span></div>
-                            <div class="api-docs-row"><code>bbl_eigen</code><span>Filterung nach Eigentumsart</span></div>
-                            <div class="api-docs-row"><code>bbl_port</code><span>Filterung nach Teilportfolio</span></div>
-                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
-                            <div class="api-docs-row"><code>offset</code><span>Pagination Offset</span></div>
-                        </div>
-                        <div class="api-docs-card">
-                            <div class="api-docs-overline">Beispiel</div>
-                            <pre><code>GET /v1/buildings?adr_land=CH&amp;adr_reg=BE&amp;limit=10
-
-HTTP/1.1 200 OK
-Content-Type: application/geo+json
-
-{
-  "type": "FeatureCollection",
-  "features": [
-    {
-      "type": "Feature",
-      "properties": {
-        "bbl_id": "1000/4840/AF",
-        "bbl_bez": "Bundeshaus West",
-        "bbl_stat": "Aktiv",
-        "adr_land": "CH",
-        "adr_ort": "Bern",
-        ...
-      },
-      "geometry": {
-        "type": "Point",
-        "coordinates": [7.4441, 46.9465]
-      }
-    }
-  ]
-}</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="api-docs-endpoint">
-                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/buildings/{bbl_id}</code></div>
-                        <p>Einzelnes Gebäude nach BBL-ID. Gibt ein einzelnes GeoJSON Feature zurück.</p>
-                        <div class="api-docs-card">
-                            <div class="api-docs-overline">Beispiel</div>
-                            <pre><code>GET /v1/buildings/1000%2F4840%2FAF</code></pre>
-                        </div>
-                    </div>
-
-                    <div class="api-docs-endpoint">
-                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels</code></div>
-                        <p>Alle Grundstücke als GeoJSON FeatureCollection mit Polygon-Geometrie.</p>
-                        <div class="api-docs-card">
-                            <div class="api-docs-overline">Parameter</div>
-                            <div class="api-docs-row"><code>adr_land</code><span>Filterung nach Land</span></div>
-                            <div class="api-docs-row"><code>bfs_gemnr</code><span>Filterung nach BFS Gemeindenummer</span></div>
-                            <div class="api-docs-row"><code>bbl_we</code><span>Filterung nach Wirtschaftseinheit</span></div>
-                            <div class="api-docs-row"><code>limit</code><span>Max. Anzahl Ergebnisse (Standard: 100)</span></div>
-                        </div>
-                    </div>
-
-                    <div class="api-docs-endpoint">
-                        <div class="api-docs-method"><span class="method-badge get">GET</span><code>/parcels/{bbl_id}</code></div>
-                        <p>Einzelnes Grundstück nach BBL-ID.</p>
-                    </div>
-                </div>
-
-                <div class="api-docs-section">
-                    <h2>Datenmodell</h2>
-                    <p>Die API liefert Attribute gemäss dem BBL GIS IMMO Datenmodell. Alle Feldnamen sind Shapefile-kompatibel (max. 10 Zeichen).</p>
-                    <div class="api-docs-card">
-                        <div class="api-docs-overline">Building — 67 Attribute</div>
-                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID (Buchungskreis/WE/Teilobjekt)</span></div>
-                        <div class="api-docs-row"><code>bbl_bez</code><span>Objektbezeichnung</span></div>
-                        <div class="api-docs-row"><code>bbl_stat</code><span>Status (Aktiv, Verkauft, ...)</span></div>
-                        <div class="api-docs-row"><code>adr_conct</code><span>Verkettete Adresse</span></div>
-                        <div class="api-docs-row"><code>wgs84_lat</code><span>WGS84 Breitengrad</span></div>
-                        <div class="api-docs-row"><code>wgs84_lon</code><span>WGS84 Längengrad</span></div>
-                        <div class="api-docs-row"><code>av_egid</code><span>FK — Eidg. Gebäudeidentifikator (CH)</span></div>
-                        <div class="api-docs-row"><code>garea_gf</code><span>Geschossfläche GF in m² (SIA 416)</span></div>
-                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
-                    </div>
-                    <div class="api-docs-card">
-                        <div class="api-docs-overline">Parcel — 43 Attribute</div>
-                        <div class="api-docs-row"><code>bbl_id</code><span>PK — Interne BBL-ID</span></div>
-                        <div class="api-docs-row"><code>av_egrid</code><span>FK — Eidg. Grundstücksidentifikator (CH)</span></div>
-                        <div class="api-docs-row"><code>larea_gsf</code><span>Grundstücksfläche GSF in m² (SIA 416)</span></div>
-                        <div class="api-docs-row"><span>...</span><span>Vollständige Dokumentation: <code>docs/BBL GIS IMMO 18-03-2026.xlsx</code></span></div>
-                    </div>
-                </div>
-
-                <div class="api-docs-section">
-                    <h2>Fehler</h2>
-                    <div class="api-docs-card">
-                        <div class="api-docs-row"><code>400</code><span>Ungültige Parameter</span></div>
-                        <div class="api-docs-row"><code>401</code><span>Fehlender oder ungültiger API-Key</span></div>
-                        <div class="api-docs-row"><code>404</code><span>Objekt nicht gefunden</span></div>
-                        <div class="api-docs-row"><code>429</code><span>Rate Limit überschritten</span></div>
-                        <div class="api-docs-row"><code>500</code><span>Interner Serverfehler</span></div>
-                    </div>
-                </div>
-
-                <div class="api-docs-section">
-                    <p class="api-docs-notice">Diese API ist ein Platzhalter für zukünftige Entwicklung. Kontakt: <a href="mailto:immobilien@bbl.admin.ch">immobilien@bbl.admin.ch</a></p>
+                <!-- Swagger UI (vendor/swagger-ui) is loaded on first open and renders data/swagger.json here -->
+                <div id="swagger-ui" class="swagger-ui-host">
+                    <div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span data-i18n="api.loading">API-Dokumentation wird geladen…</span></div>
                 </div>
             </div>
         </div>

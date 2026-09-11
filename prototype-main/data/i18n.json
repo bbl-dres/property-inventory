@@ -287,6 +287,36 @@
     "fr": "Supprimer le filtre",
     "it": "Rimuovere il filtro"
   },
+  "api.title": {
+    "de": "BBL GIS IMMO API",
+    "en": "BBL GIS IMMO API",
+    "fr": "API BBL GIS IMMO",
+    "it": "API BBL GIS IMMO"
+  },
+  "api.subtitle": {
+    "de": "Interaktive API-Dokumentation (OpenAPI 3.0). Diese API ist ein Platzhalter für zukünftige Entwicklung – die dokumentierten Endpunkte sind nicht erreichbar.",
+    "en": "Interactive API documentation (OpenAPI 3.0). This API is a placeholder for future development – the documented endpoints are not reachable.",
+    "fr": "Documentation interactive de l'API (OpenAPI 3.0). Cette API est un espace réservé pour un développement futur – les points de terminaison documentés ne sont pas accessibles.",
+    "it": "Documentazione interattiva dell'API (OpenAPI 3.0). Questa API è un segnaposto per sviluppi futuri – gli endpoint documentati non sono raggiungibili."
+  },
+  "api.spec_link": {
+    "de": "OpenAPI-Spezifikation (swagger.json)",
+    "en": "OpenAPI specification (swagger.json)",
+    "fr": "Spécification OpenAPI (swagger.json)",
+    "it": "Specifica OpenAPI (swagger.json)"
+  },
+  "api.loading": {
+    "de": "API-Dokumentation wird geladen…",
+    "en": "Loading API documentation…",
+    "fr": "Chargement de la documentation de l'API…",
+    "it": "Caricamento della documentazione API…"
+  },
+  "api.error": {
+    "de": "Die API-Dokumentation konnte nicht geladen werden (Swagger UI oder swagger.json nicht verfügbar).",
+    "en": "The API documentation could not be loaded (Swagger UI or swagger.json unavailable).",
+    "fr": "La documentation de l'API n'a pas pu être chargée (Swagger UI ou swagger.json indisponible).",
+    "it": "Impossibile caricare la documentazione API (Swagger UI o swagger.json non disponibile)."
+  },
   "success.export": {
     "de": "{count} Objekte exportiert",
     "en": "{count} objects exported",

@@ -30,6 +30,11 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 ### Internationalisation
 - DE / FR / IT / EN — switched in-app, persisted in `localStorage`.
 
+### API documentation
+- Mock REST API documented as OpenAPI 3.0 in `data/swagger.json`, rendered with Swagger UI
+  (footer link “API” or `?view=api-docs`). The endpoints are placeholders and not reachable.
+- The spec is generated from the data model: `python docs/generate_swagger.py`.
+
 ## Running
 
 Static files only — no build step. From the repo root:
@@ -53,6 +58,7 @@ Then open <http://localhost:8000/prototype-main/> (or the repo root, which redir
 |---|---|
 | Vanilla ES modules | No build, easy to read |
 | MapLibre GL JS 5.19 | Map, layers, 3D tiles — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
+| Swagger UI 5 | API documentation from `data/swagger.json` — vendored in `vendor/swagger-ui/`, loaded only when the API page opens |
 | swisstopo `api3.geo.admin.ch` | Location search & Geokatalog (no key required) |
 | Material Symbols | Icons |
 
@@ -77,12 +83,16 @@ prototype-main/
 │   ├── buildings.geojson
 │   ├── parcels.geojson
 │   ├── landcovers.geojson
-│   └── i18n.json
+│   ├── i18n.json
+│   └── swagger.json      # OpenAPI 3.0 mock API (generated)
 ├── vendor/
-│   └── maplibre-gl/      # MapLibre GL JS 5.19.0 (js, css, licence)
+│   ├── maplibre-gl/      # MapLibre GL JS 5.19.0 (js, css, licence)
+│   └── swagger-ui/       # Swagger UI 5 (js, css, licence)
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
-    └── DESIGNGUIDE.md    # Design system
+    ├── DESIGNGUIDE.md    # Design system
+    ├── CODE-REVIEW.md    # Review findings
+    └── generate_swagger.py  # DATAMODEL.json -> data/swagger.json
 ```
 
 ## See also
