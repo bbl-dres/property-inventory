@@ -1,6 +1,6 @@
 # Property Inventory / Liegenschaften Inventar
 
-![Property Inventory preview](assets/images/preview-4.jpg)
+![Painterly architectural collage of office facades, an embassy portico and a courtyard](assets/images/hero-collage.jpg)
 
 [![Demo](https://img.shields.io/badge/demo-GitHub%20Pages-2ea44f?logo=github&logoColor=white)](https://bbl-dres.github.io/property-inventory/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
@@ -19,8 +19,8 @@ approval workflows, GIS data management, and building-height enrichment.
 **Main app:** https://bbl-dres.github.io/property-inventory/
 
 <p align="center">
-  <img src="assets/images/preview-6.jpg" alt="Property Inventory map with building table" width="49%" align="top"/>
-  <img src="assets/images/preview-7.jpg" alt="Property Inventory 3D map with selected property overlays" width="49%" align="top"/>
+  <img src="assets/images/preview-6.jpg" alt="Property Inventory worldwide map with building table" width="49%" align="top"/>
+  <img src="assets/images/preview-7.jpg" alt="Property Inventory 3D map with selected parcel and property information" width="49%" align="top"/>
 </p>
 
 The repository root opens the read-only property inventory.
