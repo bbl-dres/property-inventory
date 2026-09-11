@@ -2,7 +2,8 @@
 
 import { state } from './state.js';
 import { filterConfig } from './config.js';
-import { escapeHtml, getNestedProperty } from './utils.js';
+import { escapeHtml, getNestedProperty, storageGet, storageSet } from './utils.js';
+import { t } from './i18n.js';
 import { renderListView, updateFilteredExportHeader, renderGalleryView, renderParcelsView, renderLandCoversView } from './list.js';
 import { switchView } from './ui.js';
 import { updateExportCount } from './export.js';
@@ -44,7 +45,10 @@ export function setFiltersInURL(filters) {
     }
   });
 
-  window.history.pushState({}, '', url);
+  // replaceState on purpose: a history entry per checkbox click made the Back button
+  // change the URL without changing the filters (and applyFilters() also runs on load
+  // and after every basemap switch). Filters stay deep-linkable via the share URL.
+  window.history.replaceState({}, '', url);
 }
 
 export function getActiveFilterCount() {
@@ -143,13 +147,13 @@ export function renderFilterPills() {
       html += '<span class="filter-pill">' +
         '<span class="filter-pill-label">' + label + ':</span>' +
         escapeHtml(val) +
-        '<button class="filter-pill-remove" data-filter-key="' + filterKey + '" data-filter-value="' + escapeHtml(val) + '" title="Filter entfernen">close</button>' +
+        '<button class="filter-pill-remove" data-filter-key="' + filterKey + '" data-filter-value="' + escapeHtml(val) + '" title="' + t('filter.pill.remove') + '">close</button>' +
         '</span>';
     });
   }
 
   if (hasAny) {
-    html += '<button class="filter-pills-reset" id="filter-pills-reset">Alle Filter zur\u00FCcksetzen</button>';
+    html += '<button class="filter-pills-reset" id="filter-pills-reset">' + t('filter.reset.all') + '</button>';
   }
 
   container.innerHTML = html;
@@ -370,7 +374,7 @@ export function initDrawerResize() {
   const maxWidth = parseInt(styles.getPropertyValue('--drawer-max-width')) || 800;
 
   // Load saved width from localStorage
-  const savedWidth = localStorage.getItem('drawerWidth');
+  const savedWidth = storageGet('drawerWidth');
   if (savedWidth) {
     document.documentElement.style.setProperty('--drawer-width', savedWidth + 'px');
   }
@@ -393,7 +397,7 @@ export function initDrawerResize() {
 
     // Save width to localStorage
     const currentWidth = drawer.offsetWidth;
-    localStorage.setItem('drawerWidth', currentWidth);
+    storageSet('drawerWidth', currentWidth);
 
     // Resize map
     if (state.map) {

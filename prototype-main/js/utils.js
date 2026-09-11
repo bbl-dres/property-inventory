@@ -18,14 +18,6 @@ export function escapeHtml(text) {
     .replace(/"/g, '&quot;');
 }
 
-export function escapeForJs(text) {
-  if (text == null) return '';
-  return String(text)
-    .replace(/\\/g, '\\\\')
-    .replace(/'/g, "\\'")
-    .replace(/"/g, '\\"');
-}
-
 export function escapeXml(str) {
   if (!str) return '';
   return String(str)
@@ -133,12 +125,41 @@ export function downloadBlob(blob, filename) {
   URL.revokeObjectURL(url);
 }
 
-export function fetchWithErrorHandling(url, options) {
-  return fetch(url, options)
+// ===== SAFE STORAGE =====
+// localStorage can throw (private mode, blocked third-party storage, enterprise policies).
+// These helpers never throw so a storage problem can't take the whole app down.
+export function storageGet(key) {
+  try { return window.localStorage.getItem(key); } catch (e) { return null; }
+}
+
+export function storageSet(key, value) {
+  try { window.localStorage.setItem(key, value); return true; } catch (e) { return false; }
+}
+
+// ===== FETCH =====
+// JSON fetch with HTTP status check and a timeout, so a hanging request surfaces as an
+// error (and a retry option) instead of an endless spinner.
+export function fetchWithErrorHandling(url, options, timeoutMs) {
+  options = options || {};
+  if (timeoutMs === undefined) timeoutMs = 30000;
+  const controller = new AbortController();
+  const timer = setTimeout(function() { controller.abort(); }, timeoutMs);
+  if (options.signal) {
+    options.signal.addEventListener('abort', function() { controller.abort(); });
+  }
+  const opts = Object.assign({}, options, { signal: controller.signal });
+  return fetch(url, opts)
     .then(function(response) {
       if (!response.ok) {
-        throw new Error('HTTP ' + response.status + ': ' + response.statusText);
+        throw new Error('HTTP ' + response.status + ': ' + response.statusText + ' (' + url + ')');
       }
       return response.json();
-    });
+    })
+    .catch(function(err) {
+      if (err && err.name === 'AbortError') {
+        throw new Error('Timeout after ' + Math.round(timeoutMs / 1000) + ' s: ' + url);
+      }
+      throw err;
+    })
+    .finally(function() { clearTimeout(timer); });
 }

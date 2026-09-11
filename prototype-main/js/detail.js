@@ -3,7 +3,9 @@
 import { state } from './state.js';
 import { placeholderImages } from './config.js';
 import { t } from './i18n.js';
+import { showToast } from './ui.js';
 import {
+  escapeHtml,
   formatNum,
   formatArea,
   formatVolume,
@@ -39,7 +41,7 @@ function populateDetailView(building) {
   var statusEl = document.getElementById('detail-status');
   if (statusEl) {
     if (props.bbl_stat) {
-      statusEl.innerHTML = '<span class="badge status-badge ' + getStatusClassName(props.bbl_stat) + '">' + props.bbl_stat + '</span>';
+      statusEl.innerHTML = '<span class="badge status-badge ' + getStatusClassName(props.bbl_stat) + '">' + escapeHtml(props.bbl_stat) + '</span>';
     } else {
       statusEl.textContent = '\u2013';
     }
@@ -478,14 +480,23 @@ function updateLightbox() {
 
 // ===== MINI MAP =====
 
+let miniMapMarker = null;
+let miniMapCoords = null;
+
 function initMiniMap(coords) {
-  // Destroy existing map if any
+  miniMapCoords = coords;
+
+  // Reuse the existing mini map: re-creating a MapLibre instance for every detail view
+  // re-downloads the style and tiles and costs roughly half a second each time.
   if (state.miniMap) {
-    state.miniMap.remove();
-    state.miniMap = null;
+    state.miniMap.jumpTo({ center: coords, zoom: 17, pitch: 50, bearing: -17 });
+    if (miniMapMarker) miniMapMarker.setLngLat(coords);
+    state.miniMap.resize();
+    setTimeout(function() { if (state.miniMap) state.miniMap.resize(); }, 300);
+    return;
   }
 
-  // Create new mini map
+  // Create the mini map (first detail view only)
   state.miniMap = new maplibregl.Map({
     container: 'mini-map',
     style: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
@@ -539,9 +550,9 @@ function initMiniMap(coords) {
       }, labelLayerId);
     }
 
-    // Add marker
-    new maplibregl.Marker({ color: '#c00' })
-      .setLngLat(coords)
+    // Add marker (at the most recently requested position)
+    miniMapMarker = new maplibregl.Marker({ color: '#c00' })
+      .setLngLat(miniMapCoords || coords)
       .addTo(state.miniMap);
   });
 
@@ -810,7 +821,7 @@ function createEntityTable(config) {
     const addBtn = document.getElementById(config.addBtnId);
     if (addBtn) {
       addBtn.addEventListener('click', function() {
-        alert(config.addBtnMessage);
+        showToast({ type: 'info', message: t('detail.coming_soon'), duration: 4000 });
       });
     }
 
@@ -863,7 +874,6 @@ const measurementsTable = createEntityTable({
   actionClass: 'measurements-action',
   filterId: 'measurements-filter',
   addBtnId: 'btn-add-measurement',
-  addBtnMessage: 'Bemessung hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'id',
   dataSource: function() { return state.allAreaMeasurements; },
   transform: function(m) {
@@ -902,7 +912,6 @@ const documentsTable = createEntityTable({
   actionClass: 'documents-action',
   filterId: 'documents-filter',
   addBtnId: 'btn-add-document',
-  addBtnMessage: 'Dokument hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'id',
   dataSource: function() { return state.allDocuments; },
   transform: function(d) {
@@ -935,7 +944,6 @@ const contactsTable = createEntityTable({
   actionClass: 'contacts-action',
   filterId: 'contacts-filter',
   addBtnId: 'btn-add-contact',
-  addBtnMessage: 'Kontakt hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'name',
   dataSource: function() { return state.allContacts; },
   transform: function(contact) {
@@ -971,7 +979,6 @@ const costsTable = createEntityTable({
   actionClass: 'costs-action',
   filterId: 'costs-filter',
   addBtnId: 'btn-add-cost',
-  addBtnMessage: 'Kosten hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'kostengruppe',
   dataSource: function() { return state.allCosts; },
   transform: function(cost) {
@@ -1009,7 +1016,6 @@ const contractsTable = createEntityTable({
   actionClass: 'contracts-action',
   filterId: 'contracts-filter',
   addBtnId: 'btn-add-contract',
-  addBtnMessage: 'Vertrag hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'vertragsart',
   dataSource: function() { return state.allContracts; },
   transform: function(contract) {
@@ -1051,7 +1057,6 @@ const assetsTable = createEntityTable({
   actionClass: 'assets-action',
   filterId: 'assets-filter',
   addBtnId: 'btn-add-asset',
-  addBtnMessage: 'Ausstattung hinzuf\u00fcgen - kommt bald...',
   defaultSort: 'bezeichnung',
   dataSource: function() { return state.allAssets; },
   transform: function(asset) {

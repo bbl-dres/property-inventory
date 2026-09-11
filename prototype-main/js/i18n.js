@@ -2,6 +2,7 @@
 // Loads a single data/i18n.json with all languages, exposes t() for keyed lookups.
 
 let allTranslations = null; // cached: { de: { key: value }, en: { key: value }, ... }
+let loadFailed = false;     // true when data/i18n.json could not be loaded (UI shows raw keys)
 let translations = {};
 let currentLang = 'de';
 const supportedLangs = ['de', 'fr', 'it', 'en'];
@@ -25,6 +26,11 @@ export function t(key, params) {
     });
   }
   return value;
+}
+
+// True once translations were loaded successfully; false if the fetch failed.
+export function translationsLoaded() {
+  return !loadFailed;
 }
 
 // Get the current language code
@@ -124,6 +130,7 @@ function loadAllTranslations() {
     })
     .catch(function(err) {
       console.error('[i18n] ' + err.message);
+      loadFailed = true;
       allTranslations = {};
     });
 }

@@ -87,5 +87,5 @@ prototype-main/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

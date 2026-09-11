@@ -4,7 +4,7 @@
 import { state } from './state.js';
 import { fetchWithErrorHandling } from './utils.js';
 import {
-  showError, getViewFromURL, getBuildingIdFromURL, getTabFromURL,
+  showError, showWarning, getViewFromURL, getBuildingIdFromURL, getTabFromURL,
   switchView, showDetailView, initUI
 } from './ui.js';
 import {
@@ -24,10 +24,10 @@ import { initMap, addMapLayers, initStyleSwitcher, initContextMenu } from './map
 import { initSearch, handleSearchClick } from './search.js';
 import { initMeasure } from './measure.js';
 import { initPrintWidget } from './print.js';
-import { initI18n, t } from './i18n.js';
+import { initI18n, translationsLoaded, t } from './i18n.js';
 import {
   removeSwisstopoLayer, toggleSwisstopoLayerVisibility,
-  showLayerInfo, showInternalLayerInfo
+  showLayerInfo, showInternalLayerInfo, loadGeokatalog
 } from './swisstopo.js';
 
 // ===== LOADING OVERLAY =====
@@ -50,6 +50,63 @@ function hideLoadingOverlay() {
   }
 }
 
+// ===== ERROR REPORTING =====
+
+// t() returns the key itself when translations are unavailable — fall back to a static text then.
+function tf(key, fallback) {
+  const s = t(key);
+  return s === key ? fallback : s;
+}
+
+// Marks the boot as finished for the watchdog in index.html (which otherwise replaces the
+// spinner with a static error message after 20 s).
+function markBooted() {
+  window.__appBooted = true;
+}
+
+let lastRuntimeError = null;
+let lastRuntimeErrorAt = 0;
+
+// Surfaces uncaught errors / rejected promises as a toast instead of failing silently.
+// Throttled and de-duplicated so a repeating error cannot flood the screen.
+function reportRuntimeError(err) {
+  const message = (err && err.message) ? err.message : String(err || 'Unknown error');
+  if (/ResizeObserver loop|^Script error\.?$/.test(message)) return; // benign browser noise
+  const now = Date.now();
+  if (message === lastRuntimeError && now - lastRuntimeErrorAt < 10000) return;
+  lastRuntimeError = message;
+  lastRuntimeErrorAt = now;
+  console.error('[app] runtime error:', err);
+  showError(
+    tf('error.unexpected.title', 'Unerwarteter Fehler'),
+    tf('error.unexpected.message', 'Ein Fehler ist aufgetreten. Bitte laden Sie die Seite neu, falls das Problem weiterhin besteht.') +
+      ' (' + message + ')'
+  );
+}
+
+function initGlobalErrorHandlers() {
+  window.addEventListener('error', function(e) {
+    reportRuntimeError(e.error || e.message);
+  });
+  window.addEventListener('unhandledrejection', function(e) {
+    reportRuntimeError(e.reason);
+  });
+}
+
+// Anything that throws before the data is loaded ends up here: hide the spinner and
+// show a persistent error with a reload action.
+function fatalBootError(err) {
+  console.error('[app] fatal boot error:', err);
+  hideLoadingOverlay();
+  markBooted();
+  const message = (err && err.message) ? err.message : String(err);
+  showError(
+    tf('error.init.title', 'Anwendung konnte nicht gestartet werden'),
+    tf('error.init.message', 'Bitte laden Sie die Seite neu. Details finden Sie in der Browser-Konsole.') + ' (' + message + ')',
+    function() { window.location.reload(); }
+  );
+}
+
 // ===== TABLE PANEL TOGGLE & RESIZE =====
 
 function initTablePanel() {
@@ -61,8 +118,8 @@ function initTablePanel() {
   var urlParams = new URLSearchParams(window.location.search);
   var showTable = urlParams.get('table') === 'open';
 
+  state.tableOpen = showTable;
   if (!showTable) {
-    state.tableOpen = false;
     panel.classList.add('collapsed');
     toggleBtn.classList.add('collapsed');
     if (handle) handle.style.display = 'none';
@@ -74,7 +131,7 @@ function initTablePanel() {
     panel.style.height = '';
     panel.classList.toggle('collapsed', !state.tableOpen);
     toggleBtn.classList.toggle('collapsed', !state.tableOpen);
-    handle.style.display = state.tableOpen ? '' : 'none';
+    if (handle) handle.style.display = state.tableOpen ? '' : 'none';
     if (state.tableOpen && state.listViewDirty) {
       renderListView();
       renderParcelsView();
@@ -162,101 +219,135 @@ function initInternalLayerToggles() {
 
 // ===== DATA LOADING =====
 
+// UI wiring that must happen exactly once. Kept separate from the data application so a
+// "retry" after a failed fetch does not register every event listener a second time.
+let dataUiInitialized = false;
+
+function initDataDependentUI() {
+  if (dataUiInitialized) return;
+  dataUiInitialized = true;
+
+  initFilterPane();
+  initDrawerResize();
+  initExportPanel();
+  initBuildingTableHeaders();
+  initDelegatedListeners();
+  initListToolbar();
+  initListPagination();
+  initGalleryFilter();
+  initParcelsTable();
+  initLandCoversTable();
+  initTableTabs();
+  initInternalLayerToggles();
+  initTablePanel();
+  initAllEntityTables();
+}
+
+function buildIndexes() {
+  state.buildingIndex = new Map();
+  state.buildingsData.features.forEach(function(f) {
+    state.buildingIndex.set(f.properties.bbl_id, f);
+  });
+  state.parcelIndex = new Map();
+  if (state.parcelData && state.parcelData.features) {
+    state.parcelData.features.forEach(function(f) {
+      state.parcelIndex.set(f.properties.bbl_id, f);
+    });
+  }
+  state.landCoverIndex = new Map();
+  if (state.landCoverData && state.landCoverData.features) {
+    state.landCoverData.features.forEach(function(f) {
+      state.landCoverIndex.set(f.properties.objectid, f);
+    });
+  }
+}
+
+// Restore the view from the URL. Only ?view=detail opens the detail page; a plain ?id=…
+// (as written by a map selection) keeps the map view and restores the selection there.
+function restoreViewFromUrl() {
+  const buildingId = getBuildingIdFromURL();
+  const initialTab = getTabFromURL();
+  const initialView = getViewFromURL();
+  if (initialView === 'detail' && buildingId && state.buildingIndex.has(buildingId)) {
+    showDetailView(buildingId, initialTab);
+  } else if (initialView === 'gallery') {
+    switchView('gallery');
+    renderGalleryView();
+  } else {
+    const styleSwitcher = document.getElementById('style-switcher');
+    if (styleSwitcher) {
+      styleSwitcher.classList.add('visible');
+    }
+  }
+}
+
+function applyLoadedData(buildings, parcels, landcovers) {
+  state.buildingsData = buildings;
+  state.parcelData = parcels;
+  state.landCoverData = landcovers;
+
+  // Validate buildings data (the only mandatory dataset)
+  if (!state.buildingsData || !Array.isArray(state.buildingsData.features)) {
+    throw new Error('Ung\u00FCltiges Datenformat: Geb\u00E4udedaten fehlen');
+  }
+
+  buildIndexes();
+
+  // Initialize filters from URL, then build filter options from the data
+  state.activeFilters = getFiltersFromURL();
+  initFilterOptions();
+
+  initDataDependentUI();
+
+  // Apply initial filters and render tables
+  applyFilters();
+  renderListView();
+  renderParcelsView();
+  renderLandCoversView();
+
+  // Add map layers when map is ready
+  if (state.map.loaded()) {
+    addMapLayers();
+  } else {
+    state.map.once('load', addMapLayers);
+  }
+
+  restoreViewFromUrl();
+}
+
 function loadAllData() {
-  showLoadingOverlay('Daten werden geladen...');
+  showLoadingOverlay(tf('loading.data', 'Daten werden geladen...'));
+
+  // Parcels and land covers are optional: the app still works with buildings only.
+  function optional(url) {
+    return fetchWithErrorHandling(url).catch(function(err) {
+      console.warn('[app] optional dataset failed to load:', url, err);
+      return null;
+    });
+  }
 
   Promise.all([
     fetchWithErrorHandling('data/buildings.geojson'),
-    fetchWithErrorHandling('data/parcels.geojson'),
-    fetchWithErrorHandling('data/landcovers.geojson')
+    optional('data/parcels.geojson'),
+    optional('data/landcovers.geojson')
   ])
     .then(function(results) {
-      state.buildingsData = results[0];
-      state.parcelData = results[1];
-      state.landCoverData = results[2];
-
-      // Validate buildings data
-      if (!state.buildingsData || !state.buildingsData.features) {
-        throw new Error('Ung\u00FCltiges Datenformat: Geb\u00E4udedaten fehlen');
-      }
-
-      // Build O(1) lookup indexes
-      state.buildingIndex = new Map();
-      state.buildingsData.features.forEach(function(f) {
-        state.buildingIndex.set(f.properties.bbl_id, f);
-      });
-      state.parcelIndex = new Map();
-      if (state.parcelData && state.parcelData.features) {
-        state.parcelData.features.forEach(function(f) {
-          state.parcelIndex.set(f.properties.bbl_id, f);
-        });
-      }
-      state.landCoverIndex = new Map();
-      if (state.landCoverData && state.landCoverData.features) {
-        state.landCoverData.features.forEach(function(f) {
-          state.landCoverIndex.set(f.properties.objectid, f);
-        });
-      }
-
-      // Initialize filters from URL
-      state.activeFilters = getFiltersFromURL();
-
-      // Initialize filter pane with options
-      initFilterOptions();
-      initFilterPane();
-      initDrawerResize();
-      initExportPanel();
-
-      // Apply initial filters
-      applyFilters();
-
-      initBuildingTableHeaders();
-      renderListView();
-      renderParcelsView();
-      renderLandCoversView();
-      initDelegatedListeners();
-      initListToolbar();
-      initListPagination();
-      initGalleryFilter();
-      initParcelsTable();
-      initLandCoversTable();
-      initTableTabs();
-      initInternalLayerToggles();
-      initTablePanel();
-      initAllEntityTables();
-
-      // Add map layers when map is ready
-      if (state.map.loaded()) {
-        addMapLayers();
-      } else {
-        state.map.once('load', addMapLayers);
-      }
-
-      // Restore view from URL
-      const buildingId = getBuildingIdFromURL();
-      const initialTab = getTabFromURL();
-      const initialView = getViewFromURL();
-      if (buildingId) {
-        showDetailView(buildingId, initialTab);
-      } else if (initialView === 'gallery') {
-        switchView('gallery');
-        renderGalleryView();
-      } else {
-        const styleSwitcher = document.getElementById('style-switcher');
-        if (styleSwitcher) {
-          styleSwitcher.classList.add('visible');
-        }
-      }
-
+      applyLoadedData(results[0], results[1], results[2]);
       hideLoadingOverlay();
+      markBooted();
+
+      if (results[1] === null || results[2] === null) {
+        showWarning(t('error.data.partial.title'), t('error.data.partial.message'));
+      }
     })
     .catch(function(error) {
       console.error('Fehler beim Laden der Daten:', error);
       hideLoadingOverlay();
+      markBooted();
 
       showError(
         t('error.data.title'),
-        t('error.data.message'),
+        t('error.data.message') + ' (' + (error && error.message ? error.message : error) + ')',
         function() {
           loadAllData();
         }
@@ -264,10 +355,13 @@ function loadAllData() {
     });
 }
 
-// ===== INITIALIZE UI COMPONENTS =====
+// ===== BOOT =====
 
-// Load translations first, then initialize everything
-initI18n().then(function() {
+function boot() {
+  if (typeof maplibregl === 'undefined') {
+    throw new Error('MapLibre GL JS konnte nicht geladen werden (vendor/maplibre-gl/maplibre-gl.js)');
+  }
+
   initMap();
   initSearch();
   initContextMenu();
@@ -275,6 +369,14 @@ initI18n().then(function() {
   initStyleSwitcher();
   initPrintWidget();
   initUI();
+
+  if (!translationsLoaded()) {
+    // Static text on purpose: t() cannot translate when the translation file failed to load
+    showWarning(
+      '\u00DCbersetzungen nicht verf\u00FCgbar / Translations unavailable',
+      'data/i18n.json konnte nicht geladen werden. Die Oberfl\u00E4che zeigt Schl\u00FCssel statt Texte.'
+    );
+  }
 
   // ===== START DATA LOAD =====
   loadAllData();
@@ -293,6 +395,7 @@ initI18n().then(function() {
     navigateWithOrtFilter: function() { navigateWithOrtFilter(); },
     removeSwisstopoLayer: function(el) { removeSwisstopoLayer(el.dataset.layerId); },
     showLayerInfo: function(el) { showLayerInfo(el.dataset.layerId); },
+    retryGeokatalog: function() { loadGeokatalog(); },
     searchLocal: function(el) { handleSearchClick('local', el.dataset.id); },
     searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), null, null, el.dataset.bbox || null, el.dataset.origin || ''); },
     searchLayer: function(el) { handleSearchClick('layer', el.dataset.layerId, null, null, null, el.dataset.title); }
@@ -315,4 +418,9 @@ initI18n().then(function() {
       toggleSwisstopoLayerVisibility(target.dataset.layerId);
     }
   });
-});
+}
+
+initGlobalErrorHandlers();
+
+// Load translations first, then initialize everything. Any error on the way is made visible.
+initI18n().then(boot).catch(fatalBootError);

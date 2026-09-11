@@ -1,7 +1,7 @@
 // Search functionality
 
 import { state } from './state.js';
-import { escapeHtml } from './utils.js';
+import { escapeHtml, storageGet, storageSet } from './utils.js';
 import { selectBuilding, smartFlyTo, updateSelectedBuilding, updateUrlWithSelection } from './map.js';
 import { addSwisstopoLayer } from './swisstopo.js';
 import { switchView } from './ui.js';
@@ -13,7 +13,7 @@ const HISTORY_MAX = 15;
 
 function getSearchHistory() {
   try {
-    return JSON.parse(localStorage.getItem(HISTORY_KEY)) || [];
+    return JSON.parse(storageGet(HISTORY_KEY)) || [];
   } catch { return []; }
 }
 
@@ -22,12 +22,25 @@ function saveToSearchHistory(term) {
   const history = getSearchHistory().filter(h => h !== term);
   history.unshift(term);
   if (history.length > HISTORY_MAX) history.length = HISTORY_MAX;
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  storageSet(HISTORY_KEY, JSON.stringify(history)); // never throws (blocked storage)
 }
 
 function removeFromSearchHistory(term) {
   const history = getSearchHistory().filter(h => h !== term);
-  localStorage.setItem(HISTORY_KEY, JSON.stringify(history));
+  storageSet(HISTORY_KEY, JSON.stringify(history));
+}
+
+// Lower-cased local search text, computed once per building (WeakMap: no property pollution)
+const localSearchCache = new WeakMap();
+
+function getLocalSearchText(feature) {
+  let text = localSearchCache.get(feature);
+  if (text === undefined) {
+    const p = feature.properties || {};
+    text = [p.bbl_bez, p.adr_conct, p.adr_ort].map(function(v) { return v == null ? '' : String(v); }).join(' ').toLowerCase();
+    localSearchCache.set(feature, text);
+  }
+  return text;
 }
 
 // Strip HTML tags from API results (e.g., Swisstopo returns <b>, <i> markup)
@@ -260,10 +273,7 @@ export function initSearch() {
       if (state.buildingsData) {
         const lowerTerm = term.toLowerCase();
         matches = state.buildingsData.features.filter(function(f) {
-          const p = f.properties;
-          return (p.bbl_bez && p.bbl_bez.toLowerCase().includes(lowerTerm)) ||
-                 (p.adr_conct && p.adr_conct.toLowerCase().includes(lowerTerm)) ||
-                 (p.adr_ort && p.adr_ort.toLowerCase().includes(lowerTerm));
+          return getLocalSearchText(f).includes(lowerTerm);
         });
       }
       resolve({ type: 'local', data: matches });
@@ -271,20 +281,22 @@ export function initSearch() {
 
     // 2. Swisstopo Locations
     promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=locations&limit=5&sr=4326&searchText=' + encodeURIComponent(term), { signal: signal })
-      .then(function(r) { return r.json(); })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(data) { return { type: 'locations', data: data.results }; })
       .catch(function(e) {
         if (e.name === 'AbortError') return { type: 'locations', data: [], aborted: true };
-        return { type: 'locations', data: [] };
+        console.warn('[search] swisstopo locations failed:', e);
+        return { type: 'locations', data: [], error: true };
       }));
 
     // 3. Swisstopo Layers
     promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=layers&limit=5&lang=de&searchText=' + encodeURIComponent(term), { signal: signal })
-      .then(function(r) { return r.json(); })
+      .then(function(r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
       .then(function(data) { return { type: 'layers', data: data.results }; })
       .catch(function(e) {
         if (e.name === 'AbortError') return { type: 'layers', data: [], aborted: true };
-        return { type: 'layers', data: [] };
+        console.warn('[search] swisstopo layers failed:', e);
+        return { type: 'layers', data: [], error: true };
       }));
 
     Promise.all(promises).then(function(results) {
@@ -347,6 +359,14 @@ export function initSearch() {
 
     if (html === '') {
       html = '<div class="search-item" style="cursor:default;"><div class="search-item-subtitle">' + t('search.empty') + '</div></div>';
+    }
+
+    // Tell the user when the external (swisstopo) search failed instead of silently showing fewer results
+    if (results.some(function(r) { return r.error; })) {
+      html += '<div class="search-item search-item-warning" role="status">' +
+              '<span class="material-symbols-outlined" aria-hidden="true">warning</span>' +
+              '<div class="search-item-subtitle">' + t('search.error.external') + '</div>' +
+              '</div>';
     }
 
     searchResults.innerHTML = html;

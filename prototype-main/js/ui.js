@@ -7,7 +7,7 @@ import { renderListView, renderGalleryView, renderParcelsView, renderLandCoversV
 import { populateDetailView, renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
 import { updateMapFilter } from './filters.js';
 import { showPrintPreview, hidePrintPreview, updatePrintPreview } from './print.js';
-import { updateShareLink, getShareUrl, updateExportCount } from './export.js';
+import { getShareUrl } from './export.js';
 import { loadGeokatalog } from './swisstopo.js';
 import { selectBuilding, selectParcel, selectLandCover, smartFlyTo, updateSelectedBuilding, updateSelectedParcel, updateSelectedLandCover, updateUrlWithSelection, getPolygonCentroid } from './map.js';
 
@@ -134,6 +134,10 @@ export function getTabFromURL() {
   return params.get('tab') || 'overview';
 }
 
+// While a popstate event is being handled, URL updates must not push new entries —
+// otherwise Back/Forward would immediately re-push what they just navigated away from.
+let suppressHistoryPush = false;
+
 export function setViewInURL(view, buildingId, tab) {
   const url = new URL(window.location);
   url.searchParams.set('view', view);
@@ -147,7 +151,12 @@ export function setViewInURL(view, buildingId, tab) {
   } else {
     url.searchParams.delete('tab');
   }
-  window.history.pushState({}, '', url);
+  if (url.toString() === window.location.href) return; // no duplicate history entries
+  if (suppressHistoryPush) {
+    window.history.replaceState({}, '', url);
+  } else {
+    window.history.pushState({}, '', url);
+  }
 }
 
 export function setTabInURL(tab) {
@@ -622,10 +631,7 @@ function initAccordion() {
 
 // ===== PRINT ORIENTATION / WINDOW RESIZE =====
 function initPrintListeners() {
-  const printOrientationSelect = document.getElementById('print-orientation');
-  if (printOrientationSelect) {
-    printOrientationSelect.addEventListener('change', updatePrintPreview);
-  }
+  // (Orientation/scale change listeners live in print.js — initPrintWidget)
 
   // Update print preview on window resize
   window.addEventListener('resize', function() {
@@ -811,12 +817,21 @@ function initViewToggle() {
 // ===== BROWSER BACK/FORWARD =====
 function initPopstate() {
   window.addEventListener('popstate', function() {
+    if (!state.buildingsData) return; // data not loaded yet — the boot code restores the view
     const buildingId = getBuildingIdFromURL();
     const tab = getTabFromURL();
-    if (buildingId) {
-      showDetailView(buildingId, tab);
-    } else if (state.currentView === 'detail') {
-      switchView(state.previousView || 'map');
+    const view = getViewFromURL();
+    suppressHistoryPush = true;
+    try {
+      if (view === 'detail' && buildingId) {
+        showDetailView(buildingId, tab);
+      } else if (view === 'gallery') {
+        switchView('gallery');
+      } else {
+        switchView('map');
+      }
+    } finally {
+      suppressHistoryPush = false;
     }
   });
 }

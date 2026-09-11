@@ -6,7 +6,9 @@ import { TilesRenderer } from '3d-tiles-renderer';
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/examples/jsm/loaders/DRACOLoader.js';
 
-const GOOGLE_API_KEY = 'AIzaSyCcfg9ab7_u9uRpqVVSVoqiVZfKp3q7Oa0';
+// Set a *restricted* key here to enable Google 3D Tiles. The feature is disabled in map.js
+// and this module is not imported, so no key is shipped with the prototype.
+const GOOGLE_API_KEY = '';
 const TILES_URL = 'https://tile.googleapis.com/v1/3dtiles/root.json?key=' + GOOGLE_API_KEY;
 const LAYER_ID = 'google-3d-tiles';
 

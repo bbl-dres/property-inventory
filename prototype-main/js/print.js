@@ -5,6 +5,7 @@ import { state } from './state.js';
 import { statusColors, paperSizes, mapStyles } from './config.js';
 import { formatNum } from './utils.js';
 import { t, getLocale } from './i18n.js';
+import { showError } from './ui.js';
 
 // Maximum WebGL canvas dimension (conservative; most GPUs support 4096–16384)
 var MAX_GL_SIZE = 4096;
@@ -365,9 +366,12 @@ function renderOffscreenTile(style, center, zoom, width, height) {
         }
       });
 
-      offMap.once('error', function(e) {
+      // Only abort on style-level errors. Single tile failures (e.g. raster tiles outside a
+      // source's coverage, one flaky WMS response) are expected and must not cancel the print.
+      offMap.on('error', function(e) {
+        if (e && (e.tile || e.sourceId)) return;
         cleanup();
-        reject(e.error || e);
+        reject((e && e.error) || e);
       });
     } catch (e) {
       cleanup();
@@ -631,11 +635,6 @@ function hideProgress() {
 
 // ===== MAIN PDF GENERATION =====
 
-export function generatePrintPDF() {
-  // This is now only used by the old print-pdf-btn, if it still exists
-  // The new flow uses the async version in initPrintWidget
-}
-
 export function initPrintWidget() {
   // Print preview: orientation change and map move update the overlay
   var printOrientationEl = document.getElementById('print-orientation');
@@ -658,17 +657,16 @@ export function initPrintWidget() {
       var btn = this;
       var originalHTML = btn.innerHTML;
       btn.disabled = true;
-      btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span> ' + t('print.generating');
+      btn.innerHTML = '<span class="spinner inline-spinner" aria-hidden="true"></span>' + t('print.generating');
 
       try {
         await doGeneratePDF();
       } catch (e) {
         console.error('PDF error:', e);
-        if (e.message === 'timeout') {
-          alert(t('print.error.timeout'));
-        } else {
-          alert(t('error.pdf', { message: e.message }));
-        }
+        showError(
+          t('print.error.title'),
+          e.message === 'timeout' ? t('print.error.timeout') : t('error.pdf', { message: e.message })
+        );
       }
 
       hideProgress();
@@ -679,6 +677,10 @@ export function initPrintWidget() {
 }
 
 async function doGeneratePDF() {
+  if (!window.jspdf || !window.jspdf.jsPDF) {
+    throw new Error(t('print.error.library'));
+  }
+
   var orientation = document.getElementById('print-orientation').value;
   var scaleOption = document.getElementById('print-scale').value;
   var includeLegend = document.getElementById('print-legend').checked;
@@ -732,6 +734,11 @@ async function doGeneratePDF() {
     pdf.setTextColor(100);
     var dateStr = new Date().toLocaleDateString(getLocale(), { day: '2-digit', month: '2-digit', year: 'numeric' });
     pdf.text(t('print.date', { date: dateStr }), pw - m, y + 5, { align: 'right' });
+    // Prototype notice (fictional data), centred in the header
+    pdf.setFontSize(8);
+    pdf.setFont('helvetica', 'bold');
+    pdf.setTextColor(183, 28, 28);
+    pdf.text(t('print.prototype.note').toUpperCase(), pw / 2, y + 5, { align: 'center' });
     y += 8;
     pdf.setDrawColor(50);
     pdf.setLineWidth(0.5);
@@ -808,8 +815,8 @@ async function doGeneratePDF() {
   pdf.setFont('helvetica', 'normal');
   pdf.setTextColor(150);
 
-  // Left: source
-  pdf.text(t('print.source'), m, ph - m - 1);
+  // Left: source + prototype notice
+  pdf.text(t('print.source') + '  |  ' + t('print.prototype.note'), m, ph - m - 1);
 
   // Center: basemap name + center coordinates
   var basemapName = mapStyles[state.currentMapStyle] ? mapStyles[state.currentMapStyle].name : state.currentMapStyle;

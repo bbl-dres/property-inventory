@@ -321,6 +321,8 @@ export function clearIdentifyHighlight() {
   }
 }
 
+let identifyController = null;
+
 export function identifySwisstopoFeatures(lngLat) {
   // Only identify if there are active layers
   if (state.activeSwisstopoLayers.length === 0) return;
@@ -350,9 +352,18 @@ export function identifySwisstopoFeatures(lngLat) {
     '&returnGeometry=true' +
     '&lang=de';
 
-  fetch(url)
+  // A newer click supersedes a pending request (responses could otherwise arrive out of order)
+  if (identifyController) identifyController.abort();
+  identifyController = new AbortController();
+  const signal = identifyController.signal;
+
+  // Busy cursor while the request is pending (typically 0.5 to 2 s)
+  const canvas = state.map.getCanvas();
+  canvas.style.cursor = 'progress';
+
+  fetch(url, { signal: signal })
     .then(function(response) {
-      if (!response.ok) throw new Error('Identify request failed');
+      if (!response.ok) throw new Error('Identify request failed (HTTP ' + response.status + ')');
       return response.json();
     })
     .then(function(data) {
@@ -363,8 +374,13 @@ export function identifySwisstopoFeatures(lngLat) {
       }
     })
     .catch(function(e) {
+      if (e.name === 'AbortError') return;
       console.error('Identify error:', e);
       clearIdentifyHighlight();
+      showToast({ type: 'warning', title: t('swisstopo.error'), message: t('swisstopo.identify.failed'), duration: 5000 });
+    })
+    .finally(function() {
+      if (!signal.aborted) canvas.style.cursor = state.measureState.active ? 'crosshair' : '';
     });
 }
 
@@ -453,7 +469,7 @@ export function showLayerInfo(layerId) {
   if (!layerInfoModal || !layerInfoContent || !layerId) return;
 
   // Show modal with loading state
-  layerInfoContent.innerHTML = '<div class="layer-info-loading">' + t('swisstopo.loadingInfo') + '</div>';
+  layerInfoContent.innerHTML = '<div class="layer-info-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('swisstopo.loadingInfo') + '</span></div>';
   layerInfoModal.classList.add('show');
 
   // Fetch layer legend/info
@@ -608,10 +624,10 @@ export function showInternalLayerInfo(layerKey) {
     '<table>' +
     '<tr><td>Quelle</td><td>' + escapeHtml(meta.source) + '</td></tr>' +
     '<tr><td>Format</td><td>' + escapeHtml(meta.format) + ' (' + escapeHtml(meta.geometryType) + ')</td></tr>' +
-    '<tr><td>Metadaten</td><td><a href="#">Link zu Metadaten</a></td></tr>' +
-    '<tr><td>Detailbeschreibung</td><td><a href="#">Link zur Detailbeschreibung</a></td></tr>' +
-    '<tr><td>Datenbezug</td><td><a href="#">Link für Datenbezug</a></td></tr>' +
-    '<tr><td>Thematisches Geoportal</td><td><a href="#">Link zum Fachportal</a></td></tr>' +
+    '<tr><td>Metadaten</td><td><span class="placeholder-link">Link zu Metadaten (Platzhalter)</span></td></tr>' +
+    '<tr><td>Detailbeschreibung</td><td><span class="placeholder-link">Link zur Detailbeschreibung (Platzhalter)</span></td></tr>' +
+    '<tr><td>Datenbezug</td><td><span class="placeholder-link">Link für Datenbezug (Platzhalter)</span></td></tr>' +
+    '<tr><td>Thematisches Geoportal</td><td><span class="placeholder-link">Link zum Fachportal (Platzhalter)</span></td></tr>' +
     '<tr><td>Datenstand</td><td>' + datenstand + '</td></tr>' +
     '</table>' +
     '</div>';
@@ -632,14 +648,18 @@ export function updateGeokatalogCheckboxes() {
   });
 }
 
+let geokatalogLoading = false;
+
 export function loadGeokatalog() {
-  if (state.geokatalogLoaded) return;
+  if (state.geokatalogLoaded || geokatalogLoading) return;
+  geokatalogLoading = true;
 
   const treeContainer = document.getElementById('geokatalog-tree');
+  treeContainer.innerHTML = '<div class="geokatalog-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('loading.catalog') + '</span></div>';
 
   fetch('https://api3.geo.admin.ch/rest/services/ech/CatalogServer?lang=de')
     .then(function(response) {
-      if (!response.ok) throw new Error('API nicht erreichbar');
+      if (!response.ok) throw new Error('API nicht erreichbar (HTTP ' + response.status + ')');
       return response.json();
     })
     .then(function(data) {
@@ -647,16 +667,66 @@ export function loadGeokatalog() {
       treeContainer.innerHTML = '';
 
       if (data.results && data.results.root && data.results.root.children) {
+        initCatalogTreeEvents(treeContainer);
         renderCatalogTree(data.results.root.children, treeContainer);
       } else {
-        treeContainer.innerHTML = '<div class="geokatalog-error">Keine Daten verfügbar</div>';
+        treeContainer.innerHTML = '<div class="geokatalog-error">' + t('swisstopo.catalog.empty') + '</div>';
       }
-
     })
     .catch(function(error) {
       console.error('Geokatalog Fehler:', error);
-      treeContainer.innerHTML = '<div class="geokatalog-error">Fehler beim Laden des Katalogs</div>';
+      treeContainer.innerHTML = '<div class="geokatalog-error">' + t('swisstopo.catalog.failed') +
+        '<br><button type="button" class="geokatalog-retry" data-action="retryGeokatalog">' + t('error.retry') + '</button></div>';
+    })
+    .finally(function() {
+      geokatalogLoading = false;
     });
+}
+
+// One delegated click handler for the whole catalog tree (the swisstopo catalog has
+// several hundred nodes; one listener per node was needless work and memory).
+let catalogEventsBound = false;
+
+function initCatalogTreeEvents(container) {
+  if (catalogEventsBound) return;
+  catalogEventsBound = true;
+
+  container.addEventListener('click', function(e) {
+    // Info icon: layer info modal
+    const info = e.target.closest('.node-info');
+    if (info) {
+      e.stopPropagation();
+      const lid = info.getAttribute('data-layer-id');
+      if (lid) showLayerInfo(lid);
+      return;
+    }
+
+    const node = e.target.closest('.catalog-node');
+    if (!node || !container.contains(node)) return;
+    e.stopPropagation();
+
+    if (node.classList.contains('leaf')) {
+      // Leaf node toggles the layer
+      const layerId = node.getAttribute('data-layer-id');
+      if (!layerId) return;
+      const layerTitle = node.getAttribute('data-layer-title') || layerId;
+      const checkboxEl = node.querySelector('.node-checkbox');
+      const isActive = state.activeSwisstopoLayers.some(function(l) { return l.id === layerId; });
+
+      if (isActive) {
+        removeSwisstopoLayer(layerId);
+        if (checkboxEl) checkboxEl.checked = false;
+      } else {
+        addSwisstopoLayer(layerId, layerTitle, false);
+        if (checkboxEl) checkboxEl.checked = true;
+      }
+    } else {
+      // Category node expands/collapses its children
+      const itemEl = node.parentElement;
+      if (itemEl) itemEl.classList.toggle('expanded');
+      node.classList.toggle('expanded');
+    }
+  });
 }
 
 export function renderCatalogTree(items, container) {
@@ -697,7 +767,7 @@ export function renderCatalogTree(items, container) {
     labelEl.textContent = item.label || item.category || 'Unbekannt';
     nodeEl.appendChild(labelEl);
 
-    // Add info icon to leaf nodes
+    // Add info icon to leaf nodes (click handled by the delegated tree listener)
     if (!hasChildren && item.layerBodId) {
       const infoEl = document.createElement('span');
       infoEl.className = 'node-info';
@@ -705,12 +775,9 @@ export function renderCatalogTree(items, container) {
       infoEl.setAttribute('data-layer-id', item.layerBodId);
       nodeEl.appendChild(infoEl);
 
-      // Click on info icon shows layer info modal
-      infoEl.addEventListener('click', function(e) {
-        e.stopPropagation();
-        const lid = this.getAttribute('data-layer-id');
-        if (lid) showLayerInfo(lid);
-      });
+      // Leaf data for the delegated click handler
+      nodeEl.setAttribute('data-layer-id', item.layerBodId);
+      nodeEl.setAttribute('data-layer-title', item.label || item.category || item.layerBodId);
     }
 
     itemEl.appendChild(nodeEl);
@@ -720,34 +787,6 @@ export function renderCatalogTree(items, container) {
       childrenEl.className = 'catalog-children';
       renderCatalogTree(item.children, childrenEl);
       itemEl.appendChild(childrenEl);
-
-      nodeEl.addEventListener('click', function(e) {
-        e.stopPropagation();
-        itemEl.classList.toggle('expanded');
-        nodeEl.classList.toggle('expanded');
-        });
-    } else {
-      // Click on leaf node toggles layer
-      const layerId = item.layerBodId;
-      const layerTitle = item.label || item.category || layerId;
-
-      nodeEl.addEventListener('click', function(e) {
-        e.stopPropagation();
-        // Don't toggle if clicking on info icon
-        if (e.target.closest('.node-info')) return;
-        if (!layerId) return;
-
-        const checkboxEl = nodeEl.querySelector('.node-checkbox');
-        const isActive = state.activeSwisstopoLayers.some(function(l) { return l.id === layerId; });
-
-        if (isActive) {
-          removeSwisstopoLayer(layerId);
-          if (checkboxEl) checkboxEl.checked = false;
-        } else {
-          addSwisstopoLayer(layerId, layerTitle, false);
-          if (checkboxEl) checkboxEl.checked = true;
-        }
-      });
     }
 
     container.appendChild(itemEl);

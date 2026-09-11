@@ -17,8 +17,32 @@
     <link rel="stylesheet" href="css/styles.css">
 
     <script defer src="vendor/maplibre-gl/maplibre-gl.js"></script>
+    <script>
+      // Boot watchdog: if the app has not signalled readiness 20 s after load (e.g. a module
+      // failed to parse or a script was blocked), replace the spinner with a visible error.
+      window.__appBooted = false;
+      window.addEventListener('load', function() {
+        setTimeout(function() {
+          if (window.__appBooted) return;
+          var overlay = document.getElementById('loading-overlay');
+          if (!overlay || overlay.classList.contains('hidden')) return;
+          overlay.classList.add('failed');
+          var text = overlay.querySelector('.loading-text');
+          if (text) {
+            text.innerHTML = '<strong>Die Anwendung konnte nicht geladen werden.</strong><br>' +
+              'The application could not be loaded. (See browser console for details.)<br>' +
+              '<button type="button" onclick="location.reload()">Neu laden / Reload</button>';
+          }
+        }, 20000);
+      });
+    </script>
 </head>
 <body>
+    <!-- Prototype warning banner (always visible, all views) -->
+    <div id="prototype-banner" class="prototype-banner" role="note">
+        <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp</strong> <span data-i18n="banner.prototype.text">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span></span>
+    </div>
+
     <!-- Fullscreen image lightbox -->
     <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Bildansicht">
         <div class="lightbox-backdrop"></div>
@@ -176,9 +200,6 @@
             <div class="mobile-menu-links">
                 <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
                 <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
-                <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
-                <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
-                <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
             </div>
         </div>
     </nav>
@@ -213,8 +234,11 @@
                 </button>
             </div>
 
-            <!-- Toast notification container (inside #map so it doesn't overlap table) -->
-            <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
+            <!-- Map loading indicator: shown while the style or tiles are still loading -->
+            <div id="map-busy" class="map-busy" role="status" aria-live="polite">
+                <span class="spinner inline-spinner" aria-hidden="true"></span>
+                <span data-i18n="map.loading">Karte wird geladen…</span>
+            </div>
 
             <!-- Measure Distance Display (inside #map for correct positioning) -->
             <div id="measure-distance-display" class="measure-distance-display">
@@ -1157,11 +1181,11 @@ Content-Type: application/geo+json
         <div id="footer-links">
             <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
             <a href="#" id="footer-api-link" data-i18n="footer.api">API</a>
-            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
-            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
-            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
         </div>
     </footer>
+
+    <!-- Toast notifications: fixed to the viewport so they are visible in every view -->
+    <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
 
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script type="importmap">

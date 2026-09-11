@@ -7,6 +7,24 @@ import { selectBuilding, selectParcel, selectLandCover } from './map.js';
 import { showDetailView, showToast } from './ui.js';
 import { t, onLangChange } from './i18n.js';
 
+// ===== SEARCH TEXT CACHE =====
+// Lower-cased search strings are computed once per feature instead of on every render /
+// keystroke. A WeakMap keeps the cache off the feature objects (exports stay clean).
+const BUILDING_SEARCH_FIELDS = ['bbl_id', 'bbl_bez', 'adr_land', 'adr_ort', 'adr_conct', 'bbl_port', 'bbl_stat'];
+const PARCEL_SEARCH_FIELDS = ['bbl_id', 'av_nr', 'bbl_bez', 'bfs_gem', 'adr_reg', 'av_zbez', 'bbl_eigen'];
+const LANDCOVER_SEARCH_FIELDS = ['objectid', 'bbl_id', 'av_type', 'av_stat', 'av_egid', 'av_egrid'];
+const searchTextCache = new WeakMap();
+
+function getSearchText(feature, fields) {
+  let text = searchTextCache.get(feature);
+  if (text === undefined) {
+    const p = feature.properties || {};
+    text = fields.map(function(f) { return p[f] == null ? '' : String(p[f]); }).join(' ').toLowerCase();
+    searchTextCache.set(feature, text);
+  }
+  return text;
+}
+
 // ===== BUILDING TABLE COLUMN DEFINITIONS =====
 const buildingColumns = [
   // Sorted to match DATAMODEL.json — Internal Master Data
@@ -18,7 +36,7 @@ const buildingColumns = [
   { field: 'bbl_stat', label: 'Status', format: function(v) {
     if (!v) return '\u2013';
     const cls = getStatusClassName(v);
-    return '<span class="badge status-badge ' + cls + '">' + v + '</span>';
+    return '<span class="badge status-badge ' + cls + '">' + escapeHtml(v) + '</span>';
   }},
   // Address
   { field: 'adr_land', label: 'Land' },
@@ -107,10 +125,9 @@ export function initBuildingTableHeaders() {
   });
   headerRow.innerHTML = html;
 
-  // Apply initial visibility from building column checkboxes
-  document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
-    handleColumnToggle(cb);
-  });
+  // Apply initial visibility from all column checkbox lists (stylesheet-based, so it also
+  // covers rows rendered later)
+  initColumnVisibility();
 
   // Re-render headers when language changes
   onLangChange(function() {
@@ -121,10 +138,6 @@ export function initBuildingTableHeaders() {
       h += '<th class="col-' + col.field + '">' + t('col.' + col.field) + ' <span class="material-symbols-outlined">unfold_more</span></th>';
     });
     row.innerHTML = h;
-    // Re-apply column visibility
-    document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
-      handleColumnToggle(cb);
-    });
   });
 }
 
@@ -183,17 +196,7 @@ export function renderListView() {
     dataToRender = {
       type: dataToRender.type,
       features: dataToRender.features.filter(function(feature) {
-        const props = feature.properties;
-        const searchableText = [
-          props.bbl_id,
-          props.bbl_bez,
-          props.adr_land,
-          props.adr_ort,
-          props.adr_conct,
-          props.bbl_port,
-          props.bbl_stat
-        ].join(' ').toLowerCase();
-        return searchableText.includes(state.listSearchTerm);
+        return getSearchText(feature, BUILDING_SEARCH_FIELDS).includes(state.listSearchTerm);
       })
     };
   }
@@ -240,10 +243,10 @@ export function renderListView() {
 
   paginatedFeatures.forEach(function(feature) {
     const props = feature.properties;
-    html += '<tr data-id="' + props.bbl_id + '" tabindex="0" role="row">';
+    html += '<tr data-id="' + escapeHtml(props.bbl_id) + '" tabindex="0" role="row">';
     buildingColumns.forEach(function(col) {
       const val = props[col.field];
-      let display = (val !== null && val !== undefined && val !== '') ? String(val) : '\u2013';
+      let display = (val !== null && val !== undefined && val !== '') ? escapeHtml(String(val)) : '\u2013';
       if (col.format) display = col.format(val, props);
       html += '<td class="col-' + col.field + '">' + display + '</td>';
     });
@@ -251,11 +254,6 @@ export function renderListView() {
   });
 
   listBody.innerHTML = html;
-
-  // Re-apply column visibility to new rows
-  document.querySelectorAll('#columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
-    if (!cb.checked) handleColumnToggle(cb);
-  });
 
   // Update pagination info
   updateListPaginationInfo(state.listCurrentPage, totalPages, totalItems);
@@ -461,14 +459,41 @@ document.addEventListener('click', function(e) {
 });
 
 // ===== COLUMN TOGGLE =====
+// Column visibility is driven by one generated stylesheet instead of touching every cell:
+// toggling a column is O(1), and freshly rendered rows need no re-application.
+const hiddenColumns = new Set();
+let columnStyleEl = null;
+
+function updateColumnStylesheet() {
+  if (!columnStyleEl) {
+    columnStyleEl = document.createElement('style');
+    columnStyleEl.id = 'column-visibility-style';
+    document.head.appendChild(columnStyleEl);
+  }
+  let css = '';
+  hiddenColumns.forEach(function(cls) {
+    if (/^[a-zA-Z0-9_-]+$/.test(cls)) css += '#table-panel .' + cls + '{display:none;}';
+  });
+  columnStyleEl.textContent = css;
+}
+
 function handleColumnToggle(checkbox) {
   const columnClass = checkbox.getAttribute('data-column');
-  const isVisible = checkbox.checked;
+  if (!columnClass) return;
+  if (checkbox.checked) {
+    hiddenColumns.delete(columnClass);
+  } else {
+    hiddenColumns.add(columnClass);
+  }
+  updateColumnStylesheet();
+}
 
-  // Toggle visibility of header and body cells
-  document.querySelectorAll('.' + columnClass).forEach(function(cell) {
-    cell.style.display = isVisible ? '' : 'none';
+// Seed the hidden set from the initial checkbox state of all three column lists
+function initColumnVisibility() {
+  document.querySelectorAll('.columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
+    if (!cb.checked) hiddenColumns.add(cb.getAttribute('data-column'));
   });
+  updateColumnStylesheet();
 }
 
 function toggleAllColumns(showAll) {
@@ -809,17 +834,7 @@ export function renderParcelsView() {
     dataToRender = {
       type: dataToRender.type,
       features: dataToRender.features.filter(function(feature) {
-        const props = feature.properties;
-        const searchableText = [
-          props.bbl_id,
-          props.av_nr,
-          props.bbl_bez,
-          props.bfs_gem,
-          props.adr_reg,
-          props.av_zbez,
-          props.bbl_eigen
-        ].join(' ').toLowerCase();
-        return searchableText.includes(state.parcelSearchTerm);
+        return getSearchText(feature, PARCEL_SEARCH_FIELDS).includes(state.parcelSearchTerm);
       })
     };
   }
@@ -862,16 +877,6 @@ export function renderParcelsView() {
 
   parcelsBody.innerHTML = html;
   updateParcelsPaginationInfo(state.parcelCurrentPage, totalPages, totalItems);
-
-  // Re-apply parcel column visibility
-  document.querySelectorAll('#parcel-columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
-    if (!cb.checked) {
-      const columnClass = cb.getAttribute('data-column');
-      document.querySelectorAll('.' + columnClass).forEach(function(cell) {
-        cell.style.display = 'none';
-      });
-    }
-  });
 }
 
 // ===== PAGINATION INFO =====
@@ -964,16 +969,7 @@ export function renderLandCoversView() {
     dataToRender = {
       type: dataToRender.type,
       features: dataToRender.features.filter(function(feature) {
-        var props = feature.properties;
-        var searchableText = [
-          props.objectid,
-          props.bbl_id,
-          props.av_type,
-          props.av_stat,
-          props.av_egid,
-          props.av_egrid
-        ].join(' ').toLowerCase();
-        return searchableText.includes(state.landCoverSearchTerm);
+        return getSearchText(feature, LANDCOVER_SEARCH_FIELDS).includes(state.landCoverSearchTerm);
       })
     };
   }
@@ -999,10 +995,10 @@ export function renderLandCoversView() {
   var html = '';
   paginatedFeatures.forEach(function(feature) {
     var props = feature.properties;
-    html += '<tr data-landcover-id="' + props.objectid + '" tabindex="0" role="row">';
+    html += '<tr data-landcover-id="' + escapeHtml(props.objectid) + '" tabindex="0" role="row">';
     landCoverColumns.forEach(function(col) {
       var val = props[col.field];
-      var display = (val !== null && val !== undefined && val !== '') ? String(val) : '\u2013';
+      var display = (val !== null && val !== undefined && val !== '') ? escapeHtml(String(val)) : '\u2013';
       if (col.format) display = col.format(val, props);
       html += '<td class="col-lc-' + col.field + '">' + display + '</td>';
     });
@@ -1011,16 +1007,6 @@ export function renderLandCoversView() {
 
   lcBody.innerHTML = html;
   updateLandCoversPaginationInfo(state.landCoverCurrentPage, totalPages, totalItems);
-
-  // Re-apply column visibility
-  document.querySelectorAll('#landcover-columns-list input[type="checkbox"][data-column]').forEach(function(cb) {
-    if (!cb.checked) {
-      var columnClass = cb.getAttribute('data-column');
-      document.querySelectorAll('.' + columnClass).forEach(function(cell) {
-        cell.style.display = 'none';
-      });
-    }
-  });
 }
 
 function updateLandCoversPaginationInfo(currentPage, totalPages, totalItems) {

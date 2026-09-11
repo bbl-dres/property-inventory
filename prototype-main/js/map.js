@@ -2,7 +2,7 @@
 
 import { state } from './state.js';
 import { statusColors, mapStyles, placeholderImages } from './config.js';
-import { escapeHtml, getStatusClassName } from './utils.js';
+import { escapeHtml, getStatusClassName, storageSet } from './utils.js';
 import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
 // Google 3D tiles disabled — requires API key with sufficient quota
@@ -57,6 +57,7 @@ function initMap() {
 
 
   state.map = map;
+  initMapStatusIndicators(map);
 
   map.addControl(new maplibregl.NavigationControl(), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
@@ -192,6 +193,53 @@ function initMap() {
   return map;
 }
 
+// ===== MAP STATUS: busy indicator + error reporting =====
+
+function initMapStatusIndicators(map) {
+  const busyEl = document.getElementById('map-busy');
+  let busyTimer = null;
+
+  // Show the indicator only if loading takes longer than 400 ms (avoids flicker on fast tile loads)
+  function showBusy() {
+    if (busyTimer || !busyEl) return;
+    busyTimer = setTimeout(function() {
+      busyTimer = null;
+      if (!map.loaded()) busyEl.classList.add('show');
+    }, 400);
+  }
+
+  function hideBusy() {
+    if (busyTimer) {
+      clearTimeout(busyTimer);
+      busyTimer = null;
+    }
+    if (busyEl) busyEl.classList.remove('show');
+  }
+
+  map.on('dataloading', showBusy);
+  map.on('idle', hideBusy);
+
+  // Style/source failures are reported to the user (throttled). Single tile errors are
+  // expected (e.g. raster tiles outside a source's coverage) and stay silent.
+  let lastMapErrorAt = 0;
+  map.on('error', function(e) {
+    const err = e && e.error;
+    if (!err) return;
+    if (e.tile || e.sourceId || err.name === 'AbortError') return;
+    console.error('[map] error:', err);
+    const now = Date.now();
+    if (now - lastMapErrorAt < 10000) return;
+    lastMapErrorAt = now;
+    hideBusy();
+    showToast({
+      type: 'warning',
+      title: t('map.error.title'),
+      message: t('map.error.style') + ' (' + (err.message || err) + ')',
+      duration: 8000
+    });
+  });
+}
+
 // ===== SMART FLY-TO =====
 // Adapts duration based on distance: snappy for nearby, smooth for far away
 
@@ -314,6 +362,9 @@ function pulseStep() {
     stopPulseAnimation();
     return;
   }
+  // Skip while the map is not visible (other view / background tab): every paint
+  // property change triggers a full map re-render.
+  if (document.hidden || state.currentView !== 'map') return;
 
   pulseRadius += 0.9 * pulseDirection;
   pulseOpacity -= 0.03 * pulseDirection;
@@ -624,10 +675,42 @@ function addMapLayers() {
     }
   });
 
+  // Apply initial filters to map if any (filters may be active from the URL)
+  if (state.filteredData && getActiveFilterCount() > 0) {
+    updateMapFilter();
+  }
+
+  bindMapInteractions();
+  restoreSelectionFromUrl();
+
+  // Initialize highlight layer for Swisstopo feature identification
+  initIdentifyHighlightLayer();
+
+  // Load background layers from URL parameters
+  loadLayersFromUrl();
+}
+
+// ===== MAP INTERACTIONS =====
+// Bound exactly once. MapLibre keeps layer event listeners across setStyle(), while
+// addMapLayers() runs again after every style change — binding there duplicated every
+// click handler per basemap switch.
+let interactionsBound = false;
+
+function bindMapInteractions() {
+  if (interactionsBound) return;
+  interactionsBound = true;
+  const map = state.map;
+
+  // Hover cursor helper — keeps the crosshair while the measure tool is active
+  function setPointerCursor(on) {
+    map.getCanvas().style.cursor = state.measureState.active ? 'crosshair' : (on ? 'pointer' : '');
+  }
+
   // ===== CLUSTER INTERACTION =====
 
   // Click cluster to zoom in
   map.on('click', 'buildings-clusters', function(e) {
+    if (state.measureState.active) return;
     const features = map.queryRenderedFeatures(e.point, { layers: ['buildings-clusters'] });
     if (!features.length) return;
     const clusterId = features[0].properties.cluster_id;
@@ -638,25 +721,26 @@ function addMapLayers() {
   });
 
   map.on('mouseenter', 'buildings-clusters', function() {
-    map.getCanvas().style.cursor = 'pointer';
+    setPointerCursor(true);
   });
 
   map.on('mouseleave', 'buildings-clusters', function() {
-    map.getCanvas().style.cursor = '';
+    setPointerCursor(false);
   });
 
   // ===== INDIVIDUAL POINT INTERACTION =====
 
   map.on('mouseenter', 'buildings-points', function() {
-    map.getCanvas().style.cursor = 'pointer';
+    setPointerCursor(true);
   });
 
   map.on('mouseleave', 'buildings-points', function() {
-    map.getCanvas().style.cursor = '';
+    setPointerCursor(false);
   });
 
   // CLICK HANDLER
   map.on('click', 'buildings-points', function(e) {
+    if (state.measureState.active) return;
     const props = e.features[0].properties;
     selectBuilding(props.bbl_id, false);
   });
@@ -664,7 +748,7 @@ function addMapLayers() {
   // PARCEL HANDLERS
   if (state.parcelData && state.parcelData.features) {
     map.on('mouseenter', 'parcels-fill', function(e) {
-      map.getCanvas().style.cursor = 'pointer';
+      setPointerCursor(true);
       if (e.features.length > 0) {
         const parcelId = e.features[0].properties.bbl_id;
         map.setFilter('parcels-highlight', ['==', ['get', 'bbl_id'], parcelId]);
@@ -672,11 +756,12 @@ function addMapLayers() {
     });
 
     map.on('mouseleave', 'parcels-fill', function() {
-      map.getCanvas().style.cursor = '';
+      setPointerCursor(false);
       map.setFilter('parcels-highlight', ['==', ['get', 'bbl_id'], '']);
     });
 
     map.on('click', 'parcels-fill', function(e) {
+      if (state.measureState.active) return;
       // Parcels yield to buildings/clusters AND land covers (parcels are the bottom layer)
       const bbox = [
         [e.point.x - 15, e.point.y - 15],
@@ -698,18 +783,19 @@ function addMapLayers() {
   // LAND COVER HANDLERS
   if (state.landCoverData && state.landCoverData.features) {
     map.on('mouseenter', 'landcovers-fill', function(e) {
-      map.getCanvas().style.cursor = 'pointer';
+      setPointerCursor(true);
       if (e.features.length > 0) {
         map.setFilter('landcovers-highlight', ['==', ['get', 'objectid'], e.features[0].properties.objectid]);
       }
     });
 
     map.on('mouseleave', 'landcovers-fill', function() {
-      map.getCanvas().style.cursor = '';
+      setPointerCursor(false);
       map.setFilter('landcovers-highlight', ['==', ['get', 'objectid'], -1]);
     });
 
     map.on('click', 'landcovers-fill', function(e) {
+      if (state.measureState.active) return;
       // Land covers yield only to buildings/clusters (not parcels — land covers are above parcels)
       var bbox = [[e.point.x - 15, e.point.y - 15], [e.point.x + 15, e.point.y + 15]];
       var buildingFeatures = map.queryRenderedFeatures(bbox, { layers: ['buildings-points'] });
@@ -723,6 +809,7 @@ function addMapLayers() {
 
   // Click on map (not on a feature) to deselect or identify Swisstopo features
   map.on('click', function(e) {
+    if (state.measureState.active) return; // measure tool owns map clicks
     const clusterFeatures = map.queryRenderedFeatures(e.point, { layers: ['buildings-clusters'] });
     if (clusterFeatures.length > 0) return;
 
@@ -753,10 +840,16 @@ function addMapLayers() {
     }
   });
 
-  // Apply initial filters to map if any
-  if (state.filteredData && getActiveFilterCount() > 0) {
-    updateMapFilter();
-  }
+}
+
+// ===== URL SELECTION RESTORE (first load only) =====
+// Previously part of addMapLayers(), which also runs after every basemap switch — that
+// flew the map back to the URL's selected object on each style change.
+let urlSelectionRestored = false;
+
+function restoreSelectionFromUrl() {
+  if (urlSelectionRestored) return;
+  urlSelectionRestored = true;
 
   // Select building, parcel, or land cover from URL parameter if present
   const urlParams = new URLSearchParams(window.location.search);
@@ -777,12 +870,6 @@ function addMapLayers() {
       selectLandCover(lcId, true);
     }
   }
-
-  // Initialize highlight layer for Swisstopo feature identification
-  initIdentifyHighlightLayer();
-
-  // Load background layers from URL parameters
-  loadLayersFromUrl();
 }
 
 // ===== BUILDING SELECTION =====
@@ -1087,6 +1174,15 @@ function initStyleSwitcher() {
 
   // Restore all custom layers after a style change
   function restoreLayersAfterStyleChange() {
+    try {
+      restoreLayers();
+    } catch (e) {
+      console.error('[map] failed to restore layers after style change:', e);
+      showToast({ type: 'error', title: t('map.error.title'), message: e.message, duration: 8000 });
+    }
+  }
+
+  function restoreLayers() {
     if (state.buildingsData) {
       addMapLayers();
 
@@ -1135,7 +1231,7 @@ function initStyleSwitcher() {
       }
 
       state.currentMapStyle = styleId;
-      localStorage.setItem('mapStyle', styleId);
+      storageSet('mapStyle', styleId);
       updateActiveStyleButton();
 
       // Change map style — use 'idle' event (the only reliable event
@@ -1263,14 +1359,29 @@ function initContextMenu() {
     e.stopPropagation();
     if (!state.contextMenuLngLat) return;
 
-    // Generate share URL with coordinates
-    const lat = state.contextMenuLngLat.lat.toFixed(5);
-    const lon = state.contextMenuLngLat.lng.toFixed(5);
-    const shareUrl = window.location.origin + window.location.pathname + '?center=' + lon + ',' + lat + '&zoom=' + Math.round(map.getZoom());
+    // Share URL uses the same lng/lat/zoom parameters the app restores on load
+    // (the previous ?center=… parameter was never read back).
+    const shareUrlObj = new URL(window.location);
+    shareUrlObj.searchParams.set('lng', state.contextMenuLngLat.lng.toFixed(5));
+    shareUrlObj.searchParams.set('lat', state.contextMenuLngLat.lat.toFixed(5));
+    shareUrlObj.searchParams.set('zoom', map.getZoom().toFixed(2));
+    const shareUrl = shareUrlObj.toString();
 
     hideContextMenu();
 
-    // Use native Web Share API
+    function copyToClipboard() {
+      if (!navigator.clipboard) {
+        showToast({ type: 'error', title: t('error.copy.title'), message: t('error.copy.message'), duration: 3000 });
+        return;
+      }
+      navigator.clipboard.writeText(shareUrl).then(function() {
+        showToast({ type: 'success', title: t('success.copy.title'), message: t('success.copy.message'), duration: 2000 });
+      }).catch(function() {
+        showToast({ type: 'error', title: t('error.copy.title'), message: t('error.copy.message'), duration: 3000 });
+      });
+    }
+
+    // Use native Web Share API when available, clipboard otherwise
     if (navigator.share) {
       navigator.share({
         title: t('share.title'),
@@ -1278,27 +1389,10 @@ function initContextMenu() {
         url: shareUrl
       }).catch(function(err) {
         // User cancelled or share failed - copy to clipboard as fallback
-        if (err.name !== 'AbortError') {
-          navigator.clipboard.writeText(shareUrl).then(function() {
-            showToast({
-              type: 'success',
-              title: 'Link kopiert',
-              message: 'Link wurde in die Zwischenablage kopiert',
-              duration: 2000
-            });
-          });
-        }
+        if (err.name !== 'AbortError') copyToClipboard();
       });
     } else {
-      // Fallback for browsers without Web Share API - copy to clipboard
-      navigator.clipboard.writeText(shareUrl).then(function() {
-        showToast({
-          type: 'success',
-          title: t('success.copy.title'),
-          message: t('success.copy.message'),
-          duration: 2000
-        });
-      });
+      copyToClipboard();
     }
   });
 

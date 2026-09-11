@@ -161,6 +161,132 @@
     "fr": "Erreur lors de la création du PDF : {message}",
     "it": "Errore nella creazione del PDF: {message}"
   },
+  "banner.prototype.title": {
+    "de": "Prototyp",
+    "en": "Prototype",
+    "fr": "Prototype",
+    "it": "Prototipo"
+  },
+  "banner.prototype.text": {
+    "de": "Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.",
+    "en": "All data is fictional. For demonstration purposes only, not for production use.",
+    "fr": "Toutes les données sont fictives. À des fins de démonstration uniquement, pas pour un usage productif.",
+    "it": "Tutti i dati sono fittizi. Solo a scopo dimostrativo, non per uso produttivo."
+  },
+  "map.loading": {
+    "de": "Karte wird geladen…",
+    "en": "Loading map…",
+    "fr": "Chargement de la carte…",
+    "it": "Caricamento della carta…"
+  },
+  "map.error.title": {
+    "de": "Kartenfehler",
+    "en": "Map error",
+    "fr": "Erreur de carte",
+    "it": "Errore della carta"
+  },
+  "map.error.style": {
+    "de": "Der Kartenhintergrund konnte nicht geladen werden. Bitte Internetverbindung prüfen.",
+    "en": "The basemap could not be loaded. Please check your internet connection.",
+    "fr": "Le fond de carte n'a pas pu être chargé. Veuillez vérifier votre connexion internet.",
+    "it": "Impossibile caricare lo sfondo della carta. Verificare la connessione internet."
+  },
+  "error.unexpected.title": {
+    "de": "Unerwarteter Fehler",
+    "en": "Unexpected error",
+    "fr": "Erreur inattendue",
+    "it": "Errore imprevisto"
+  },
+  "error.unexpected.message": {
+    "de": "Ein Fehler ist aufgetreten. Bitte laden Sie die Seite neu, falls das Problem weiterhin besteht.",
+    "en": "An error occurred. Please reload the page if the problem persists.",
+    "fr": "Une erreur s'est produite. Veuillez recharger la page si le problème persiste.",
+    "it": "Si è verificato un errore. Ricaricare la pagina se il problema persiste."
+  },
+  "error.init.title": {
+    "de": "Anwendung konnte nicht gestartet werden",
+    "en": "The application could not start",
+    "fr": "L'application n'a pas pu démarrer",
+    "it": "Impossibile avviare l'applicazione"
+  },
+  "error.init.message": {
+    "de": "Bitte laden Sie die Seite neu. Details finden Sie in der Browser-Konsole.",
+    "en": "Please reload the page. Details are available in the browser console.",
+    "fr": "Veuillez recharger la page. Les détails sont disponibles dans la console du navigateur.",
+    "it": "Ricaricare la pagina. I dettagli sono disponibili nella console del browser."
+  },
+  "error.data.partial.title": {
+    "de": "Daten unvollständig",
+    "en": "Data incomplete",
+    "fr": "Données incomplètes",
+    "it": "Dati incompleti"
+  },
+  "error.data.partial.message": {
+    "de": "Grundstücke oder Bodenabdeckungen konnten nicht geladen werden. Die Karte zeigt nur Gebäude.",
+    "en": "Parcels or land covers could not be loaded. The map shows buildings only.",
+    "fr": "Les parcelles ou les couvertures du sol n'ont pas pu être chargées. La carte n'affiche que les bâtiments.",
+    "it": "Impossibile caricare i fondi o le coperture del suolo. La carta mostra solo gli edifici."
+  },
+  "search.error.external": {
+    "de": "Externe Suche (swisstopo) derzeit nicht verfügbar",
+    "en": "External search (swisstopo) currently unavailable",
+    "fr": "Recherche externe (swisstopo) actuellement indisponible",
+    "it": "Ricerca esterna (swisstopo) attualmente non disponibile"
+  },
+  "swisstopo.identify.failed": {
+    "de": "Die Abfrage der Karteninformationen ist fehlgeschlagen.",
+    "en": "The map feature query failed.",
+    "fr": "L'interrogation des informations cartographiques a échoué.",
+    "it": "L'interrogazione delle informazioni cartografiche non è riuscita."
+  },
+  "swisstopo.catalog.failed": {
+    "de": "Der Geokatalog konnte nicht geladen werden.",
+    "en": "The Geocatalog could not be loaded.",
+    "fr": "Le géocatalogue n'a pas pu être chargé.",
+    "it": "Impossibile caricare il geocatalogo."
+  },
+  "swisstopo.catalog.empty": {
+    "de": "Keine Daten verfügbar",
+    "en": "No data available",
+    "fr": "Aucune donnée disponible",
+    "it": "Nessun dato disponibile"
+  },
+  "print.error.title": {
+    "de": "PDF-Fehler",
+    "en": "PDF error",
+    "fr": "Erreur PDF",
+    "it": "Errore PDF"
+  },
+  "print.error.library": {
+    "de": "Die PDF-Bibliothek (jsPDF) konnte nicht geladen werden. Bitte Internetverbindung prüfen und Seite neu laden.",
+    "en": "The PDF library (jsPDF) could not be loaded. Please check your internet connection and reload the page.",
+    "fr": "La bibliothèque PDF (jsPDF) n'a pas pu être chargée. Veuillez vérifier votre connexion internet et recharger la page.",
+    "it": "Impossibile caricare la libreria PDF (jsPDF). Verificare la connessione internet e ricaricare la pagina."
+  },
+  "print.prototype.note": {
+    "de": "Prototyp – fiktive Daten",
+    "en": "Prototype – fictional data",
+    "fr": "Prototype – données fictives",
+    "it": "Prototipo – dati fittizi"
+  },
+  "detail.coming_soon": {
+    "de": "Diese Funktion ist im Prototyp noch nicht verfügbar.",
+    "en": "This function is not yet available in the prototype.",
+    "fr": "Cette fonction n'est pas encore disponible dans le prototype.",
+    "it": "Questa funzione non è ancora disponibile nel prototipo."
+  },
+  "filter.reset.all": {
+    "de": "Alle Filter zurücksetzen",
+    "en": "Reset all filters",
+    "fr": "Réinitialiser tous les filtres",
+    "it": "Reimpostare tutti i filtri"
+  },
+  "filter.pill.remove": {
+    "de": "Filter entfernen",
+    "en": "Remove filter",
+    "fr": "Supprimer le filtre",
+    "it": "Rimuovere il filtro"
+  },
   "success.export": {
     "de": "{count} Objekte exportiert",
     "en": "{count} objects exported",
@@ -1588,24 +1714,6 @@
     "en": "API",
     "fr": "API",
     "it": "API"
-  },
-  "footer.legal": {
-    "de": "Rechtliches",
-    "en": "Legal",
-    "fr": "Informations juridiques",
-    "it": "Basi legali"
-  },
-  "footer.help": {
-    "de": "Hilfe",
-    "en": "Help",
-    "fr": "Aide",
-    "it": "Aiuto"
-  },
-  "footer.contact": {
-    "de": "Kontakt",
-    "en": "Contact",
-    "fr": "Contact",
-    "it": "Contatto"
   },
   "detail.section.location": {
     "de": "Standort",

@@ -3426,11 +3426,11 @@ body.detail-active #detail-view {
 
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast-container {
-  position: absolute;
-  bottom: 60px;
+  position: fixed;
+  bottom: 44px;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 500;
+  z-index: 10000; /* above modals, drawers and the loading overlay */
   display: flex;
   flex-direction: column-reverse;
   gap: var(--space-3);
@@ -5102,7 +5102,7 @@ body.detail-active #detail-view {
 /* Responsive toast */
 @media screen and (max-width: 767px) {
   .toast-container {
-    bottom: 60px;
+    bottom: 16px;
     left: 50%;
     transform: translateX(-50%);
     width: calc(100% - 40px);
@@ -5123,4 +5123,138 @@ body.detail-active #detail-view {
   .layer-info-body {
     padding: var(--space-4);
   }
+}
+
+/* ===== PROTOTYPE BANNER ===== */
+.prototype-banner {
+  position: relative;
+  z-index: 1001;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: #b71c1c;
+  color: #fff;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  text-align: center;
+}
+
+.prototype-banner strong {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-right: var(--space-1);
+}
+
+@media screen and (max-width: 767px) {
+  .prototype-banner {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
+  }
+}
+
+/* ===== INLINE SPINNER (buttons, loading rows) ===== */
+/* Uses currentColor so it works on any button/background colour */
+.spinner.inline-spinner {
+  display: inline-block;
+  vertical-align: middle;
+  margin-right: var(--space-2);
+  flex-shrink: 0;
+  border-color: rgba(128, 128, 128, 0.3);
+  border-top-color: currentColor;
+}
+
+/* ===== MAP BUSY INDICATOR ===== */
+.map-busy {
+  position: absolute;
+  top: var(--space-3);
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 20;
+  display: none;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-1) var(--space-3);
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  font-size: var(--text-xs);
+  color: var(--grey-700);
+  pointer-events: none;
+}
+
+.map-busy.show {
+  display: flex;
+}
+
+.map-busy .spinner {
+  width: 14px;
+  height: 14px;
+  margin-right: 0;
+}
+
+/* ===== LOADING / ERROR STATES IN PANELS ===== */
+.geokatalog-loading,
+.layer-info-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+}
+
+.geokatalog-retry {
+  margin-top: var(--space-3);
+  padding: var(--space-1) var(--space-3);
+  border: 1px solid var(--grey-400);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--grey-800);
+  font-size: var(--text-xs);
+  cursor: pointer;
+}
+
+.geokatalog-retry:hover {
+  background: var(--grey-100);
+}
+
+.search-item-warning {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--status-warning-text);
+  background: var(--status-warning-bg);
+  cursor: default;
+}
+
+.search-item-warning .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.placeholder-link {
+  color: var(--grey-500);
+  font-style: italic;
+}
+
+/* Boot watchdog failure state (see inline script in index.html) */
+.loading-overlay.failed .loading-spinner {
+  display: none;
+}
+
+.loading-overlay.failed .loading-text {
+  text-align: center;
+  color: var(--status-error-text);
+}
+
+.loading-overlay.failed .loading-text button {
+  margin-top: var(--space-4);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid var(--grey-400);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  color: var(--grey-900);
+  font-size: var(--text-sm);
+  cursor: pointer;
 }

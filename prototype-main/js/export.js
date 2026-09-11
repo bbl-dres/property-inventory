@@ -76,7 +76,7 @@ export function performExport() {
 
   const btn = document.getElementById('export-btn');
   const originalHTML = btn.innerHTML;
-  btn.innerHTML = '<span class="material-symbols-outlined">hourglass_empty</span><span>' + t('export.exporting') + '</span>';
+  btn.innerHTML = '<span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('export.exporting') + '</span>';
   btn.disabled = true;
 
   setTimeout(function() {
@@ -295,49 +295,19 @@ export function getShareUrl() {
     params.set('zoom', zoom.toFixed(2));
   }
 
-  // Add selected building or parcel if one is selected
+  // Add the selected object, if any (building, parcel or land cover)
+  params.delete('id');
+  params.delete('parcelId');
+  params.delete('landCoverId');
   if (state.selectedBuildingId) {
     params.set('id', state.selectedBuildingId);
-    params.delete('parcelId');
   } else if (state.selectedParcelId) {
     params.set('parcelId', state.selectedParcelId);
-    params.delete('id');
-  } else {
-    params.delete('id');
-    params.delete('parcelId');
+  } else if (state.selectedLandCoverId != null) {
+    params.set('landCoverId', state.selectedLandCoverId);
   }
 
   return baseUrl + '?' + params.toString();
-}
-
-export function updateShareLink() {
-  const input = document.getElementById('share-link-input');
-  if (input) {
-    input.value = getShareUrl();
-  }
-}
-
-export function shareViaEmail() {
-  const url = getShareUrl();
-  const subject = encodeURIComponent(t('share.email.subject'));
-  const body = encodeURIComponent(t('share.email.body') + '\n\n' + url);
-  window.open('mailto:?subject=' + subject + '&body=' + body, '_self');
-}
-
-export function shareViaFacebook() {
-  const url = encodeURIComponent(getShareUrl());
-  window.open('https://www.facebook.com/sharer/sharer.php?u=' + url, '_blank', 'width=600,height=400');
-}
-
-export function shareViaLinkedIn() {
-  const url = encodeURIComponent(getShareUrl());
-  window.open('https://www.linkedin.com/sharing/share-offsite/?url=' + url, '_blank', 'width=600,height=400');
-}
-
-export function shareViaX() {
-  const url = encodeURIComponent(getShareUrl());
-  const text = encodeURIComponent(t('share.email.subject'));
-  window.open('https://twitter.com/intent/tweet?url=' + url + '&text=' + text, '_blank', 'width=600,height=400');
 }
 
 export function copyShareLink() {
@@ -352,6 +322,8 @@ export function copyShareLink() {
         button.textContent = t('accordion.share.copy');
         button.classList.remove('copied');
       }, 2000);
+    }).catch(function() {
+      showToast({ type: 'error', title: t('error.copy.title'), message: t('error.copy.message'), duration: 3000 });
     });
   } else if (input) {
     // Fallback for older browsers

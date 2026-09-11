@@ -317,7 +317,6 @@ function isNearFirstPoint(lngLat) {
   if (measureState.points.length < 3) return false;
 
   const firstPoint = measureState.points[0];
-  const distance = haversineDistance(lngLat.lat, lngLat.lng, firstPoint[1], firstPoint[0]);
 
   // Within visible pixel distance
   const pixelDistance = map.project(lngLat).dist(map.project({ lng: firstPoint[0], lat: firstPoint[1] }));

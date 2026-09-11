@@ -1,13 +1,14 @@
 // Shared application state
 
 import { filterConfig, mapStyles } from './config.js';
+import { storageGet } from './utils.js';
 
 // Initialize activeFilters from filterConfig keys
 const activeFilters = {};
 Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
-// Load saved map style from localStorage
-let savedMapStyle = localStorage.getItem('mapStyle') || 'positron';
+// Load saved map style from localStorage (safe accessor: never throws at module evaluation)
+let savedMapStyle = storageGet('mapStyle') || 'positron';
 if (!mapStyles[savedMapStyle]) savedMapStyle = 'positron';
 
 export const state = {
