@@ -66,7 +66,7 @@ export function setLang(lang) {
   return Promise.resolve();
 }
 
-// Initialise: detect language, load the single i18n file, activate.
+// Initialise from the URL, defaulting to German, then load and activate translations.
 export function initI18n() {
   const lang = detectLang();
   currentLang = lang;
@@ -74,26 +74,17 @@ export function initI18n() {
     translations = (allTranslations && allTranslations[lang]) || {};
     applyTranslationsToDOM();
     document.documentElement.lang = lang;
+    persistLang(lang);
   });
 }
 
 // ===== INTERNAL =====
 
 function detectLang() {
-  // 1. URL parameter
+  // Explicit links override the German default; browser and saved preferences do not.
   const params = new URLSearchParams(window.location.search);
   const urlLang = params.get('lang');
   if (urlLang && supportedLangs.indexOf(urlLang) !== -1) return urlLang;
-
-  // 2. localStorage
-  try {
-    const stored = localStorage.getItem('bbl-lang');
-    if (stored && supportedLangs.indexOf(stored) !== -1) return stored;
-  } catch (e) { /* ignore */ }
-
-  // 3. Browser language
-  const browserLang = (navigator.language || '').substring(0, 2).toLowerCase();
-  if (supportedLangs.indexOf(browserLang) !== -1) return browserLang;
 
   return fallbackLang;
 }
@@ -101,10 +92,9 @@ function detectLang() {
 function persistLang(lang) {
   const url = new URL(window.location);
   url.searchParams.set('lang', lang);
-  window.history.replaceState({}, '', url);
-  try {
-    localStorage.setItem('bbl-lang', lang);
-  } catch (e) { /* ignore */ }
+  if (url.href !== window.location.href) {
+    window.history.replaceState(window.history.state, '', url);
+  }
 }
 
 function loadAllTranslations() {

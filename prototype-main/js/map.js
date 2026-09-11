@@ -1,8 +1,8 @@
 // Map initialization, layers, selection, style switching, and context menu
 
 import { state } from './state.js';
-import { statusColors, mapStyles, placeholderImages } from './config.js';
-import { escapeHtml, getStatusClassName, storageSet } from './utils.js';
+import { statusColors, mapStyles, getMapStyleFromBasemap, placeholderImages } from './config.js';
+import { escapeHtml, getStatusClassName } from './utils.js';
 import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
 // Google 3D tiles disabled — requires API key with sufficient quota
@@ -1107,6 +1107,14 @@ function updateSelectedLandCover() {
 
 // ===== STYLE SWITCHER =====
 
+function updateBasemapUrl() {
+  const url = new URL(window.location);
+  url.searchParams.set('basemap', mapStyles[state.currentMapStyle].urlValue);
+  if (url.href !== window.location.href) {
+    window.history.replaceState(window.history.state, '', url);
+  }
+}
+
 // Get thumbnail URL from config (static tile images, no API key needed)
 function getStyleThumbnail(styleId) {
   const style = mapStyles[styleId];
@@ -1220,6 +1228,21 @@ function initStyleSwitcher() {
     readdSwisstopoLayers();
   }
 
+  function applyMapStyle(styleId) {
+    const changed = styleId !== state.currentMapStyle;
+    state.currentMapStyle = styleId;
+    updateBasemapUrl();
+    updateActiveStyleButton();
+
+    if (changed) {
+      // The old style can become idle while the new one is still downloading.
+      // Rebuild after the new style loads, including when backgrounds change rapidly.
+      state.map.off('style.load', restoreLayersAfterStyleChange);
+      state.map.once('style.load', restoreLayersAfterStyleChange);
+      state.map.setStyle(mapStyles[styleId].url, { diff: false });
+    }
+  }
+
   // Style option click handlers
   document.querySelectorAll('.style-option').forEach(function(btn) {
     btn.addEventListener('click', function(e) {
@@ -1230,15 +1253,7 @@ function initStyleSwitcher() {
         return;
       }
 
-      state.currentMapStyle = styleId;
-      storageSet('mapStyle', styleId);
-      updateActiveStyleButton();
-
-      // Change map style — use 'idle' event (the only reliable event
-      // MapLibre v4 emits after setStyle). Register after setStyle since
-      // idle is always async (fires after next render frame).
-      state.map.setStyle(mapStyles[styleId].url);
-      state.map.once('idle', restoreLayersAfterStyleChange);
+      applyMapStyle(styleId);
 
       // Close panel
       state.stylePanelOpen = false;
@@ -1246,6 +1261,12 @@ function initStyleSwitcher() {
     });
   });
 
+  window.addEventListener('popstate', function() {
+    applyMapStyle(getMapStyleFromBasemap(new URLSearchParams(window.location.search).get('basemap')));
+  });
+
+  // Make the default explicit in copied URLs, including when an invalid value was supplied.
+  updateBasemapUrl();
   updateActiveStyleButton();
 }
 

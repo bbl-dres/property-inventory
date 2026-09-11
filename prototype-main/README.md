@@ -23,12 +23,21 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 - 6 filter categories: status, ownership type, portfolio, building type, country, region.
 - Deep linking with URL-based navigation and filter persistence.
 
+### Basemap links
+- `?basemap=light` selects Light (the default).
+- `?basemap=standard`, `?basemap=aerial`, and `?basemap=dark` select the other backgrounds.
+- Missing or invalid values use Light and are normalized to `basemap=light` in the URL.
+- Changing the background updates the URL; reloading, sharing, and Back/Forward restore that choice. Previously saved `localStorage` basemap preferences are ignored.
+- Aerial imagery covers Switzerland and starts at zoom 8; for example, `?basemap=aerial&lng=8.2275&lat=46.8182&zoom=10`.
+
 ### Data export
 - CSV, Excel (`.xlsx`), GeoJSON.
 - Custom column selection before export. Filtered-vs-all scope.
 
 ### Internationalisation
-- DE / FR / IT / EN — switched in-app, persisted in `localStorage`.
+- German (DE) is the default, regardless of browser language or previously saved preferences.
+- `?lang=de`, `?lang=fr`, `?lang=it`, and `?lang=en` select an explicit language. Missing or invalid values use German.
+- Switching language updates the `lang` URL parameter, so reloads and shared links retain the choice.
 
 ### API documentation
 - Mock REST API documented as OpenAPI 3.0 in `data/swagger.json`, rendered with Swagger UI

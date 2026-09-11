@@ -1,6 +1,7 @@
 // Export panel, data export, share link, and social sharing functions
 
 import { state } from './state.js';
+import { mapStyles } from './config.js';
 import { escapeXml, downloadBlob } from './utils.js';
 import { showToast } from './ui.js';
 import { t } from './i18n.js';
@@ -285,6 +286,7 @@ export function exportShapefile(data) {
 export function getShareUrl() {
   const baseUrl = window.location.origin + window.location.pathname;
   const params = new URLSearchParams(window.location.search);
+  params.set('basemap', mapStyles[state.currentMapStyle].urlValue);
 
   // Add current map position if map exists
   if (state.map) {

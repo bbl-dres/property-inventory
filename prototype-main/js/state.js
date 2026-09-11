@@ -1,15 +1,13 @@
 // Shared application state
 
-import { filterConfig, mapStyles } from './config.js';
-import { storageGet } from './utils.js';
+import { filterConfig, getMapStyleFromBasemap } from './config.js';
 
 // Initialize activeFilters from filterConfig keys
 const activeFilters = {};
 Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
 
-// Load saved map style from localStorage (safe accessor: never throws at module evaluation)
-let savedMapStyle = storageGet('mapStyle') || 'positron';
-if (!mapStyles[savedMapStyle]) savedMapStyle = 'positron';
+// The URL owns basemap selection so the same link opens the same background everywhere.
+const initialMapStyle = getMapStyleFromBasemap(new URLSearchParams(window.location.search).get('basemap'));
 
 export const state = {
   // Data
@@ -63,7 +61,7 @@ export const state = {
   // Map
   map: null,
   miniMap: null,
-  currentMapStyle: savedMapStyle,
+  currentMapStyle: initialMapStyle,
   is3D: false,
   skipFilterZoom: false,
   searchMarker: null,

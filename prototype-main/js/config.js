@@ -25,16 +25,19 @@ export const filterConfig = {
 export const mapStyles = {
   'positron': {
     name: 'Light',
+    urlValue: 'light',
     url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
     thumbnail: 'https://basemaps.cartocdn.com/light_all/8/134/91.png'
   },
   'voyager': {
     name: 'Standard',
+    urlValue: 'standard',
     url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
     thumbnail: 'https://basemaps.cartocdn.com/rastertiles/voyager/8/134/91.png'
   },
   'swissimage': {
     name: 'Luftbild',
+    urlValue: 'aerial',
     url: {
       version: 8,
       glyphs: 'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
@@ -55,10 +58,18 @@ export const mapStyles = {
   },
   'dark-matter': {
     name: 'Dark',
+    urlValue: 'dark',
     url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
     thumbnail: 'https://basemaps.cartocdn.com/dark_all/8/134/91.png'
   }
 };
+
+// Only known URL values select a basemap; absent or invalid values mean Light.
+export function getMapStyleFromBasemap(basemap) {
+  return Object.keys(mapStyles).find(function(styleId) {
+    return mapStyles[styleId].urlValue === basemap;
+  }) || 'positron';
+}
 
 export const placeholderImages = [
   'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
