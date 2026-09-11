@@ -52,7 +52,7 @@ Then open <http://localhost:8000/prototype-main/> (or the repo root, which redir
 | What | Why |
 |---|---|
 | Vanilla ES modules | No build, easy to read |
-| MapLibre GL JS 5.19 | Map, layers, 3D tiles |
+| MapLibre GL JS 5.19 | Map, layers, 3D tiles — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
 | swisstopo `api3.geo.admin.ch` | Location search & Geokatalog (no key required) |
 | Material Symbols | Icons |
 
@@ -78,6 +78,8 @@ prototype-main/
 │   ├── parcels.geojson
 │   ├── landcovers.geojson
 │   └── i18n.json
+├── vendor/
+│   └── maplibre-gl/      # MapLibre GL JS 5.19.0 (js, css, licence)
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
     └── DESIGNGUIDE.md    # Design system

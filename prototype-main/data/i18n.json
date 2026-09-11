@@ -5,18 +5,6 @@
     "fr": "Inventaire immobilier OFCL",
     "it": "Inventario immobili UFCL"
   },
-  "app.logo.flag_alt": {
-    "de": "Schweizer Flagge",
-    "en": "Swiss flag",
-    "fr": "Drapeau suisse",
-    "it": "Bandiera svizzera"
-  },
-  "app.logo.text_alt": {
-    "de": "Schweizerische Eidgenossenschaft",
-    "en": "Swiss Confederation",
-    "fr": "Confédération suisse",
-    "it": "Confederazione Svizzera"
-  },
   "app.logo.org": {
     "de": "Bundesamt für Bauten und Logistik BBL",
     "en": "Federal Office for Buildings and Logistics FOBL",
