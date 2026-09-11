@@ -3,6 +3,8 @@
 <head>
 <meta charset="UTF-8">
 <title>Wireframe — Create Workflow</title>
+<!-- No favicon: an empty data URI suppresses the browser's /favicon.ico request -->
+<link rel="icon" href="data:,">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0">
 <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@5.19.0/dist/maplibre-gl.css">
 <link rel="stylesheet" href="https://unpkg.com/bpmn-js@17.11.1/dist/assets/diagram-js.css">
@@ -885,13 +887,15 @@
 </head>
 <body>
 
+<!-- Prototype warning banner (always visible) -->
+<div id="prototype-banner" class="prototype-banner" role="note">
+  <span class="prototype-banner-text"><strong>Prototyp</strong> <span>Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span></span>
+</div>
+
 <!-- ===== REAL HEADER (copied verbatim from index.html) ===== -->
 <header id="header" role="banner">
   <div class="header-main">
     <div id="logo-area">
-      <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge" width="30" height="30">
-      <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft" width="300" height="18">
-      <div class="logo-divider"></div>
       <div id="logo-title">
         <strong>Bundesamt für Bauten und Logistik BBL</strong>
         <span class="logo-subtitle"><br><span>Liegenschaften Inventar</span></span>
@@ -1563,9 +1567,6 @@
     <div id="footer-links">
         <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
         <a href="#" id="footer-api-link" data-i18n="footer.api">API</a>
-        <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank" rel="noopener" data-i18n="footer.legal">Rechtliches</a>
-        <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank" rel="noopener" data-i18n="footer.help">Hilfe</a>
-        <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank" rel="noopener" data-i18n="footer.contact">Kontakt</a>
     </div>
 </footer>
 

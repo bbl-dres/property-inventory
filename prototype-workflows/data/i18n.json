@@ -1601,24 +1601,6 @@
     "fr": "API",
     "it": "API"
   },
-  "footer.legal": {
-    "de": "Rechtliches",
-    "en": "Legal",
-    "fr": "Informations juridiques",
-    "it": "Basi legali"
-  },
-  "footer.help": {
-    "de": "Hilfe",
-    "en": "Help",
-    "fr": "Aide",
-    "it": "Aiuto"
-  },
-  "footer.contact": {
-    "de": "Kontakt",
-    "en": "Contact",
-    "fr": "Contact",
-    "it": "Contatto"
-  },
   "detail.section.location": {
     "de": "Standort",
     "en": "Location",

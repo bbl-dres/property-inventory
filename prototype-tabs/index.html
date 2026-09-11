@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BBL Immobilienportfolio - GIS POC</title>
+    <!-- No favicon: an empty data URI suppresses the browser's /favicon.ico request -->
+    <link rel="icon" href="data:,">
     
     <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
     <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
@@ -13,6 +15,11 @@
     <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
+    <!-- Prototype warning banner (always visible) -->
+    <div id="prototype-banner" class="prototype-banner" role="note">
+        <span class="prototype-banner-text"><strong>Prototyp</strong> <span>Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span></span>
+    </div>
+
     <!-- Loading overlay (shown during initial data fetch) -->
     <div id="loading-overlay" class="loading-overlay">
         <div class="loading-spinner"></div>
@@ -40,8 +47,10 @@
     <header id="header" role="banner">
         <div class="header-main">
             <div id="logo-area">
-                <img id="logo-flag" src="https://www.swisstopo.admin.ch/images/swiss-logo-flag.svg" alt="Schweizer Flagge">
-                <img id="logo-text-img" src="https://prod-swisstopoch-hcms-sdweb.imgix.net/2023/12/16/26d017bc-3987-4322-aa29-18052c11eac5.png" alt="Schweizerische Eidgenossenschaft">
+                <div id="logo-title">
+                    <strong>Bundesamt für Bauten und Logistik BBL</strong>
+                    <span class="logo-subtitle"><br><span>Liegenschaften Inventar</span></span>
+                </div>
             </div>
 
             <div id="search-area" role="search">
@@ -1392,9 +1401,6 @@
         <div id="coordinates">WGS 84 | Koordinaten: --</div>
         <div id="footer-links">
             <a href="https://github.com/bbl-dres/property-inventory" target="_blank">Quellcode</a>
-            <a href="https://www.admin.ch/gov/de/start/rechtliches.html" target="_blank">Rechtliches</a>
-            <a href="https://www.bbl.admin.ch/de/hilfe" target="_blank">Hilfe</a>
-            <a href="https://www.bbl.admin.ch/de/kontakt" target="_blank">Kontakt</a>
         </div>
     </footer>
 

@@ -29,24 +29,6 @@
   cursor: pointer;
 }
 
-#logo-flag {
-  width: 25px;
-  height: auto;
-}
-
-#logo-text-img {
-  height: 50px;
-  width: auto;
-}
-
-.logo-divider {
-  width: 1px;
-  align-self: stretch;
-  background: var(--grey-400);
-  margin: 0 var(--space-4);
-  flex-shrink: 0;
-}
-
 #logo-title {
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
@@ -4214,20 +4196,8 @@ body.detail-active #detail-view {
 
 /* ===== RESPONSIVE DESIGN ===== */
 
-/* Hide logo title + divider first (keep Swiss coat of arms text) */
-@media screen and (max-width: 1800px) {
-  #logo-title,
-  .logo-divider {
-    display: none;
-  }
-}
-
-/* Small laptop — also hide coat of arms text */
+/* Small laptop */
 @media screen and (max-width: 1366px) {
-  #logo-text-img {
-    display: none;
-  }
-
   .header-main {
     gap: var(--space-3);
   }
@@ -4328,12 +4298,6 @@ body.detail-active #detail-view {
     height: var(--header-main-height);
   }
 
-  #logo-text-img,
-  .logo-divider,
-  #logo-title {
-    display: none;
-  }
-
   #search-area {
     padding: 0 16px;
     gap: var(--space-3);
@@ -4403,12 +4367,12 @@ body.detail-active #detail-view {
     flex-shrink: 0;
   }
 
-  /* Hide logo text, divider, title — keep only flag */
-  #logo-text-img, .logo-divider, #logo-title {
+  /* Hide logo title on phones — search takes the full row */
+  #logo-title {
     display: none;
   }
 
-  /* Search fills available space between flag and buttons */
+  /* Search fills available space */
   #search-area {
     position: static;
     flex: 1;
@@ -5158,5 +5122,35 @@ body.detail-active #detail-view {
 
   .layer-info-body {
     padding: var(--space-4);
+  }
+}
+
+/* ===== PROTOTYPE BANNER ===== */
+.prototype-banner {
+  position: relative;
+  z-index: 1001;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  background: #b71c1c;
+  color: #fff;
+  font-size: var(--text-sm);
+  line-height: var(--leading-snug);
+  text-align: center;
+}
+
+.prototype-banner strong {
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-right: var(--space-1);
+}
+
+@media screen and (max-width: 767px) {
+  .prototype-banner {
+    font-size: var(--text-xs);
+    padding: var(--space-1) var(--space-3);
   }
 }
