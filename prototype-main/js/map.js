@@ -2,7 +2,7 @@
 
 import { state } from './state.js';
 import { statusColors, mapStyles, getMapStyleFromBasemap, placeholderImages } from './config.js';
-import { escapeHtml, getStatusClassName } from './utils.js';
+import { escapeHtml, getStatusClassName, isMobileLayout } from './utils.js';
 import { showToast, showDetailView } from './ui.js';
 import { t } from './i18n.js';
 // Google 3D tiles disabled — requires API key with sufficient quota
@@ -263,8 +263,48 @@ function smartFlyTo(options) {
     center: target,
     zoom: options.zoom,
     duration: duration,
-    essential: true
+    essential: true,
+    offset: getInfoPanelOffset() // keep the target out from under the mobile info sheet
   });
+}
+
+// ===== MOBILE INFO SHEET: KEEP THE SELECTION VISIBLE =====
+
+// On phones the info panel is a bottom sheet (or a right-hand sheet in landscape) that covers
+// part of the map. Returns the MapLibre `offset` (pixels relative to the map centre) that
+// centres a target in the uncovered part of the map; [0, 0] on desktop or when the panel is hidden.
+function getInfoPanelOffset() {
+  var map = state.map;
+  var panel = document.getElementById('info-panel');
+  if (!map || !panel || !isMobileLayout() || !panel.classList.contains('show')) return [0, 0];
+  var m = map.getContainer().getBoundingClientRect();
+  var p = panel.getBoundingClientRect();
+  if (p.width >= m.width * 0.9) {
+    var coveredBottom = Math.max(0, m.bottom - Math.max(p.top, m.top));
+    return [0, -coveredBottom / 2];
+  }
+  if (p.height >= m.height * 0.9) {
+    var coveredRight = Math.max(0, m.right - Math.max(p.left, m.left));
+    return [-coveredRight / 2, 0];
+  }
+  return [0, 0];
+}
+
+// After a tap selection on a phone: if the selected object ended up under the info sheet,
+// pan so it sits in the middle of the visible part of the map.
+function revealSelectionOnMobile(lngLat) {
+  var map = state.map;
+  if (!map || !lngLat) return;
+  var offset = getInfoPanelOffset();
+  if (!offset[0] && !offset[1]) return;
+  var m = map.getContainer().getBoundingClientRect();
+  var visibleW = m.width + offset[0] * 2;
+  var visibleH = m.height + offset[1] * 2;
+  var pt = map.project(lngLat);
+  var margin = 32;
+  if (pt.x < margin || pt.x > visibleW - margin || pt.y < margin || pt.y > visibleH - margin) {
+    map.panBy([pt.x - visibleW / 2, pt.y - visibleH / 2], { duration: 300 });
+  }
 }
 
 // ===== 3D BUILDINGS =====
@@ -933,6 +973,8 @@ function selectBuilding(buildingId, flyToBuilding) {
   // Only fly to building if explicitly requested (e.g. from Search)
   if (state.map && flyToBuilding) {
     smartFlyTo({ center: building.geometry.coordinates, zoom: 16 });
+  } else if (building.geometry && building.geometry.coordinates) {
+    revealSelectionOnMobile(building.geometry.coordinates);
   }
 }
 
@@ -1034,6 +1076,8 @@ function selectParcel(parcelId, flyToParcel) {
   if (state.map && flyToParcel && parcel.geometry && parcel.geometry.coordinates) {
     var center = getPolygonCentroid(parcel.geometry.coordinates);
     smartFlyTo({ center: center, zoom: 16 });
+  } else if (parcel.geometry && parcel.geometry.coordinates) {
+    revealSelectionOnMobile(getPolygonCentroid(parcel.geometry.coordinates));
   }
 }
 
@@ -1091,6 +1135,8 @@ function selectLandCover(objectid, flyToLandCover) {
   if (state.map && flyToLandCover && lc.geometry && lc.geometry.coordinates) {
     var center = getPolygonCentroid(lc.geometry.coordinates);
     smartFlyTo({ center: center, zoom: 17 });
+  } else if (lc.geometry && lc.geometry.coordinates) {
+    revealSelectionOnMobile(getPolygonCentroid(lc.geometry.coordinates));
   }
 }
 

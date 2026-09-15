@@ -17,6 +17,7 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 - **List** — sortable, searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
 - **Detail panel** — building dashboard with images, basic info, mini-map, and area data (SIA 416 compliant).
+- **Mobile** — phones (portrait and landscape) get a compact header with a hamburger menu, a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ### Search & filtering
 - Multi-source search: local buildings + swisstopo location API + Geokatalog layers.
@@ -100,11 +101,12 @@ prototype-main/
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
     ├── DESIGNGUIDE.md    # Design system
-    ├── CODE-REVIEW.md    # Review findings
+    ├── CODE-REVIEW.md    # Review findings (bugs, performance)
+    ├── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
     └── generate_swagger.py  # DATAMODEL.json -> data/swagger.json
 ```
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

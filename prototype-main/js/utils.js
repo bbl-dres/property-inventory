@@ -163,3 +163,12 @@ export function fetchWithErrorHandling(url, options, timeoutMs) {
     })
     .finally(function() { clearTimeout(timer); });
 }
+
+// ===== LAYOUT MODE =====
+// Mirrors the breakpoints in css/styles.css. "Mobile" is a narrow viewport (phones in portrait)
+// or a landscape phone: short and touch-operated, even though it is wider than 767px.
+const MOBILE_LAYOUT_QUERY = '(max-width: 767px), (max-height: 500px) and (pointer: coarse)';
+
+export function isMobileLayout() {
+  return typeof window.matchMedia === 'function' && window.matchMedia(MOBILE_LAYOUT_QUERY).matches;
+}

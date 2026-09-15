@@ -7,8 +7,9 @@
     <!-- No favicon: an empty data URI suppresses the browser's /favicon.ico request -->
     <link rel="icon" href="data:,">
     
-    <script src="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.js"></script>
-    <link href="https://api.mapbox.com/mapbox-gl-js/v3.4.0/mapbox-gl.css" rel="stylesheet" />
+    <!-- MapLibre GL JS (vendored, same build as prototype-main) — no API key needed -->
+    <link href="vendor/maplibre-gl/maplibre-gl.css" rel="stylesheet" />
+    <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
     
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
     
@@ -17,7 +18,7 @@
 <body>
     <!-- Prototype warning banner (always visible) -->
     <div id="prototype-banner" class="prototype-banner" role="note">
-        <span class="prototype-banner-text"><strong>Prototyp</strong> <span>Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span></span>
+        <span class="prototype-banner-text"><strong>Prototyp</strong> <span class="prototype-banner-text-long">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span><span class="prototype-banner-text-short">Alle Daten sind fiktiv.</span></span>
     </div>
 
     <!-- Loading overlay (shown during initial data fetch) -->
@@ -50,6 +51,7 @@
                 <div id="logo-title">
                     <strong>Bundesamt für Bauten und Logistik BBL</strong>
                     <span class="logo-subtitle"><br><span>Liegenschaften Inventar</span></span>
+                    <span class="logo-title-short"><strong>BBL</strong> Liegenschaften Inventar</span>
                 </div>
             </div>
 
@@ -64,6 +66,13 @@
                             <span class="material-symbols-outlined" aria-hidden="true">close</span>
                         </button>
                         <div id="search-spinner" class="spinner" role="status" aria-label="Suche läuft"></div>
+                        <select id="search-scope" class="search-scope" aria-label="Suchbereich">
+                            <option value="all">Alle</option>
+                            <option value="objects">Objekte</option>
+                            <option value="places">Orte</option>
+                            <option value="maps">Karten</option>
+                            <option value="ask">Fragen</option>
+                        </select>
                     </div>
                     <div id="search-results" role="listbox" aria-label="Suchergebnisse"></div>
                 </div>
@@ -86,15 +95,19 @@
 
             <div id="header-right">
                 <span id="object-count" aria-live="polite">10 Objekte</span>
-                <button class="header-btn" id="smart-drawer-btn" title="Filter & KI Assistent" aria-label="Filter und KI Assistent öffnen" aria-expanded="false" aria-controls="smart-drawer">
+                <button class="header-btn" id="smart-drawer-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="smart-drawer">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-                    Filter & KI Assistent
+                    <span class="header-btn-label">Filter</span>
                 </button>
                 <div id="login-area">
                     <button id="login-btn" title="Anmelden" aria-label="Anmelden">
                         <span class="material-symbols-outlined" aria-hidden="true">person</span>
                     </button>
                 </div>
+                <!-- Phones only: opens the map tools (#accordion-panel) as a slide-in menu, like the main prototype -->
+                <button id="hamburger-btn" class="hamburger-btn" aria-label="Menü öffnen" aria-expanded="false" aria-controls="accordion-panel">
+                    <span class="material-symbols-outlined" aria-hidden="true">menu</span>
+                </button>
             </div>
         </div>
 
@@ -125,14 +138,14 @@
             </div>
 
             <div class="detail-tabs">
-                <div class="detail-tabs-inner">
-                    <div class="detail-tab active" data-tab="overview">Übersicht</div>
-                    <div class="detail-tab" data-tab="measurements">Bemessungen</div>
-                    <div class="detail-tab" data-tab="costs">Kosten</div>
-                    <div class="detail-tab" data-tab="contracts">Verträge</div>
-                    <div class="detail-tab" data-tab="assets">Ausstattung</div>
-                    <div class="detail-tab" data-tab="documents">Dokumente</div>
-                    <div class="detail-tab" data-tab="contacts">Kontakte</div>
+                <div class="detail-tabs-inner" role="tablist" aria-label="Objektbereiche">
+                    <div class="detail-tab active" data-tab="overview" role="tab" tabindex="0" aria-selected="true">Übersicht</div>
+                    <div class="detail-tab" data-tab="measurements" role="tab" tabindex="0" aria-selected="false">Bemessungen</div>
+                    <div class="detail-tab" data-tab="costs" role="tab" tabindex="0" aria-selected="false">Kosten</div>
+                    <div class="detail-tab" data-tab="contracts" role="tab" tabindex="0" aria-selected="false">Verträge</div>
+                    <div class="detail-tab" data-tab="assets" role="tab" tabindex="0" aria-selected="false">Ausstattung</div>
+                    <div class="detail-tab" data-tab="documents" role="tab" tabindex="0" aria-selected="false">Dokumente</div>
+                    <div class="detail-tab" data-tab="contacts" role="tab" tabindex="0" aria-selected="false">Kontakte</div>
                 </div>
             </div>
         </div>
@@ -143,7 +156,15 @@
             <div id="map-view" class="active">
             <div id="map"></div>
             
-            <nav id="accordion-panel">
+            <!-- Map tools. Desktop/tablet: floating panel with the "Menü" toggle. Phones: slide-in hamburger menu. -->
+            <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
+            <nav id="accordion-panel" aria-label="Kartenwerkzeuge">
+                <div class="mobile-menu-header">
+                    <span class="mobile-menu-title">Liegenschaften Inventar</span>
+                    <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
+                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                    </button>
+                </div>
                 <div class="accordion-item">
                     <div class="accordion-header">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
@@ -239,7 +260,7 @@
                     </div>
                 </div>
 
-                <div class="accordion-item">
+                <div class="accordion-item" id="measure-accordion">
                     <div class="accordion-header">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Zeichnen & Messen auf der Karte</span>
@@ -357,12 +378,13 @@
                 </div>
             </nav>
             
-            <div id="menu-toggle">
-                <span class="material-symbols-outlined">expand_less</span>
+            <div id="menu-toggle" role="button" tabindex="0" aria-controls="accordion-panel" aria-expanded="true">
+                <span class="material-symbols-outlined" aria-hidden="true">expand_less</span>
                 <span id="menu-toggle-text">Menü schliessen</span>
             </div>
-            
+
             <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                <div class="sheet-handle" aria-hidden="true"></div>
                 <div id="info-header">
                     <span id="info-header-title">Objekt-Information</span>
                     <div id="info-header-actions">
@@ -378,21 +400,22 @@
             <!-- Style Switcher (visible only in map view) -->
             <div class="style-switcher" id="style-switcher">
                 <div class="style-switcher-panel" id="style-panel">
-                    <button class="style-option active" data-style="light-v11" title="Light">
-                        <img id="thumb-light-v11" src="" alt="Light">
+                    <!-- Basemaps: same set as prototype-main (CARTO vector styles + swisstopo SWISSIMAGE raster) -->
+                    <button class="style-option active" data-style="positron" title="Light">
+                        <img id="thumb-positron" src="" alt="Light">
                         <span>Light</span>
                     </button>
-                    <button class="style-option" data-style="streets-v12" title="Standard">
-                        <img id="thumb-streets-v12" src="" alt="Standard">
+                    <button class="style-option" data-style="voyager" title="Standard">
+                        <img id="thumb-voyager" src="" alt="Standard">
                         <span>Standard</span>
                     </button>
-                    <button class="style-option" data-style="satellite-v9" title="Luftbild">
-                        <img id="thumb-satellite-v9" src="" alt="Luftbild">
+                    <button class="style-option" data-style="swissimage" title="Luftbild (swisstopo)">
+                        <img id="thumb-swissimage" src="" alt="Luftbild">
                         <span>Luftbild</span>
                     </button>
-                    <button class="style-option" data-style="satellite-streets-v12" title="Luftbild + Strassen">
-                        <img id="thumb-satellite-streets-v12" src="" alt="Luftbild + Strassen">
-                        <span>Hybrid</span>
+                    <button class="style-option" data-style="dark-matter" title="Dark">
+                        <img id="thumb-dark-matter" src="" alt="Dark">
+                        <span>Dark</span>
                     </button>
                 </div>
                 <button class="style-switcher-btn" id="style-switcher-btn" title="Hintergrund wechseln">
@@ -575,11 +598,11 @@
                             <div class="detail-section-title">Bilder</div>
                             <div class="carousel" id="detail-carousel">
                                 <div class="carousel-image" id="carousel-image"></div>
-                                <button class="carousel-btn prev" onclick="carouselPrev()">
-                                    <span class="material-symbols-outlined">chevron_left</span>
+                                <button class="carousel-btn prev" onclick="carouselPrev()" aria-label="Vorheriges Bild">
+                                    <span class="material-symbols-outlined" aria-hidden="true">chevron_left</span>
                                 </button>
-                                <button class="carousel-btn next" onclick="carouselNext()">
-                                    <span class="material-symbols-outlined">chevron_right</span>
+                                <button class="carousel-btn next" onclick="carouselNext()" aria-label="Nächstes Bild">
+                                    <span class="material-symbols-outlined" aria-hidden="true">chevron_right</span>
                                 </button>
                                 <div class="carousel-dots" id="carousel-dots"></div>
                             </div>
@@ -707,12 +730,13 @@
                             </div>
                         </div>
                         
-                        <div class="detail-section">
+                        <div class="detail-section detail-section--address">
                             <div class="detail-section-title">Adresse</div>
                             <div class="detail-section-content">
                                 <div class="mini-map-container">
                                     <div id="mini-map" class="mini-map"></div>
                                 </div>
+                                <!-- data-label: shown as row labels when the column is too narrow for 7 table columns (container query) -->
                                 <table class="address-table">
                                     <thead>
                                         <tr>
@@ -727,17 +751,17 @@
                                     </thead>
                                     <tbody>
                                         <tr>
-                                            <td>
+                                            <td class="address-marker-cell">
                                                 <span class="address-marker">
-                                                    <span class="material-symbols-outlined">location_on</span>
+                                                    <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
                                                 </span>
                                             </td>
-                                            <td id="detail-country">—</td>
-                                            <td id="detail-region">—</td>
-                                            <td id="detail-city">—</td>
-                                            <td id="detail-plz">—</td>
-                                            <td id="detail-street">—</td>
-                                            <td id="detail-housenumber">—</td>
+                                            <td id="detail-country" data-label="Land">—</td>
+                                            <td id="detail-region" data-label="Region">—</td>
+                                            <td id="detail-city" data-label="Stadt">—</td>
+                                            <td id="detail-plz" data-label="Postleitzahl">—</td>
+                                            <td id="detail-street" data-label="Strasse">—</td>
+                                            <td id="detail-housenumber" data-label="Hausnummer">—</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -1298,31 +1322,26 @@
         </div><!-- /.main-content -->
 
         <!-- Smart Drawer (merged Filter + AI Assistant) -->
-        <aside id="smart-drawer" role="complementary" aria-label="Smart Drawer">
-            <div class="smart-drawer-resize-handle" title="Grösse ändern"></div>
+        <!-- Filter drawer. The former "KI Assistent" tab was removed: KI answers appear inline in the search suggestions. -->
+        <aside id="smart-drawer" role="complementary" aria-label="Filter">
+            <div class="smart-drawer-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
             <div class="smart-drawer-header">
-                <div class="smart-drawer-tabs" role="tablist">
-                    <button class="smart-drawer-tab active" data-drawer-tab="filter" role="tab" aria-selected="true" aria-controls="drawer-filter-content">
-                        <span class="material-symbols-outlined">filter_list</span>
-                        Filter
-                    </button>
-                    <button class="smart-drawer-tab" data-drawer-tab="assistant" role="tab" aria-selected="false" aria-controls="drawer-assistant-content">
-                        <span class="material-symbols-outlined">smart_toy</span>
-                        KI Assistent
-                    </button>
+                <div class="panel-header-title" id="smart-drawer-title">
+                    <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+                    <span>Filter Stammdaten</span>
                 </div>
                 <div class="smart-drawer-actions">
-                    <button class="smart-drawer-btn" id="drawer-reset-btn" title="Filter zurücksetzen">
-                        <span class="material-symbols-outlined">replay</span>
+                    <button class="smart-drawer-btn" id="drawer-reset-btn" title="Filter zurücksetzen" aria-label="Filter zurücksetzen">
+                        <span class="material-symbols-outlined" aria-hidden="true">replay</span>
                     </button>
-                    <button class="smart-drawer-btn" id="drawer-close-btn" title="Schliessen">
-                        <span class="material-symbols-outlined">close</span>
+                    <button class="smart-drawer-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen">
+                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
             </div>
 
             <!-- Filter Content -->
-            <div class="smart-drawer-content" id="drawer-filter-content" data-drawer-content="filter" role="tabpanel">
+            <div class="smart-drawer-content" id="drawer-filter-content" role="region" aria-labelledby="smart-drawer-title">
                 <div class="filter-section open" data-filter="status">
                     <div class="filter-section-header">
                         <span class="filter-section-title">Status</span>
@@ -1384,15 +1403,10 @@
                 </div>
             </div>
 
-            <!-- AI Assistant Content -->
-            <div class="smart-drawer-content" id="drawer-assistant-content" data-drawer-content="assistant" role="tabpanel" style="display: none;">
-                <iframe
-                    src="https://www.stack-ai.com/chat/694734d49f9811840eaae560-471rLuzJCA1Nm02SXb2Bq5"
-                    class="ai-assistant-iframe"
-                    title="KI Assistent"
-                    frameborder="0"
-                    allow="clipboard-write"
-                ></iframe>
+            <!-- Mobile only: sticky footer with live result count (see css/main.css, mobile breakpoint) -->
+            <div class="smart-drawer-footer">
+                <button class="btn-secondary" id="drawer-footer-reset" type="button">Zurücksetzen</button>
+                <button class="btn-primary" id="drawer-footer-apply" type="button"><span id="drawer-footer-count">10 Objekte anzeigen</span></button>
             </div>
         </aside>
     </main>

@@ -503,7 +503,15 @@ function initMiniMap(coords) {
     center: coords,
     zoom: 17,
     pitch: 50,
-    bearing: -17
+    bearing: -17,
+    // The mini map sits inside a scrolling page: a one-finger drag or a plain scroll wheel keeps
+    // scrolling the page; two fingers / Ctrl+wheel operate the map.
+    cooperativeGestures: true,
+    locale: {
+      'CooperativeGesturesHandler.WindowsHelpText': t('minimap.gesture.desktop'),
+      'CooperativeGesturesHandler.MacHelpText': t('minimap.gesture.mac'),
+      'CooperativeGesturesHandler.MobileHelpText': t('minimap.gesture.mobile')
+    }
   });
 
   // Add 3D buildings layer and marker

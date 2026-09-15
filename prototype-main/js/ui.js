@@ -1,7 +1,7 @@
 // UI module: view management, toast notifications, menu, accordion, tabs, and panels
 
 import { state } from './state.js';
-import { escapeHtml } from './utils.js';
+import { escapeHtml, isMobileLayout } from './utils.js';
 import { setLang, getLang, t } from './i18n.js';
 import { renderListView, renderGalleryView, renderParcelsView, renderLandCoversView, syncGalleryFilter } from './list.js';
 import { populateDetailView, renderMeasurementsTable, renderDocumentsTable, renderContactsTable, renderCostsTable, renderContractsTable, renderAssetsTable } from './detail.js';
@@ -319,6 +319,7 @@ function initUI() {
   initPrintListeners();
   initMenuToggle();
   initInfoPanel();
+  initSheetGestures();
   initDetailTabs();
   initViewToggle();
   initPopstate();
@@ -351,26 +352,40 @@ function initMobileMenu() {
     backdrop.classList.add('active');
     hamburgerBtn.setAttribute('aria-expanded', 'true');
     document.body.style.overflow = 'hidden';
+    // Move keyboard focus into the menu (screen readers, external keyboards on tablets)
+    closeBtn.focus();
   }
 
-  function closeMenu() {
+  // restoreFocus: true when the menu is dismissed without choosing an entry
+  function closeMenu(restoreFocus) {
+    var wasOpen = menu.classList.contains('active');
     menu.classList.remove('active');
     backdrop.classList.remove('active');
     hamburgerBtn.setAttribute('aria-expanded', 'false');
     document.body.style.overflow = '';
+    if (restoreFocus && wasOpen) hamburgerBtn.focus();
   }
 
   hamburgerBtn.addEventListener('click', openMenu);
-  closeBtn.addEventListener('click', closeMenu);
-  backdrop.addEventListener('click', closeMenu);
+  closeBtn.addEventListener('click', function() { closeMenu(true); });
+  backdrop.addEventListener('click', function() { closeMenu(true); });
 
   // Escape key closes menu
   document.addEventListener('keydown', function(e) {
     if (e.key === 'Escape' && menu.classList.contains('active')) {
       e.stopImmediatePropagation();
-      closeMenu();
+      closeMenu(true);
     }
   });
+
+  // Share the current view: the map context menu (right-click) is not reachable on touch screens
+  var mobileShareBtn = document.getElementById('mobile-share-btn');
+  if (mobileShareBtn) {
+    mobileShareBtn.addEventListener('click', function() {
+      closeMenu();
+      shareCurrentView();
+    });
+  }
 
   // Filter button in mobile menu → opens filter panel, closes menu
   var mobileFilterBtn = document.getElementById('mobile-filter-btn');
@@ -441,8 +456,8 @@ function populateMobileLayers() {
     var desktopCheckbox = document.getElementById(layer.toggle);
     var checked = desktopCheckbox && desktopCheckbox.checked ? 'checked' : '';
     html += '<div class="mobile-layer-item">' +
-      '<input type="checkbox" ' + checked + ' data-sync-toggle="' + layer.toggle + '">' +
-      '<span class="mobile-layer-title" data-i18n="' + layer.label + '">' + t(layer.label) + '</span>' +
+      '<input type="checkbox" id="mobile-' + layer.toggle + '" ' + checked + ' data-sync-toggle="' + layer.toggle + '">' +
+      '<label class="mobile-layer-title" for="mobile-' + layer.toggle + '" data-i18n="' + layer.label + '">' + t(layer.label) + '</label>' +
       '<button class="mobile-layer-info" data-action="showInternalLayerInfo" data-layer-key="' + layer.id + '">' +
         '<span class="material-symbols-outlined">info</span>' +
       '</button>' +
@@ -717,18 +732,24 @@ function initMenuToggle() {
   menuToggleIcon = menuToggle.querySelector('.material-symbols-outlined');
   menuOpen = true;
 
+  function renderMenuToggle() {
+    accordionPanel.classList.toggle('collapsed', !menuOpen);
+    // data-i18n keeps the label correct after a language change
+    menuToggleText.setAttribute('data-i18n', menuOpen ? 'menu.close' : 'menu.open');
+    menuToggleText.textContent = t(menuOpen ? 'menu.close' : 'menu.open');
+    menuToggleIcon.textContent = menuOpen ? 'expand_less' : 'expand_more';
+  }
+
+  // Tablets: start collapsed so the panel does not cover a third of the map by default.
+  // (On phones the panel is hidden entirely; its layer toggles live in the hamburger menu.)
+  if (window.matchMedia && window.matchMedia('(max-width: 1024px)').matches) {
+    menuOpen = false;
+    renderMenuToggle();
+  }
+
   menuToggle.addEventListener('click', function() {
     menuOpen = !menuOpen;
-
-    if (menuOpen) {
-      accordionPanel.classList.remove('collapsed');
-      menuToggleText.textContent = t('menu.close');
-      menuToggleIcon.textContent = 'expand_less';
-    } else {
-      accordionPanel.classList.add('collapsed');
-      menuToggleText.textContent = t('menu.open');
-      menuToggleIcon.textContent = 'expand_more';
-    }
+    renderMenuToggle();
   });
 }
 
@@ -769,46 +790,100 @@ function initInfoPanel() {
   });
 
   // Info panel share
-  // BUG FIX #21b: Fixed clipboard fallback to use correct showToast object format
-  document.getElementById('info-share').addEventListener('click', function() {
-    const url = getShareUrl();
-    const title = t('share.title');
-    const text = state.selectedBuildingId
-      ? t('share.building', {id: state.selectedBuildingId})
-      : state.selectedParcelId
-        ? t('share.parcel', {id: state.selectedParcelId})
-        : t('share.map');
+  document.getElementById('info-share').addEventListener('click', shareCurrentView);
+}
 
-    // Use Web Share API if available
-    if (navigator.share) {
-      navigator.share({
-        title: title,
-        text: text,
-        url: url
-      }).catch(function(err) {
-        // User cancelled or error - silently ignore
-        console.log('Share cancelled or failed:', err);
-      });
-    } else {
-      // Fallback: copy to clipboard
-      if (navigator.clipboard) {
-        navigator.clipboard.writeText(url).then(function() {
-          showToast({
-            type: 'success',
-            title: t('success.copy.title'),
-            message: t('success.copy.message'),
-            duration: 2000
-          });
-        }).catch(function() {
-          showToast({
-            type: 'error',
-            title: t('error.copy.title'),
-            message: t('error.copy.message'),
-            duration: 3000
-          });
+// Share the current view (selected object or map position) via the Web Share API,
+// falling back to the clipboard. Used by the info panel and the mobile menu.
+// BUG FIX #21b: Fixed clipboard fallback to use correct showToast object format
+export function shareCurrentView() {
+  const url = getShareUrl();
+  const title = t('share.title');
+  const text = state.selectedBuildingId
+    ? t('share.building', {id: state.selectedBuildingId})
+    : state.selectedParcelId
+      ? t('share.parcel', {id: state.selectedParcelId})
+      : t('share.map');
+
+  // Use Web Share API if available
+  if (navigator.share) {
+    navigator.share({
+      title: title,
+      text: text,
+      url: url
+    }).catch(function(err) {
+      // User cancelled or error - silently ignore
+      console.log('Share cancelled or failed:', err);
+    });
+  } else {
+    // Fallback: copy to clipboard
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(url).then(function() {
+        showToast({
+          type: 'success',
+          title: t('success.copy.title'),
+          message: t('success.copy.message'),
+          duration: 2000
         });
-      }
+      }).catch(function() {
+        showToast({
+          type: 'error',
+          title: t('error.copy.title'),
+          message: t('error.copy.message'),
+          duration: 3000
+        });
+      });
     }
+  }
+}
+
+// ===== BOTTOM SHEET (mobile info panel): swipe down on the header to dismiss =====
+function initSheetGestures() {
+  var panel = document.getElementById('info-panel');
+  var closeBtn = document.getElementById('info-close');
+  if (!panel || !closeBtn) return;
+
+  var startY = 0;
+  var dragY = 0;
+  var dragging = false;
+
+  function isBottomSheet() {
+    // Landscape phones dock the panel to the right (styles.css); no vertical swipe there
+    return isMobileLayout() && !window.matchMedia('(max-height: 500px) and (min-width: 600px)').matches;
+  }
+
+  function onStart(e) {
+    if (!isBottomSheet() || e.touches.length !== 1) return;
+    startY = e.touches[0].clientY;
+    dragY = 0;
+    dragging = true;
+    panel.classList.add('sheet-dragging');
+  }
+
+  function onMove(e) {
+    if (!dragging) return;
+    dragY = Math.max(0, e.touches[0].clientY - startY);
+    if (dragY > 0) {
+      panel.style.transform = 'translateY(' + dragY + 'px)';
+      if (e.cancelable) e.preventDefault(); // the sheet follows the finger, the map must not pan
+    }
+  }
+
+  function onEnd() {
+    if (!dragging) return;
+    dragging = false;
+    panel.classList.remove('sheet-dragging');
+    panel.style.transform = '';
+    if (dragY > 80) closeBtn.click();
+  }
+
+  ['.sheet-handle', '#info-header'].forEach(function(selector) {
+    var el = panel.querySelector(selector);
+    if (!el) return;
+    el.addEventListener('touchstart', onStart, { passive: true });
+    el.addEventListener('touchmove', onMove, { passive: false });
+    el.addEventListener('touchend', onEnd);
+    el.addEventListener('touchcancel', onEnd);
   });
 }
 

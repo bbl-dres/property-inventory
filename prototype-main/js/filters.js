@@ -2,8 +2,8 @@
 
 import { state } from './state.js';
 import { filterConfig } from './config.js';
-import { escapeHtml, getNestedProperty, storageGet, storageSet } from './utils.js';
-import { t } from './i18n.js';
+import { escapeHtml, getNestedProperty, storageGet, storageSet, isMobileLayout } from './utils.js';
+import { t, onLangChange } from './i18n.js';
 import { renderListView, updateFilteredExportHeader, renderGalleryView, renderParcelsView, renderLandCoversView } from './list.js';
 import { switchView } from './ui.js';
 import { updateExportCount } from './export.js';
@@ -167,7 +167,7 @@ export function renderFilterPills() {
       if (state.activeFilters[key]) {
         state.activeFilters[key] = state.activeFilters[key].filter(function(v) { return v !== val; });
         // Also uncheck the corresponding checkbox in the drawer
-        const cb = document.querySelector('#filter-pane input[data-filter="' + key + '"][data-value="' + val + '"]');
+        const cb = document.querySelector('#filter-panel input[data-filter="' + key + '"][data-value="' + val + '"]');
         if (cb) cb.checked = false;
         applyFilters();
       }
@@ -183,7 +183,7 @@ export function renderFilterPills() {
         state.activeFilters[key] = [];
       }
       // Uncheck all filter checkboxes in the drawer
-      document.querySelectorAll('#filter-pane input[type="checkbox"]').forEach(function(cb) {
+      document.querySelectorAll('#filter-panel input[type="checkbox"]').forEach(function(cb) {
         cb.checked = false;
       });
       applyFilters();
@@ -223,7 +223,7 @@ export function resetFilters() {
   Object.keys(filterConfig).forEach(function(k) { state.activeFilters[k] = []; });
 
   // Uncheck all checkboxes
-  document.querySelectorAll('#filter-pane input[type="checkbox"]').forEach(function(cb) {
+  document.querySelectorAll('#filter-panel input[type="checkbox"]').forEach(function(cb) {
     cb.checked = false;
   });
 
@@ -312,6 +312,13 @@ export function updateFilterButtonState() {
       badge.remove();
     }
   }
+
+  // Mobile drawer footer: "Show N objects"
+  const applyText = document.getElementById('drawer-apply-text');
+  if (applyText) {
+    const total = state.filteredData ? state.filteredData.features.length : 0;
+    applyText.textContent = t('filter.apply', { count: total });
+  }
 }
 
 export function renderCurrentView() {
@@ -345,6 +352,10 @@ export function toggleSmartDrawer(open) {
     drawerBtn.classList.add('panel-open');
     drawerBtn.setAttribute('aria-expanded', 'true');
     document.body.classList.add('drawer-open');
+    if (isMobileLayout()) {
+      const closeBtn = document.getElementById('drawer-close-btn');
+      if (closeBtn) closeBtn.focus();
+    }
   } else {
     drawer.classList.remove('open');
     drawerBtn.classList.remove('panel-open');
@@ -387,8 +398,9 @@ export function initDrawerResize() {
   }
 
   function onResizeEnd() {
-    document.removeEventListener('mousemove', onResizeMove);
-    document.removeEventListener('mouseup', onResizeEnd);
+    document.removeEventListener('pointermove', onResizeMove);
+    document.removeEventListener('pointerup', onResizeEnd);
+    document.removeEventListener('pointercancel', onResizeEnd);
 
     handle.classList.remove('dragging');
     drawer.classList.remove('resizing');
@@ -405,7 +417,8 @@ export function initDrawerResize() {
     }
   }
 
-  handle.addEventListener('mousedown', function(e) {
+  handle.addEventListener('pointerdown', function(e) {
+    if (e.button !== 0) return;
     startX = e.clientX;
     startWidth = drawer.offsetWidth;
     handle.classList.add('dragging');
@@ -414,8 +427,9 @@ export function initDrawerResize() {
     document.body.style.userSelect = 'none';
     e.preventDefault();
 
-    document.addEventListener('mousemove', onResizeMove);
-    document.addEventListener('mouseup', onResizeEnd);
+    document.addEventListener('pointermove', onResizeMove);
+    document.addEventListener('pointerup', onResizeEnd);
+    document.addEventListener('pointercancel', onResizeEnd);
   });
 }
 
@@ -510,6 +524,23 @@ export function initFilterPane() {
   // Reset filters (button inside drawer)
   document.getElementById('drawer-reset-btn').addEventListener('click', function() {
     resetFilters();
+  });
+
+  // Mobile footer: filters apply instantly, the primary button only closes the full-screen drawer
+  const applyBtn = document.getElementById('drawer-apply-btn');
+  if (applyBtn) {
+    applyBtn.addEventListener('click', function() {
+      toggleSmartDrawer(false);
+    });
+  }
+  const resetMobileBtn = document.getElementById('drawer-reset-mobile-btn');
+  if (resetMobileBtn) {
+    resetMobileBtn.addEventListener('click', function() {
+      resetFilters();
+    });
+  }
+  onLangChange(function() {
+    updateFilterButtonState();
   });
 
   // Filter section accordion toggle

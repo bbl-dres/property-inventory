@@ -4232,7 +4232,7 @@ body.detail-active #detail-view {
 }
 
 /* Mobile breakpoint (< 768px) */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   /* === COMPACT SINGLE-ROW HEADER === */
   .header-main {
     flex-wrap: nowrap;
@@ -4598,7 +4598,7 @@ body.detail-active #detail-view {
 }
 
 /* Lightbox responsive */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   .lightbox-nav {
     width: 36px;
     height: 36px;
@@ -4923,7 +4923,7 @@ body.detail-active #detail-view {
   text-decoration: underline;
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   /* Show hamburger, hide desktop header-right */
   .hamburger-btn {
     display: flex;
@@ -4978,7 +4978,7 @@ body.detail-active #detail-view {
 }
 
 /* Responsive toast */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   .toast-container {
     bottom: 16px;
     left: 50%;
@@ -4989,7 +4989,7 @@ body.detail-active #detail-view {
 }
 
 /* Responsive layer info modal */
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   .layer-info-modal {
     padding: var(--space-3);
   }
@@ -5026,7 +5026,7 @@ body.detail-active #detail-view {
   margin-right: var(--space-1);
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
   .prototype-banner {
     font-size: var(--text-xs);
     padding: var(--space-1) var(--space-3);
@@ -5190,4 +5190,305 @@ body.detail-active #detail-view {
 
 .swagger-ui-host .swagger-ui a {
   color: var(--interactive-blue);
+}
+
+/* ===== MOBILE & TOUCH REFINEMENTS (responsive review, see docs/RESPONSIVE-REVIEW.md) ===== */
+/* Breakpoints used in this file:
+   - tablet : max-width 1024px
+   - mobile : max-width 767px, or a landscape phone (max-height 500px with a coarse pointer)
+   - touch  : (pointer: coarse) - target sizes only, independent of the viewport width */
+
+/* --- Touch targets: 44px minimum on coarse pointers --- */
+@media (pointer: coarse) {
+  .maplibregl-ctrl-group button,
+  .map-home-btn,
+  .map-3d-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .filter-panel-btn,
+  #info-header-actions button,
+  .mobile-menu-close,
+  .mobile-layer-item .mobile-layer-info,
+  .active-layer-info,
+  .layer-info-modal-close,
+  .lightbox-action-btn,
+  .measure-distance-close,
+  .search-history-remove,
+  .toolbar-search-clear,
+  .pagination-btn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .lightbox-nav,
+  .carousel-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  .mobile-lang-pill,
+  .mobile-view-btn,
+  .mobile-menu-item,
+  .btn-back,
+  .dropdown-btn,
+  .share-copy-btn,
+  .geokatalog-retry,
+  .detail-overline,
+  .catalog-node,
+  .active-layer-item,
+  .search-item,
+  .dropdown-menu-item,
+  .context-menu-item {
+    min-height: 44px;
+  }
+
+  /* Filter rows: the label carries the hit area so the whole row toggles the box */
+  .filter-option {
+    min-height: 44px;
+    padding: 0;
+  }
+
+  .filter-option label {
+    padding: var(--space-3) 0;
+  }
+
+  .filter-option input[type="checkbox"],
+  input[type="checkbox"].active-layer-checkbox,
+  .catalog-node input[type="checkbox"].node-checkbox,
+  .mobile-layer-item input[type="checkbox"],
+  .export-checkbox-label input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+  }
+
+  /* Mobile menu layer rows: the label is the tap target */
+  .mobile-layer-item label.mobile-layer-title {
+    padding: var(--space-3) 0;
+    cursor: pointer;
+  }
+
+  /* Remaining sub-44px controls reported by the audit */
+  .info-detail-link,
+  .filter-search,
+  .toolbar-search,
+  .tbl-toggle,
+  .table-tab,
+  .detail-tab {
+    min-height: 44px;
+  }
+
+  .mobile-lang-pill {
+    min-width: 44px;
+  }
+
+  .header-btn,
+  .view-toggle {
+    height: 44px;
+  }
+
+  /* Keep panel headers compact although their buttons grew to 44px */
+  .filter-panel-header,
+  #info-header {
+    padding-top: var(--space-1);
+    padding-bottom: var(--space-1);
+    padding-right: var(--space-2);
+  }
+
+  /* Resize handles need a wider grab zone */
+  .tbl-resize-handle {
+    height: 12px;
+  }
+
+  .filter-panel-resize-handle {
+    width: 12px;
+  }
+}
+
+/* Dragging a handle must not scroll the page on touch screens */
+.filter-panel-resize-handle,
+.tbl-resize-handle {
+  touch-action: none;
+}
+
+/* --- Elements that only exist for the mobile layout --- */
+.prototype-banner-text-short,
+.sheet-handle,
+.filter-panel-footer {
+  display: none;
+}
+
+.mobile-menu {
+  max-width: 85vw;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.mobile-menu-header {
+  justify-content: space-between;
+  align-items: center;
+  padding-left: var(--space-4);
+}
+
+.mobile-menu-title {
+  font-size: var(--text-sm);
+  font-weight: var(--font-semibold);
+  color: var(--grey-900);
+}
+
+/* --- Mobile layout (phones in portrait and landscape) --- */
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
+  /* Header: 56px row with a 44px search field and menu button */
+  .header-main {
+    height: 56px;
+  }
+
+  #search-container {
+    height: 44px;
+  }
+
+  .hamburger-btn {
+    width: 44px;
+    height: 44px;
+  }
+
+  /* Form fields below 16px make iOS Safari zoom into the page on focus */
+  #search-input,
+  .filter-search input,
+  .toolbar-search input,
+  .columns-search input,
+  .custom-select,
+  .pagination-rows select,
+  .share-link-input {
+    font-size: 16px;
+  }
+
+  #search-results {
+    max-height: 60dvh;
+  }
+
+  /* One-line prototype notice */
+  .prototype-banner {
+    padding: var(--space-1) var(--space-3);
+  }
+
+  .prototype-banner-text-long {
+    display: none;
+  }
+
+  .prototype-banner-text-short {
+    display: inline;
+  }
+
+  /* Info panel as bottom sheet: grab handle, safe area, swipe-to-close (see ui.js) */
+  #info-panel {
+    max-height: 50dvh;
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.18);
+    transition: transform var(--transition-normal);
+    overscroll-behavior: contain;
+  }
+
+  #info-panel.sheet-dragging {
+    transition: none;
+  }
+
+  .sheet-handle {
+    display: block;
+    width: 36px;
+    height: 4px;
+    margin: var(--space-2) auto 0;
+    border-radius: var(--radius-full);
+    background: var(--grey-300);
+  }
+
+  #info-header {
+    background: var(--white);
+    border-bottom-color: var(--grey-200);
+  }
+
+  /* Filter drawer: sticky footer with result count and reset */
+  .filter-panel-footer {
+    display: flex;
+    gap: var(--space-3);
+    padding: var(--space-3) var(--space-4);
+    padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+    border-top: 1px solid var(--grey-200);
+    background: var(--white);
+    flex-shrink: 0;
+  }
+
+  .filter-panel-footer .btn-primary {
+    flex: 1;
+    justify-content: center;
+  }
+
+  /* Basemap switcher: smaller thumbnails, clear of the home indicator */
+  .style-switcher {
+    bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .style-switcher-btn img {
+    width: 56px;
+    height: 42px;
+  }
+
+  .style-option img {
+    width: 64px;
+    height: 46px;
+  }
+
+  /* Overlays: dynamic viewport units and safe area */
+  .layer-info-modal-content {
+    max-height: 90dvh;
+  }
+
+  .lightbox-image {
+    max-height: 80dvh;
+  }
+
+  .toast-container {
+    bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+  }
+
+  /* Detail page: back button above the breadcrumb, full-height tap target */
+  .detail-header-inner {
+    flex-direction: column-reverse;
+  }
+
+  .detail-header-actions .btn-back {
+    min-height: 44px;
+  }
+}
+
+/* --- Landscape phones: info panel docks to the right, gallery in two columns --- */
+@media screen and (max-height: 500px) and (pointer: coarse) and (min-width: 600px) {
+  #info-panel {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: auto;
+    right: 0;
+    width: min(360px, 55vw);
+    max-height: none;
+    border-radius: 0;
+    box-shadow: var(--shadow-xl);
+    padding-bottom: 0;
+  }
+
+  .sheet-handle {
+    display: none;
+  }
+
+  .gallery-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  #search-results {
+    max-height: 75dvh;
+  }
+
+  .carousel {
+    height: 240px;
+  }
 }

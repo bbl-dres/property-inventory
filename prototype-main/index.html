@@ -41,7 +41,7 @@
 <body>
     <!-- Prototype warning banner (always visible, all views) -->
     <div id="prototype-banner" class="prototype-banner" role="note">
-        <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp</strong> <span data-i18n="banner.prototype.text">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span></span>
+        <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp</strong> <span class="prototype-banner-text-long" data-i18n="banner.prototype.text">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span><span class="prototype-banner-text-short" data-i18n="banner.prototype.short">Alle Daten sind fiktiv.</span></span>
     </div>
 
     <!-- Fullscreen image lightbox -->
@@ -143,7 +143,7 @@
                     </div>
                 </div>
             </div>
-            <button id="hamburger-btn" class="hamburger-btn" aria-label="Menü öffnen" aria-expanded="false">
+            <button id="hamburger-btn" class="hamburger-btn" data-i18n-aria-label="menu.open" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
                 <span class="material-symbols-outlined">menu</span>
             </button>
         </div>
@@ -154,7 +154,8 @@
     <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
     <nav id="mobile-menu" class="mobile-menu" aria-label="Hauptmenü">
         <div class="mobile-menu-header">
-            <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
+            <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
+            <button id="mobile-menu-close" class="mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
                 <span class="material-symbols-outlined">close</span>
             </button>
         </div>
@@ -175,6 +176,11 @@
                 <span class="material-symbols-outlined">tune</span>
                 <span data-i18n="header.filter">Filter</span>
                 <span class="material-symbols-outlined mobile-menu-arrow">chevron_right</span>
+            </button>
+            <!-- Share: the map context menu (right-click) is unreachable on touch screens -->
+            <button class="mobile-menu-item" id="mobile-share-btn">
+                <span class="material-symbols-outlined">share</span>
+                <span data-i18n="map.context.share">Teilen</span>
             </button>
             <!-- Language selector -->
             <div class="mobile-menu-lang">
@@ -400,6 +406,7 @@
             </div><!-- /#accordion-wrapper -->
 
             <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                <div class="sheet-handle" aria-hidden="true"></div>
                 <div id="info-header">
                     <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
                     <div id="info-header-actions">
@@ -1054,6 +1061,12 @@
                     <div class="filter-section-header"><span class="filter-section-title" data-i18n="filter.section.kgskat">KGS Kategorie (kgs_kat)</span><span class="filter-section-arrow"><span class="material-symbols-outlined">expand_more</span></span></div>
                     <div class="filter-section-content" id="filter-kgskat-options"></div>
                 </div>
+            </div>
+
+            <!-- Mobile footer: filters apply instantly; this closes the full-screen drawer and shows the result count -->
+            <div class="filter-panel-footer">
+                <button type="button" class="btn-secondary" id="drawer-reset-mobile-btn" data-i18n="filter.reset">Zurücksetzen</button>
+                <button type="button" class="btn-primary" id="drawer-apply-btn"><span id="drawer-apply-text">Objekte anzeigen</span></button>
             </div>
 
         </aside>

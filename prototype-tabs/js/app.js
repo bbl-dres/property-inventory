@@ -1,8 +1,7 @@
 // BBL GIS Immobilienportfolio - Main Application Script
 // Extracted from index.html for better maintainability
 
-// Mapbox Access Token
-        mapboxgl.accessToken = 'pk.eyJ1IjoiZGF2aWRyYXNuZXI1IiwiYSI6ImNtMm5yamVkdjA5MDcycXMyZ2I2MHRhamgifQ.m651j7WIX7MyxNh8KIQ1Gg';
+// Map library: MapLibre GL JS (vendor/maplibre-gl), no access token required
         
         // Status Farben (synchronized with CSS --status-* variables)
         var statusColors = {
@@ -53,6 +52,23 @@
         var listCurrentPage = 1;
         var listRowsPerPage = 50;
         var listSearchTerm = '';
+
+        // ===== LAYOUT QUERIES =====
+        // Mirror the media queries in css/main.css (Responsive Design section). Change both places together.
+        var MOBILE_LAYOUT_QUERY = '(max-width: 767px), (max-height: 500px) and (pointer: coarse)';
+        var LANDSCAPE_PHONE_QUERY = '(max-height: 500px) and (pointer: coarse) and (min-width: 600px)';
+        var COMPACT_LAYOUT_QUERY = '(max-width: 1024px)';
+
+        function mediaMatches(query) {
+            return typeof window.matchMedia === 'function' && window.matchMedia(query).matches;
+        }
+
+        // Phones in portrait and landscape: bottom sheets, full-screen drawer, two-row header
+        function isMobileLayout() { return mediaMatches(MOBILE_LAYOUT_QUERY); }
+        // Landscape phones: info panel and tools panel dock to the sides instead of the bottom
+        function isLandscapePhone() { return mediaMatches(LANDSCAPE_PHONE_QUERY); }
+        // Tablets and phones: the map tools panel starts collapsed
+        function isCompactLayout() { return mediaMatches(COMPACT_LAYOUT_QUERY); }
 
         // ===== UTILITY FUNCTIONS =====
 
@@ -411,7 +427,7 @@
                 });
             } else {
                 // Multiple points - fit bounds
-                var bounds = new mapboxgl.LngLatBounds();
+                var bounds = new maplibregl.LngLatBounds();
                 features.forEach(function(feature) {
                     bounds.extend(feature.geometry.coordinates);
                 });
@@ -434,7 +450,7 @@
             };
 
             // Uncheck all checkboxes
-            document.querySelectorAll('#filter-pane input[type="checkbox"]').forEach(function(cb) {
+            document.querySelectorAll('#smart-drawer .filter-option input[type="checkbox"]').forEach(function(cb) {
                 cb.checked = false;
             });
 
@@ -489,6 +505,11 @@
             if (countEl) {
                 countEl.textContent = count + ' Objekte';
             }
+            // Mobile filter sheet footer ("N Objekte anzeigen")
+            var footerCount = document.getElementById('drawer-footer-count');
+            if (footerCount) {
+                footerCount.textContent = count + (count === 1 ? ' Objekt anzeigen' : ' Objekte anzeigen');
+            }
         }
 
         function updateFilterButtonState() {
@@ -539,10 +560,9 @@
             // Map view updates via updateMapFilter()
         }
 
-        // ===== SMART DRAWER =====
-        var smartDrawerActiveTab = 'filter';
-
-        function toggleSmartDrawer(open, tab) {
+        // ===== SMART DRAWER (filter) =====
+        // The former "KI Assistent" tab was removed: KI answers now appear inline in the search suggestions.
+        function toggleSmartDrawer(open) {
             var drawer = document.getElementById('smart-drawer');
             var drawerBtn = document.getElementById('smart-drawer-btn');
 
@@ -550,17 +570,25 @@
                 open = !drawer.classList.contains('open');
             }
 
+            var wasOpen = drawer.classList.contains('open');
+
             if (open) {
                 drawer.classList.add('open');
                 drawerBtn.classList.add('panel-open');
                 drawerBtn.setAttribute('aria-expanded', 'true');
-                if (tab) {
-                    switchDrawerTab(tab);
+                // On phones the drawer is a full-screen sheet: move focus into it
+                if (isMobileLayout() && !wasOpen) {
+                    var closeBtn = document.getElementById('drawer-close-btn');
+                    if (closeBtn) closeBtn.focus();
                 }
             } else {
                 drawer.classList.remove('open');
                 drawerBtn.classList.remove('panel-open');
                 drawerBtn.setAttribute('aria-expanded', 'false');
+                // Return focus to the button that opened the sheet
+                if (wasOpen && drawer.contains(document.activeElement)) {
+                    drawerBtn.focus();
+                }
             }
 
             // Resize map after transition completes
@@ -569,26 +597,6 @@
                     map.resize();
                 }, 350);
             }
-        }
-
-        function switchDrawerTab(tab) {
-            smartDrawerActiveTab = tab;
-            var drawer = document.getElementById('smart-drawer');
-
-            // Update tab buttons
-            document.querySelectorAll('.smart-drawer-tab').forEach(function(tabBtn) {
-                var isActive = tabBtn.dataset.drawerTab === tab;
-                tabBtn.classList.toggle('active', isActive);
-                tabBtn.setAttribute('aria-selected', isActive ? 'true' : 'false');
-            });
-
-            // Update content visibility
-            document.querySelectorAll('.smart-drawer-content').forEach(function(content) {
-                content.style.display = content.dataset.drawerContent === tab ? '' : 'none';
-            });
-
-            // Update data attribute for CSS
-            drawer.setAttribute('data-active-tab', tab);
         }
 
         // ===== DRAWER RESIZE =====
@@ -611,7 +619,9 @@
                 document.documentElement.style.setProperty('--drawer-width', savedWidth + 'px');
             }
 
-            handle.addEventListener('mousedown', function(e) {
+            // Pointer events: mouse, pen and touch (the handle has touch-action: none in the stylesheet)
+            handle.addEventListener('pointerdown', function(e) {
+                if (isMobileLayout()) return; // full-screen sheet on phones, nothing to resize
                 isResizing = true;
                 startX = e.clientX;
                 startWidth = drawer.offsetWidth;
@@ -619,10 +629,11 @@
                 drawer.classList.add('resizing');
                 document.body.style.cursor = 'ew-resize';
                 document.body.style.userSelect = 'none';
+                if (handle.setPointerCapture) handle.setPointerCapture(e.pointerId);
                 e.preventDefault();
             });
 
-            document.addEventListener('mousemove', function(e) {
+            handle.addEventListener('pointermove', function(e) {
                 if (!isResizing) return;
 
                 // Calculate new width (dragging left = wider, right = narrower)
@@ -632,7 +643,7 @@
                 document.documentElement.style.setProperty('--drawer-width', newWidth + 'px');
             });
 
-            document.addEventListener('mouseup', function() {
+            function endResize() {
                 if (!isResizing) return;
 
                 isResizing = false;
@@ -649,7 +660,10 @@
                 if (window.map) {
                     map.resize();
                 }
-            });
+            }
+
+            handle.addEventListener('pointerup', endResize);
+            handle.addEventListener('pointercancel', endResize);
         }
 
         function initFilterOptions() {
@@ -665,15 +679,24 @@
                 region: new Set()
             };
 
+            // Objects per option value, shown next to each label ("Verwaltungsgebäude 2")
+            var valueCounts = {};
+            function collect(filterKey, value) {
+                if (!value) return;
+                uniqueValues[filterKey].add(value);
+                valueCounts[filterKey] = valueCounts[filterKey] || {};
+                valueCounts[filterKey][value] = (valueCounts[filterKey][value] || 0) + 1;
+            }
+
             portfolioData.features.forEach(function(feature) {
                 var props = feature.properties;
                 var ext = props.extensionData || {};
-                if (props.status) uniqueValues.status.add(props.status);
-                if (props.typeOfOwnership) uniqueValues.eigentum.add(props.typeOfOwnership);
-                if (ext.portfolio) uniqueValues.teilportfolio.add(ext.portfolio);
-                if (props.primaryTypeOfBuilding) uniqueValues.gebaeudeart.add(props.primaryTypeOfBuilding);
-                if (props.country) uniqueValues.land.add(props.country);
-                if (props.stateProvincePrefecture) uniqueValues.region.add(props.stateProvincePrefecture);
+                collect('status', props.status);
+                collect('eigentum', props.typeOfOwnership);
+                collect('teilportfolio', ext.portfolio);
+                collect('gebaeudeart', props.primaryTypeOfBuilding);
+                collect('land', props.country);
+                collect('region', props.stateProvincePrefecture);
             });
 
             // Render options for each filter
@@ -690,7 +713,9 @@
 
                     html += '<div class="filter-option">' +
                         '<input type="checkbox" id="' + id + '" data-filter="' + filterKey + '" data-value="' + value + '" ' + checked + '>' +
-                        '<label for="' + id + '">' + value + '</label>' +
+                        '<label for="' + id + '">' + escapeHtml(value) +
+                            ' <span class="filter-option-count">' + valueCounts[filterKey][value] + '</span>' +
+                        '</label>' +
                         '</div>';
                 });
 
@@ -734,12 +759,11 @@
                 resetFilters();
             });
 
-            // Smart drawer tab switching
-            document.querySelectorAll('.smart-drawer-tab').forEach(function(tab) {
-                tab.addEventListener('click', function() {
-                    switchDrawerTab(this.dataset.drawerTab);
-                });
-            });
+            // Mobile sheet footer: reset and "N Objekte anzeigen" (closes the sheet)
+            var footerReset = document.getElementById('drawer-footer-reset');
+            var footerApply = document.getElementById('drawer-footer-apply');
+            if (footerReset) footerReset.addEventListener('click', resetFilters);
+            if (footerApply) footerApply.addEventListener('click', function() { toggleSmartDrawer(false); });
 
             // Filter section accordion toggle
             document.querySelectorAll('.filter-section-header').forEach(function(header) {
@@ -1635,6 +1659,7 @@
 
             // Disable page scrolling mode when leaving detail view
             document.body.classList.remove('detail-active');
+            updateDetailHeaderOffset();
 
             var viewElement = document.getElementById(view + '-view');
             if (viewElement) {
@@ -1724,16 +1749,37 @@
 
             // Activate the specified tab
             activateTab(tab);
+
+            // Phones: the sticky header collapses to the tab strip (needs the rendered breadcrumb height)
+            updateDetailHeaderOffset();
         }
+
+        // Phones: #header is sticky with a negative top, so on scroll it collapses until only the tab strip is pinned
+        function updateDetailHeaderOffset() {
+            var header = document.getElementById('header');
+            var tabs = document.querySelector('.detail-tabs');
+            if (!header) return;
+            if (!isMobileLayout() || !document.body.classList.contains('detail-active') || !tabs) {
+                header.style.removeProperty('--header-sticky-offset');
+                return;
+            }
+            var offset = header.offsetHeight - tabs.offsetHeight;
+            header.style.setProperty('--header-sticky-offset', (-Math.max(0, offset)) + 'px');
+        }
+        window.addEventListener('resize', updateDetailHeaderOffset);
 
         function activateTab(tab) {
             // Update active tab styling
             document.querySelectorAll('.detail-tab').forEach(function(t) {
-                t.classList.remove('active');
-                if (t.dataset.tab === tab) {
-                    t.classList.add('active');
+                var isActive = t.dataset.tab === tab;
+                t.classList.toggle('active', isActive);
+                t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                // Phones: the tab strip scrolls horizontally — keep the active tab in view
+                if (isActive && t.scrollIntoView && isTabStripScrollable()) {
+                    t.scrollIntoView({ block: 'nearest', inline: 'center' });
                 }
             });
+            updateTabStripFade();
 
             // Switch content visibility
             document.querySelectorAll('.tab-content').forEach(function(content) {
@@ -1918,6 +1964,28 @@
                 };
                 dotsContainer.appendChild(dot);
             });
+
+            // Touch: a horizontal swipe changes the image
+            var carouselEl = document.getElementById('detail-carousel');
+            if (carouselEl && !carouselEl.dataset.swipeInit) {
+                carouselEl.dataset.swipeInit = '1';
+                var swipeStartX = null;
+                var swipeStartY = 0;
+                carouselEl.addEventListener('touchstart', function(e) {
+                    if (e.touches.length !== 1) { swipeStartX = null; return; }
+                    swipeStartX = e.touches[0].clientX;
+                    swipeStartY = e.touches[0].clientY;
+                }, { passive: true });
+                carouselEl.addEventListener('touchend', function(e) {
+                    if (swipeStartX === null) return;
+                    var dx = e.changedTouches[0].clientX - swipeStartX;
+                    var dy = e.changedTouches[0].clientY - swipeStartY;
+                    swipeStartX = null;
+                    if (Math.abs(dx) > 40 && Math.abs(dx) > Math.abs(dy)) {
+                        if (dx < 0) carouselNext(); else carouselPrev();
+                    }
+                }, { passive: true });
+            }
         }
         
         function updateCarouselImage() {
@@ -1948,58 +2016,81 @@
             }
             
             // Create new mini map
-            miniMap = new mapboxgl.Map({
+            miniMap = new maplibregl.Map({
                 container: 'mini-map',
-                style: 'mapbox://styles/mapbox/light-v11',
+                style: mapStyles.positron.url,
                 center: coords,
                 zoom: 17,
                 pitch: 50,
-                bearing: -17
+                bearing: -17,
+                // The mini map sits inside a scrolling page: one-finger drag and plain wheel scroll the page,
+                // two fingers / Ctrl+wheel move the map (MapLibre shows a localized hint)
+                cooperativeGestures: true,
+                locale: {
+                    'CooperativeGesturesHandler.WindowsHelpText': 'Ctrl + Scrollen zum Zoomen der Karte',
+                    'CooperativeGesturesHandler.MacHelpText': '⌘ + Scrollen zum Zoomen der Karte',
+                    'CooperativeGesturesHandler.MobileHelpText': 'Karte mit zwei Fingern bewegen'
+                }
             });
             
-            // Add 3D buildings layer
+            // Add 3D buildings layer (OpenMapTiles "building" layer of the CARTO basemap, like prototype-main)
             miniMap.on('load', function() {
-                // Add 3D buildings
-                var layers = miniMap.getStyle().layers;
+                var style = miniMap.getStyle();
+                var layers = style.layers || [];
+                var sources = style.sources || {};
+
+                // First vector source of the basemap carries the building footprints
+                var vectorSourceId = Object.keys(sources).find(function(key) { return sources[key].type === 'vector'; });
+
+                // Insert below the first label layer so street names stay readable
                 var labelLayerId;
                 for (var i = 0; i < layers.length; i++) {
-                    if (layers[i].type === 'symbol' && layers[i].layout['text-field']) {
+                    if (layers[i].type === 'symbol' && layers[i].layout && layers[i].layout['text-field']) {
                         labelLayerId = layers[i].id;
                         break;
                     }
                 }
-                
-                miniMap.addLayer({
-                    'id': '3d-buildings',
-                    'source': 'composite',
-                    'source-layer': 'building',
-                    'filter': ['==', 'extrude', 'true'],
-                    'type': 'fill-extrusion',
-                    'minzoom': 15,
-                    'paint': {
-                        'fill-extrusion-color': '#A8B0B7',
-                        'fill-extrusion-height': [
-                            'interpolate', ['linear'], ['zoom'],
-                            15, 0,
-                            15.05, ['get', 'height']
-                        ],
-                        'fill-extrusion-base': [
-                            'interpolate', ['linear'], ['zoom'],
-                            15, 0,
-                            15.05, ['get', 'min_height']
-                        ],
-                        'fill-extrusion-opacity': 0.6
-                    }
-                }, labelLayerId);
-                
+
+                if (vectorSourceId) {
+                    // Hide the basemap's own flat building layers to prevent double-rendering
+                    layers.forEach(function(layer) {
+                        if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
+                            miniMap.setLayoutProperty(layer.id, 'visibility', 'none');
+                        }
+                    });
+
+                    miniMap.addLayer({
+                        'id': '3d-buildings',
+                        'source': vectorSourceId,
+                        'source-layer': 'building',
+                        'type': 'fill-extrusion',
+                        'minzoom': 15,
+                        'filter': ['!=', ['get', 'hide_3d'], true],
+                        'paint': {
+                            'fill-extrusion-color': '#A8B0B7',
+                            'fill-extrusion-height': [
+                                'interpolate', ['linear'], ['zoom'],
+                                15, 0,
+                                15.05, ['coalesce', ['get', 'render_height'], 5]
+                            ],
+                            'fill-extrusion-base': [
+                                'interpolate', ['linear'], ['zoom'],
+                                15, 0,
+                                15.05, ['coalesce', ['get', 'render_min_height'], 0]
+                            ],
+                            'fill-extrusion-opacity': 0.6
+                        }
+                    }, labelLayerId);
+                }
+
                 // Add marker
-                new mapboxgl.Marker({ color: '#c00' })
+                new maplibregl.Marker({ color: '#c00' })
                     .setLngLat(coords)
                     .addTo(miniMap);
             });
-            
+
             // Add navigation controls
-            miniMap.addControl(new mapboxgl.NavigationControl({ showCompass: false }), 'top-right');
+            miniMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
         }
         
         // View toggle click handlers
@@ -2261,18 +2352,53 @@
         // ===== INITIALIZE MAP =====
 
         // Map style definitions (defined early for use in map initialization)
+        // Same basemaps as prototype-main: CARTO vector styles (OpenMapTiles schema) and the swisstopo
+        // SWISSIMAGE raster. `url` is a style URL or an inline style object; `thumbnail` a local PNG
+        // rendered from the style itself (assets/basemaps, 160×120 @2x) — no API key, no static-image service.
+        var SWISSIMAGE_TILES = 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg';
         var mapStyles = {
-            'light-v11': { name: 'Light', url: 'mapbox://styles/mapbox/light-v11' },
-            'streets-v12': { name: 'Standard', url: 'mapbox://styles/mapbox/streets-v12' },
-            'satellite-v9': { name: 'Luftbild', url: 'mapbox://styles/mapbox/satellite-v9' },
-            'satellite-streets-v12': { name: 'Hybrid', url: 'mapbox://styles/mapbox/satellite-streets-v12' }
+            'positron': {
+                name: 'Light',
+                url: 'https://basemaps.cartocdn.com/gl/positron-gl-style/style.json',
+                thumbnail: 'assets/basemaps/positron.png'
+            },
+            'voyager': {
+                name: 'Standard',
+                url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
+                thumbnail: 'assets/basemaps/voyager.png'
+            },
+            'swissimage': {
+                name: 'Luftbild',
+                url: {
+                    version: 8,
+                    glyphs: 'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
+                    sources: {
+                        'swissimage': {
+                            type: 'raster',
+                            tiles: [SWISSIMAGE_TILES],
+                            tileSize: 256,
+                            minzoom: 8,
+                            maxzoom: 20,
+                            bounds: [5.95, 45.81, 10.49, 47.81],
+                            attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
+                        }
+                    },
+                    layers: [{ id: 'swissimage', type: 'raster', source: 'swissimage' }]
+                },
+                thumbnail: 'assets/basemaps/swissimage.png'
+            },
+            'dark-matter': {
+                name: 'Dark',
+                url: 'https://basemaps.cartocdn.com/gl/dark-matter-gl-style/style.json',
+                thumbnail: 'assets/basemaps/dark-matter.png'
+            }
         };
+        var DEFAULT_MAP_STYLE = 'positron';
 
-        // Load saved map style from localStorage (default to light-v11)
-        var currentMapStyle = localStorage.getItem('mapStyle') || 'light-v11';
-        // Validate saved style exists, fallback to default if invalid
+        // Load saved map style from localStorage (old Mapbox ids fall back to the default)
+        var currentMapStyle = localStorage.getItem('mapStyle') || DEFAULT_MAP_STYLE;
         if (!mapStyles[currentMapStyle]) {
-            currentMapStyle = 'light-v11';
+            currentMapStyle = DEFAULT_MAP_STYLE;
         }
 
         // 1. Parse URL parameters for map state
@@ -2291,22 +2417,22 @@
             startZoom = initialZoom;
         }
 
-        var map = new mapboxgl.Map({
+        var map = new maplibregl.Map({
             container: 'map',
             style: mapStyles[currentMapStyle].url,
             center: startCenter,
             zoom: startZoom
         });
         
-        map.addControl(new mapboxgl.NavigationControl(), 'top-right');
-        map.addControl(new mapboxgl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
+        map.addControl(new maplibregl.NavigationControl(), 'top-right');
+        map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
 
         // Home button control
         var HomeControl = function() {};
         HomeControl.prototype.onAdd = function(map) {
             this._map = map;
             this._container = document.createElement('div');
-            this._container.className = 'mapboxgl-ctrl mapboxgl-ctrl-group';
+            this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
 
             var button = document.createElement('button');
             button.className = 'map-home-btn';
@@ -2808,7 +2934,7 @@
             html += '</div></div>';
 
             // Create and show popup
-            identifiedFeaturePopup = new mapboxgl.Popup({
+            identifiedFeaturePopup = new maplibregl.Popup({
                 closeButton: true,
                 closeOnClick: false,
                 maxWidth: '320px'
@@ -3103,8 +3229,9 @@
             // Update header title
             document.getElementById('info-header-title').textContent = 'Gebäude';
 
-            // Show preview image for buildings
-            document.getElementById('info-preview-image').style.display = 'block';
+            // Show preview image for buildings (a class, so the stylesheet can still hide it on short
+            // viewports and on phones — an inline display would override those rules)
+            document.getElementById('info-panel').classList.add('has-preview');
 
             // Find building index for placeholder image
             var buildingIndex = portfolioData.features.findIndex(function(f) {
@@ -3133,13 +3260,16 @@
 
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
-            
+
             // UPDATED: Only fly to building if explicitly requested (e.g. from Search)
             if (map && flyToBuilding) {
                 map.flyTo({
                     center: building.geometry.coordinates,
-                    zoom: 16
+                    zoom: 16,
+                    offset: getInfoPanelOffset() // keep the object out from under the mobile sheet
                 });
+            } else if (map) {
+                revealSelectionOnMobile(building.geometry.coordinates);
             }
         }
         
@@ -3239,7 +3369,7 @@
             document.getElementById('info-header-title').textContent = 'Parzelle';
 
             // Hide preview image for parcels
-            document.getElementById('info-preview-image').style.display = 'none';
+            document.getElementById('info-panel').classList.remove('has-preview');
 
             // Build info panel HTML content
             var infoHtml =
@@ -3254,13 +3384,18 @@
             document.getElementById('info-body').innerHTML = infoHtml;
             document.getElementById('info-panel').classList.add('show');
 
-            // Fly to parcel if requested
-            if (map && flyToParcel && parcel.geometry && parcel.geometry.coordinates) {
+            // Fly to parcel if requested; otherwise make sure it is not hidden under the mobile sheet
+            if (map && parcel.geometry && parcel.geometry.coordinates) {
                 var center = getPolygonCentroid(parcel.geometry.coordinates);
-                map.flyTo({
-                    center: center,
-                    zoom: 16
-                });
+                if (flyToParcel) {
+                    map.flyTo({
+                        center: center,
+                        zoom: 16,
+                        offset: getInfoPanelOffset()
+                    });
+                } else {
+                    revealSelectionOnMobile(center);
+                }
             }
         }
 
@@ -3277,6 +3412,14 @@
         var searchClearBtn = document.getElementById('search-clear-btn');
         var searchDebounceTimer;
         var searchAbortController = null;
+
+        // The long placeholder is cut to "Suche nach Objekten, O" in a ~200px field: shorter hint on phones
+        var searchPlaceholderLong = searchInput.getAttribute('placeholder');
+        function updateSearchPlaceholder() {
+            searchInput.setAttribute('placeholder', isMobileLayout() ? 'Objekt, Ort oder Karte' : searchPlaceholderLong);
+        }
+        updateSearchPlaceholder();
+        window.addEventListener('resize', updateSearchPlaceholder);
         
         // Listen for input
         searchInput.addEventListener('input', function(e) {
@@ -3301,6 +3444,33 @@
                 performSearch(val);
             }, 300);
         });
+
+        // Enter: answer the KI suggestion if there is one, otherwise open the first result
+        searchInput.addEventListener('keydown', function(e) {
+            if (e.key !== 'Enter') return;
+            e.preventDefault();
+            if (!searchResults.classList.contains('active')) return;
+            if (document.getElementById('search-ai-item')) {
+                showAiAnswer();
+                return;
+            }
+            var first = searchResults.querySelector('.search-item[onclick]');
+            if (first) first.click();
+        });
+
+        // Scope select inside the search box ("Alle / Objekte / Orte / Karten / Fragen")
+        var searchScope = 'all';
+        var searchScopeSelect = document.getElementById('search-scope');
+        if (searchScopeSelect) {
+            searchScopeSelect.addEventListener('change', function() {
+                searchScope = this.value;
+                var val = searchInput.value.trim();
+                if (val.length >= 2) {
+                    searchSpinner.style.display = 'block';
+                    performSearch(val);
+                }
+            });
+        }
 
         // Clear Button Click Listener
         searchClearBtn.addEventListener('click', function() {
@@ -3330,6 +3500,18 @@
             }
         });
         
+        // Wrap the matched term in <b> (escaped text; Swisstopo labels arrive with their own <b> tags)
+        function highlightMatch(text, term) {
+            var safe = escapeHtml(text || '');
+            if (!term) return safe;
+            var pattern = escapeHtml(term).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            return safe.replace(new RegExp('(' + pattern + ')', 'ig'), '<b>$1</b>');
+        }
+
+        function scopeAllows(section) {
+            return searchScope === 'all' || searchScope === section;
+        }
+
         function performSearch(term) {
             // Cancel any pending search requests
             if (searchAbortController) {
@@ -3337,115 +3519,339 @@
             }
             searchAbortController = new AbortController();
             var signal = searchAbortController.signal;
+            var lowerTerm = term.toLowerCase();
 
             var promises = [];
 
-            // 1. Local Search
+            // 1. Local search: buildings and parcels
             promises.push(new Promise(function(resolve) {
-                var matches = [];
-                if (portfolioData) {
-                    var lowerTerm = term.toLowerCase();
-                    matches = portfolioData.features.filter(function(f) {
-                        var p = f.properties;
-                        return (p.name && p.name.toLowerCase().includes(lowerTerm)) ||
-                               (p.streetName && p.streetName.toLowerCase().includes(lowerTerm)) ||
-                               (p.city && p.city.toLowerCase().includes(lowerTerm));
-                    });
+                var buildings = [];
+                var parcels = [];
+                if (scopeAllows('objects') || scopeAllows('ask')) {
+                    if (portfolioData) {
+                        buildings = portfolioData.features.filter(function(f) {
+                            var p = f.properties;
+                            return [p.name, p.streetName, p.city, p.buildingId].some(function(v) {
+                                return v && String(v).toLowerCase().includes(lowerTerm);
+                            });
+                        });
+                    }
+                    if (parcelData && parcelData.features) {
+                        parcels = parcelData.features.filter(function(f) {
+                            var p = f.properties;
+                            return [p.name, p.parcelId, p.municipality, p.plotNumber].some(function(v) {
+                                return v && String(v).toLowerCase().includes(lowerTerm);
+                            });
+                        });
+                    }
                 }
-                resolve({ type: 'local', data: matches });
+                resolve({ type: 'local', data: buildings, parcels: parcels });
             }));
 
             // 2. Swisstopo Locations
-            promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=locations&limit=5&sr=4326&searchText=' + encodeURIComponent(term), { signal: signal })
-                .then(function(r) { return r.json(); })
-                .then(function(data) { return { type: 'locations', data: data.results }; })
-                .catch(function(e) {
-                    if (e.name === 'AbortError') return { type: 'locations', data: [], aborted: true };
-                    return { type: 'locations', data: [] };
-                }));
+            if (scopeAllows('places')) {
+                promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=locations&limit=5&sr=4326&searchText=' + encodeURIComponent(term), { signal: signal })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) { return { type: 'locations', data: data.results }; })
+                    .catch(function(e) {
+                        if (e.name === 'AbortError') return { type: 'locations', data: [], aborted: true };
+                        return { type: 'locations', data: [] };
+                    }));
+            } else {
+                promises.push(Promise.resolve({ type: 'locations', data: [] }));
+            }
 
             // 3. Swisstopo Layers
-            promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=layers&limit=5&lang=de&searchText=' + encodeURIComponent(term), { signal: signal })
-                .then(function(r) { return r.json(); })
-                .then(function(data) { return { type: 'layers', data: data.results }; })
-                .catch(function(e) {
-                    if (e.name === 'AbortError') return { type: 'layers', data: [], aborted: true };
-                    return { type: 'layers', data: [] };
-                }));
+            if (scopeAllows('maps')) {
+                promises.push(fetch('https://api3.geo.admin.ch/rest/services/ech/SearchServer?type=layers&limit=5&lang=de&searchText=' + encodeURIComponent(term), { signal: signal })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) { return { type: 'layers', data: data.results }; })
+                    .catch(function(e) {
+                        if (e.name === 'AbortError') return { type: 'layers', data: [], aborted: true };
+                        return { type: 'layers', data: [] };
+                    }));
+            } else {
+                promises.push(Promise.resolve({ type: 'layers', data: [] }));
+            }
 
             Promise.all(promises).then(function(results) {
                 // Don't render if request was aborted (newer search in progress)
                 var wasAborted = results.some(function(r) { return r.aborted; });
                 if (wasAborted) return;
 
-                renderSearchResults(results);
+                renderSearchResults(results, term);
                 searchSpinner.style.display = 'none';
             });
         }
-        
-        function renderSearchResults(results) {
-            var localResults = results.find(function(r) { return r.type === 'local'; }).data;
+
+        var currentAiSuggestion = null;
+
+        function renderSearchResults(results, term) {
+            var local = results.find(function(r) { return r.type === 'local'; });
+            var localResults = local.data;
+            var parcelResults = local.parcels || [];
             var locResults = results.find(function(r) { return r.type === 'locations'; }).data;
             var layerResults = results.find(function(r) { return r.type === 'layers'; }).data;
-            
+
             var html = '';
-            
-            // Section: Objekte (Local)
-            if (localResults.length > 0) {
-                html += '<div class="search-section-header">Objekte</div>';
+            var sectionHeader = function(title, source) {
+                return '<div class="search-section-header"><span>' + title + '</span>' +
+                    (source ? '<span class="search-section-source">' + source + '</span>' : '') + '</div>';
+            };
+            var icon = function(name) {
+                return '<span class="material-symbols-outlined search-item-icon" aria-hidden="true">' + name + '</span>';
+            };
+
+            // Section: Frage stellen (KI) — one suggested question, answered inline from the loaded data
+            currentAiSuggestion = scopeAllows('ask') ? suggestAiQuestion(term, localResults) : null;
+            if (currentAiSuggestion) {
+                html += sectionHeader('Frage stellen', 'KI') +
+                    '<div class="search-item search-item--ask" id="search-ai-item" role="option" tabindex="0" aria-expanded="false">' +
+                        icon('auto_awesome') +
+                        '<span class="search-item-main"><span class="search-item-title">' + currentAiSuggestion.questionHtml + '</span></span>' +
+                        '<span class="search-item-meta"><span class="material-symbols-outlined" aria-hidden="true">keyboard_return</span>Antwort</span>' +
+                    '</div>' +
+                    '<div class="search-answer" id="search-ai-answer" hidden aria-live="polite"></div>';
+            }
+
+            // Section: Objekte (buildings and parcels, local)
+            if (scopeAllows('objects') && (localResults.length > 0 || parcelResults.length > 0)) {
+                html += sectionHeader('Objekte', '');
                 localResults.forEach(function(f) {
-                    html += '<div class="search-item" onclick="handleSearchClick(\'local\', \'' + f.properties.buildingId + '\')">' +
-                            '<div class="search-item-title">' + f.properties.name + '</div>' +
-                            '<div class="search-item-subtitle">' + f.properties.streetName + ', ' + f.properties.city + '</div>' +
-                            '</div>';
+                    var p = f.properties;
+                    html += '<div class="search-item" role="option" onclick="handleSearchClick(\'local\', \'' + escapeForJs(p.buildingId) + '\')">' +
+                        icon('apartment') +
+                        '<span class="search-item-main">' +
+                            '<span class="search-item-title">' + highlightMatch(p.name, term) + '</span>' +
+                            '<span class="search-item-subtitle">' + escapeHtml((p.streetName || '') + ', ' + (p.city || '')) + '</span>' +
+                        '</span>' +
+                        '<span class="search-item-meta">Gebäude · ' + escapeHtml((p.city || '') + ' ' + (p.country || '')) + ' · ' + escapeHtml(p.buildingId) + '</span>' +
+                    '</div>';
+                });
+                parcelResults.forEach(function(f) {
+                    var p = f.properties;
+                    html += '<div class="search-item" role="option" onclick="handleSearchClick(\'parcel\', \'' + escapeForJs(p.parcelId) + '\')">' +
+                        icon('crop_square') +
+                        '<span class="search-item-main">' +
+                            '<span class="search-item-title">' + highlightMatch(p.name || p.parcelId, term) + '</span>' +
+                            '<span class="search-item-subtitle">' + escapeHtml((p.municipality || '') + (p.canton ? ', ' + p.canton : '')) + '</span>' +
+                        '</span>' +
+                        '<span class="search-item-meta">Parzelle · ' + escapeHtml(p.municipality || '') + (p.plotNumber ? ' · Nr. ' + escapeHtml(p.plotNumber) : '') + '</span>' +
+                    '</div>';
                 });
             }
-            
-            // Section: Orte (API)
+
+            // Section: Orte (Swisstopo)
             if (locResults.length > 0) {
-                html += '<div class="search-section-header">Orte</div>';
-                locResults.forEach(function(r, index) {
+                html += sectionHeader('Ort', 'swisstopo');
+                locResults.forEach(function(r) {
                     var lat = r.attrs.lat;
                     var lon = r.attrs.lon;
                     var zoom = r.attrs.zoomlevel || 14;
-                    html += '<div class="search-item" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
-                            '<div class="search-item-title">' + r.attrs.label + '</div>' +
-                            '</div>';
+                    html += '<div class="search-item" role="option" onclick="handleSearchClick(\'location\', null, ' + lat + ', ' + lon + ', ' + zoom + ')">' +
+                        icon('location_on') +
+                        '<span class="search-item-main"><span class="search-item-title">' + r.attrs.label + '</span></span>' +
+                        '<span class="search-item-meta">Ort</span>' +
+                    '</div>';
                 });
             }
-            
-            // Section: Karten (API)
+
+            // Section: Karten (Swisstopo Geokatalog) — row click adds the layer
             if (layerResults.length > 0) {
-                html += '<div class="search-section-header">Karten hinzufügen...</div>';
+                html += sectionHeader('Karten', 'Geokatalog');
                 layerResults.forEach(function(r) {
                     var layerId = r.attrs.layer || '';
                     var layerTitle = r.attrs.title || r.attrs.label || layerId;
-                    html += '<div class="search-item" onclick="handleSearchClick(\'layer\', \'' + layerId.replace(/'/g, "\\'") + '\', null, null, null, \'' + layerTitle.replace(/'/g, "\\'") + '\')">' +
-                            '<div class="search-item-title">' + r.attrs.label + '</div>' +
-                            '</div>';
+                    html += '<div class="search-item" role="option" onclick="handleSearchClick(\'layer\', \'' + escapeForJs(layerId) + '\', null, null, null, \'' + escapeForJs(layerTitle) + '\')">' +
+                        icon('map') +
+                        '<span class="search-item-main"><span class="search-item-title">' + r.attrs.label + '</span></span>' +
+                        '<span class="search-item-action">+ Als Ebene</span>' +
+                    '</div>';
                 });
             }
-            
+
             if (html === '') {
-                html = '<div class="search-item" style="cursor:default;"><div class="search-item-subtitle">Keine Resultate gefunden</div></div>';
+                html = '<div class="search-item search-item--empty"><span class="search-item-subtitle">Keine Resultate gefunden</span></div>';
             }
-            
+
             searchResults.innerHTML = html;
             searchResults.classList.add('active');
+
+            var aiItem = document.getElementById('search-ai-item');
+            if (aiItem) {
+                aiItem.addEventListener('click', showAiAnswer);
+                aiItem.addEventListener('keydown', function(e) {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        showAiAnswer();
+                    }
+                });
+            }
         }
-        
+
+        // Reveal the answer below the suggested question; chips in the answer select the object on the map
+        function showAiAnswer() {
+            var answerEl = document.getElementById('search-ai-answer');
+            var item = document.getElementById('search-ai-item');
+            if (!answerEl || !currentAiSuggestion) return;
+            answerEl.innerHTML = currentAiSuggestion.answerHtml +
+                '<span class="search-answer-note">Prototyp: Antwort aus den geladenen Daten, kein Sprachmodell.</span>';
+            answerEl.hidden = false;
+            if (item) item.setAttribute('aria-expanded', 'true');
+            answerEl.querySelectorAll('[data-building]').forEach(function(link) {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    handleSearchClick('local', this.dataset.building);
+                });
+            });
+        }
+
+        // ===== KI: MOCK ANSWERS IN THE SEARCH SUGGESTIONS =====
+        // Prototype only. A handful of question templates are answered from the loaded portfolio data —
+        // no model, no network. The point is the interaction (question among the suggestions, answer
+        // inline) before a real assistant is wired in. Replaces the former KI side panel.
+        function formatSquareMetres(value) {
+            return Number(value || 0).toLocaleString('de-CH') + ' m²';
+        }
+
+        function buildingArea(f) {
+            return Number(((f.properties || {}).extensionData || {}).netFloorArea || 0);
+        }
+
+        function buildingChip(f) {
+            var p = f.properties;
+            return '<a href="#" class="search-answer-link" data-building="' + escapeHtml(p.buildingId) + '">' +
+                '<span class="material-symbols-outlined" aria-hidden="true">apartment</span>' + escapeHtml(p.name) + '</a>';
+        }
+
+        function buildingChips(features) {
+            return '<span class="search-answer-links">' + features.map(buildingChip).join('') + '</span>';
+        }
+
+        function joinNames(features) {
+            return features.map(function(f) { return '«' + escapeHtml(f.properties.name) + '»'; }).join(', ');
+        }
+
+        function suggestAiQuestion(term, localMatches) {
+            if (!portfolioData || !portfolioData.features.length) return null;
+            var features = portfolioData.features;
+            var t = term.toLowerCase().trim();
+            var question = function(text) { return highlightMatch(text, term); };
+            var isQuestion = /\?$/.test(t) || /^(wie|welche|welches|was|wo|gibt)\b/.test(t);
+
+            function byStatus(status, label) {
+                var hits = features.filter(function(f) { return f.properties.status === status; });
+                return {
+                    questionHtml: question('Welche Objekte sind ' + label + '?'),
+                    answerHtml: hits.length
+                        ? '<b>' + hits.length + (hits.length === 1 ? ' Objekt ist' : ' Objekte sind') + '</b> ' + label + ': ' + joinNames(hits) + '.' + buildingChips(hits)
+                        : 'Zurzeit ist kein Objekt ' + label + '.'
+                };
+            }
+
+            // Keyword intents first
+            if (/renov|sanier/.test(t)) return byStatus('In Renovation', 'in Renovation');
+            if (/planung|geplant/.test(t)) return byStatus('In Planung', 'in Planung');
+            if (/ausser betrieb|stillgelegt/.test(t)) return byStatus('Ausser Betrieb', 'ausser Betrieb');
+
+            if (/gesamt|total|summe|portfolio|alle objekte|geschossfl|fläche|flaeche/.test(t) && !localMatches.length) {
+                var total = features.reduce(function(sum, f) { return sum + buildingArea(f); }, 0);
+                var largest = features.slice().sort(function(a, b) { return buildingArea(b) - buildingArea(a); })[0];
+                return {
+                    questionHtml: question('Wie gross ist die gesamte Nettogeschossfläche des Portfolios?'),
+                    answerHtml: 'Das Portfolio umfasst <b>' + features.length + ' Objekte</b> mit total <b>' + formatSquareMetres(total) +
+                        '</b> Nettogeschossfläche. Das grösste Objekt ist «' + escapeHtml(largest.properties.name) + '» mit ' +
+                        formatSquareMetres(buildingArea(largest)) + '.' + buildingChips([largest])
+                };
+            }
+
+            if (/ältest|älteste|baujahr/.test(t)) {
+                var dated = features.filter(function(f) { return extractYear(f.properties.constructionYear); })
+                    .sort(function(a, b) { return extractYear(a.properties.constructionYear) - extractYear(b.properties.constructionYear); });
+                if (dated.length) {
+                    var oldest = dated[0].properties;
+                    return {
+                        questionHtml: question('Welches ist das älteste Objekt im Portfolio?'),
+                        answerHtml: 'Das älteste Objekt ist «' + escapeHtml(oldest.name) + '» in ' + escapeHtml(oldest.city) +
+                            ' mit Baujahr <b>' + extractYear(oldest.constructionYear) + '</b>.' + buildingChips([dated[0]])
+                    };
+                }
+            }
+
+            // The term is part of a building name → its floor area
+            // (a match on the city or street only is handled as a place question below)
+            var nameMatches = localMatches.filter(function(f) {
+                return (f.properties.name || '').toLowerCase().includes(t);
+            });
+            if (nameMatches.length) {
+                var f = nameMatches[0];
+                var p = f.properties;
+                var year = extractYear(p.constructionYear) || '—';
+                return {
+                    questionHtml: question('Wie gross ist die Nettogeschossfläche von «' + p.name + '»?'),
+                    answerHtml: '«' + escapeHtml(p.name) + '» (' + escapeHtml((p.city || '') + ', ' + (p.country || '')) +
+                        ') hat eine Nettogeschossfläche von <b>' + formatSquareMetres(buildingArea(f)) + '</b>. Baujahr ' + year +
+                        ', Status «' + escapeHtml(p.status || '—') + '».' + buildingChips([f])
+                };
+            }
+
+            // A place (city, region or country) matches → objects there
+            var place = null;
+            features.some(function(f) {
+                var p = f.properties;
+                place = [p.city, p.stateProvincePrefecture, p.country].find(function(v) {
+                    return v && String(v).toLowerCase().includes(t);
+                }) || null;
+                return !!place;
+            });
+            if (place) {
+                var inPlace = features.filter(function(f) {
+                    var p = f.properties;
+                    return p.city === place || p.stateProvincePrefecture === place || p.country === place;
+                });
+                var area = inPlace.reduce(function(sum, f) { return sum + buildingArea(f); }, 0);
+                return {
+                    questionHtml: question('Wie viele Objekte gibt es in ' + place + '?'),
+                    answerHtml: 'In ' + escapeHtml(place) + ' gibt es <b>' + inPlace.length + (inPlace.length === 1 ? ' Objekt' : ' Objekte') +
+                        '</b> mit total ' + formatSquareMetres(area) + ' Nettogeschossfläche: ' + joinNames(inPlace) + '.' + buildingChips(inPlace)
+                };
+            }
+
+            // Street matched a building → its floor area
+            if (localMatches.length) {
+                var byStreet = localMatches[0];
+                var bp = byStreet.properties;
+                return {
+                    questionHtml: question('Wie gross ist die Nettogeschossfläche von «' + bp.name + '»?'),
+                    answerHtml: '«' + escapeHtml(bp.name) + '» (' + escapeHtml((bp.city || '') + ', ' + (bp.country || '')) +
+                        ') hat eine Nettogeschossfläche von <b>' + formatSquareMetres(buildingArea(byStreet)) + '</b>. Baujahr ' +
+                        (extractYear(bp.constructionYear) || '—') + ', Status «' + escapeHtml(bp.status || '—') + '».' + buildingChips([byStreet])
+                };
+            }
+
+            // Looks like a question, but nothing matched
+            if (isQuestion) {
+                return {
+                    questionHtml: escapeHtml(term),
+                    answerHtml: 'Diese Frage kann der Prototyp noch nicht beantworten. Beispiele, die funktionieren: ' +
+                        '«Wie viele Objekte gibt es in Bern?», «Welche Objekte sind in Renovation?», «Wie gross ist die gesamte Nettogeschossfläche?».'
+                };
+            }
+            return null;
+        }
+
         // Make this function global so onclick in HTML string works
         window.handleSearchClick = function(type, id, lat, lon, zoom, title) {
             searchResults.classList.remove('active');
-            
+
             if (currentView !== 'map') {
                 switchView('map');
             }
-            
+
             if (type === 'local') {
                 // Pass true to fly to the building when searching
                 selectBuilding(id, true);
-                
+
                 // Remove generic search marker if we select a specific building
                 if (searchMarker) {
                     searchMarker.remove();
@@ -3455,6 +3861,18 @@
                 var b = portfolioData.features.find(f => f.properties.buildingId === id);
                 if(b) {
                     searchInput.value = b.properties.name;
+                    searchClearBtn.classList.add('visible');
+                }
+
+            } else if (type === 'parcel') {
+                if (searchMarker) {
+                    searchMarker.remove();
+                    searchMarker = null;
+                }
+                selectParcel(id, true);
+                var parcel = parcelData && parcelData.features.find(function(f) { return f.properties.parcelId === id; });
+                if (parcel) {
+                    searchInput.value = parcel.properties.name || id;
                     searchClearBtn.classList.add('visible');
                 }
 
@@ -3471,7 +3889,7 @@
                 });
 
                 // 3. Add Red Marker
-                searchMarker = new mapboxgl.Marker({ color: '#c00' })
+                searchMarker = new maplibregl.Marker({ color: '#c00' })
                     .setLngLat([lon, lat])
                     .addTo(map);
 
@@ -3487,7 +3905,7 @@
                 addSwisstopoLayer(id, title);
             }
         };
-        
+
         // ===== ACCORDION =====
         var geokatalogAccordion = document.getElementById('geokatalog-accordion');
 
@@ -3748,9 +4166,53 @@
         var accordionPanel = document.getElementById('accordion-panel');
         var menuToggleText = document.getElementById('menu-toggle-text');
         var menuToggleIcon = menuToggle.querySelector('.material-symbols-outlined');
-        var menuOpen = true;
-        
+        // Phones: the same panel is a slide-in hamburger menu (css: mobile breakpoint)
+        var hamburgerBtn = document.getElementById('hamburger-btn');
+        var mobileMenuClose = document.getElementById('mobile-menu-close');
+        var mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
+        // Tablets and phones start with the tools panel collapsed: open, it covers 40–80 % of the map
+        var menuOpen = !isCompactLayout();
+
+        // Backdrop and hamburger state only apply to the phone layout
+        function syncMobileMenuChrome() {
+            var mobileOpen = menuOpen && isMobileLayout();
+            if (mobileMenuBackdrop) mobileMenuBackdrop.classList.toggle('active', mobileOpen);
+            if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', mobileOpen ? 'true' : 'false');
+        }
+
+        function renderMenuToggleState() {
+            accordionPanel.classList.toggle('collapsed', !menuOpen);
+            menuToggleText.textContent = menuOpen ? 'Menü schliessen' : 'Menü öffnen';
+            menuToggleIcon.textContent = menuOpen ? 'expand_less' : 'expand_more';
+            menuToggle.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+            syncMobileMenuChrome();
+        }
+        renderMenuToggleState();
+
+        function setMenuOpen(open, restoreFocus) {
+            menuOpen = open;
+            renderMenuToggleState();
+            updateMenuTogglePositionDebounced();
+            if (!isMobileLayout()) return;
+            // Phone menu: move focus into the menu, and back to the hamburger when it closes
+            if (open && mobileMenuClose) {
+                mobileMenuClose.focus();
+            } else if (!open && restoreFocus && hamburgerBtn && accordionPanel.contains(document.activeElement)) {
+                hamburgerBtn.focus();
+            }
+        }
+
+        if (hamburgerBtn) hamburgerBtn.addEventListener('click', function() { setMenuOpen(true); });
+        if (mobileMenuClose) mobileMenuClose.addEventListener('click', function() { setMenuOpen(false, true); });
+        if (mobileMenuBackdrop) mobileMenuBackdrop.addEventListener('click', function() { setMenuOpen(false, true); });
+
         function updateMenuTogglePosition() {
+            if (isMobileLayout()) {
+                // Phones: the panel is the hamburger menu, the floating toggle is hidden
+                menuToggle.style.top = '';
+                return;
+            }
+
             var mainRect = document.getElementById('map-view').getBoundingClientRect();
 
             if (menuOpen) {
@@ -3779,19 +4241,26 @@
         setTimeout(updateMenuTogglePosition, 100);
         
         menuToggle.addEventListener('click', function() {
-            menuOpen = !menuOpen;
-            
-            if (menuOpen) {
-                accordionPanel.classList.remove('collapsed');
-                menuToggleText.textContent = 'Menü schliessen';
-                menuToggleIcon.textContent = 'expand_less';
-            } else {
-                accordionPanel.classList.add('collapsed');
-                menuToggleText.textContent = 'Menü öffnen';
-                menuToggleIcon.textContent = 'expand_more';
+            setMenuOpen(!menuOpen);
+        });
+
+        menuToggle.addEventListener('keydown', function(e) {
+            if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                menuToggle.click();
             }
-            
+        });
+
+        window.addEventListener('resize', function() {
+            syncMobileMenuChrome();
             updateMenuTogglePositionDebounced();
+        });
+
+        // Escape closes the phone menu
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && menuOpen && isMobileLayout()) {
+                setMenuOpen(false, true);
+            }
         });
 
         var observer = new MutationObserver(function() {
@@ -3815,7 +4284,8 @@
                 if (building && building.geometry) {
                     map.flyTo({
                         center: building.geometry.coordinates,
-                        zoom: 16
+                        zoom: 16,
+                        offset: getInfoPanelOffset()
                     });
                 }
             } else if (selectedParcelId && map) {
@@ -3826,11 +4296,96 @@
                     var center = getPolygonCentroid(parcel.geometry.coordinates);
                     map.flyTo({
                         center: center,
-                        zoom: 16
+                        zoom: 16,
+                        offset: getInfoPanelOffset()
                     });
                 }
             }
         });
+
+        // ===== INFO PANEL: MOBILE SHEET HELPERS =====
+        // Fly-to offset that centres the object in the part of the map not covered by the sheet
+        // (bottom sheet on portrait phones, side panel on landscape phones). [0, 0] on larger screens.
+        function getInfoPanelOffset() {
+            var panel = document.getElementById('info-panel');
+            if (!window.map || !panel || !isMobileLayout() || !panel.classList.contains('show')) return [0, 0];
+            var m = map.getContainer().getBoundingClientRect();
+            var p = panel.getBoundingClientRect();
+            if (p.width >= m.width * 0.9) {
+                var coveredBottom = Math.max(0, m.bottom - Math.max(p.top, m.top));
+                return [0, -coveredBottom / 2];
+            }
+            if (p.height >= m.height * 0.9) {
+                var coveredRight = Math.max(0, m.right - Math.max(p.left, m.left));
+                return [-coveredRight / 2, 0];
+            }
+            return [0, 0];
+        }
+
+        // After a tap selection on a phone: if the object ended up under the sheet, pan it into the visible part
+        function revealSelectionOnMobile(lngLat) {
+            if (!window.map || !lngLat) return;
+            var offset = getInfoPanelOffset();
+            if (!offset[0] && !offset[1]) return;
+            var m = map.getContainer().getBoundingClientRect();
+            var visibleW = m.width + offset[0] * 2;
+            var visibleH = m.height + offset[1] * 2;
+            var pt = map.project(lngLat);
+            var margin = 32;
+            if (pt.x < margin || pt.x > visibleW - margin || pt.y < margin || pt.y > visibleH - margin) {
+                map.panBy([pt.x - visibleW / 2, pt.y - visibleH / 2], { duration: 300 });
+            }
+        }
+
+        // Bottom sheets on phones: swiping the handle (or header) down dismisses the sheet
+        function initSheetGesture(panel, handleSelectors, onDismiss, isSheetFn) {
+            if (!panel) return;
+            var startY = 0;
+            var dragY = 0;
+            var dragging = false;
+
+            function onStart(e) {
+                if (!isSheetFn() || e.touches.length !== 1) return;
+                startY = e.touches[0].clientY;
+                dragY = 0;
+                dragging = true;
+                panel.classList.add('sheet-dragging');
+            }
+
+            function onMove(e) {
+                if (!dragging) return;
+                dragY = Math.max(0, e.touches[0].clientY - startY);
+                if (dragY > 0) {
+                    panel.style.transform = 'translateY(' + dragY + 'px)';
+                    if (e.cancelable) e.preventDefault(); // the sheet follows the finger, the map must not pan
+                }
+            }
+
+            function onEnd() {
+                if (!dragging) return;
+                dragging = false;
+                panel.classList.remove('sheet-dragging');
+                panel.style.transform = '';
+                if (dragY > 80) onDismiss();
+            }
+
+            handleSelectors.forEach(function(selector) {
+                var el = panel.querySelector(selector);
+                if (!el) return;
+                el.addEventListener('touchstart', onStart, { passive: true });
+                el.addEventListener('touchmove', onMove, { passive: false });
+                el.addEventListener('touchend', onEnd);
+                el.addEventListener('touchcancel', onEnd);
+            });
+        }
+
+        function isPortraitPhoneSheet() {
+            return isMobileLayout() && !isLandscapePhone();
+        }
+
+        initSheetGesture(document.getElementById('info-panel'), ['.sheet-handle', '#info-header'], function() {
+            document.getElementById('info-close').click();
+        }, isPortraitPhoneSheet);
 
         // ===== INFO PANEL SHARE =====
         document.getElementById('info-share').addEventListener('click', function() {
@@ -3856,68 +4411,48 @@
                 // Fallback: copy to clipboard
                 if (navigator.clipboard) {
                     navigator.clipboard.writeText(url).then(function() {
-                        showToast('Link in Zwischenablage kopiert');
+                        showToast({ type: 'success', title: 'Link kopiert', message: 'Link wurde in die Zwischenablage kopiert', duration: 2000 });
                     }).catch(function() {
-                        showToast('Kopieren fehlgeschlagen');
+                        showToast({ type: 'error', title: 'Fehler beim Kopieren', message: 'Link konnte nicht kopiert werden', duration: 3000 });
                     });
                 }
             }
         });
 
         // ===== DETAIL TABS =====
+        var detailTabsEl = document.querySelector('.detail-tabs');
+
+        // Phones: the tab strip is wider than the screen and scrolls horizontally
+        function isTabStripScrollable() {
+            return !!detailTabsEl && detailTabsEl.scrollWidth > detailTabsEl.clientWidth + 1;
+        }
+
+        // Fade hint at the right edge while more tabs are hidden (css: .detail-tabs.can-scroll-right)
+        function updateTabStripFade() {
+            if (!detailTabsEl) return;
+            var more = isTabStripScrollable() &&
+                detailTabsEl.scrollLeft + detailTabsEl.clientWidth < detailTabsEl.scrollWidth - 1;
+            detailTabsEl.classList.toggle('can-scroll-right', more);
+        }
+
+        if (detailTabsEl) {
+            detailTabsEl.addEventListener('scroll', updateTabStripFade, { passive: true });
+            window.addEventListener('resize', updateTabStripFade);
+        }
+
+        // Click, Enter and Space select a tab (activateTab renders the tab's table and syncs aria-selected)
         document.querySelectorAll('.detail-tab').forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                if (this.classList.contains('disabled')) {
-                    return;
-                }
-                var targetTab = this.dataset.tab;
-
-                // Update active tab
-                document.querySelectorAll('.detail-tab').forEach(function(t) {
-                    t.classList.remove('active');
-                });
-                this.classList.add('active');
-
-                // Switch content
-                document.querySelectorAll('.tab-content').forEach(function(content) {
-                    content.classList.remove('active');
-                });
-                var targetContent = document.querySelector('.tab-content[data-content="' + targetTab + '"]');
-                if (targetContent) {
-                    targetContent.classList.add('active');
-                }
-
-                // Update URL with current tab
+            function select() {
+                if (tab.classList.contains('disabled')) return;
+                var targetTab = tab.dataset.tab;
+                activateTab(targetTab);
                 setTabInURL(targetTab);
-
-                // Render measurements table when switching to measurements tab
-                if (targetTab === 'measurements') {
-                    renderMeasurementsTable();
-                }
-
-                // Render documents table when switching to documents tab
-                if (targetTab === 'documents') {
-                    renderDocumentsTable();
-                }
-
-                // Render contacts table when switching to contacts tab
-                if (targetTab === 'contacts') {
-                    renderContactsTable();
-                }
-
-                // Render costs table when switching to costs tab
-                if (targetTab === 'costs') {
-                    renderCostsTable();
-                }
-
-                // Render contracts table when switching to contracts tab
-                if (targetTab === 'contracts') {
-                    renderContractsTable();
-                }
-
-                // Render assets table when switching to assets tab
-                if (targetTab === 'assets') {
-                    renderAssetsTable();
+            }
+            tab.addEventListener('click', select);
+            tab.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    select();
                 }
             });
         });
@@ -3928,14 +4463,9 @@
         var stylePanel = document.getElementById('style-panel');
         var stylePanelOpen = false;
 
-        // Generate thumbnail URL using Mapbox Static Images API
-        function getStyleThumbnail(styleId, width, height) {
-            var lon = 8.2275;
-            var lat = 46.8182;
-            var zoom = 6;
-            return 'https://api.mapbox.com/styles/v1/mapbox/' + styleId + '/static/' +
-                   lon + ',' + lat + ',' + zoom + '/' + width + 'x' + height +
-                   '?access_token=' + mapboxgl.accessToken;
+        // Thumbnail: a static z8 tile of Switzerland from the basemap provider (see mapStyles)
+        function getStyleThumbnail(styleId) {
+            return (mapStyles[styleId] && mapStyles[styleId].thumbnail) || '';
         }
 
         // Initialize thumbnails
@@ -3943,11 +4473,11 @@
             Object.keys(mapStyles).forEach(function(styleId) {
                 var thumbEl = document.getElementById('thumb-' + styleId);
                 if (thumbEl) {
-                    thumbEl.src = getStyleThumbnail(styleId, 140, 100);
+                    thumbEl.src = getStyleThumbnail(styleId);
                 }
             });
             // Set current style thumbnail
-            document.getElementById('current-style-thumb').src = getStyleThumbnail(currentMapStyle, 160, 120);
+            document.getElementById('current-style-thumb').src = getStyleThumbnail(currentMapStyle);
         }
 
         // Update active style button
@@ -3958,7 +4488,7 @@
                     btn.classList.add('active');
                 }
             });
-            document.getElementById('current-style-thumb').src = getStyleThumbnail(currentMapStyle, 160, 120);
+            document.getElementById('current-style-thumb').src = getStyleThumbnail(currentMapStyle);
         }
 
         // Toggle style panel
@@ -4631,7 +5161,7 @@
         var measureState = {
             active: false,
             points: [],           // Array of [lng, lat] coordinates
-            markers: [],          // Array of Mapbox markers
+            markers: [],          // Array of MapLibre markers
             labelMarkers: [],     // Array of label markers for distances
             lineSourceId: 'measure-line-source',
             lineLayerId: 'measure-line',
@@ -4868,7 +5398,7 @@
             // Create marker if new point
             if (index >= measureState.markers.length) {
                 var markerEl = createMeasureMarkerElement();
-                var marker = new mapboxgl.Marker({
+                var marker = new maplibregl.Marker({
                     element: markerEl,
                     draggable: true,
                     anchor: 'center'
@@ -5008,7 +5538,7 @@
                 var midLat = (p1[1] + p2[1]) / 2;
 
                 var labelEl = createDistanceLabel(distance);
-                var labelMarker = new mapboxgl.Marker({
+                var labelMarker = new maplibregl.Marker({
                     element: labelEl,
                     anchor: 'center'
                 })
@@ -5028,7 +5558,7 @@
                 var closingMidLat = (pLast[1] + pFirst[1]) / 2;
 
                 var closingLabelEl = createDistanceLabel(closingDistance);
-                var closingLabelMarker = new mapboxgl.Marker({
+                var closingLabelMarker = new maplibregl.Marker({
                     element: closingLabelEl,
                     anchor: 'center'
                 })

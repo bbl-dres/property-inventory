@@ -1,7 +1,7 @@
 # Design Guide
 
 **BBL GIS Immobilienportfolio**
-Version 1.0 | Last Updated: December 2024
+Version 1.1 | Last Updated: September 2026
 
 ---
 
@@ -598,8 +598,46 @@ For grouped information display.
   <button class="search-clear-btn">
     <span class="material-symbols-outlined">close</span>
   </button>
+  <select class="search-scope" aria-label="Suchbereich">   <!-- desktop and tablet only -->
+    <option value="all">Alle</option> …
+  </select>
 </div>
 ```
+
+### Search Suggestions Pattern
+
+One dropdown, several sources. Each section names its source on the right; each row is
+*icon · title (+ subtitle) · meta or action*. The matched term is highlighted in the title.
+
+```
+FRAGE STELLEN ………………………… KI          ← one suggested question, answered inline (Enter or tap)
+✦  Wie viele Objekte gibt es in Bern?     ↵ Antwort
+   In Bern gibt es 2 Objekte mit total …  [chips that select the object on the map]
+OBJEKTE
+▦  Bundeshaus West                        Gebäude · Bern CH · BBL-001
+▢  Bundesplatz Parzelle A                 Parzelle · Bern · Nr. BE-3003-1001
+ORT ……………………………………… swisstopo
+◉  Bern (BE)                              Ort
+KARTEN ……………………………… Geokatalog
+▤  ISOS Ortsbildaufnahmen                 [+ Als Ebene]
+```
+
+```html
+<div class="search-section-header"><span>Objekte</span><span class="search-section-source">…</span></div>
+<div class="search-item" role="option">
+  <span class="material-symbols-outlined search-item-icon" aria-hidden="true">apartment</span>
+  <span class="search-item-main">
+    <span class="search-item-title">Bundeshaus <b>West</b></span>
+    <span class="search-item-subtitle">Bundesplatz 3, Bern</span>
+  </span>
+  <span class="search-item-meta">Gebäude · Bern CH · BBL-001</span>
+</div>
+<div class="search-answer">…</div>   <!-- follows the KI row; hidden until requested -->
+```
+
+The KI answers of the prototype are computed from the loaded data (`suggestAiQuestion()` in `js/app.js`),
+not by a model; the pattern is what matters: the assistant lives in the search box, not in a side panel.
+On phones the dropdown spans the header width and the meta wraps under the title.
 
 ### Filter Panel Pattern
 
@@ -731,29 +769,49 @@ For grouped information display.
 
 ### Breakpoints
 
-| Name | Max Width | Target |
-|------|-----------|--------|
-| Desktop | > 1024px | Large screens, default |
-| Tablet | ≤ 1024px | iPads, small laptops |
-| Mobile | ≤ 767px | Phones, portrait |
-| Small Mobile | ≤ 479px | Small phones |
+| Name | Media query | Target |
+|------|-------------|--------|
+| Desktop | `> 1024px` | Large screens, default |
+| Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, icon-only header buttons, tools panel starts collapsed. |
+| Mobile | `max-width: 767px`, **or** `max-height: 500px and (pointer: coarse)` | Phones in portrait **and** landscape. Two-row header (title + actions / search + view toggle), hamburger menu for the map tools, full-screen filter sheet, bottom-sheet info panel, sticky tab strip on the detail page. |
+| Small Mobile | `max-width: 479px` | Small phones |
+| Touch | `(pointer: coarse)` | Any touch device, independent of width: 44 px targets, 20 px checkboxes, wider resize handles |
+
+The mobile query is a list on purpose: a phone held sideways is 800–950 px wide but only ~390 px tall,
+so a width-only breakpoint would give it the tablet layout. `js/app.js` exposes the same queries as
+`isMobileLayout()`, `isLandscapePhone()` and `isCompactLayout()` for behaviour that has to follow the
+layout (menu state, sheet gestures, focus management, map offsets). Change both places together.
+
+Landscape phones additionally dock the info panel to the right (`max-height: 500px and (pointer: coarse) and (min-width: 600px)`).
 
 ### Responsive Patterns
 
-**Header Transformation (Mobile):**
+**Header Transformation (Mobile):** two 44 px rows — title, filter and menu button; search and view toggle.
 ```css
-@media (max-width: 767px) {
-  #header {
-    flex-wrap: wrap;
-    height: auto;
-    padding: 12px 16px;
-  }
-
-  #logo-area { order: 1; }
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  .header-main { flex-wrap: wrap; height: auto; padding: 8px 16px; }
+  #logo-area   { order: 1; }                   /* short title: "BBL Liegenschaften Inventar" */
   #header-right { order: 2; margin-left: auto; }
-  #search-area { order: 3; width: 100%; }
+  #search-area { order: 3; flex: 0 0 100%; }   /* flex-basis, not width: the base rule is flex: 1 */
 }
 ```
+
+**Hamburger Menu (Mobile):** on phones the map tools panel (`#accordion-panel`) is the menu itself,
+so share, print, export, Geokatalog and the external layers stay available without a second markup.
+```css
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  .hamburger-btn { display: flex; width: 44px; height: 44px; }
+  #accordion-panel {
+    position: fixed; top: 0; right: 0; bottom: 0;
+    width: 300px; max-width: 85vw;
+    transform: translateX(100%);               /* .collapsed: off-screen, visibility hidden */
+    transition: transform var(--transition-slow);
+  }
+  #accordion-panel:not(.collapsed) { transform: translateX(0); }
+  .mobile-menu-backdrop.active { display: block; }
+}
+```
+Tablets and desktop keep the floating panel with the "Menü öffnen" toggle (collapsed by default on tablets).
 
 **Grid Collapse (Mobile):**
 ```css
@@ -768,17 +826,51 @@ For grouped information display.
 
 **Bottom Sheet Pattern (Mobile):**
 ```css
-@media (max-width: 767px) {
-  .panel {
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  #info-panel {
     position: fixed;
     bottom: 0;
     left: 0;
     right: 0;
-    max-height: 70vh;
-    border-radius: 16px 16px 0 0;
+    max-height: 50dvh;                       /* dynamic viewport: excludes the browser chrome */
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
   }
+  .sheet-handle { display: block; }          /* 36×4 px pill, signals "swipe down to close" */
 }
 ```
+The sheet is dismissed with the close button or by swiping its handle or header down (`initSheetGesture()`
+in `js/app.js`). When it opens, the map keeps the selected object out from under it
+(`revealSelectionOnMobile()` and the fly-to `offset`).
+
+**Full-screen Sheet with Footer (Mobile filter):**
+```css
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  #smart-drawer { position: fixed; inset: 0; z-index: 2000; }
+  .smart-drawer-footer { display: flex; }     /* "Zurücksetzen" + "N Objekte anzeigen" (live count) */
+}
+```
+
+**Touch Targets:**
+```css
+@media (pointer: coarse) {
+  .maplibregl-ctrl-group button { width: 44px; height: 44px; }
+  .filter-option { min-height: 44px; }        /* the label carries the hit area */
+  input[type="checkbox"] { width: 20px; height: 20px; }
+}
+```
+Visual size may stay small (an 18 px icon, a 10 px carousel dot) as long as the hit area is 44 px.
+Inputs use `font-size: 16px` on phones so iOS Safari does not zoom into the page when they receive focus.
+
+**Sticky Tab Strip (Mobile detail page):** `#header` is `position: sticky` with a negative `top`
+(`--header-sticky-offset`, set by `updateDetailHeaderOffset()`), so the header collapses on scroll until
+only the tab strip is pinned. The strip scrolls horizontally, snaps to tabs and fades at the right edge
+while more tabs are hidden.
+
+**Wide Tables in Narrow Columns:** the address table becomes stacked label/value rows below a
+container width of 640 px (`@container` on `.detail-section--address`), so it also works next to the open
+drawer on a desktop. Entity tables scroll horizontally in their wrapper; flex/grid children that contain
+tables need `min-width: 0`, otherwise they push the page past the viewport.
 
 ### Mobile-First Approach
 
@@ -1016,6 +1108,7 @@ Decorative icons should be hidden from screen readers:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.1 | Sep 2026 | Responsive review: landscape-phone breakpoint, touch-target rules, two-row phone header, hamburger menu, bottom-sheet / filter-footer / sticky-tab patterns, container query for the address table; search suggestions with inline KI answer (see `RESPONSIVE-REVIEW.md`) |
 | 1.0 | Dec 2024 | Initial design guide release |
 
 ---

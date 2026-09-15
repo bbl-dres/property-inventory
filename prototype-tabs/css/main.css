@@ -9,6 +9,7 @@
             --grey-700: #4E555A;
             --grey-600: #5E666B;
             --grey-500: #6C757D; /* WCAG AA compliant on white, matches accent-panel */
+            --grey-400: #A0A8AE;
             --grey-300: #C5CCD1;
             --grey-200: #DDE2E6;
             --grey-100: #F3F5F7;
@@ -147,6 +148,7 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh; /* dynamic viewport: excludes the mobile browser chrome */
             overflow: hidden;
             color: var(--grey-900);
         }
@@ -353,7 +355,12 @@
             display: block;
         }
 
+        /* Section header: title left, source right ("KI", "swisstopo", "Geokatalog") */
         .search-section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: var(--space-3);
             background: var(--accent-panel);
             color: white;
             padding: var(--space-2) var(--space-3);
@@ -363,19 +370,53 @@
             letter-spacing: 0.5px;
         }
 
+        .search-section-source {
+            font-weight: var(--font-normal);
+            text-transform: none;
+            letter-spacing: 0;
+            opacity: 0.85;
+        }
+
+        /* Result row: icon · title (+ subtitle) · meta or action on the right */
         .search-item {
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
             padding: var(--space-3) var(--space-4);
             cursor: pointer;
             border-bottom: 1px solid var(--grey-100);
             transition: background var(--transition-fast);
         }
 
-        .search-item:hover {
+        .search-item:hover,
+        .search-item:focus-visible {
             background: var(--grey-100);
         }
 
         .search-item:last-child {
             border-bottom: none;
+        }
+
+        .search-item--empty {
+            cursor: default;
+        }
+
+        .search-item-icon {
+            font-size: var(--icon-lg);
+            color: var(--grey-500);
+            flex-shrink: 0;
+        }
+
+        .search-item--ask .search-item-icon {
+            color: var(--primary-red);
+        }
+
+        .search-item-main {
+            flex: 1;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
         }
 
         .search-item-title {
@@ -386,12 +427,116 @@
 
         .search-item-title b {
             color: var(--primary-red);
+            font-weight: var(--font-semibold);
         }
 
         .search-item-subtitle {
             font-size: var(--text-xs);
             color: var(--grey-600);
-            margin-top: var(--space-1);
+        }
+
+        .search-item-meta {
+            flex-shrink: 0;
+            font-size: var(--text-xs);
+            color: var(--grey-500);
+            text-align: right;
+            white-space: nowrap;
+        }
+
+        .search-item-meta .material-symbols-outlined {
+            font-size: var(--icon-sm);
+            vertical-align: -3px;
+            margin-right: 2px;
+        }
+
+        .search-item-action {
+            flex-shrink: 0;
+            padding: var(--space-1) var(--space-3);
+            border: 1px solid var(--grey-300);
+            border-radius: var(--radius-sm);
+            background: var(--white);
+            font-size: var(--text-xs);
+            font-weight: var(--font-medium);
+            color: var(--grey-900);
+            white-space: nowrap;
+        }
+
+        .search-item:hover .search-item-action {
+            border-color: var(--grey-500);
+        }
+
+        /* Inline answer of the KI suggestion (mock, answered from the loaded data — see app.js) */
+        .search-answer {
+            padding: var(--space-3) var(--space-4) var(--space-4) calc(var(--space-4) + var(--icon-lg) + var(--space-3));
+            background: var(--grey-50);
+            border-bottom: 1px solid var(--grey-100);
+            font-size: var(--text-sm);
+            color: var(--grey-800);
+            line-height: var(--leading-normal);
+        }
+
+        .search-answer[hidden] {
+            display: none;
+        }
+
+        .search-answer b {
+            color: var(--grey-900);
+        }
+
+        .search-answer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-top: var(--space-2);
+        }
+
+        .search-answer-link {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-1);
+            padding: var(--space-1) var(--space-3);
+            border: 1px solid var(--grey-300);
+            border-radius: var(--radius-full);
+            background: var(--white);
+            font-size: var(--text-xs);
+            color: var(--grey-900);
+            text-decoration: none;
+        }
+
+        .search-answer-link .material-symbols-outlined {
+            font-size: var(--icon-sm);
+            color: var(--grey-500);
+        }
+
+        .search-answer-link:hover {
+            border-color: var(--grey-500);
+            background: var(--grey-100);
+        }
+
+        .search-answer-note {
+            display: block;
+            margin-top: var(--space-2);
+            font-size: var(--text-xs);
+            color: var(--grey-500);
+        }
+
+        /* Scope select inside the search box ("Alle ▾") */
+        .search-scope {
+            appearance: none;
+            height: 100%;
+            border: none;
+            border-left: 1px solid var(--grey-300);
+            padding: 0 var(--space-6) 0 var(--space-3);
+            background: var(--grey-50) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M3 4.5L6 7.5L9 4.5'/%3E%3C/svg%3E") no-repeat right var(--space-2) center;
+            font-size: var(--text-sm);
+            color: var(--grey-700);
+            cursor: pointer;
+        }
+
+        .search-scope:hover,
+        .search-scope:focus {
+            outline: none;
+            background-color: var(--grey-100);
         }
         
         .view-toggle {
@@ -465,6 +610,7 @@
         }
         
         .header-btn {
+            position: relative;
             background: var(--white);
             border: 1px solid var(--grey-300);
             padding: var(--space-2) var(--space-4);
@@ -480,6 +626,21 @@
         
         .header-btn:hover {
             background: var(--grey-100);
+        }
+
+        /* Filters active: dark pill with the red count badge (see updateFilterButtonState) */
+        .header-btn.has-active-filters {
+            background: var(--grey-900);
+            border-color: var(--grey-900);
+            color: var(--white);
+        }
+
+        .header-btn.has-active-filters:hover {
+            background: var(--grey-700);
+        }
+
+        .header-btn.has-active-filters .material-symbols-outlined {
+            color: var(--white);
         }
 
         .header-btn.panel-open {
@@ -933,7 +1094,13 @@
         
         .gallery-card:hover {
             box-shadow: var(--shadow-lg);
-            transform: translateY(-2px);
+        }
+
+        /* Lift only for devices that can hover; on touch the lifted state would stick after a tap */
+        @media (hover: hover) {
+            .gallery-card:hover {
+                transform: translateY(-2px);
+            }
         }
         
         .gallery-image {
@@ -1502,7 +1669,12 @@
 
         .share-icon-btn:hover {
             background: var(--grey-600);
-            transform: scale(1.05);
+        }
+
+        @media (hover: hover) {
+            .share-icon-btn:hover {
+                transform: scale(1.05);
+            }
         }
 
         .share-icon-btn svg {
@@ -1972,7 +2144,7 @@
             margin-right: var(--space-3);
             flex-shrink: 0;
             cursor: pointer;
-            accent-color: var(--primary);
+            accent-color: var(--primary-red);
         }
 
         .catalog-node .node-label {
@@ -2154,20 +2326,20 @@
             color: var(--grey-800);
         }
 
-        /* Mapbox popup overrides */
-        .mapboxgl-popup-content {
+        /* MapLibre popup overrides */
+        .maplibregl-popup-content {
             padding: var(--space-3) var(--space-4);
             border-radius: var(--radius-md);
             box-shadow: var(--shadow-lg);
         }
 
-        .mapboxgl-popup-close-button {
+        .maplibregl-popup-close-button {
             font-size: 18px;
             padding: var(--space-1) var(--space-2);
             color: var(--grey-500);
         }
 
-        .mapboxgl-popup-close-button:hover {
+        .maplibregl-popup-close-button:hover {
             background: var(--grey-100);
             color: var(--grey-700);
         }
@@ -2216,11 +2388,17 @@
             display: block;
         }
         
+        /* Shown for buildings only (#info-panel.has-preview, set by selectBuilding) */
         #info-preview-image {
+            display: none;
             height: 140px;
             background-size: cover;
             background-position: center;
             background-color: var(--grey-100);
+        }
+
+        #info-panel.has-preview #info-preview-image {
+            display: block;
         }
         
         #info-header {
@@ -2316,7 +2494,7 @@
         /* Hide secondary info rows and preview image on short viewports
            to ensure the "Details anzeigen" button is always visible */
         @media (max-height: 800px) {
-            #info-preview-image {
+            #info-panel.has-preview #info-preview-image {
                 display: none;
             }
 
@@ -2351,13 +2529,13 @@
             text-decoration: underline;
         }
         
-        /* Mapbox Controls */
-        .mapboxgl-ctrl-top-right {
+        /* MapLibre Controls */
+        .maplibregl-ctrl-top-right {
             top: var(--space-3);
             right: var(--space-3);
         }
 
-        /* Home Button Control - matches Mapbox default control size for visual consistency */
+        /* Home Button Control - matches the MapLibre default control size for visual consistency */
         .map-home-btn {
             background: var(--white);
             border: none;
@@ -2469,7 +2647,12 @@
 
         .style-option:hover {
             border-color: var(--grey-500);
-            transform: translateY(-2px);
+        }
+
+        @media (hover: hover) {
+            .style-option:hover {
+                transform: translateY(-2px);
+            }
         }
 
         .style-option.active {
@@ -2495,164 +2678,6 @@
         .style-option.active span {
             color: var(--primary-red);
             font-weight: var(--font-semibold);
-        }
-
-        /* ===== AI ASSISTANT PANEL ===== */
-        #ai-assistant-panel {
-            width: 0;
-            min-width: 0;
-            height: 100%;
-            background: var(--white);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            transition: width var(--transition-slow), min-width var(--transition-slow);
-            flex-shrink: 0;
-        }
-
-        #ai-assistant-panel.show {
-            width: var(--drawer-width);
-            min-width: var(--drawer-width);
-            border-left: 1px solid var(--grey-300);
-            box-shadow: -4px 0 16px rgba(0,0,0,0.15);
-        }
-
-        .ai-panel-header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: var(--space-4) var(--space-5);
-            border-bottom: 1px solid var(--grey-200);
-            background: var(--grey-50);
-        }
-
-        .ai-panel-header-title {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-2) 0;
-            font-size: var(--text-sm);
-            font-weight: var(--font-semibold);
-            line-height: 1;
-            color: var(--grey-900);
-        }
-
-        .ai-panel-header-title .material-symbols-outlined {
-            font-size: var(--icon-md);
-            color: var(--grey-600);
-        }
-
-        .ai-panel-close {
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: var(--space-1);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: var(--radius-sm);
-            transition: background var(--transition-normal);
-        }
-
-        .ai-panel-close:hover {
-            background: var(--grey-200);
-        }
-
-        .ai-panel-close .material-symbols-outlined {
-            font-size: var(--icon-lg);
-            color: var(--grey-600);
-        }
-
-        .ai-panel-content {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--space-5);
-        }
-
-        .ai-chat-message {
-            margin-bottom: var(--space-5);
-        }
-
-        .ai-chat-message-label {
-            font-size: var(--text-sm);
-            font-weight: var(--font-semibold);
-            color: var(--grey-700);
-            margin-bottom: var(--space-2);
-        }
-
-        .ai-chat-message-content {
-            font-size: var(--text-sm);
-            color: var(--grey-800);
-            line-height: 1.6;
-        }
-
-        .ai-chat-message-content ul {
-            margin: var(--space-2) 0;
-            padding-left: 20px;
-        }
-
-        .ai-chat-message-content li {
-            margin-bottom: var(--space-1);
-        }
-
-        .ai-panel-input {
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            padding: var(--space-4) var(--space-5);
-            border-top: 1px solid var(--grey-200);
-            background: var(--grey-50);
-        }
-
-        .ai-panel-input-field {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            gap: var(--space-3);
-            background: var(--white);
-            border: 1px solid var(--grey-300);
-            border-radius: var(--radius-full);
-            padding: var(--space-3) var(--space-4);
-        }
-
-        .ai-panel-input-field .material-symbols-outlined {
-            font-size: var(--icon-lg);
-            color: var(--grey-400);
-        }
-
-        .ai-panel-input-field input {
-            flex: 1;
-            border: none;
-            outline: none;
-            font-size: var(--text-sm);
-            color: var(--grey-800);
-            background: transparent;
-        }
-
-        .ai-panel-input-field input::placeholder {
-            color: var(--grey-400);
-        }
-
-        .ai-panel-send-btn {
-            background: var(--grey-200);
-            border: none;
-            border-radius: 50%;
-            width: 36px;
-            height: 36px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: background var(--transition-normal);
-        }
-
-        .ai-panel-send-btn:hover {
-            background: var(--grey-300);
-        }
-
-        .ai-panel-send-btn .material-symbols-outlined {
-            font-size: var(--icon-md);
-            color: var(--grey-600);
         }
 
         /* ===== TAB CONTENT SWITCHING ===== */
@@ -2852,44 +2877,6 @@
             gap: var(--space-3);
         }
 
-        .smart-drawer-tabs {
-            display: flex;
-            background: var(--grey-200);
-            border-radius: var(--radius-md);
-            padding: 3px;
-            gap: 2px;
-        }
-
-        .smart-drawer-tab {
-            display: flex;
-            align-items: center;
-            gap: var(--space-2);
-            padding: var(--space-2) var(--space-3);
-            border: none;
-            background: transparent;
-            border-radius: var(--radius-sm);
-            font-size: var(--text-sm);
-            font-weight: 500;
-            color: var(--grey-600);
-            cursor: pointer;
-            transition: all var(--transition-normal);
-            white-space: nowrap;
-        }
-
-        .smart-drawer-tab:hover {
-            color: var(--grey-900);
-        }
-
-        .smart-drawer-tab.active {
-            background: var(--white);
-            color: var(--grey-900);
-            box-shadow: var(--shadow-sm);
-        }
-
-        .smart-drawer-tab .material-symbols-outlined {
-            font-size: var(--icon-sm);
-        }
-
         .smart-drawer-actions {
             display: flex;
             align-items: center;
@@ -2917,33 +2904,10 @@
             font-size: var(--icon-lg);
         }
 
-        /* Hide reset button when not on filter tab */
-        #smart-drawer[data-active-tab="assistant"] #drawer-reset-btn {
-            display: none;
-        }
-
         .smart-drawer-content {
             flex: 1;
             overflow-y: auto;
             padding: 0;
-        }
-
-        .smart-drawer-content[data-drawer-content="assistant"] {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .smart-drawer-content .ai-chat-messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: var(--space-4);
-        }
-
-        .ai-assistant-iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: var(--white);
         }
 
         /* Legacy filter-pane styles for backward compatibility */
@@ -3124,13 +3088,11 @@
             font-size: var(--icon-sm);
         }
 
-        /* Filter button - active filters state */
-        #filter-btn.has-active-filters {
-            background: rgba(204, 0, 0, 0.1); /* --primary-red at 10% opacity */
-        }
-
-        #filter-btn.has-active-filters.panel-open {
-            background: var(--accent-panel);
+        /* Count of objects per filter option ("Verwaltungsgebäude 2") */
+        .filter-option-count {
+            margin-left: var(--space-1);
+            color: var(--grey-500);
+            font-variant-numeric: tabular-nums;
         }
 
         /* Filter count badge */
@@ -3426,6 +3388,168 @@
 
 
         /* ===== RESPONSIVE DESIGN ===== */
+        /* Breakpoints (docs/DESIGNGUIDE.md → Responsive Design):
+             Tablet   max-width: 1024px
+             Mobile   max-width: 767px  OR  (max-height: 500px and pointer: coarse)   ← phones in landscape
+             Small    max-width: 479px
+             Touch    (pointer: coarse), independent of width
+           js/app.js mirrors the mobile query in isMobileLayout(). Change both places together. */
+
+        /* --- Elements that only exist for compact layouts (shown by the media queries below) --- */
+        .logo-title-short,
+        .prototype-banner-text-short,
+        .sheet-handle,
+        .smart-drawer-footer,
+        .hamburger-btn,
+        .mobile-menu-header,
+        .mobile-menu-backdrop {
+            display: none;
+        }
+
+        /* Backdrop of the phone hamburger menu (.active is set by js/app.js on phones only) */
+        .mobile-menu-backdrop {
+            position: fixed;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 2099;
+        }
+
+        .mobile-menu-backdrop.active {
+            display: block;
+        }
+
+        .logo-title-short {
+            white-space: nowrap;
+            color: var(--grey-700);
+        }
+
+        .logo-title-short strong {
+            font-weight: var(--font-semibold);
+            color: var(--grey-900);
+        }
+
+        /* Grab handle of bottom sheets (36 × 4 px pill, signals "swipe down to close") */
+        .sheet-handle {
+            width: 36px;
+            height: 4px;
+            margin: var(--space-2) auto 0;
+            border-radius: var(--radius-full);
+            background: var(--grey-300);
+            flex-shrink: 0;
+        }
+
+        /* Filter drawer footer: live result count + reset (phones only) */
+        .smart-drawer-footer {
+            gap: var(--space-3);
+            padding: var(--space-3) var(--space-4);
+            padding-bottom: calc(var(--space-3) + env(safe-area-inset-bottom, 0px));
+            border-top: 1px solid var(--grey-200);
+            background: var(--white);
+            flex-shrink: 0;
+        }
+
+        .smart-drawer-footer .btn-primary {
+            flex: 1;
+            justify-content: center;
+        }
+
+        /* Flex and grid children must be allowed to shrink below the min-content width of their
+           content; otherwise the 7-column address table and the entity tables push the detail
+           page past the viewport and #main (overflow: hidden) clips it. */
+        #list-view,
+        #gallery-view,
+        #detail-view,
+        .tab-content,
+        .detail-table-container,
+        .detail-grid,
+        .detail-left,
+        .detail-right {
+            min-width: 0;
+        }
+
+        .detail-table-wrapper,
+        .list-table-wrapper {
+            max-width: 100%;
+        }
+
+        /* Detail sections are size containers: their content adapts to the column width, not to the
+           viewport, so the rules also apply next to the open drawer on a tablet or desktop. */
+        .detail-section {
+            container-type: inline-size;
+        }
+
+        .data-item {
+            min-width: 0;
+        }
+
+        .data-label,
+        .data-value {
+            overflow-wrap: anywhere;
+        }
+
+        /* Two-column data grid collapses to one column in narrow sections (e.g. tablet with drawer open) */
+        @container (max-width: 400px) {
+            .data-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+        }
+
+        /* Address table: stacked label/value rows when its column is narrower than the 7 columns need. */
+
+        @container (max-width: 640px) {
+            .address-table thead {
+                display: none;
+            }
+
+            .address-table,
+            .address-table tbody,
+            .address-table tr {
+                display: block;
+            }
+
+            .address-table td {
+                display: flex;
+                justify-content: space-between;
+                align-items: baseline;
+                gap: var(--space-4);
+                padding: var(--space-2) 0;
+                text-align: right;
+                border-bottom: 1px solid var(--grey-100);
+            }
+
+            .address-table td::before {
+                content: attr(data-label);
+                flex-shrink: 0;
+                color: var(--grey-600);
+                text-align: left;
+            }
+
+            .address-table td.address-marker-cell {
+                display: none;
+            }
+        }
+
+        /* Carousel dots stay 10 px but get a 34 px hit area (dots are 34 px apart) */
+        .carousel-dots {
+            gap: var(--space-6);
+        }
+
+        .carousel-dot {
+            position: relative;
+        }
+
+        .carousel-dot::after {
+            content: '';
+            position: absolute;
+            inset: -12px;
+        }
+
+        /* Detail tabs: scroll fade hint, toggled by js/app.js when the strip overflows */
+        .detail-tabs.can-scroll-right {
+            -webkit-mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+            mask-image: linear-gradient(to right, #000 calc(100% - 40px), transparent);
+        }
 
         /* Tablet breakpoint (768px - 1024px) */
         @media screen and (max-width: 1024px) {
@@ -3437,26 +3561,101 @@
             }
 
             .header-main {
-                padding: 0 16px;
+                padding: 0 var(--space-4);
                 height: var(--header-main-height);
+                gap: var(--space-3);
+            }
+
+            /* One-line logo, so search, view toggle, count and actions fit on 768px */
+            #logo-area {
+                flex-shrink: 0;
+                min-width: 0;
+                align-items: center;
+            }
+
+            #logo-title > strong,
+            #logo-title > .logo-subtitle {
+                display: none;
+            }
+
+            #logo-title .logo-title-short {
+                display: inline;
+            }
+
+            /* Active-filter badge sits on the corner of the icon-only button */
+            .header-btn .filter-count {
+                position: absolute;
+                top: -4px;
+                right: -4px;
+                margin: 0;
             }
 
             #search-area {
-                padding: 0 16px;
+                padding: 0 var(--space-3);
                 gap: var(--space-3);
+                min-width: 0;
             }
 
             #search-wrapper {
                 max-width: 400px;
+                min-width: 0;
+            }
+
+            /* The input may shrink to ~190px on a portrait tablet; the dropdown keeps a readable width */
+            #search-results {
+                left: 0;
+                right: auto;
+                width: clamp(360px, 60vw, 600px);
+            }
+
+            .view-toggle-btn {
+                padding: var(--space-2);
+                min-width: 40px;
+                justify-content: center;
+            }
+
+            .view-toggle-btn .view-label {
+                display: none !important;
             }
 
             #header-right {
                 min-width: auto;
-                gap: var(--space-4);
+                gap: var(--space-3);
+                flex-shrink: 0;
+            }
+
+            #object-count {
+                white-space: nowrap;
+                padding: 0;
+            }
+
+            /* Icon-only drawer button; the aria-label carries the name */
+            .header-btn .header-btn-label {
+                display: none;
+            }
+
+            .header-btn,
+            #login-btn {
+                padding: 0;
+                width: 44px;
+                height: 44px;
+                justify-content: center;
             }
 
             .header-detail .detail-header {
                 padding: var(--space-3) var(--space-4);
+            }
+
+            /* Entity-table toolbars: search + four actions do not fit one 768px row */
+            .toolbar {
+                flex-wrap: wrap;
+                gap: var(--space-3);
+            }
+
+            .toolbar-actions {
+                flex-wrap: wrap;
+                justify-content: flex-end;
+                margin-left: auto;
             }
 
             #smart-drawer.open {
@@ -3478,9 +3677,10 @@
                 margin-left: calc((320px - 160px) / 2);
             }
 
+            /* Clear of the 44px map controls (touch) */
             #info-panel {
                 width: 300px;
-                right: 10px;
+                right: 68px;
             }
 
             .detail-grid {
@@ -3490,7 +3690,6 @@
             .gallery-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: var(--space-4);
-                padding: var(--space-4);
             }
 
             #gallery-view {
@@ -3509,159 +3708,373 @@
             }
         }
 
-        /* Mobile breakpoint (< 768px) */
-        @media screen and (max-width: 767px) {
+        /* Touch devices, independent of width: 44px targets (WCAG 2.5.8 / design guide), 20px checkboxes */
+        @media (pointer: coarse) {
+            .maplibregl-ctrl-group button,
+            .map-home-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            #info-header-actions button,
+            .smart-drawer-btn,
+            .layer-info-modal-close,
+            .measure-distance-close,
+            .pagination-btn,
+            .toast-close {
+                min-width: 44px;
+                min-height: 44px;
+            }
+
+            .carousel-btn,
+            .share-icon-btn {
+                width: 44px;
+                height: 44px;
+            }
+
+            .btn-back,
+            .btn-edit,
+            .btn-action,
+            .dropdown-btn,
+            .dropdown-toggle-btn,
+            .share-copy-btn,
+            .print-btn,
+            .export-btn,
+            .export-format-card,
+            .print-select,
+            .export-select,
+            .info-detail-link,
+            .toolbar-search,
+            .detail-tab,
+            .accordion-header,
+            .filter-section-header,
+            .search-item,
+            .dropdown-menu-item,
+            .context-menu-item,
+            .catalog-node,
+            .active-layer-item,
+            .print-checkbox-label,
+            .export-checkbox-label,
+            #menu-toggle,
+            .style-switcher-btn {
+                min-height: 44px;
+            }
+
+            /* Filter rows: the label carries the hit area so the whole row toggles the box */
+            .filter-option {
+                min-height: 44px;
+                padding: 0;
+            }
+
+            .filter-option label {
+                padding: var(--space-3) 0;
+            }
+
+            .filter-option input[type="checkbox"],
+            .print-checkbox-label input[type="checkbox"],
+            .export-checkbox-label input[type="checkbox"],
+            .dropdown-menu-item input[type="checkbox"],
+            .detail-table input[type="checkbox"],
+            .catalog-node .node-checkbox,
+            .active-layer-checkbox {
+                width: 20px;
+                height: 20px;
+            }
+
+            /* Small inline icon buttons inside 44px rows: keep the icon, enlarge the hit area */
+            .active-layer-remove,
+            .active-layer-info,
+            .catalog-node .node-info,
+            .filter-chip-remove {
+                position: relative;
+            }
+
+            .active-layer-remove::after,
+            .active-layer-info::after,
+            .catalog-node .node-info::after,
+            .filter-chip-remove::after {
+                content: '';
+                position: absolute;
+                inset: -12px;
+            }
+
+            .header-btn,
+            #login-btn,
+            .view-toggle {
+                height: 44px;
+            }
+
+            .view-toggle-btn {
+                min-width: 44px;
+            }
+
+            .pagination-rows select {
+                min-height: 40px;
+            }
+
+            /* Keep panel headers compact although their buttons grew to 44px */
+            #info-header {
+                padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+            }
+
+            .smart-drawer-header {
+                padding-top: var(--space-1);
+                padding-bottom: var(--space-1);
+                padding-right: var(--space-2);
+            }
+
+            /* Resize handle needs a wider grab zone */
+            .smart-drawer-resize-handle {
+                width: 12px;
+            }
+        }
+
+        /* Dragging the handle must not scroll the page on touch screens */
+        .smart-drawer-resize-handle {
+            touch-action: none;
+        }
+
+        /* Mobile breakpoint: phones in portrait (< 768px) and in landscape (short and touch) */
+        @media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
+            /* --- Header: two 44px rows — title + actions, search + view toggle --- */
             .header-main {
                 flex-wrap: wrap;
                 height: auto;
-                padding: var(--space-3) var(--space-4);
-                gap: var(--space-3);
+                padding: var(--space-2) var(--space-4);
+                gap: var(--space-2) var(--space-3);
             }
 
             #logo-area {
                 order: 1;
+                flex: 1 1 auto;
+                min-width: 0;
+                min-height: 44px;
+                align-items: center;
+            }
+
+            #logo-title {
+                overflow: hidden;
+                text-overflow: ellipsis;
             }
 
             #header-right {
                 order: 2;
                 margin-left: auto;
+                gap: var(--space-2);
             }
 
             #object-count {
                 display: none;
             }
 
-            .header-btn span:not(.material-symbols-outlined) {
-                display: none;
-            }
-
-            .header-btn {
-                padding: var(--space-2);
-                border-radius: 50%;
-                width: 40px;
-                height: 40px;
-                justify-content: center;
-            }
-
             #search-area {
                 order: 3;
+                flex: 0 0 100%; /* flex-basis, not width: the base rule's flex: 1 would keep it on row 1 */
                 width: 100%;
                 padding: 0;
-                flex-wrap: wrap;
+                gap: var(--space-2);
+                flex-wrap: nowrap;
             }
 
             #search-wrapper {
                 max-width: 100%;
                 flex: 1;
-                min-width: 200px;
+                min-width: 0;
+            }
+
+            /* Dropdown spans the header width, not just the ~200px input */
+            #search-results {
+                max-height: 60dvh;
+                left: 0;
+                right: auto;
+                width: calc(100vw - 2 * var(--space-4));
+                max-width: 600px;
+            }
+
+            /* No room for the scope select in a 200px field; results show all sections */
+            .search-scope {
+                display: none;
+            }
+
+            /* Result meta wraps under the title */
+            .search-item {
+                flex-wrap: wrap;
+            }
+
+            .search-item-meta {
+                flex-basis: 100%;
+                padding-left: calc(var(--icon-lg) + var(--space-3));
+                text-align: left;
+                white-space: normal;
+            }
+
+            .search-item--ask .search-item-meta {
+                flex-basis: auto;
+                padding-left: 0;
             }
 
             .view-toggle {
                 flex-shrink: 0;
+                height: 44px;
             }
 
             .view-toggle-btn {
-                padding: var(--space-2) var(--space-3);
+                min-width: 44px;
             }
 
-            .view-toggle-btn .view-label {
-                display: none !important;
+            /* Form fields below 16px make iOS Safari zoom into the page on focus */
+            #search-input,
+            .toolbar-search input,
+            .pagination-rows select,
+            .share-link-input,
+            .print-select,
+            .export-select {
+                font-size: 16px;
             }
 
-            /* Header detail on mobile */
+            /* One-line prototype notice */
+            .prototype-banner {
+                padding: var(--space-1) var(--space-3);
+            }
+
+            .prototype-banner-text-long {
+                display: none;
+            }
+
+            .prototype-banner-text-short {
+                display: inline;
+            }
+
+            /* Footer: the coordinates need a mouse, the map carries its own attribution */
+            #footer {
+                display: none;
+            }
+
+            body.detail-active #detail-view {
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+            }
+
+            /* --- Detail page: the header collapses on scroll until only the tab strip is pinned.
+                   --header-sticky-offset = -(header height − tab strip height), set by js/app.js. --- */
+            body.detail-active #header {
+                position: sticky;
+                top: var(--header-sticky-offset, 0px);
+            }
+
             .header-detail .detail-header {
                 padding: var(--space-3) var(--space-4);
             }
 
-            .header-detail .detail-tabs {
-                overflow-x: auto;
-            }
-
             /* No padding adjustment on mobile - drawer is fullscreen overlay */
-            body:has(#smart-drawer.open) .header-detail .detail-header,
-            body:has(#smart-drawer.open) .header-detail .detail-tabs {
+            body:has(#smart-drawer.open) .header-detail .detail-header {
                 padding-right: var(--space-4);
             }
 
-            /* Smart drawer - full screen on mobile */
-            #smart-drawer {
-                position: fixed;
-                top: 0;
-                left: 0;
-                right: 0;
-                bottom: 0;
-                width: 100% !important;
-                min-width: 100% !important;
-                z-index: 2000;
-                border-left: none;
+            body:has(#smart-drawer.open) .header-detail .detail-tabs {
+                padding-right: 0;
             }
 
-            #smart-drawer:not(.open) {
+            /* Back button first and full-height, breadcrumb below */
+            .detail-header-inner {
+                flex-direction: column-reverse;
+                align-items: stretch;
+                gap: var(--space-3);
+            }
+
+            .breadcrumb {
+                font-size: var(--text-xs);
+                flex-wrap: wrap;
+                row-gap: var(--space-1);
+            }
+
+            .detail-header-actions {
+                width: 100%;
+                gap: var(--space-3);
+            }
+
+            .detail-header-actions .btn-back {
+                order: -1;
+            }
+
+            .detail-header-actions .btn-back,
+            .detail-header-actions .btn-edit {
+                flex: 1;
+                justify-content: center;
+                min-height: 44px;
+            }
+
+            /* Tab strip scrolls horizontally; the active tab is scrolled into view by js/app.js */
+            .detail-tabs {
+                padding: 0;
+                overflow-x: auto;
+                scrollbar-width: none;
+                -webkit-overflow-scrolling: touch;
+                scroll-snap-type: x proximity;
+            }
+
+            .detail-tabs::-webkit-scrollbar {
                 display: none;
             }
 
-            .smart-drawer-tab span:not(.material-symbols-outlined) {
+            .detail-tabs-inner {
+                min-width: max-content;
+                padding: 0 var(--space-2);
+            }
+
+            .detail-tab {
+                display: flex;
+                align-items: center;
+                min-height: 44px;
+                padding: var(--space-3) var(--space-4);
+                font-size: var(--text-sm);
+                white-space: nowrap;
+                scroll-snap-align: start;
+            }
+
+            .detail-content {
+                padding: var(--space-3);
+            }
+
+            .detail-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+
+            .detail-left,
+            .detail-right {
+                gap: var(--space-4);
+            }
+
+            .detail-section-content {
+                padding: var(--space-4);
+            }
+
+            .data-grid {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+
+            .carousel {
+                height: 220px;
+            }
+
+            .mini-map-container {
+                height: 220px;
+            }
+
+            /* Entity tables: UUID column hidden (still exported), toolbar actions wrap */
+            .detail-table-wrapper {
+                padding: var(--space-3);
+            }
+
+            .detail-table .col-id,
+            .detail-table [class*="-id"] {
                 display: none;
             }
 
-            /* Accordion panel - full width bottom sheet on mobile */
-            #accordion-panel {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: 60vh;
-                margin: 0;
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-            }
-
-            #menu-toggle {
-                position: fixed;
-                bottom: 10px;
-                left: 50%;
-                transform: translateX(-50%);
-                margin-left: 0;
-                width: auto;
-                padding: var(--space-3) var(--space-5);
-            }
-
-            #accordion-panel.collapsed + #menu-toggle {
-                bottom: 10px;
-            }
-
-            /* Info panel - full width bottom sheet on mobile */
-            #info-panel {
-                position: fixed;
-                top: auto;
-                bottom: 0;
-                left: 0;
-                right: 0;
-                width: 100%;
-                max-height: 70vh;
-                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
-                overflow-y: auto;
-            }
-
-
-            /* Style switcher position on mobile */
-            .style-switcher {
-                bottom: 80px;
-                right: 10px;
-            }
-
-            .style-switcher-panel {
-                right: 0;
-                bottom: 100%;
-                margin-bottom: var(--space-3);
-                margin-right: 0;
-                flex-direction: column;
-            }
-
-            /* List view adjustments */
             .toolbar {
                 flex-direction: column;
+                align-items: stretch;
                 gap: var(--space-3);
                 padding: var(--space-3) var(--space-4);
             }
@@ -3673,11 +4086,33 @@
 
             .toolbar-actions {
                 width: 100%;
-                justify-content: flex-end;
+                flex-wrap: wrap;
+                justify-content: flex-start;
+                gap: var(--space-2);
             }
 
-            .list-table {
-                font-size: var(--text-xs);
+            .detail-table-actions .btn-back {
+                margin-left: auto;
+            }
+
+            .pagination-footer {
+                flex-wrap: wrap;
+                gap: var(--space-2) var(--space-3);
+                padding: var(--space-3) var(--space-4);
+            }
+
+            .pagination-rows,
+            .pagination-info {
+                white-space: nowrap;
+            }
+
+            /* List view */
+            #list-view {
+                padding: var(--space-3);
+            }
+
+            .list-table-wrapper {
+                padding: var(--space-3);
             }
 
             .list-table th,
@@ -3685,13 +4120,12 @@
                 padding: var(--space-3) var(--space-2);
             }
 
-            /* Hide some columns on mobile */
             .list-table .col-adresse,
             .list-table .col-portfolio {
                 display: none;
             }
 
-            /* Gallery view adjustments */
+            /* Gallery: horizontal cards */
             #gallery-view {
                 padding: var(--space-3);
             }
@@ -3715,6 +4149,7 @@
 
             .gallery-content {
                 flex: 1;
+                min-width: 0;
                 padding: var(--space-3);
             }
 
@@ -3736,132 +4171,314 @@
                 padding: 2px 6px;
             }
 
-            /* Detail view adjustments */
-            .detail-header {
-                padding: var(--space-3) var(--space-4);
-            }
-
-            .detail-header-inner {
-                flex-direction: column;
-                gap: var(--space-3);
-                align-items: flex-start;
-            }
-
-            .breadcrumb {
-                font-size: var(--text-xs);
-                flex-wrap: wrap;
-            }
-
-            .detail-header-actions {
-                width: 100%;
-                justify-content: space-between;
-            }
-
-            .detail-tabs {
-                padding: 0 16px;
-                overflow-x: auto;
-            }
-
-            .detail-tabs-inner {
-                min-width: max-content;
-            }
-
-            .detail-tab {
-                padding: var(--space-3) var(--space-4);
-                font-size: var(--text-sm);
-                white-space: nowrap;
-            }
-
-            .detail-content {
-                padding: var(--space-4);
-            }
-
-            .detail-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .data-grid {
-                grid-template-columns: 1fr;
-                gap: var(--space-5);
-            }
-
-            .carousel {
-                height: 200px;
-            }
-
-            .mini-map-container {
-                height: 200px;
-            }
-
-            .address-table {
-                font-size: var(--text-xs);
-            }
-
-            .address-table th,
-            .address-table td {
-                padding: var(--space-2) var(--space-1);
-            }
-
-            /* Filter pane - full screen overlay on mobile */
-            #filter-pane {
+            /* --- Smart drawer: full-screen sheet (also in detail view, where it is otherwise fixed below the header) --- */
+            #smart-drawer,
+            body.detail-active #smart-drawer.open {
                 position: fixed;
                 top: 0;
                 left: 0;
                 right: 0;
                 bottom: 0;
+                height: auto;
                 width: 100% !important;
                 min-width: 100% !important;
+                max-width: none;
                 z-index: 2000;
                 border-left: none;
             }
 
-            #filter-pane:not(.open) {
+            #smart-drawer:not(.open) {
                 display: none;
             }
 
-            /* Footer adjustments */
-            #footer {
-                padding: var(--space-2) var(--space-3);
-                font-size: var(--text-xs);
-                flex-wrap: wrap;
+            .smart-drawer-resize-handle {
+                display: none !important;
+            }
+
+            .smart-drawer-footer {
+                display: flex;
+            }
+
+            /* --- Map tools: hamburger menu, slide-in from the right (same pattern as the main prototype).
+                   The accordion panel itself becomes the menu, so Teilen, Drucken, Export, Geokatalog and the
+                   external layers ("Dargestellte Karten") are all available on phones. --- */
+            .hamburger-btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                border: 1px solid var(--grey-300);
+                border-radius: var(--radius-full);
+                background: var(--white);
+                color: var(--grey-700);
+                cursor: pointer;
+                flex-shrink: 0;
+            }
+
+            .hamburger-btn .material-symbols-outlined {
+                font-size: var(--icon-xl);
+            }
+
+            /* Login has no function in the prototype; the row holds title, filter and menu */
+            #login-area {
+                display: none;
+            }
+
+            #accordion-panel {
+                position: fixed;
+                top: 0;
+                right: 0;
+                bottom: 0;
+                left: auto;
+                width: 300px;
+                max-width: 85vw;
+                max-height: none;
+                margin: 0;
+                border-radius: 0;
+                background: var(--white);
+                color: var(--grey-900);
+                box-shadow: -4px 0 16px rgba(0, 0, 0, 0.15);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                transform: translateX(100%);
+                transition: transform var(--transition-slow), visibility 0s var(--transition-slow);
+                visibility: hidden;
+                z-index: 2100;
+            }
+
+            #accordion-panel.collapsed {
+                display: flex; /* keep it in the DOM for the slide transition */
+            }
+
+            #accordion-panel:not(.collapsed) {
+                transform: translateX(0);
+                visibility: visible;
+                transition: transform var(--transition-slow);
+            }
+
+            .mobile-menu-header {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                gap: var(--space-3);
+                min-height: 56px;
+                padding: var(--space-1) var(--space-2) var(--space-1) var(--space-4);
+                background: var(--white);
+                border-bottom: 1px solid var(--grey-200);
+                position: sticky;
+                top: 0;
+                z-index: 1;
+                flex-shrink: 0;
+            }
+
+            .mobile-menu-title {
+                font-size: var(--text-sm);
+                font-weight: var(--font-semibold);
+                color: var(--grey-900);
+            }
+
+            .mobile-menu-close {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 44px;
+                height: 44px;
+                border: none;
+                background: none;
+                color: var(--grey-600);
+                border-radius: var(--radius-sm);
+                cursor: pointer;
+            }
+
+            .mobile-menu-close:hover {
+                background: var(--grey-100);
+            }
+
+            /* Menu entries keep the panel's grey headers on the white menu */
+            #accordion-panel .accordion-header {
+                background: var(--accent-panel);
+                color: var(--white);
+            }
+
+            #accordion-panel .accordion-header.active {
+                background: var(--grey-100);
+                color: var(--grey-900);
+            }
+
+            #accordion-panel .accordion-item {
+                border-bottom-color: var(--white);
+            }
+
+            /* Measuring needs the map context menu (right-click), which touch screens cannot open */
+            #measure-accordion {
+                display: none;
+            }
+
+            /* The floating "Menü öffnen" toggle is replaced by the hamburger button */
+            #menu-toggle {
+                display: none;
+            }
+
+            /* --- Object info: bottom sheet with handle, swipe-to-close (js/app.js), safe area --- */
+            #info-panel {
+                position: fixed;
+                top: auto;
+                bottom: 0;
+                left: 0;
+                right: 0;
+                width: 100%;
+                max-height: 50dvh;
+                border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+                box-shadow: 0 -4px 16px rgba(0, 0, 0, 0.18);
+                padding-bottom: env(safe-area-inset-bottom, 0px);
+                overflow-y: auto;
+                overscroll-behavior: contain;
+                transition: transform var(--transition-normal);
+                z-index: 650;
+            }
+
+            #info-panel.sheet-dragging {
+                transition: none;
+            }
+
+            #info-panel .sheet-handle {
+                display: block;
+            }
+
+            #info-header {
+                background: var(--white);
+                border-bottom-color: var(--grey-200);
+            }
+
+            /* The sheet keeps to its 50dvh: no preview image on phones */
+            #info-panel.has-preview #info-preview-image {
+                display: none;
+            }
+
+            /* --- Basemap switcher: compact, 2×2 panel, hidden while a sheet is open --- */
+            .style-switcher {
+                bottom: calc(44px + env(safe-area-inset-bottom, 0px));
+                right: var(--space-3);
+            }
+
+            .style-switcher-btn img {
+                width: 56px;
+                height: 42px;
+            }
+
+            .style-switcher-panel {
+                right: 0;
+                bottom: 100%;
+                margin: 0 0 var(--space-2) 0;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+            }
+
+            .style-option img {
+                width: 64px;
+                height: 46px;
+            }
+
+            #map-view:has(#info-panel.show) .style-switcher,
+            #map-view:has(#accordion-panel:not(.collapsed)) .style-switcher {
+                display: none;
+            }
+
+            .measure-distance-display {
+                width: calc(100% - var(--space-6));
+                max-width: 320px;
+            }
+        }
+
+        /* Landscape phones: one header row, panels dock to the sides, two gallery columns */
+        @media screen and (max-height: 500px) and (pointer: coarse) and (min-width: 600px) {
+            .header-main {
+                flex-wrap: nowrap;
+                padding: var(--space-1) var(--space-3);
                 gap: var(--space-2);
             }
 
-            #coordinates {
-                font-size: var(--text-xs);
+            #logo-area {
+                order: 0;
+                flex: 0 1 auto;
             }
 
-            #footer-links a {
-                margin-left: var(--space-3);
+            #search-area {
+                order: 0;
+                width: auto;
+                flex: 1;
+            }
+
+            #header-right {
+                order: 0;
+                margin-left: 0;
+            }
+
+            #info-panel {
+                position: absolute;
+                top: 0;
+                bottom: 0;
+                left: auto;
+                right: 0;
+                width: min(360px, 55vw);
+                max-height: none;
+                border-radius: 0;
+                box-shadow: var(--shadow-xl);
+                padding-bottom: 0;
+            }
+
+            #info-panel .sheet-handle {
+                display: none;
+            }
+
+            /* Enough width for breadcrumb and actions on one row */
+            .detail-header-inner {
+                flex-direction: row-reverse;
+                align-items: center;
+            }
+
+            .detail-header-actions {
+                width: auto;
+                flex-shrink: 0;
+            }
+
+            .detail-header-actions .btn-back,
+            .detail-header-actions .btn-edit {
+                flex: 0 0 auto;
+            }
+
+            .gallery-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .carousel,
+            .mini-map-container {
+                height: 240px;
+            }
+
+            #search-results {
+                max-height: 75dvh;
+                left: 0;
+                right: 0;
+                width: auto;
             }
         }
 
         /* Small mobile (< 480px) */
         @media screen and (max-width: 479px) {
-            #logo-title {
-                display: none;
-            }
-
-            .view-toggle-btn {
-                padding: var(--space-2);
-            }
-
-            #info-panel {
-                max-height: 80vh;
-            }
-
-            #info-preview-image {
-                height: 100px;
-            }
-
             .gallery-image {
                 width: 100px;
                 min-height: 100px;
             }
 
-            .detail-tab {
-                padding: var(--space-2) var(--space-3);
-                font-size: var(--text-xs);
+            .list-table .col-flaeche {
+                display: none;
+            }
+
+            .pagination-rows {
+                display: none;
             }
         }
 
@@ -4159,9 +4776,9 @@
         }
 
         /* Responsive toast */
-        @media screen and (max-width: 767px) {
+        @media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
             .toast-container {
-                bottom: 60px;
+                bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
                 left: 50%;
                 transform: translateX(-50%);
                 width: calc(100% - 40px);
@@ -4259,7 +4876,7 @@
             padding: var(--space-3);
             background: var(--grey-50);
             border-radius: var(--radius-md);
-            border-left: 3px solid var(--primary);
+            border-left: 3px solid var(--primary-red);
         }
 
         .layer-info-body .legend-footer {
@@ -4317,7 +4934,7 @@
         }
 
         .layer-info-body table a {
-            color: var(--primary);
+            color: var(--interactive-blue);
             text-decoration: none;
         }
 
@@ -4325,13 +4942,13 @@
             text-decoration: underline;
         }
 
-        @media screen and (max-width: 767px) {
+        @media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
             .layer-info-modal {
                 padding: var(--space-3);
             }
 
             .layer-info-modal-content {
-                max-height: 90vh;
+                max-height: 90dvh;
             }
 
             .layer-info-body {
@@ -4575,9 +5192,27 @@
     margin-right: var(--space-1);
 }
 
-@media screen and (max-width: 767px) {
+@media screen and (max-width: 767px), screen and (max-height: 500px) and (pointer: coarse) {
     .prototype-banner {
         font-size: var(--text-xs);
         padding: var(--space-1) var(--space-3);
+    }
+}
+
+/* ===== REDUCED MOTION ===== */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+
+    .loading-spinner,
+    .spinner {
+        animation: none;
+        opacity: 0.7;
     }
 }

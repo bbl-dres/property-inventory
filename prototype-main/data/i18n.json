@@ -2272,5 +2272,35 @@
     "en": "Land Cover",
     "fr": "Couverture du sol",
     "it": "Copertura del suolo"
+  },
+  "banner.prototype.short": {
+    "de": "Alle Daten sind fiktiv.",
+    "en": "All data is fictional.",
+    "fr": "Toutes les données sont fictives.",
+    "it": "Tutti i dati sono fittizi."
+  },
+  "filter.apply": {
+    "de": "{count} Objekte anzeigen",
+    "en": "Show {count} objects",
+    "fr": "Afficher {count} objets",
+    "it": "Mostrare {count} oggetti"
+  },
+  "minimap.gesture.desktop": {
+    "de": "Strg + Scrollen zum Zoomen der Karte",
+    "en": "Use Ctrl + scroll to zoom the map",
+    "fr": "Ctrl + molette pour zoomer la carte",
+    "it": "Ctrl + scorrimento per zoomare la carta"
+  },
+  "minimap.gesture.mac": {
+    "de": "⌘ + Scrollen zum Zoomen der Karte",
+    "en": "Use ⌘ + scroll to zoom the map",
+    "fr": "⌘ + molette pour zoomer la carte",
+    "it": "⌘ + scorrimento per zoomare la carta"
+  },
+  "minimap.gesture.mobile": {
+    "de": "Karte mit zwei Fingern bewegen",
+    "en": "Use two fingers to move the map",
+    "fr": "Déplacer la carte avec deux doigts",
+    "it": "Muovere la carta con due dita"
   }
 }
