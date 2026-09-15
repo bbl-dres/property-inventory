@@ -12,7 +12,7 @@ import { initContextMenu } from './context-menu.js';
 import { initSwisstopo, swisstopoClickActions, swisstopoChangeActions } from './swisstopo.js';
 import { initPrintWidget } from './print.js';
 import { carouselActions } from './carousel.js';
-import { initMap, addMapLayers, selectBuilding, selectParcel } from './map.js';
+import { initMap, addMapLayers, hasMapLoaded, selectBuilding, selectParcel } from './map.js';
 import { initLocationTree } from './location-tree.js';
 import { initUI, switchView, showDetailView, initApiDocs, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
 import { getFiltersFromURL, featureMatchesFilters, setExactFilters, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithOrtFilter } from './filters.js';
@@ -109,8 +109,9 @@ function applyLoadedData(buildings, parcels, landcovers) {
   applyFilters();
   renderTables();
 
-  if (state.map.loaded()) addMapLayers();
-  else state.map.once('load', addMapLayers);
+  // Map loaded first: add the layers now. Otherwise the map's load handler (initMap) adds them.
+  // (map.loaded() is no substitute: it is false again while tiles stream, and 'load' fires only once.)
+  if (hasMapLoaded()) addMapLayers();
 
   restoreViewFromUrl();
 }

@@ -11,10 +11,10 @@ import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
 import { toggleTreePanel } from './location-tree.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
-import { renderTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
+import { renderFilteredTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
 import { populateDetailView } from './detail.js';
 import { renderEntityTable } from './entity-tables.js';
-import { updateMapFilter, resetFilters, toggleSmartDrawer } from './filters.js';
+import { zoomToFilteredPoints, resetFilters, toggleSmartDrawer } from './filters.js';
 import { getShareUrl, updateShareLink, updateExportCount } from './export.js';
 import { clearSelection, zoomToSelection, setInternalLayerVisibility } from './map.js';
 import { flyHome } from './map-controls.js';
@@ -91,10 +91,15 @@ export function switchView(view) {
   if (view === 'map' && state.map) {
     setTimeout(function() {
       state.map.resize();
-      if (state.map.getLayer('buildings-points')) updateMapFilter();
+      // A filter applied while the map was hidden could not zoom to its result (a hidden map has no
+      // size): do it now, once. Returning to an unchanged filter keeps the reader's map position.
+      if (state.pendingFilterZoom && state.map.getLayer('buildings-points')) {
+        state.pendingFilterZoom = false;
+        zoomToFilteredPoints();
+      }
     }, 100);
     if (state.listViewDirty && state.tableOpen) {
-      renderTables();
+      renderFilteredTables();
       state.listViewDirty = false;
     }
   }

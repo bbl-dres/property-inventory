@@ -39,6 +39,26 @@ export function getPrintDimensions(orientation) {
   return dims;
 }
 
+// Page layout in mm: margin, header (title row plus rule), legend block and footer
+const PAGE_MARGIN = 10;
+const HEADER_HEIGHT = 11;
+const LEGEND_HEIGHT = 16;
+const FOOTER_HEIGHT = 10;
+
+// Placement of the map image on the page (mm). The map is rendered with the aspect ratio of this
+// area, not of the paper: header, legend and footer take part of the page, and an image rendered
+// for the whole sheet would be squeezed into the remaining space (distorted map, wrong corner
+// coordinates and scale bar). The preview crop and the PDF use the same layout.
+export function getPrintLayout(dims, includeTitle, includeLegend) {
+  const mapY = PAGE_MARGIN + (includeTitle ? HEADER_HEIGHT : 0);
+  return {
+    margin: PAGE_MARGIN,
+    mapY: mapY,
+    mapW: dims.width - PAGE_MARGIN * 2,
+    mapH: dims.height - mapY - PAGE_MARGIN - (includeLegend ? LEGEND_HEIGHT : 0) - FOOTER_HEIGHT
+  };
+}
+
 // Approximate map scale denominator of the current view (96 dpi screen)
 export function getMapScale() {
   if (!map) return 25000;
@@ -93,9 +113,11 @@ export function updatePrintPreview() {
   const orientation = orientationEl.value;
   const printDims = getPrintDimensions(orientation);
   const printScale = readPrintScale();
+  const layout = getPrintLayout(printDims, checked('print-title', true), checked('print-legend', true));
 
-  const groundWidthM = (printDims.width / 1000) * printScale;
-  const groundHeightM = (printDims.height / 1000) * printScale;
+  // The crop shows the map area of the page (without header, legend and footer)
+  const groundWidthM = (layout.mapW / 1000) * printScale;
+  const groundHeightM = (layout.mapH / 1000) * printScale;
   const mpp = metersPerPixel(map.getCenter().lat, map.getZoom());
 
   let cropWidth = groundWidthM / mpp;
@@ -479,8 +501,10 @@ async function doGeneratePDF() {
   const printScale = readPrintScale();
   const isLandscape = orientation.indexOf('landscape') === 0;
   const center = map.getCenter();
+  const layout = getPrintLayout(dims, includeTitle, includeLegend);
 
-  const params = computePrintParams(dims, printScale, dpi, center);
+  // Render the map for the area it will occupy on the page (see getPrintLayout)
+  const params = computePrintParams({ width: layout.mapW, height: layout.mapH }, printScale, dpi, center);
   showProgress(t('print.rendering'), 0.05);
   const style = cloneMapStyle(includeLabels);
   const mapCanvas = await renderHighResMap(params, style, center, showProgress);
@@ -497,10 +521,10 @@ async function doGeneratePDF() {
 
   const pw = dims.width;
   const ph = dims.height;
-  const m = 10; // margin mm
+  const m = layout.margin;
   let y = m;
 
-  // Header
+  // Header (HEADER_HEIGHT mm, see getPrintLayout)
   if (includeTitle) {
     pdf.setFontSize(14);
     pdf.setFont('helvetica', 'bold');
@@ -523,12 +547,10 @@ async function doGeneratePDF() {
     pdf.setTextColor(0);
   }
 
-  // Map image
-  const legendSpace = includeLegend ? 16 : 0;
-  const footerSpace = 10;
-  const mapAreaW = pw - m * 2;
-  const mapAreaH = ph - y - m - legendSpace - footerSpace;
-  const mapY = y;
+  // Map image: the canvas was rendered with exactly this aspect ratio
+  const mapAreaW = layout.mapW;
+  const mapAreaH = layout.mapH;
+  const mapY = layout.mapY;
   pdf.addImage(mapDataUrl, 'JPEG', m, mapY, mapAreaW, mapAreaH);
   pdf.setDrawColor(150);
   pdf.setLineWidth(0.3);
@@ -582,7 +604,8 @@ export function initPrintWidget(mapInstance, opts) {
   map = mapInstance;
   options = opts || {};
 
-  ['print-orientation', 'print-scale'].forEach(function(id) {
+  // Format, scale and the title/legend options change the map area of the page (preview crop)
+  ['print-orientation', 'print-scale', 'print-title', 'print-legend'].forEach(function(id) {
     const el = document.getElementById(id);
     if (el) el.addEventListener('change', updatePrintPreview);
   });

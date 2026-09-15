@@ -3,9 +3,9 @@
 import { state } from './state.js';
 import { filterConfig, filterLabel } from './config.js';
 import { escapeHtml, getNestedProperty, storageGet, storageSet, isMobileLayout } from './utils.js';
-import { t, onLangChange } from './i18n.js';
+import { t, onLangChange, getLocale } from './i18n.js';
 import { onEscape } from './keys.js';
-import { renderTables, renderGalleryView } from './list.js';
+import { renderFilteredTables, renderGalleryView } from './list.js';
 import { switchView } from './ui.js';
 import { renderLocationTree } from './location-tree.js';
 import { updateFilteredExportHeader, updateExportCount } from './export.js';
@@ -85,9 +85,13 @@ export function updateMapFilter() {
   const dataToShow = getActiveFilterCount() === 0 ? state.buildingsData : state.filteredData;
   state.map.getSource('buildings').setData(dataToShow);
 
-  // Zoom to fit the filtered points (skipped while layers are restored after a basemap change)
-  if (getActiveFilterCount() > 0 && !state.skipFilterZoom) {
-    zoomToFilteredPoints();
+  // Zoom to fit the filtered points: skipped while layers are restored after a basemap change,
+  // deferred while another view is active (a hidden map has no size to fit; switchView catches up)
+  if (getActiveFilterCount() === 0) {
+    state.pendingFilterZoom = false;
+  } else if (!state.skipFilterZoom) {
+    if (state.currentView === 'map') zoomToFilteredPoints();
+    else state.pendingFilterZoom = true;
   }
 }
 
@@ -107,7 +111,7 @@ export function zoomToFilteredPoints() {
 // Tables and gallery are re-rendered only while visible; hidden views are marked dirty
 export function renderCurrentView() {
   if (state.currentView === 'map' && state.tableOpen) {
-    renderTables();
+    renderFilteredTables(); // only the buildings table depends on the filters
   } else {
     state.listViewDirty = true;
   }
@@ -347,9 +351,12 @@ export function initFilterOptions() {
     const container = document.getElementById('filter-' + filterKey + '-options');
     if (!container) return;
 
-    const values = Object.keys(valueCounts[filterKey]).sort();
-    container.innerHTML = values.map(function(value) {
-      const id = 'filter-' + filterKey + '-' + value.replace(/[^a-zA-Z0-9]/g, '_');
+    const values = Object.keys(valueCounts[filterKey]).sort(function(a, b) {
+      return a.localeCompare(b, getLocale(), { numeric: true });
+    });
+    container.innerHTML = values.map(function(value, index) {
+      // Index-based id: an id derived from the value could collide ("Bern-Ost" and "Bern Ost")
+      const id = 'filter-' + filterKey + '-' + index;
       const checked = state.activeFilters[filterKey].indexOf(value) !== -1 ? ' checked' : '';
       return '<div class="filter-option">' +
         '<input type="checkbox" id="' + id + '" data-filter="' + escapeHtml(filterKey) + '" data-value="' + escapeHtml(value) + '"' + checked + '>' +

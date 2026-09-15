@@ -87,6 +87,7 @@ prototype-tabs/
 ├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT), Swagger UI (Apache-2.0)
 └── docs/
     ├── CODE-REVIEW.md        # Review (2026-09-15): bugs, dead code, alignment with the simple app
+    ├── CODE-REVIEW-2.md      # Review 2 (2026-09-15): bugs, performance, async robustness (with the simple app)
     ├── DATAMODEL.md          # BuildingMinds-style model with extensionData (differs from the simple app, see CODE-REVIEW.md)
     ├── DESIGNGUIDE.md        # Design system (identical with ../prototype-simple)
     ├── DESIGN-REVIEW.md      # Design review (2026-09-15): alignment of both prototypes
@@ -96,6 +97,6 @@ prototype-tabs/
 
 ## See also
 
-- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Code review](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Parent prototype: [`../prototype-simple`](../prototype-simple) (read-only inventory)
 - Sibling prototypes: [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

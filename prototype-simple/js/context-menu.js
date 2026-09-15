@@ -69,8 +69,14 @@ export function initContextMenu(map) {
     contextMenu.classList.add('show');
   });
 
-  // Any left click on the map closes the menu (the measure tool then handles the click)
+  // Any left click on the map closes the menu (the measure tool then handles the click). The menu is
+  // anchored to a map position: a pan or zoom moves the map under it, so it closes too, as does a
+  // click anywhere else on the page.
   map.on('click', hideContextMenu);
+  map.on('movestart', hideContextMenu);
+  document.addEventListener('click', function(e) {
+    if (contextMenu.classList.contains('show') && !contextMenu.contains(e.target)) hideContextMenu();
+  });
 
   onEscape(function() {
     if (!contextMenu.classList.contains('show')) return false;

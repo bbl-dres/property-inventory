@@ -143,6 +143,12 @@ export function renderTables() {
   TABLE_TABS.forEach(function(tab) { tables[tab].render(); });
 }
 
+// After a filter change: only the buildings table depends on the filters (parcels and land covers
+// always list every feature), so the other two are not rebuilt
+export function renderFilteredTables() {
+  tables.buildings.render();
+}
+
 // ===== TABLE HEADERS (buildings: rendered from the column definitions) =====
 
 function renderBuildingTableHeaders() {
@@ -151,6 +157,7 @@ function renderBuildingTableHeaders() {
   row.innerHTML = buildingColumns.map(function(col) {
     return '<th class="' + col.cls + '">' + t('col.' + col.field) + ' <span class="material-symbols-outlined">unfold_more</span></th>';
   }).join('');
+  tables.buildings.updateSortIndicator(); // the sorted column keeps its marker after a language change
 }
 
 export function initBuildingTableHeaders() {
@@ -381,7 +388,7 @@ export function setTablePanelOpen(open) {
   toggleBtn.classList.toggle('collapsed', !state.tableOpen);
   if (handle) handle.style.display = state.tableOpen ? '' : 'none';
   if (state.tableOpen && state.listViewDirty) {
-    renderTables();
+    renderFilteredTables();
     state.listViewDirty = false;
   }
   const url = new URL(window.location);
@@ -416,6 +423,7 @@ export function initTablePanel() {
   const MIN_H = 120;
   const MAX_FRAC = 0.75;
   let startY, startH;
+  let resizeFrame = null;
 
   handle.addEventListener('pointerdown', function(e) {
     e.preventDefault();
@@ -425,11 +433,17 @@ export function initTablePanel() {
     startY = e.clientY;
     startH = panel.getBoundingClientRect().height;
 
+    // The panel height follows every pointer event; the map (a full re-layout and render on
+    // resize) and the collision check are updated once per animation frame
     function onMove(ev) {
       const maxH = window.innerHeight * MAX_FRAC;
       panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
-      if (state.map) state.map.resize();
-      collapseToolsPanelIfColliding(panel);
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(function() {
+        resizeFrame = null;
+        if (state.map) state.map.resize();
+        collapseToolsPanelIfColliding(panel);
+      });
     }
 
     function onUp() {
@@ -438,7 +452,12 @@ export function initTablePanel() {
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('lostpointercapture', onUp);
+      if (resizeFrame) {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = null;
+      }
       if (state.map) state.map.resize();
+      collapseToolsPanelIfColliding(panel);
     }
 
     handle.addEventListener('pointermove', onMove);

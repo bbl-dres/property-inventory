@@ -4,6 +4,7 @@
 
 import { showPrintPreview, hidePrintPreview } from './print.js';
 import { loadGeokatalog } from './swisstopo.js';
+import { openToolsPanel } from './tools-panel.js';
 
 let hooks = {};
 
@@ -55,8 +56,11 @@ export function initAccordion(options) {
   });
 }
 
-// Open an item programmatically (e.g. from the mobile menu)
+// Open an item programmatically (e.g. from the map context menu). The tools panel is unfolded
+// first: an item opened inside a collapsed panel would be invisible.
 export function openAccordion(key) {
   const header = document.querySelector('.accordion-item[data-accordion="' + key + '"] .accordion-header');
-  if (header && !header.classList.contains('active')) header.click();
+  if (!header) return;
+  openToolsPanel();
+  if (!header.classList.contains('active')) header.click();
 }

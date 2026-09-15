@@ -19,6 +19,12 @@ export function closePhoneMenu(restoreFocus) {
   if (menuOpen && isMobileLayout()) setOpenRef(false, restoreFocus);
 }
 
+// Unfolds the panel (tablets start collapsed, phones keep it as the hamburger menu) so that an
+// accordion item opened from elsewhere, e.g. "Drucken" in the map context menu, is visible
+export function openToolsPanel() {
+  if (!menuOpen) setOpenRef(true);
+}
+
 // Folds the floating panel when another element (the table panel under the map) would overlap it; the
 // reader can open it again with the toggle. Returns true when it folded. Phones: the menu never floats.
 export function collapseToolsPanelIfColliding(el) {

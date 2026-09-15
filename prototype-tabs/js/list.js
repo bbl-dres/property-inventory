@@ -27,8 +27,8 @@ const buildingColumns = [
   { field: 'country', cls: 'col-land' },
   { field: 'city', cls: 'col-ort' },
   { field: 'streetName', cls: 'col-adresse' },
-  { field: 'extensionData', cls: 'col-portfolio', format: function(v, props) { return escapeHtml(ext(props).portfolio || '—'); } },
-  { field: 'extensionData', cls: 'col-flaeche', format: function(v, props) { return formatNum(ext(props).netFloorArea || 0, 0) + ' m²'; } },
+  { field: 'extensionData', sortField: 'extensionData.portfolio', cls: 'col-portfolio', format: function(v, props) { return escapeHtml(ext(props).portfolio || '—'); } },
+  { field: 'extensionData', sortField: 'extensionData.netFloorArea', cls: 'col-flaeche', format: function(v, props) { return formatNum(ext(props).netFloorArea || 0, 0) + ' m²'; } },
   { field: 'status', cls: 'col-status', format: statusBadge }
 ];
 
@@ -98,6 +98,13 @@ export function initTables() {
 export function renderTables() {
   if (!state.buildingsData) return;
   TABLE_TABS.forEach(function(tab) { tables[tab].render(); });
+}
+
+// After a filter change: only the buildings table depends on the filters (the parcels table
+// always lists every parcel), so it is not rebuilt
+export function renderFilteredTables() {
+  if (!state.buildingsData) return;
+  tables.buildings.render();
 }
 
 // ===== TABLE TABS =====
@@ -321,7 +328,7 @@ export function setTablePanelOpen(open) {
   toggleBtn.classList.toggle('collapsed', !state.tableOpen);
   if (handle) handle.style.display = state.tableOpen ? '' : 'none';
   if (state.tableOpen && state.listViewDirty) {
-    renderTables();
+    renderFilteredTables();
     state.listViewDirty = false;
   }
   const url = new URL(window.location);
@@ -356,6 +363,7 @@ export function initTablePanel() {
   const MIN_H = 120;
   const MAX_FRAC = 0.75;
   let startY, startH;
+  let resizeFrame = null;
 
   handle.addEventListener('pointerdown', function(e) {
     e.preventDefault();
@@ -365,11 +373,17 @@ export function initTablePanel() {
     startY = e.clientY;
     startH = panel.getBoundingClientRect().height;
 
+    // The panel height follows every pointer event; the map (a full re-layout and render on
+    // resize) and the collision check are updated once per animation frame
     function onMove(ev) {
       const maxH = window.innerHeight * MAX_FRAC;
       panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
-      if (state.map) state.map.resize();
-      collapseToolsPanelIfColliding(panel);
+      if (resizeFrame) return;
+      resizeFrame = requestAnimationFrame(function() {
+        resizeFrame = null;
+        if (state.map) state.map.resize();
+        collapseToolsPanelIfColliding(panel);
+      });
     }
 
     function onUp() {
@@ -378,7 +392,12 @@ export function initTablePanel() {
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('lostpointercapture', onUp);
+      if (resizeFrame) {
+        cancelAnimationFrame(resizeFrame);
+        resizeFrame = null;
+      }
       if (state.map) state.map.resize();
+      collapseToolsPanelIfColliding(panel);
     }
 
     handle.addEventListener('pointermove', onMove);

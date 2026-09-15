@@ -21,18 +21,23 @@ function jsonResponse(body, status) {
 }
 
 // Serves relative URLs from the prototype folder; external hosts get empty API results unless
-// the scenario provides an override (prefix match) that returns a body, a status or an Error.
+// the scenario provides an override (prefix match) that returns a body, a status, an Error or a
+// promise of one of these (to hold a response back until the scenario releases it).
 function makeFetch(prototypeDir, overrides) {
   overrides = overrides || {};
+  function toResponse(o) {
+    if (o instanceof Error) throw o;
+    if (o && o.status && !o.body) return jsonResponse('{}', o.status);
+    if (o && o.status && o.body) return jsonResponse(o.body, o.status);
+    return jsonResponse(o);
+  }
   return async function fakeFetch(url) {
     url = String(url);
     const key = Object.keys(overrides).find(k => url.startsWith(k) || url.split('?')[0] === k);
     if (key !== undefined) {
       const o = typeof overrides[key] === 'function' ? overrides[key](url) : overrides[key];
-      if (o instanceof Error) throw o;
-      if (o && o.status && !o.body) return jsonResponse('{}', o.status);
-      if (o && o.status && o.body) return jsonResponse(o.body, o.status);
-      return jsonResponse(o);
+      if (o && typeof o.then === 'function') return o.then(toResponse);
+      return toResponse(o);
     }
     if (/^https?:/.test(url)) {
       if (url.indexOf('SearchServer') !== -1) return jsonResponse({ results: [] });

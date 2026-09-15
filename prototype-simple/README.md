@@ -14,7 +14,7 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 
 ### Core views
 - **Map** — MapLibre WebGL map with colour-coded property markers, 5 basemap styles (Light, Standard, Aerial, Hybrid, Dark), measure tool, print-to-PDF, and a sidebar accordion for layers/Geokatalog.
-- **List** — sortable, searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
+- **List** — sortable (header click, second click reverses), searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
 - **Detail panel** — building dashboard with images, basic info, mini-map, and area data (SIA 416 compliant).
 - **Mobile** — phones (portrait and landscape) get a two-row header, the tools panel as a hamburger menu (print, Geokatalog, layers, share, language), a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
@@ -130,6 +130,7 @@ prototype-simple/
     ├── DESIGN-REVIEW-2.md # Polish review: tokens, icon button, state styles (identical with ../prototype-tabs)
     ├── CODE-REVIEW.md    # Review 1 (2026-09-11): bugs, performance
     ├── CODE-REVIEW-2.md  # Review 2 (2026-09-15): dead code, duplication, alignment with prototype-tabs
+    ├── CODE-REVIEW-3.md  # Review 3 (2026-09-15): bugs, performance, async robustness of both prototypes
     ├── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
     ├── generate_swagger.py  # DATAMODEL.json -> data/swagger.json
     └── generate_countries.py # Natural Earth -> assets/countries/ and assets/regions/ (both prototypes)
@@ -137,5 +138,5 @@ prototype-simple/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Code review 3](docs/CODE-REVIEW-3.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

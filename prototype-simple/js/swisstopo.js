@@ -376,12 +376,17 @@ function showIdentifiedFeature(result, lngLat) {
 function layerInfoModal() { return document.getElementById('layer-info-modal'); }
 function layerInfoContent() { return document.getElementById('layer-info-content'); }
 
+// The modal shows one layer at a time: a response that arrives after another layer was requested
+// (or after the modal was closed) is dropped.
+let layerInfoRequestId = 0;
+
 // Legend/info of a Geokatalog layer. The API returns HTML: it is parsed in a detached document
-// and stripped of scripts, frames, forms and event handlers before insertion.
+// and stripped of scripts, frames, forms, external resources and event handlers before insertion.
 export function showLayerInfo(layerId) {
   const modal = layerInfoModal();
   const content = layerInfoContent();
   if (!modal || !content || !layerId) return;
+  const requestId = ++layerInfoRequestId;
 
   content.innerHTML = '<div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('swisstopo.loadingInfo') + '</span></div>';
   modal.classList.add('show');
@@ -392,8 +397,9 @@ export function showLayerInfo(layerId) {
       return response.text();
     })
     .then(function(html) {
+      if (requestId !== layerInfoRequestId) return;
       const doc = new DOMParser().parseFromString(html, 'text/html');
-      doc.querySelectorAll('script, iframe, object, embed, form').forEach(function(el) { el.remove(); });
+      doc.querySelectorAll('script, iframe, object, embed, form, link, meta, base').forEach(function(el) { el.remove(); });
       doc.querySelectorAll('*').forEach(function(el) {
         Array.from(el.attributes).forEach(function(attr) {
           if (attr.name.startsWith('on') || attr.value.trim().toLowerCase().startsWith('javascript:')) {
@@ -404,12 +410,14 @@ export function showLayerInfo(layerId) {
       content.innerHTML = '<div class="layer-info-api-content">' + (doc.body ? doc.body.innerHTML : '') + '</div>';
     })
     .catch(function(error) {
+      if (requestId !== layerInfoRequestId) return;
       console.error('[swisstopo] layer info failed:', error);
       content.innerHTML = '<div class="loading-row">' + t('swisstopo.loadInfoFailed') + '</div>';
     });
 }
 
 export function hideLayerInfo() {
+  layerInfoRequestId++;
   const modal = layerInfoModal();
   if (modal) modal.classList.remove('show');
 }
@@ -420,6 +428,7 @@ export function showInternalLayerInfo(layerKey) {
   const content = layerInfoContent();
   const meta = internalLayers[layerKey];
   if (!modal || !content || !meta) return;
+  layerInfoRequestId++; // a pending Geokatalog response must not replace this content
 
   const datenstand = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
   content.innerHTML = '<div class="legend-container">' +

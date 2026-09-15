@@ -35,6 +35,7 @@ export const state = {
   // Map
   map: null,
   skipFilterZoom: false,
+  pendingFilterZoom: false, // a filter was applied while the map was hidden: zoom to its result when the map shows again
   searchMarker: null,
 
   // Filters

@@ -20,6 +20,7 @@ module.exports = {
     check('table hidden by default', document.getElementById('table-panel').classList.contains('collapsed') && state.tableOpen === false);
     check('filter options with counts', document.querySelectorAll('#filter-status-options .filter-option').length === 3 && !!document.querySelector('#filter-teilportfolio-options .filter-option-count'));
     check('style switcher visible', document.getElementById('style-switcher').classList.contains('visible'));
+    check('location tree not built while its panel is closed', document.getElementById('tree-panel-content').children.length === 0);
 
     // Map layers and handlers
     check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels'));
@@ -28,10 +29,16 @@ module.exports = {
     check('cluster click handler bound', map.listenerCount('click', 'buildings-clusters') === 1);
     check('point click handler bound once', map.listenerCount('click', 'buildings-points') === 1);
 
-    // Selection via the map
+    // Selection via the map (the table is synced once per selection)
+    const buildingsTable = modules.list.tables.buildings;
+    const origSyncTo = buildingsTable.syncTo;
+    let syncCalls = 0;
+    buildingsTable.syncTo = function() { syncCalls++; return origSyncTo.apply(this, arguments); };
     map.fire('click', { features: [{ properties: { buildingId: '1080/4840/AF' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     await settle();
+    buildingsTable.syncTo = origSyncTo;
     check('map click selects building', state.selectedBuildingId === '1080/4840/AF');
+    check('table synced once per selection', syncCalls === 1);
     check('info panel shown with preview', document.getElementById('info-panel').classList.contains('show') && document.getElementById('info-panel').classList.contains('has-preview'));
     check('info panel content', document.getElementById('info-body').innerHTML.indexOf('Bundeshaus West') !== -1);
     check('selection in URL', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1);
@@ -80,6 +87,26 @@ module.exports = {
     document.getElementById('tbl-toggle').click();
     check('table toggle closes the panel', state.tableOpen === false && document.getElementById('table-panel').classList.contains('collapsed'));
 
+    // Sorting: a header click sorts the table by that column, a second click reverses it; the
+    // extensionData columns sort by their nested value
+    const nameHeader = document.querySelector('#list-table th.col-name');
+    const names = state.buildingsData.features.map(f => f.properties.name).sort((a, b) => a.localeCompare(b, 'de-CH', { numeric: true, sensitivity: 'base' }));
+    const firstCell = cls => document.querySelector('#list-body tr td.' + cls).textContent;
+    nameHeader.click();
+    check('header click sorts ascending', firstCell('col-name') === names[0] && nameHeader.getAttribute('aria-sort') === 'ascending' && nameHeader.classList.contains('sort-asc'));
+    nameHeader.click();
+    check('second click sorts descending', firstCell('col-name') === names[names.length - 1] && nameHeader.getAttribute('aria-sort') === 'descending');
+    document.querySelector('#list-table th.col-flaeche').click();
+    const areas = state.buildingsData.features.map(f => (f.properties.extensionData || {}).netFloorArea).filter(v => v != null).sort((a, b) => a - b);
+    check('nested numeric column sorts numerically', firstCell('col-flaeche').replace(/[^0-9]/g, '') === Number(areas[0]).toFixed(0) && document.querySelectorAll('#list-table th[aria-sort="ascending"]').length === 1);
+
+    // "Keine" / "Alle" of the columns menu rebuild the column stylesheet
+    const sheet = document.getElementById('column-visibility-style');
+    document.getElementById('columns-toggle-none').click();
+    check('"Keine" hides every building column', sheet.textContent.indexOf('.col-id{') !== -1 && sheet.textContent.indexOf('.col-flaeche{') !== -1);
+    document.getElementById('columns-toggle-all').click();
+    check('"Alle" shows every building column', sheet.textContent.indexOf('.col-id{') === -1 && sheet.textContent.indexOf('.col-flaeche{') === -1);
+
     // Detail view
     modules.ui.showDetailView('1080/4840/AF');
     await settle(50);
@@ -122,6 +149,26 @@ module.exports = {
     await settle();
     check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 10);
 
+    // A filter applied while the gallery shows cannot zoom the hidden map: the zoom happens once,
+    // when the map shows again; returning to an unchanged filter keeps the map position
+    const camBefore = map.calls.fitBounds.length + map.calls.flyTo.length;
+    cb.checked = true;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    check('no camera move while the map is hidden', map.calls.fitBounds.length + map.calls.flyTo.length === camBefore && state.pendingFilterZoom === true);
+    document.querySelector('.view-toggle-btn[data-view="map"]').click();
+    await settle(150);
+    check('zoom to the filtered objects when the map shows', map.calls.fitBounds.length + map.calls.flyTo.length === camBefore + 1 && state.pendingFilterZoom === false);
+    document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
+    await settle();
+    document.querySelector('.view-toggle-btn[data-view="map"]').click();
+    await settle(150);
+    check('returning to an unchanged filter keeps the map position', map.calls.fitBounds.length + map.calls.flyTo.length === camBefore + 1);
+    cb.checked = false;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    check('filter cleared again', state.filteredData.features.length === 10 && state.pendingFilterZoom === false);
+
     // Map view + basemap switch
     document.querySelector('.view-toggle-btn[data-view="map"]').click();
     await settle(150);
@@ -152,7 +199,28 @@ module.exports = {
     map.fire('click', { point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } });
     check('selection unchanged while measuring', state.selectedBuildingId === selectedBefore);
     check('measure point added', fake.Marker.instances.some(m => m.options.draggable));
+    map.fire('click', { point: { x: 50, y: 50 }, lngLat: { lng: 7.5, lat: 46.95 } });
+    const labelMarkers = () => fake.Marker.instances.filter(m => m._el.className === 'measure-label' && !m.removed);
+    check('second point draws the line with one segment label', !!map.getLayer('measure-line') && labelMarkers().length === 1);
+    // A basemap change drops the line source: the measurement in progress is redrawn
+    document.querySelector('.style-option[data-style="dark-matter"]').click();
+    await settle(50);
+    check('measurement survives a basemap change', modules.measure.isMeasuring() && !!map.getSource('measure-line-source') && !!map.getLayer('measure-line') && labelMarkers().length === 1);
     modules.measure.clearMeasurement();
+    check('measurement cleared', !modules.measure.isMeasuring() && !map.getSource('measure-line-source') && labelMarkers().length === 0);
+    document.querySelector('.style-option[data-style="positron"]').click(); // back to Light (the share link below expects it)
+    await settle(50);
+    check('no measurement layer restored once cleared', !map.getSource('measure-line-source'));
+
+    // Context menu: closes when the map moves under it or on a click elsewhere on the page
+    const menu = document.getElementById('map-context-menu');
+    map.fire('contextmenu', { point: { x: 20, y: 20 }, lngLat: { lng: 7.4, lat: 46.9 }, preventDefault() {} });
+    check('context menu opens with the coordinates', menu.classList.contains('show') && document.getElementById('context-menu-coords-text').textContent === '46.90000, 7.40000');
+    map.fire('movestart');
+    check('context menu closes when the map moves', !menu.classList.contains('show'));
+    map.fire('contextmenu', { point: { x: 20, y: 20 }, lngLat: { lng: 7.4, lat: 46.9 }, preventDefault() {} });
+    document.getElementById('header').click();
+    check('context menu closes on a click elsewhere', !menu.classList.contains('show'));
 
     // Search: KI suggestion, objects (buildings and parcels), external results escaped
     ctx.setFetch({
@@ -318,6 +386,15 @@ module.exports = {
     tablePanel.getBoundingClientRect = origTable;
     document.getElementById('tbl-toggle').click();
     await settle(400);
+
+    // "Drucken" in the context menu unfolds a collapsed tools panel, then opens the print item
+    document.getElementById('menu-toggle').click();
+    check('tools panel folded by the toggle', toolsPanel.classList.contains('collapsed'));
+    document.getElementById('context-menu-print').click();
+    const printHeader = document.querySelector('.accordion-item[data-accordion="print"] .accordion-header');
+    check('context menu "Drucken" unfolds the panel and opens the print item', !toolsPanel.classList.contains('collapsed') && printHeader.classList.contains('active') && !!document.querySelector('#map .print-preview-overlay.active'));
+    printHeader.click();
+    check('print preview hidden with the item', !document.querySelector('#map .print-preview-overlay.active'));
 
     // Map busy pill: not shown when every tile is loaded; shown for a slow load and hidden again as soon as
     // the map is ready (sourcedata) or after the watchdog, not only on 'idle'

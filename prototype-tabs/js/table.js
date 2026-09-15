@@ -2,7 +2,7 @@
 // stylesheet-driven column visibility and the toolbar dropdowns.
 
 import { escapeHtml, getNestedProperty } from './utils.js';
-import { t } from './i18n.js';
+import { t, getLocale } from './i18n.js';
 
 // ===== FEATURE TABLE FACTORY =====
 //
@@ -11,15 +11,18 @@ import { t } from './i18n.js';
 //   rowIdAttr:      'data-id'                       attribute carrying the row key
 //   getRowId:       props => key                    row key from feature properties
 //   parseRowId:     str => key                      (optional) key from the attribute string
-//   columns:        [{ field, cls, format(value, props, feature) }]
+//   columns:        [{ field, cls, format(value, props, feature), sortField }]
+//                   sortField: dot path used for sorting when `field` holds an object (optional)
 //   getFeatures:    () => feature[]                 base data (already filtered by the app)
 //   searchFields:   ['bbl_id', ...]                 properties searched by the toolbar search
 //   onRowSelect:    key => void                     click / Enter / Space on a row
 //   pagination:     { infoId, pageInfoId, prevId, nextId, rowsSelectId, infoKey, emptyKey }
 //   empty:          { type: 'row', colspan, key } | { type: 'block', afterSelector, html: () => string }
 // }
+// A click on a header cell of the table's <thead> sorts by that column (second click: descending);
+// the header keeps the icon markup `<th class="col-x">Label <span class="material-symbols-outlined">unfold_more</span></th>`.
 export function createFeatureTable(config) {
-  const st = { page: 1, rowsPerPage: 50, searchTerm: '' };
+  const st = { page: 1, rowsPerPage: 50, searchTerm: '', sortField: null, sortDir: 'asc' };
   // Lower-cased search strings are computed once per feature (WeakMap: no property pollution)
   const searchTextCache = new WeakMap();
 
@@ -36,12 +39,87 @@ export function createFeatureTable(config) {
     return text;
   }
 
+  function isEmptyValue(v) {
+    return v === null || v === undefined || v === '';
+  }
+
+  // Numbers (also numeric strings) numerically, everything else with the locale's collation
+  function compareValues(a, b) {
+    if (typeof a === 'number' && typeof b === 'number') return a - b;
+    const na = Number(a);
+    const nb = Number(b);
+    if (!isNaN(na) && !isNaN(nb) && String(a).trim() !== '' && String(b).trim() !== '') return na - nb;
+    return String(a).localeCompare(String(b), getLocale(), { numeric: true, sensitivity: 'base' });
+  }
+
+  function sortFeatures(features) {
+    if (!st.sortField) return features;
+    const field = st.sortField;
+    const dir = st.sortDir === 'desc' ? -1 : 1;
+    return features.slice().sort(function(fa, fb) {
+      const a = getNestedProperty(fa.properties || {}, field);
+      const b = getNestedProperty(fb.properties || {}, field);
+      const aEmpty = isEmptyValue(a);
+      const bEmpty = isEmptyValue(b);
+      if (aEmpty || bEmpty) return aEmpty && bEmpty ? 0 : (aEmpty ? 1 : -1); // empty cells last in both directions
+      return compareValues(a, b) * dir;
+    });
+  }
+
   function visibleFeatures() {
     let features = config.getFeatures() || [];
     if (st.searchTerm) {
       features = features.filter(function(f) { return getSearchText(f).indexOf(st.searchTerm) !== -1; });
     }
-    return features;
+    return sortFeatures(features);
+  }
+
+  function sortFieldOf(col) {
+    return col.sortField || col.field;
+  }
+
+  function tableEl() {
+    const tbody = document.getElementById(config.tbodyId);
+    return tbody ? tbody.closest('table') : null;
+  }
+
+  // Header classes, aria-sort and the icon of the sorted column
+  function updateSortIndicator() {
+    const table = tableEl();
+    if (!table) return;
+    table.querySelectorAll('thead th').forEach(function(th, index) {
+      const col = config.columns[index];
+      const active = !!col && st.sortField !== null && sortFieldOf(col) === st.sortField;
+      th.classList.toggle('sort-asc', active && st.sortDir === 'asc');
+      th.classList.toggle('sort-desc', active && st.sortDir === 'desc');
+      th.setAttribute('aria-sort', active ? (st.sortDir === 'asc' ? 'ascending' : 'descending') : 'none');
+      const icon = th.querySelector('.material-symbols-outlined');
+      if (icon) icon.textContent = active ? (st.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more';
+    });
+  }
+
+  function sortBy(field) {
+    if (st.sortField === field) {
+      st.sortDir = st.sortDir === 'asc' ? 'desc' : 'asc';
+    } else {
+      st.sortField = field;
+      st.sortDir = 'asc';
+    }
+    st.page = 1;
+    render();
+  }
+
+  // One delegated listener on the <thead>: the building headers are re-rendered on a language change
+  function bindSortHeaders() {
+    const table = tableEl();
+    const thead = table ? table.querySelector('thead') : null;
+    if (!thead) return;
+    thead.addEventListener('click', function(e) {
+      const th = e.target.closest('th');
+      if (!th || !thead.contains(th)) return;
+      const col = config.columns[Array.prototype.indexOf.call(th.parentNode.children, th)];
+      if (col) sortBy(sortFieldOf(col));
+    });
   }
 
   function parseId(str) {
@@ -127,6 +205,7 @@ export function createFeatureTable(config) {
     });
     tbody.innerHTML = html;
     updatePagination(st.page, totalPages, totalItems);
+    updateSortIndicator();
   }
 
   function highlightRow(tbody, row) {
@@ -157,6 +236,7 @@ export function createFeatureTable(config) {
   }
 
   function init() {
+    bindSortHeaders();
     const tbody = document.getElementById(config.tbodyId);
     if (tbody) {
       tbody.addEventListener('click', function(e) {
@@ -209,6 +289,8 @@ export function createFeatureTable(config) {
       render();
     },
     resetPage: function() { st.page = 1; },
+    sortBy: sortBy,
+    updateSortIndicator: updateSortIndicator,
     getState: function() { return st; }
   };
 }
@@ -252,13 +334,16 @@ export function initColumnVisibility(scopeSelector, menuSelector) {
   updateColumnStylesheet();
 }
 
-// "Alle" / "Keine" for the checkboxes of one column list
+// "Alle" / "Keine" for the checkboxes of one column list (the stylesheet is rebuilt once, not per checkbox)
 export function toggleAllColumns(listEl, showAll) {
   if (!listEl) return;
   listEl.querySelectorAll('input[type="checkbox"][data-column]').forEach(function(checkbox) {
     checkbox.checked = showAll;
-    handleColumnToggle(checkbox);
+    const columnClass = checkbox.getAttribute('data-column');
+    if (!columnClass) return;
+    if (showAll) hiddenColumns.delete(columnClass); else hiddenColumns.add(columnClass);
   });
+  updateColumnStylesheet();
 }
 
 // Column search inside the columns dropdown (filters the checkbox rows and hides empty group labels)

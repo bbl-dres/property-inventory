@@ -1715,6 +1715,12 @@
     "fr": "Afficher/masquer les bâtiments",
     "it": "Mostrare/nascondere gli edifici"
   },
+  "accordion.layers.landcovers.toggle": {
+    "de": "Bodenabdeckung ein-/ausblenden",
+    "en": "Show/hide land cover",
+    "fr": "Afficher/masquer la couverture du sol",
+    "it": "Mostrare/nascondere la copertura del suolo"
+  },
   "accordion.layers.parcels": {
     "de": "Grundstücke",
     "en": "Parcels",

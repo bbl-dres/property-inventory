@@ -125,21 +125,32 @@ function updateMeasureLine() {
   });
 }
 
-function addSegmentLabel(p1, p2) {
-  const distance = haversineDistance(p1[1], p1[0], p2[1], p2[0]);
-  const labelMarker = new maplibregl.Marker({ element: createDistanceLabel(distance), anchor: 'center' })
-    .setLngLat([(p1[0] + p2[0]) / 2, (p1[1] + p2[1]) / 2])
-    .addTo(map);
-  measureState.labelMarkers.push(labelMarker);
+function segments() {
+  const points = measureState.points;
+  const list = [];
+  for (let i = 0; i < points.length - 1; i++) list.push([points[i], points[i + 1]]);
+  if (measureState.isClosed && points.length >= 3) list.push([points[points.length - 1], points[0]]);
+  return list;
 }
 
+// One label marker per segment. The markers are reused and moved: this runs on every drag event
+// of a point, and creating DOM markers at that rate is the expensive part.
 function updateMeasureLabels() {
-  measureState.labelMarkers.forEach(function(m) { m.remove(); });
-  measureState.labelMarkers = [];
-  const points = measureState.points;
-  if (points.length < 2) return;
-  for (let i = 0; i < points.length - 1; i++) addSegmentLabel(points[i], points[i + 1]);
-  if (measureState.isClosed && points.length >= 3) addSegmentLabel(points[points.length - 1], points[0]);
+  const segs = segments();
+  while (measureState.labelMarkers.length > segs.length) measureState.labelMarkers.pop().remove();
+  segs.forEach(function(seg, i) {
+    const distance = haversineDistance(seg[0][1], seg[0][0], seg[1][1], seg[1][0]);
+    const mid = [(seg[0][0] + seg[1][0]) / 2, (seg[0][1] + seg[1][1]) / 2];
+    const marker = measureState.labelMarkers[i];
+    if (marker) {
+      marker.setLngLat(mid);
+      marker.getElement().textContent = formatDistance(distance);
+    } else {
+      measureState.labelMarkers.push(
+        new maplibregl.Marker({ element: createDistanceLabel(distance), anchor: 'center' }).setLngLat(mid).addTo(map)
+      );
+    }
+  });
 }
 
 function totalDistance() {
@@ -204,6 +215,14 @@ export function clearMeasurement() {
 
 export function toggleMeasurement() {
   if (measureState.active) clearMeasurement(); else startMeasurement();
+}
+
+// After a basemap change: setStyle() drops the line source and layer while the point and label
+// markers (DOM) survive. Redraws the line of an active measurement; the app calls this when it
+// restores its own layers.
+export function restoreMeasurement() {
+  if (!map || !measureState.active) return;
+  updateMeasureLine();
 }
 
 // Binds the close button and the map click handler. Selection handlers of the application must

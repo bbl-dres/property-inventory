@@ -8,7 +8,7 @@ import { t } from './i18n.js';
 import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
 import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings } from './map-controls.js';
 import { getPolygonCentroid } from './geo.js';
-import { isMeasuring } from './measure.js';
+import { isMeasuring, restoreMeasurement } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
 import { renderLocationTree, syncCountryHighlight } from './location-tree.js';
@@ -16,9 +16,23 @@ import { syncTableToBuilding, syncTableToParcel } from './list.js';
 
 // ===== MAP INITIALISATION =====
 
+// True once the map fired its (single) 'load' event. map.loaded() is false again whenever tiles are
+// streaming, e.g. after a pan, so it cannot tell whether the layers may be added when the data arrives.
+let initialLoadDone = false;
+
+export function hasMapLoaded() {
+  return initialLoadDone;
+}
+
 export function initMap() {
   const map = createMap('map', getMapStyleUrl(), getMapStyleOptions());
   state.map = map;
+  // Registered before anything can fire 'load': adds the data layers when the data arrived first;
+  // the data loader adds them itself when the map was first (see applyLoadedData in app.js).
+  map.once('load', function() {
+    initialLoadDone = true;
+    addMapLayers();
+  });
   initMapStatusIndicators(map);
   addStandardControls(map);
   bindMapUrlSync(map, function() { return state.currentView !== 'detail'; });
@@ -341,9 +355,6 @@ export function selectBuilding(buildingId, flyToBuilding) {
     '</div>';
   showInfoPanel('info.title.building', html, imageUrl);
   syncTableToBuilding(buildingId);
-  syncTableToBuilding(buildingId);
-  syncTableToBuilding(buildingId);
-  syncTableToBuilding(buildingId);
 
   if (flyToBuilding) {
     smartFlyTo(state.map, { center: building.geometry.coordinates, zoom: 16 });
@@ -367,9 +378,6 @@ export function selectParcel(parcelId, flyToParcel) {
     infoRow('info.label.zone', escapeHtml(props.landUseZone || '—'), true) +
     infoRow('info.label.ownership', escapeHtml(props.ownershipType || '—'), true);
   showInfoPanel('info.title.parcel', html, null);
-  syncTableToParcel(parcelId);
-  syncTableToParcel(parcelId);
-  syncTableToParcel(parcelId);
   syncTableToParcel(parcelId);
 
   if (parcel.geometry && parcel.geometry.coordinates) {
@@ -431,4 +439,5 @@ function restoreLayers() {
   }
   if (is3DActive()) show3DBuildings(state.map);
   readdSwisstopoLayers();
+  restoreMeasurement();
 }

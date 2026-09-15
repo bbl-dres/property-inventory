@@ -2576,6 +2576,14 @@
   margin-left: var(--space-0-5);
 }
 
+/* Sorted column: table.js sets sort-asc / sort-desc (and aria-sort) on the header cell */
+.list-table th.sort-asc,
+.list-table th.sort-desc,
+.list-table th.sort-asc .material-symbols-outlined,
+.list-table th.sort-desc .material-symbols-outlined {
+  color: var(--primary-red);
+}
+
 .list-table td {
   padding: var(--space-2) var(--space-4);
   border-bottom: var(--border-subtle);

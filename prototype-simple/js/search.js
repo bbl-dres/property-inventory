@@ -151,9 +151,21 @@ export function initSearch() {
   searchClearBtn = document.getElementById('search-clear-btn');
   let searchDebounceTimer;
   let searchAbortController = null;
+  let searchSequence = 0; // a search only renders while it is the latest one (see cancelPendingSearch)
 
   function setSpinner(on) {
     if (searchSpinner) searchSpinner.style.display = on ? 'block' : 'none';
+  }
+
+  // Invalidates the search in flight: its external requests are aborted and, since the local part
+  // resolves regardless, its results are dropped by the sequence check instead of appearing later
+  // over a cleared or shortened field
+  function cancelPendingSearch() {
+    searchSequence++;
+    if (searchAbortController) {
+      searchAbortController.abort();
+      searchAbortController = null;
+    }
   }
 
   function showSearchHistory() {
@@ -184,6 +196,7 @@ export function initSearch() {
     searchClearBtn.classList.toggle('visible', val.length > 0);
 
     if (val.length < 2) {
+      cancelPendingSearch();
       setSpinner(false);
       if (val.length === 0) showSearchHistory(); else hideResults();
       return;
@@ -308,7 +321,8 @@ export function initSearch() {
   }
 
   function performSearch(term) {
-    if (searchAbortController) searchAbortController.abort();
+    cancelPendingSearch();
+    const sequence = searchSequence;
     searchAbortController = new AbortController();
     const signal = searchAbortController.signal;
     const lowerTerm = term.toLowerCase();
@@ -323,7 +337,7 @@ export function initSearch() {
       scopeAllows('places') ? swisstopoSearch('locations', term, signal) : Promise.resolve({ type: 'locations', data: [] }),
       scopeAllows('maps') ? swisstopoSearch('layers', term, signal) : Promise.resolve({ type: 'layers', data: [] })
     ]).then(function(results) {
-      if (results.some(function(r) { return r.aborted; })) return; // a newer search is in progress
+      if (sequence !== searchSequence) return; // a newer search is in progress or the field was cleared
       renderSearchResults(results, term);
       setSpinner(false);
     });

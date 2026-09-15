@@ -303,9 +303,25 @@ function roving(host) {
   if (current) current.tabIndex = 0;
 }
 
+function isTreePanelOpen() {
+  const panel = document.getElementById('tree-panel');
+  return !!panel && panel.classList.contains('open');
+}
+
+// Called after every selection and filter change. The tree is only built while the panel shows it;
+// a closed panel is marked stale and rendered when it opens. The map outline follows the filters
+// in both cases.
+let treeStale = true;
+
 export function renderLocationTree() {
   const host = document.getElementById('tree-panel-content');
   if (!host || !adapter) return;
+  if (!isTreePanelOpen()) {
+    treeStale = true;
+    syncCountryHighlight();
+    return;
+  }
+  treeStale = false;
   nodeIndex = new Map();
   const nodes = build(collectObjects(), 0, {}, [], '', currentSelection());
   host.innerHTML = nodes.length
@@ -330,7 +346,7 @@ export function toggleTreePanel(open) {
     btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   }
   if (open && !wasOpen) {
-    renderLocationTree();
+    if (treeStale) renderLocationTree();
     prefetchTreeCountries();
     if (isMobileLayout()) {
       const closeBtn = document.getElementById('tree-close-btn');
