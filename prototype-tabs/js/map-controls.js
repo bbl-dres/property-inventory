@@ -34,17 +34,20 @@ export function readMapViewFromUrl() {
 
 // MapLibre map with the view from the URL. preserveDrawingBuffer keeps the canvas readable
 // (needed by the print module); antialias smooths the fill-extrusion 3D buildings.
-export function createMap(containerId, styleUrl) {
+export function createMap(containerId, styleUrl, styleOptions = {}) {
   const view = readMapViewFromUrl();
-  return new maplibregl.Map({
+  const map = new maplibregl.Map({
     container: containerId,
-    style: styleUrl,
+    style: styleOptions.transformStyle ? null : styleUrl,
     center: view.center,
     zoom: view.zoom,
     pitch: view.pitch,
     bearing: view.bearing,
     canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true }
   });
+  // Style transforms are setStyle options, not constructor options.
+  if (styleOptions.transformStyle) map.setStyle(styleUrl, styleOptions);
+  return map;
 }
 
 // ===== STANDARD CONTROLS =====
@@ -132,7 +135,12 @@ export function addStandardControls(map, options) {
 
 export function findVectorSourceId(style) {
   const sources = (style && style.sources) || {};
-  return Object.keys(sources).find(function(key) { return sources[key].type === 'vector'; }) || null;
+  // Only OpenMapTiles building sources support these extrusions. The Esri hybrid
+  // reference source contains labels and roads with a different schema.
+  const buildingLayer = ((style && style.layers) || []).find(function(layer) {
+    return layer['source-layer'] === 'building' && sources[layer.source]?.type === 'vector';
+  });
+  return buildingLayer ? buildingLayer.source : null;
 }
 
 // First existing layer id of the candidates (used as the "insert before" anchor)

@@ -13,7 +13,7 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 ## Features
 
 ### Core views
-- **Map** — MapLibre WebGL map with colour-coded property markers, 4 basemap styles (Light, Standard, Aerial, Dark), measure tool, print-to-PDF, and a sidebar accordion for layers/Geokatalog.
+- **Map** — MapLibre WebGL map with colour-coded property markers, 5 basemap styles (Light, Standard, Aerial, Hybrid, Dark), measure tool, print-to-PDF, and a sidebar accordion for layers/Geokatalog.
 - **List** — sortable, searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
 - **Detail panel** — building dashboard with images, basic info, mini-map, and area data (SIA 416 compliant).
@@ -27,10 +27,10 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 
 ### Basemap links
 - `?basemap=light` selects Light (the default).
-- `?basemap=standard`, `?basemap=aerial`, and `?basemap=dark` select the other backgrounds.
+- `?basemap=standard`, `?basemap=aerial`, `?basemap=aerial-labels`, and `?basemap=dark` select the other backgrounds.
 - Missing or invalid values use Light and are normalized to `basemap=light` in the URL.
 - Changing the background updates the URL; reloading, sharing, and Back/Forward restore that choice. Previously saved `localStorage` basemap preferences are ignored.
-- Aerial imagery covers Switzerland and starts at zoom 8; for example, `?basemap=aerial&lng=8.2275&lat=46.8182&zoom=10`.
+- Both aerial choices use Esri World Imagery worldwide and higher-resolution swisstopo SWISSIMAGE over Switzerland from zoom 8. **Hybrid** adds Esri's Hybrid Reference Layer (roads, boundaries and place labels); for example, `?basemap=aerial-labels&lng=7.4474&lat=46.948&zoom=13`. See [THIRD-PARTY.md](THIRD-PARTY.md) for sources and attribution.
 
 ### Data export
 - CSV, Excel (`.xlsx`), GeoJSON.

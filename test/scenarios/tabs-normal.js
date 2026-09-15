@@ -267,6 +267,22 @@ module.exports = {
     document.querySelector('#filter-pills .filter-pill-remove[data-filter-key="land"]').click();
     await settle();
     check('pill removes the filter; nothing highlighted', state.activeFilters.land.length === 0 && state.filteredData.features.length === state.buildingsData.features.length && !document.querySelector('#tree-panel-content .tree-node.is-active') && !/filter_land/.test(window.location.search) && JSON.stringify(map.getLayer('country-highlight-line').filter) === JSON.stringify(['==', ['get', 'key'], '']));
+    // On the detail page a tree object row opens that object's page; a parcel opens its building's page
+    modules.ui.showDetailView('1080/4840/AF');
+    await settle();
+    fold('country:DE'); fold('region:DE/Berlin'); fold('city:DE/Berlin/Berlin'); fold('we:DE/Berlin/Berlin/5210');
+    document.querySelector('#tree-panel-content .tree-row[data-kind="building"][data-id="1080/5210/AA"]').click();
+    await settle();
+    const detailId = function() { const b = state.currentDetailBuilding; return b ? (b.properties.bbl_id || b.properties.buildingId) : null; };
+    check('tree building row updates the detail page', state.currentView === 'detail' && detailId() === '1080/5210/AA' && /view=detail/.test(window.location.search) && /id=1080%2F5210%2FAA/.test(window.location.search) && state.selectedBuildingId === '1080/5210/AA');
+    modules.ui.showDetailView('1080/4840/AF');
+    await settle();
+    document.querySelector('#tree-panel-content .tree-row[data-kind="parcel"][data-id="1080/5210/01"]').click();
+    await settle();
+    check('tree parcel row opens its building on the detail page', state.currentView === 'detail' && detailId() === '1080/5210/AA' && state.selectedParcelId === '1080/5210/01');
+    modules.ui.switchView('map');
+    await settle();
+
     // Resizable: dragging the grip on the right edge sets --tree-panel-width (clamped to the tokens)
     const grip = document.getElementById('tree-resize-handle');
     const ptr = function(type, x) { const ev = new window.MouseEvent(type, { bubbles: true, clientX: x, button: 0 }); (type === 'pointerdown' ? grip : document).dispatchEvent(ev); };

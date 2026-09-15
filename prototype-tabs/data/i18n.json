@@ -467,6 +467,12 @@
     "fr": "Vue aérienne",
     "it": "Vista aerea"
   },
+  "map.style.aerialLabels": {
+    "de": "Hybrid",
+    "en": "Hybrid",
+    "fr": "Hybrid",
+    "it": "Hybrid"
+  },
   "map.style.dark": {
     "de": "Dark",
     "en": "Dark",

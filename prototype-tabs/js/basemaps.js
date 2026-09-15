@@ -1,5 +1,5 @@
 // Basemaps (shared): style definitions, URL-owned basemap selection and the style switcher widget.
-// The URL owns the basemap (?basemap=light|standard|aerial|dark) so the same link opens the same
+// The URL owns the basemap (?basemap=light|standard|aerial|aerial-labels|dark) so the same link opens the same
 // background everywhere; missing or invalid values mean Light.
 
 import { showToast } from './toast.js';
@@ -10,6 +10,9 @@ const THUMBNAIL_BASE = new URL('../assets/basemaps/', import.meta.url);
 export const SWISSIMAGE_TILES = 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg';
 // Global aerial imagery for the objects abroad (Esri World Imagery: free with attribution, see THIRD-PARTY.md)
 export const WORLD_IMAGERY_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
+// Esri's current Hybrid Reference Layer, designed to sit above imagery (see THIRD-PARTY.md).
+const HYBRID_REFERENCE_STYLE = 'https://www.arcgis.com/sharing/rest/content/items/30d6b8271e1849cd9c3042060001f425/resources/styles/root.json';
+const HYBRID_REFERENCE_TILES = 'https://basemaps.arcgis.com/arcgis/rest/services/World_Basemap_v2/VectorTileServer/tile/{z}/{y}/{x}.pbf';
 
 // Same basemaps in every prototype: CARTO vector styles (OpenMapTiles schema) and the swisstopo
 // SWISSIMAGE raster. `url` is a style URL or an inline style object; `thumbnail` a local PNG rendered
@@ -59,6 +62,12 @@ export const mapStyles = {
     },
     thumbnail: new URL('swissimage.png', THUMBNAIL_BASE).href
   },
+  'swissimage-labels': {
+    name: 'Hybrid',
+    urlValue: 'aerial-labels',
+    url: HYBRID_REFERENCE_STYLE,
+    thumbnail: new URL('swissimage.png', THUMBNAIL_BASE).href
+  },
   'dark-matter': {
     name: 'Dark',
     urlValue: 'dark',
@@ -92,6 +101,44 @@ export function getCurrentBasemapUrlValue() {
 
 export function getMapStyleUrl(styleId) {
   return mapStyles[styleId || currentMapStyle].url;
+}
+
+// MapLibre calls this after downloading the reference style and before style.load.
+// Both aerial choices share exactly the same imagery; only this one adds reference layers.
+function composeHybridStyle(previousStyle, referenceStyle) {
+  const aerial = mapStyles.swissimage.url;
+  return {
+    ...referenceStyle,
+    // Keep the app's Open Sans / Noto labels working with the same glyph service.
+    glyphs: aerial.glyphs,
+    sources: {
+      ...aerial.sources,
+      esri: {
+        type: 'vector',
+        // ArcGIS service metadata is not TileJSON; use its tile template directly.
+        tiles: [HYBRID_REFERENCE_TILES],
+        maxzoom: 16,
+        attribution: 'Esri, TomTom, Garmin, FAO, NOAA, USGS, &copy; OpenStreetMap contributors, and the GIS User Community'
+      }
+    },
+    layers: aerial.layers.concat(referenceStyle.layers.map(function(layer) {
+      const fonts = layer.layout && layer.layout['text-font'];
+      if (!fonts) return layer;
+      const weight = fonts.some(font => font.includes('Bold')) ? 'Bold'
+        : fonts.some(font => font.includes('Italic')) ? 'Italic' : 'Regular';
+      return {
+        ...layer,
+        layout: { ...layer.layout, 'text-font': ['Open Sans ' + weight, 'Noto Sans ' + weight] }
+      };
+    }))
+  };
+}
+
+// Used for initial URL loading as well as selector and Back/Forward changes.
+export function getMapStyleOptions(styleId) {
+  return (styleId || currentMapStyle) === 'swissimage-labels'
+    ? { transformStyle: composeHybridStyle }
+    : {};
 }
 
 function updateBasemapUrl() {
@@ -180,7 +227,7 @@ export function initStyleSwitcher(map, restoreLayers) {
       // Rebuild after the new style loads, including when backgrounds change rapidly.
       map.off('style.load', restoreLayersAfterStyleChange);
       map.once('style.load', restoreLayersAfterStyleChange);
-      map.setStyle(mapStyles[styleId].url, { diff: false });
+      map.setStyle(mapStyles[styleId].url, { diff: false, ...getMapStyleOptions(styleId) });
     }
   }
 

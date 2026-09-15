@@ -5,7 +5,7 @@ import { state } from './state.js';
 import { statusColors, getStatusClassName, placeholderImages, parcelColor, internalLayerIds } from './config.js';
 import { escapeHtml, cssUrl, formatNum, extractYear } from './utils.js';
 import { t } from './i18n.js';
-import { getMapStyleUrl, initStyleSwitcher } from './basemaps.js';
+import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
 import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings } from './map-controls.js';
 import { getPolygonCentroid } from './geo.js';
 import { isMeasuring } from './measure.js';
@@ -17,7 +17,7 @@ import { syncTableToBuilding, syncTableToParcel } from './list.js';
 // ===== MAP INITIALISATION =====
 
 export function initMap() {
-  const map = createMap('map', getMapStyleUrl());
+  const map = createMap('map', getMapStyleUrl(), getMapStyleOptions());
   state.map = map;
   initMapStatusIndicators(map);
   addStandardControls(map);

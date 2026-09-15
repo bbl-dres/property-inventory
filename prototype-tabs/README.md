@@ -20,6 +20,17 @@ https://bbl-dres.github.io/property-inventory/prototype-tabs/
 
 ## Running
 
+### Basemap links
+
+The selector offers Light, Standard, Aerial, Hybrid and Dark. Use
+`?basemap=aerial` for imagery without labels or `?basemap=aerial-labels` for imagery
+with Esri's Hybrid Reference Layer (roads, boundaries and place labels). Both use
+Esri World Imagery worldwide and swisstopo SWISSIMAGE over Switzerland from zoom 8.
+The choice is preserved in shared URLs and restored on reload and Back/Forward.
+See [THIRD-PARTY.md](THIRD-PARTY.md) for sources and attribution.
+
+### Local server
+
 Static files only — no build step. From the repo root:
 
 ```bash

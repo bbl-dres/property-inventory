@@ -848,7 +848,8 @@ toggle). A country is also outlined on the map (`assets/countries/<ISO>.geojson`
 country loaded on demand, a 2px line in the blue of the parcels without a fill, so the basemap under the objects stays untouched) and the map zooms to it — often a country holds a single site, so the outline says where you are.
 Swiss cantons have outlines too (`assets/regions/CH-<code>.geojson`, swissBOUNDARIES3D by swisstopo, simplified to
 10–15 m and stored locally; a region filter value is matched by code, name or German name, so both data sets work); regions of other countries and city nodes zoom to their objects. WE nodes are folders (the row toggles them); an object row selects
-the object on the map. Branches
+the object on the map and, while the detail page is open, shows that object's page (a parcel opens the page of
+its building). Branches
 open one level at a time and every level has one open node: opening a country folds the other, opening a
 region folds its siblings, so the tree never shows more than one path. The chevron only folds. One tab stop,
 arrow keys, Home/End (ARIA tree). The grip on the right edge (`#tree-resize-handle`) drags the width between 240 and

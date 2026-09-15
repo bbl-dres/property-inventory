@@ -47,10 +47,23 @@ function initDataDependentUI() {
     filterKeys: { country: 'land', region: 'region', city: 'ort' },
     getFilter: function(key) { return state.activeFilters[key] || []; },
     setFilters: setExactFilters,
-    onSelectObject: function(kind, id) { if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true); }
+    // Selects on the map; on the detail page it also opens that object's page (a parcel: its building's)
+    onSelectObject: function(kind, id) {
+      if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true);
+      if (state.currentView !== 'detail') return;
+      const buildingId = kind === 'building' ? id : buildingOfParcel(id);
+      if (buildingId) showDetailView(buildingId, getTabFromURL()); else switchView('map');
+    }
   });
   initGalleryFilter();
   initEntityTables();
+}
+
+// The building a parcel belongs to, for the tree on the detail page
+function buildingOfParcel(parcelId) {
+  const parcel = state.parcelIndex.get(parcelId);
+  const id = parcel && parcel.properties.buildingId;
+  return id && state.buildingIndex.has(id) ? id : null;
 }
 
 function buildIndexes() {

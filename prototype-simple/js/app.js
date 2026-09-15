@@ -46,8 +46,22 @@ function initDataDependentUI() {
     filterKeys: { country: 'land', region: 'region', city: 'ort' },
     getFilter: function(key) { return state.activeFilters[key] || []; },
     setFilters: setExactFilters,
-    onSelectObject: function(kind, id) { if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true); }
+    // Selects on the map; on the detail page it also opens that object's page (a parcel: its building's)
+    onSelectObject: function(kind, id) {
+      if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true);
+      if (state.currentView !== 'detail') return;
+      const buildingId = kind === 'building' ? id : buildingOfParcel(id);
+      if (buildingId) showDetailView(buildingId, getTabFromURL()); else switchView('map');
+    }
   });
+}
+
+// The building a parcel belongs to (same Wirtschaftseinheit), for the tree on the detail page
+function buildingOfParcel(parcelId) {
+  const parcel = state.parcelIndex.get(parcelId);
+  const we = parcel && parcel.properties.bbl_we;
+  const building = we && state.buildingsData ? state.buildingsData.features.find(function(f) { return f.properties.bbl_we === we; }) : null;
+  return building ? building.properties.bbl_id : null;
 }
 
 function buildIndexes() {

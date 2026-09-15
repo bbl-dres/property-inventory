@@ -4636,7 +4636,7 @@ body.detail-active #detail-view {
     display: none;
   }
 
-  /* Basemap switcher: compact, 2×2 panel, hidden while a sheet or the menu is open */
+  /* Basemap switcher: compact two-column panel, hidden while a sheet or the menu is open */
   .style-switcher {
     bottom: calc(44px + env(safe-area-inset-bottom, 0px));
     right: var(--space-3);
@@ -4653,6 +4653,8 @@ body.detail-active #detail-view {
     margin: 0 0 var(--space-2) 0;
     display: grid;
     grid-template-columns: 1fr 1fr;
+    max-height: calc(100dvh - 180px);
+    overflow-y: auto;
   }
 
   .style-option img {

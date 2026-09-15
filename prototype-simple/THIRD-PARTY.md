@@ -29,10 +29,13 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 |---|---|---|
 | CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs | © CARTO, © OpenStreetMap contributors; free tier, no key |
 | swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap within Switzerland (drawn above the world imagery) | © swisstopo |
-| Esri World Imagery (`server.arcgisonline.com`) | Global aerial imagery of the "Luftbild" basemap for the objects abroad | Esri, Maxar, Earthstar Geographics, and the GIS User Community — free with this attribution under the [Esri terms of use](https://www.esri.com/en-us/legal/terms/full-master-agreement); the tile service is rate-limited and meant for interactive maps, not for bulk download |
+| Esri World Imagery (`server.arcgisonline.com`) | Global aerial imagery for both aerial basemaps | Esri, Maxar, Earthstar Geographics, and the GIS User Community — free with this attribution under the [Esri terms of use](https://www.esri.com/en-us/legal/terms/full-master-agreement); the tile service is rate-limited and meant for interactive maps, not for bulk download |
+| Esri Hybrid Reference (`www.arcgis.com`, `cdn.arcgis.com`, `basemaps.arcgis.com`) | Roads, boundaries and place labels above the imagery in "Hybrid" | [Hybrid Reference Layer](https://www.arcgis.com/home/item.html?id=30d6b8271e1849cd9c3042060001f425); Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community. Public style, sprite and vector tiles; attribution is shown on the map. Arial labels are adapted to the existing CARTO Open Sans/Noto glyph service. |
 | swisstopo WMS (`wms.geo.admin.ch`) | Rendering of the Geokatalog layers added to the map | © swisstopo |
 | geoadmin API (`api3.geo.admin.ch`) | Location and layer search (SearchServer), topics and catalog trees (CatalogServer), layer legends (MapServer legend), feature identification (identify) | No key required |
 | Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`js/config.js`) and sample values in `data/swagger.json` | [Unsplash License](https://unsplash.com/license); placeholders only |
+
+The labeled aerial option uses Esri’s current vector Hybrid Reference Layer, the reference component of [Imagery Hybrid](https://www.arcgis.com/home/item.html?id=86265e5a4bbb4187a59719cf134e0018). It avoids the legacy raster World Hybrid Overlay and World Boundaries and Places services, which Esri has [scheduled for retirement](https://www.esri.com/arcgis-blog/products/arcgis-living-atlas/announcements/sunsetting-legacy-basemaps). The source is fetched when this basemap is selected; no API key is configured in the prototypes.
 
 ## Outbound links only (nothing is loaded)
 
