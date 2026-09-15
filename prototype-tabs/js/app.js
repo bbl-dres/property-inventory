@@ -2674,11 +2674,11 @@
         };
 
         function renderActiveLayersList() {
-            var container = document.getElementById('active-layers-list');
+            var container = document.getElementById('external-layers-list');
             if (!container) return;
 
             if (activeSwisstopoLayers.length === 0) {
-                container.innerHTML = '<div class="active-layers-empty">Keine Hintergrundkarten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>';
+                container.innerHTML = '<div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>';
                 return;
             }
 
@@ -3055,6 +3055,10 @@
                 }
             });
 
+            // Re-apply the "Interne Karten" checkbox state. addMapLayers() also runs after a
+            // basemap change (style.load), which would otherwise reset hidden layers to visible.
+            applyInternalLayerVisibility();
+
             // Animate the pulse layer
             var pulseRadius = 24;
             var pulseOpacity = 0.4;
@@ -3311,11 +3315,26 @@
             } else {
                 url.searchParams.delete('bgLayers');
             }
+            // Geokatalog topic ("Thema wechseln"); the default topic needs no parameter
+            if (currentTopic !== DEFAULT_TOPIC) {
+                url.searchParams.set('topic', currentTopic);
+            } else {
+                url.searchParams.delete('topic');
+            }
             window.history.replaceState({}, '', url);
         }
 
         function loadLayersFromUrl() {
             var urlParams = new URLSearchParams(window.location.search);
+
+            // Geokatalog topic ("Thema wechseln"); the catalog itself loads when the accordion opens
+            var topic = urlParams.get('topic');
+            if (topic && isValidTopicId(topic) && topic !== currentTopic) {
+                currentTopic = topic;
+                geokatalogLoaded = false;
+                updateTopicHeader();
+            }
+
             var bgLayers = urlParams.get('bgLayers');
             if (bgLayers) {
                 var layerIds = bgLayers.split(',');
@@ -3458,18 +3477,57 @@
             if (first) first.click();
         });
 
-        // Scope select inside the search box ("Alle / Objekte / Orte / Karten / Fragen")
-        var searchScope = 'all';
-        var searchScopeSelect = document.getElementById('search-scope');
-        if (searchScopeSelect) {
-            searchScopeSelect.addEventListener('change', function() {
-                searchScope = this.value;
+        // Scope menu inside the search box ("Alle ▾" opens checkboxes Fragen / Objekte / Orte / Karten).
+        // Several sources can be combined; with every box (or none) ticked the label reads "Alle".
+        var searchScopeBtn = document.getElementById('search-scope-btn');
+        var searchScopeMenu = document.getElementById('search-scope-menu');
+        var searchScopeLabel = document.getElementById('search-scope-label');
+        var searchScopeBoxes = searchScopeMenu ? Array.prototype.slice.call(searchScopeMenu.querySelectorAll('input[type="checkbox"]')) : [];
+        var searchScopes = [];   // empty = all sources
+
+        function updateSearchScope() {
+            var checked = searchScopeBoxes.filter(function(cb) { return cb.checked; });
+            searchScopes = (checked.length === 0 || checked.length === searchScopeBoxes.length)
+                ? [] : checked.map(function(cb) { return cb.value; });
+            if (searchScopeLabel) {
+                var names = checked.map(function(cb) { return cb.parentNode.textContent.trim(); });
+                searchScopeLabel.textContent = searchScopes.length === 0 ? 'Alle'
+                    : (names.length === 1 ? names[0] : names.length + ' Bereiche');
+            }
+            if (searchScopeBtn) searchScopeBtn.classList.toggle('active', searchScopes.length > 0);
+        }
+
+        function setSearchScopeMenuOpen(open) {
+            if (!searchScopeMenu || !searchScopeBtn) return;
+            searchScopeMenu.hidden = !open;
+            searchScopeBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+        }
+
+        if (searchScopeBtn && searchScopeMenu) {
+            searchScopeBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                setSearchScopeMenuOpen(searchScopeMenu.hidden);
+            });
+            searchScopeMenu.addEventListener('change', function() {
+                updateSearchScope();
                 var val = searchInput.value.trim();
                 if (val.length >= 2) {
                     searchSpinner.style.display = 'block';
                     performSearch(val);
                 }
             });
+            document.addEventListener('click', function(e) {
+                if (!searchScopeMenu.hidden && !searchScopeBtn.contains(e.target) && !searchScopeMenu.contains(e.target)) {
+                    setSearchScopeMenuOpen(false);
+                }
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !searchScopeMenu.hidden) {
+                    setSearchScopeMenuOpen(false);
+                    searchScopeBtn.focus();
+                }
+            });
+            updateSearchScope();
         }
 
         // Clear Button Click Listener
@@ -3509,7 +3567,7 @@
         }
 
         function scopeAllows(section) {
-            return searchScope === 'all' || searchScope === section;
+            return searchScopes.length === 0 || searchScopes.indexOf(section) !== -1;
         }
 
         function performSearch(term) {
@@ -3656,7 +3714,8 @@
                 });
             }
 
-            // Section: Karten (Swisstopo Geokatalog) — row click adds the layer
+            // Section: Karten (Swisstopo Geokatalog) — row click adds the layer, the info button at the
+            // right opens the same layer info modal as in the "Dargestellte Karten" accordion
             if (layerResults.length > 0) {
                 html += sectionHeader('Karten', 'Geokatalog');
                 layerResults.forEach(function(r) {
@@ -3666,6 +3725,9 @@
                         icon('map') +
                         '<span class="search-item-main"><span class="search-item-title">' + r.attrs.label + '</span></span>' +
                         '<span class="search-item-action">+ Als Ebene</span>' +
+                        '<button type="button" class="search-item-info" onclick="event.stopPropagation(); showLayerInfo(\'' + escapeForJs(layerId) + '\')" title="Layer-Informationen" aria-label="Layer-Informationen">' +
+                            '<span class="material-symbols-outlined" aria-hidden="true">info</span>' +
+                        '</button>' +
                     '</div>';
                 });
             }
@@ -4024,6 +4086,102 @@
         // Make showLayerInfo globally accessible for onclick handlers
         window.showLayerInfo = showLayerInfo;
 
+        // ===== INTERNAL LAYERS ("Interne Karten" in the Dargestellte Karten accordion) =====
+
+        // Map layer ids that belong to each internal dataset (shown/hidden together)
+        var internalLayerMapIds = {
+            buildings: ['portfolio-points', 'portfolio-selected', 'portfolio-selected-pulse', 'portfolio-labels'],
+            parcels: ['parcels-fill', 'parcels-outline', 'parcels-highlight']
+        };
+
+        function setInternalLayerVisibility(layerKey, visible) {
+            var ids = internalLayerMapIds[layerKey];
+            if (!ids || !map) return;
+            var vis = visible ? 'visible' : 'none';
+            ids.forEach(function(id) {
+                if (map.getLayer(id)) map.setLayoutProperty(id, 'visibility', vis);
+            });
+        }
+
+        // The checkboxes in the accordion are the single source of truth for visibility
+        function applyInternalLayerVisibility() {
+            Object.keys(internalLayerMapIds).forEach(function(layerKey) {
+                var toggle = document.getElementById('layer-toggle-' + layerKey);
+                setInternalLayerVisibility(layerKey, !toggle || toggle.checked);
+            });
+        }
+
+        window.toggleInternalLayer = function(layerKey, visible) {
+            setInternalLayerVisibility(layerKey, visible);
+        };
+
+        // Metadata shown in the layer info modal for the internal datasets
+        var internalLayerMeta = {
+            buildings: {
+                title: 'Gebäude (Bundesamt für Bauten und Logistik BBL)',
+                description: 'Interner Datensatz des BBL-Immobilienportfolios. Enthält sämtliche Gebäude mit Standort, Nutzungstyp, Eigentumsverhältnissen, Baujahr und weiteren Attributen.',
+                source: 'BBL Immobilienportfolio',
+                format: 'GeoJSON',
+                geometryType: 'Point'
+            },
+            parcels: {
+                title: 'Grundstücke (Bundesamt für Bauten und Logistik BBL)',
+                description: 'Interner Datensatz der BBL-Parzellen. Enthält Grundstücksinformationen mit Flächenangaben, Nutzungszonen und Eigentumsverhältnissen.',
+                source: 'BBL Parzellen',
+                format: 'GeoJSON',
+                geometryType: 'Polygon'
+            }
+        };
+
+        function buildInternalLegendHTML(layerKey) {
+            var items = '';
+            if (layerKey === 'buildings') {
+                // Same colours as the portfolio-points circle layer
+                ['In Betrieb', 'In Renovation', 'In Planung', 'Ausser Betrieb'].forEach(function(status) {
+                    items += '<div class="internal-legend-item">' +
+                        '<span class="internal-legend-circle" style="background: ' + statusColors[status] + ';"></span>' +
+                        '<span>' + escapeHtml(status) + '</span>' +
+                    '</div>';
+                });
+            } else {
+                // Parcels: single colour, same as the parcels-fill / parcels-outline layers
+                items = '<div class="internal-legend-item">' +
+                    '<span class="internal-legend-rect" style="background: rgba(25, 118, 210, 0.15); border: 2px solid #1976d2;"></span>' +
+                    '<span>Parzelle</span>' +
+                '</div>';
+            }
+            return '<div class="legend-footer"><span>Legende</span></div>' +
+                '<div class="internal-legend">' + items + '</div>';
+        }
+
+        function showInternalLayerInfo(layerKey) {
+            if (!layerInfoModal || !layerInfoContent) return;
+
+            var meta = internalLayerMeta[layerKey];
+            if (!meta) return;
+
+            var datenstand = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+            layerInfoContent.innerHTML = '<div class="legend-container">' +
+                '<div class="bod-title">' + escapeHtml(meta.title) + '</div>' +
+                '<div class="legend-abstract">' + escapeHtml(meta.description) + '</div>' +
+                buildInternalLegendHTML(layerKey) +
+                '<div class="legend-footer"><span>Informationen</span></div>' +
+                '<table>' +
+                '<tr><td>Quelle</td><td>' + escapeHtml(meta.source) + '</td></tr>' +
+                '<tr><td>Format</td><td>' + escapeHtml(meta.format) + ' (' + escapeHtml(meta.geometryType) + ')</td></tr>' +
+                '<tr><td>Metadaten</td><td><span class="placeholder-link">Link zu Metadaten (Platzhalter)</span></td></tr>' +
+                '<tr><td>Detailbeschreibung</td><td><span class="placeholder-link">Link zur Detailbeschreibung (Platzhalter)</span></td></tr>' +
+                '<tr><td>Datenbezug</td><td><span class="placeholder-link">Link für Datenbezug (Platzhalter)</span></td></tr>' +
+                '<tr><td>Thematisches Geoportal</td><td><span class="placeholder-link">Link zum Fachportal (Platzhalter)</span></td></tr>' +
+                '<tr><td>Datenstand</td><td>' + datenstand + '</td></tr>' +
+                '</table>' +
+                '</div>';
+            layerInfoModal.classList.add('show');
+        }
+
+        window.showInternalLayerInfo = showInternalLayerInfo;
+
         // ===== GEOKATALOG =====
         var geokatalogLoaded = false;
 
@@ -4037,17 +4195,23 @@
             });
         }
 
+        var geokatalogRequestId = 0;
+
         function loadGeokatalog() {
             if (geokatalogLoaded) return;
 
             var treeContainer = document.getElementById('geokatalog-tree');
+            var requestId = ++geokatalogRequestId;
+            treeContainer.innerHTML = '<div class="geokatalog-loading">Lade Katalog...</div>';
 
-            fetch('https://api3.geo.admin.ch/rest/services/ech/CatalogServer?lang=de')
+            // Catalog of the current topic ("Thema wechseln"); "ech" is the complete Geokatalog
+            fetch('https://api3.geo.admin.ch/rest/services/' + encodeURIComponent(currentTopic) + '/CatalogServer?lang=de')
                 .then(function(response) {
                     if (!response.ok) throw new Error('API nicht erreichbar');
                     return response.json();
                 })
                 .then(function(data) {
+                    if (requestId !== geokatalogRequestId) return;   // a newer topic was requested meanwhile
                     geokatalogLoaded = true;
                     treeContainer.innerHTML = '';
 
@@ -4060,9 +4224,123 @@
                     updateMenuTogglePositionDebounced();
                 })
                 .catch(function(error) {
+                    if (requestId !== geokatalogRequestId) return;
                     console.error('Geokatalog Fehler:', error);
                     treeContainer.innerHTML = '<div class="geokatalog-error">Fehler beim Laden des Katalogs</div>';
                 });
+        }
+
+        // ===== THEMA WECHSELN (topics of map.geo.admin.ch) =====
+        // The Geokatalog is one of ~30 topics of api3.geo.admin.ch; a topic groups the catalog layers by
+        // federal office or theme. Names and the sprite (assets/topics.png) are borrowed from
+        // geoadmin/web-mapviewer; the chosen topic is kept in the URL (?topic=...).
+        var TOPIC_LABELS = {
+            are: 'ARE', astra: 'ASTRA', bafu: 'BAFU', blw: 'BLW', swisstopo: 'swisstopo', bfs: 'BFS', bav: 'BAV',
+            meteoschweiz: 'MeteoSchweiz', geodesy: 'Geodäsie', energie: 'Energie', gewiss: 'Wasser',
+            ivs: 'Hist. Verkehrswege', kgs: 'KGS Inventar', luftbilder: 'Luftbilder', nga: 'Breitbandatlas',
+            sachplan: 'Sachpläne/Konzepte', funksender: 'Funksender', verteidigung: 'Verteidigung',
+            vu: 'Verkehrsunfälle', wildruhezonen: 'Wildruhezonen', schneesport: 'Schneesport', aviation: 'Luftfahrt',
+            georessourcen: 'Georessourcen', notruf: 'Notruf', schule: 'Für die Schule', isos: 'ISOS-Ortsbilder',
+            cadastre: 'Grundstückinformation', geol: 'Geologie', inspire: 'INSPIRE', ech: 'Geokatalog'
+        };
+        var DEFAULT_TOPIC = 'ech';
+        var currentTopic = DEFAULT_TOPIC;
+        var topicList = null;   // topic ids from the API, cached for the session
+        var topicModal = document.getElementById('topic-modal');
+        var topicGrid = document.getElementById('topic-grid');
+        var topicSwitchBtn = document.getElementById('topic-switch-btn');
+
+        function isValidTopicId(id) {
+            return typeof id === 'string' && /^[a-z0-9_-]+$/i.test(id);
+        }
+
+        function topicLabel(id) {
+            return TOPIC_LABELS[id] || id;
+        }
+
+        // The accordion header shows the topic name ("Geokatalog" for the default topic)
+        function updateTopicHeader() {
+            var title = document.getElementById('geokatalog-title');
+            if (title) title.textContent = topicLabel(currentTopic);
+        }
+
+        function openTopicModal() {
+            if (!topicModal || !topicGrid) return;
+            topicModal.classList.add('show');
+            if (topicList) {
+                renderTopicGrid();
+                return;
+            }
+            topicGrid.innerHTML = '<div class="layer-info-loading">Lade Themen...</div>';
+            fetch('https://api3.geo.admin.ch/rest/services')
+                .then(function(response) {
+                    if (!response.ok) throw new Error('HTTP ' + response.status);
+                    return response.json();
+                })
+                .then(function(data) {
+                    var ids = (data.topics || []).map(function(topic) { return topic.id; }).filter(isValidTopicId);
+                    if (ids.length === 0) throw new Error('Keine Themen');
+                    topicList = ids;
+                    renderTopicGrid();
+                })
+                .catch(function(error) {
+                    console.error('Themen Fehler:', error);
+                    topicGrid.innerHTML = '<div class="geokatalog-error">Themen konnten nicht geladen werden</div>';
+                });
+        }
+
+        function closeTopicModal() {
+            if (topicModal) topicModal.classList.remove('show');
+        }
+
+        function renderTopicGrid() {
+            topicGrid.innerHTML = topicList.map(function(id) {
+                var active = id === currentTopic;
+                return '<button type="button" class="topic-card' + (active ? ' active' : '') + '" data-topic="' + escapeHtml(id) + '" aria-pressed="' + active + '">' +
+                    '<span class="topic-card-name">' + escapeHtml(topicLabel(id)) + '</span>' +
+                    '<span class="topic-sprite topic-sprite-' + escapeHtml(id) + '" aria-hidden="true"></span>' +
+                '</button>';
+            }).join('');
+        }
+
+        function selectTopic(id) {
+            closeTopicModal();
+            if (!isValidTopicId(id) || id === currentTopic) return;
+            currentTopic = id;
+            updateTopicHeader();
+            updateUrlWithLayers();
+
+            // Reload the catalog tree for the new topic; open the accordion if it is closed
+            geokatalogLoaded = false;
+            var header = geokatalogAccordion ? geokatalogAccordion.querySelector('.accordion-header') : null;
+            if (header && !header.classList.contains('active')) {
+                header.click();   // opens the accordion, which loads the catalog
+            } else {
+                loadGeokatalog();
+            }
+        }
+
+        if (topicSwitchBtn) {
+            topicSwitchBtn.addEventListener('click', function(e) {
+                e.stopPropagation();   // sits inside the accordion header: do not toggle the accordion
+                openTopicModal();
+            });
+        }
+        if (topicGrid) {
+            topicGrid.addEventListener('click', function(e) {
+                var card = e.target.closest('.topic-card');
+                if (card) selectTopic(card.getAttribute('data-topic'));
+            });
+        }
+        if (topicModal) {
+            var topicCloseBtn = topicModal.querySelector('.topic-modal-close');
+            if (topicCloseBtn) topicCloseBtn.addEventListener('click', closeTopicModal);
+            topicModal.addEventListener('click', function(e) {
+                if (e.target === topicModal) closeTopicModal();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && topicModal.classList.contains('show')) closeTopicModal();
+            });
         }
 
         function renderCatalogTree(items, container) {

@@ -27,7 +27,7 @@ import { initPrintWidget } from './print.js';
 import { initI18n, translationsLoaded, t } from './i18n.js';
 import {
   removeSwisstopoLayer, toggleSwisstopoLayerVisibility,
-  showLayerInfo, showInternalLayerInfo, loadGeokatalog
+  showLayerInfo, showInternalLayerInfo, loadGeokatalog, openTopicModal, initTopicSwitch
 } from './swisstopo.js';
 
 // ===== LOADING OVERLAY =====
@@ -371,6 +371,7 @@ function boot() {
   initStyleSwitcher();
   initPrintWidget();
   initUI();
+  initTopicSwitch();
 
   if (!translationsLoaded()) {
     // Static text on purpose: t() cannot translate when the translation file failed to load
@@ -398,6 +399,7 @@ function boot() {
     removeSwisstopoLayer: function(el) { removeSwisstopoLayer(el.dataset.layerId); },
     showLayerInfo: function(el) { showLayerInfo(el.dataset.layerId); },
     retryGeokatalog: function() { loadGeokatalog(); },
+    switchTopic: function() { openTopicModal(); },
     retryApiDocs: function() { initApiDocs(); },
     searchLocal: function(el) { handleSearchClick('local', el.dataset.id); },
     searchLocation: function(el) { handleSearchClick('location', null, parseFloat(el.dataset.lat), parseFloat(el.dataset.lng), null, null, el.dataset.bbox || null, el.dataset.origin || ''); },

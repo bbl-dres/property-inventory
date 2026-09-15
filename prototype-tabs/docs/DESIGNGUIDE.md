@@ -598,11 +598,20 @@ For grouped information display.
   <button class="search-clear-btn">
     <span class="material-symbols-outlined">close</span>
   </button>
-  <select class="search-scope" aria-label="Suchbereich">   <!-- desktop and tablet only -->
-    <option value="all">Alle</option> …
-  </select>
+  <div class="search-scope">                               <!-- desktop and tablet only -->
+    <button class="search-scope-btn" aria-haspopup="true" aria-expanded="false">
+      <span>Alle</span><span class="material-symbols-outlined">arrow_drop_down</span>
+    </button>
+  </div>
+</div>
+<div class="search-scope-menu" role="group" hidden>       <!-- checkboxes, several can be combined -->
+  <label class="search-scope-option"><input type="checkbox" value="ask" checked><span>Fragen</span></label>
+  <label class="search-scope-option"><input type="checkbox" value="objects" checked><span>Objekte</span></label> …
 </div>
 ```
+
+The scope button reads "Alle" while every box (or none) is ticked, the name of a single ticked
+source, or "N Bereiche". The menu lives outside the search container so it can drop below the box.
 
 ### Search Suggestions Pattern
 
@@ -619,7 +628,7 @@ OBJEKTE
 ORT ……………………………………… swisstopo
 ◉  Bern (BE)                              Ort
 KARTEN ……………………………… Geokatalog
-▤  ISOS Ortsbildaufnahmen                 [+ Als Ebene]
+▤  ISOS Ortsbildaufnahmen                 [+ Als Ebene] ⓘ   ← row adds the layer; ⓘ opens the layer info modal
 ```
 
 ```html
@@ -983,10 +992,12 @@ Respect user preferences for reduced motion:
 
 ### Icon Library
 
-We use **Google Material Symbols Outlined** for consistent, professional iconography.
+We use **Google Material Symbols Outlined** for consistent, professional iconography. The font is
+self-hosted in `assets/icons/` (static build of the complete icon set, Apache 2.0), so the page makes
+no request to Google Fonts and every icon name works offline.
 
 ```html
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+<link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
 ```
 
 ### Usage

@@ -3,7 +3,7 @@
 import { state } from './state.js';
 import { escapeHtml } from './utils.js';
 import { showToast } from './ui.js';
-import { t } from './i18n.js';
+import { t, getLang, onLangChange } from './i18n.js';
 import { statusColors } from './config.js';
 
 // ===== SWISSTOPO LAYER MANAGEMENT =====
@@ -233,11 +233,26 @@ export function updateUrlWithLayers() {
   } else {
     url.searchParams.delete('bgLayers');
   }
+  // Geokatalog topic ("Thema wechseln"); the default topic needs no parameter
+  if (currentTopic !== DEFAULT_TOPIC) {
+    url.searchParams.set('topic', currentTopic);
+  } else {
+    url.searchParams.delete('topic');
+  }
   window.history.replaceState({}, '', url);
 }
 
 export function loadLayersFromUrl() {
   const urlParams = new URLSearchParams(window.location.search);
+
+  // Geokatalog topic ("Thema wechseln"); the catalog itself loads when the accordion opens
+  const topic = urlParams.get('topic');
+  if (topic && isValidTopicId(topic) && topic !== currentTopic) {
+    currentTopic = topic;
+    state.geokatalogLoaded = false;
+    updateTopicHeader();
+  }
+
   const bgLayers = urlParams.get('bgLayers');
   if (bgLayers) {
     const layerIds = bgLayers.split(',');
@@ -649,20 +664,24 @@ export function updateGeokatalogCheckboxes() {
 }
 
 let geokatalogLoading = false;
+let geokatalogRequestId = 0;
 
 export function loadGeokatalog() {
   if (state.geokatalogLoaded || geokatalogLoading) return;
   geokatalogLoading = true;
+  const requestId = ++geokatalogRequestId;
 
   const treeContainer = document.getElementById('geokatalog-tree');
   treeContainer.innerHTML = '<div class="geokatalog-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('loading.catalog') + '</span></div>';
 
-  fetch('https://api3.geo.admin.ch/rest/services/ech/CatalogServer?lang=de')
+  // Catalog of the current topic ("Thema wechseln"); "ech" is the complete Geokatalog
+  fetch('https://api3.geo.admin.ch/rest/services/' + encodeURIComponent(currentTopic) + '/CatalogServer?lang=' + encodeURIComponent(getLang()))
     .then(function(response) {
       if (!response.ok) throw new Error('API nicht erreichbar (HTTP ' + response.status + ')');
       return response.json();
     })
     .then(function(data) {
+      if (requestId !== geokatalogRequestId) return; // a newer topic was requested meanwhile
       state.geokatalogLoaded = true;
       treeContainer.innerHTML = '';
 
@@ -674,13 +693,132 @@ export function loadGeokatalog() {
       }
     })
     .catch(function(error) {
+      if (requestId !== geokatalogRequestId) return;
       console.error('Geokatalog Fehler:', error);
       treeContainer.innerHTML = '<div class="geokatalog-error">' + t('swisstopo.catalog.failed') +
         '<br><button type="button" class="geokatalog-retry" data-action="retryGeokatalog">' + t('error.retry') + '</button></div>';
     })
     .finally(function() {
-      geokatalogLoading = false;
+      if (requestId === geokatalogRequestId) geokatalogLoading = false;
     });
+}
+
+// ===== THEMA WECHSELN (topics of map.geo.admin.ch) =====
+// The Geokatalog is one of ~30 topics of api3.geo.admin.ch; a topic groups the catalog layers by
+// federal office or theme. Names (data/i18n.json, "topic.*") and the sprite (assets/topics.png) are
+// borrowed from geoadmin/web-mapviewer; the chosen topic is kept in the URL (?topic=...).
+const DEFAULT_TOPIC = 'ech';
+let currentTopic = DEFAULT_TOPIC;
+let topicList = null; // topic ids from the API, cached for the session
+
+const topicModal = document.getElementById('topic-modal');
+const topicGrid = document.getElementById('topic-grid');
+
+export function getCurrentTopic() {
+  return currentTopic;
+}
+
+function isValidTopicId(id) {
+  return typeof id === 'string' && /^[a-z0-9_-]+$/i.test(id);
+}
+
+function topicLabel(id) {
+  const key = 'topic.' + id;
+  const label = t(key);
+  return label === key ? id : label;
+}
+
+// The accordion header shows the topic name ("Geokatalog" for the default topic)
+function updateTopicHeader() {
+  const title = document.getElementById('geokatalog-title');
+  if (title) title.textContent = topicLabel(currentTopic);
+}
+
+export function openTopicModal() {
+  if (!topicModal || !topicGrid) return;
+  topicModal.classList.add('show');
+  if (topicList) {
+    renderTopicGrid();
+    return;
+  }
+  topicGrid.innerHTML = '<div class="layer-info-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('topic.loading') + '</span></div>';
+  fetch('https://api3.geo.admin.ch/rest/services')
+    .then(function(response) {
+      if (!response.ok) throw new Error('HTTP ' + response.status);
+      return response.json();
+    })
+    .then(function(data) {
+      const ids = (data.topics || []).map(function(topic) { return topic.id; }).filter(isValidTopicId);
+      if (ids.length === 0) throw new Error('Keine Themen');
+      topicList = ids;
+      renderTopicGrid();
+    })
+    .catch(function(error) {
+      console.error('Themen Fehler:', error);
+      topicGrid.innerHTML = '<div class="geokatalog-error">' + t('topic.failed') + '</div>';
+    });
+}
+
+function closeTopicModal() {
+  if (topicModal) topicModal.classList.remove('show');
+}
+
+function renderTopicGrid() {
+  topicGrid.innerHTML = topicList.map(function(id) {
+    const active = id === currentTopic;
+    return '<button type="button" class="topic-card' + (active ? ' active' : '') + '" data-topic="' + escapeHtml(id) + '" aria-pressed="' + active + '">' +
+      '<span class="topic-card-name">' + escapeHtml(topicLabel(id)) + '</span>' +
+      '<span class="topic-sprite topic-sprite-' + escapeHtml(id) + '" aria-hidden="true"></span>' +
+      '</button>';
+  }).join('');
+}
+
+function selectTopic(id) {
+  closeTopicModal();
+  if (!isValidTopicId(id) || id === currentTopic) return;
+  currentTopic = id;
+  updateTopicHeader();
+  updateUrlWithLayers();
+
+  // Reload the catalog tree for the new topic (an in-flight request is invalidated by the counter);
+  // open the accordion if it is closed
+  state.geokatalogLoaded = false;
+  geokatalogLoading = false;
+  geokatalogRequestId++;
+  const header = document.querySelector('#geokatalog-accordion .accordion-header');
+  if (header && !header.classList.contains('active')) {
+    header.click(); // opens the accordion, which loads the catalog
+  } else {
+    loadGeokatalog();
+  }
+}
+
+export function initTopicSwitch() {
+  if (topicGrid) {
+    topicGrid.addEventListener('click', function(e) {
+      const card = e.target.closest('.topic-card');
+      if (card) selectTopic(card.getAttribute('data-topic'));
+    });
+  }
+  if (topicModal) {
+    const closeBtn = topicModal.querySelector('.topic-modal-close');
+    if (closeBtn) closeBtn.addEventListener('click', closeTopicModal);
+    topicModal.addEventListener('click', function(e) {
+      if (e.target === topicModal) closeTopicModal();
+    });
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape' && topicModal.classList.contains('show')) {
+        e.stopImmediatePropagation();
+        closeTopicModal();
+      }
+    });
+  }
+  // The header label and the grid are rendered from JS: refresh them after a language change
+  onLangChange(function() {
+    updateTopicHeader();
+    if (topicList && topicModal && topicModal.classList.contains('show')) renderTopicGrid();
+  });
+  updateTopicHeader();
 }
 
 // One delegated click handler for the whole catalog tree (the swisstopo catalog has

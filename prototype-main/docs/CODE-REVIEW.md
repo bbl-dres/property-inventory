@@ -80,8 +80,8 @@ The swisstopo legend HTML is still sanitised before insertion (scripts, iframes,
 
 | ID | Recommendation |
 |---|---|
-| R1 | **Icon font dependency.** Material Symbols come from Google Fonts. If that host is blocked (corporate proxy), every icon renders as its name ("search", "close"). Self-host a subset (needs a small build step) or add inline SVG fallbacks for the icon-only buttons. |
-| R2 | **jsPDF** is still loaded from cdnjs (only needed for PDF export; a clear error is shown if it is missing). Vendor it like MapLibre if PDF export must work offline. |
+| R1 | **Icon font dependency.** Material Symbols come from Google Fonts. If that host is blocked (corporate proxy), every icon renders as its name ("search", "close"). Self-host a subset (needs a small build step) or add inline SVG fallbacks for the icon-only buttons. **Resolved:** the static build of the complete icon set (322 KB) is self-hosted in `assets/icons/`; no build step, no Google Fonts request. |
+| R2 | **jsPDF** is still loaded from cdnjs (only needed for PDF export; a clear error is shown if it is missing). Vendor it like MapLibre if PDF export must work offline. **Resolved:** vendored in `vendor/jspdf/` (2.5.1, MIT); see [THIRD-PARTY.md](../THIRD-PARTY.md). |
 | R3 | The "Excel (.xlsx)" export produces a semicolon-separated CSV with BOM. Either rename the menu item or implement a real `.xlsx` export (e.g. SheetJS). |
 | R4 | Remaining German-only strings: filter pill labels (`filterConfig`), the shapefile export notice, the mobile layer group label after a language change. |
 | R5 | Geokatalog and swisstopo search are always requested with `lang=de`; pass the UI language. |

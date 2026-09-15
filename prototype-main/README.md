@@ -20,7 +20,8 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 - **Mobile** — phones (portrait and landscape) get a compact header with a hamburger menu, a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ### Search & filtering
-- Multi-source search: local buildings + swisstopo location API + Geokatalog layers.
+- Multi-source search: local buildings + swisstopo location API + Geokatalog layers. Rows show an icon, the highlighted term and a meta line; Geokatalog rows carry a "+ Als Ebene" button and an info button that opens the layer info modal. A scope menu ("Alle ▾") with checkboxes narrows the sources (several can be combined).
+- "Thema wechseln": the Geokatalog accordion switches between the ~30 topics of map.geo.admin.ch (federal offices and themes) in a topic grid borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names in `data/i18n.json` as `topic.*`, images in `assets/topics.png`); the catalog tree reloads for the chosen topic, the header shows its name and the choice is kept in the URL (`topic=`).
 - 6 filter categories: status, ownership type, portfolio, building type, country, region.
 - Deep linking with URL-based navigation and filter persistence.
 
@@ -69,8 +70,9 @@ Then open <http://localhost:8000/prototype-main/> (or the repo root, which redir
 | Vanilla ES modules | No build, easy to read |
 | MapLibre GL JS 5.19 | Map, layers, 3D tiles — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
 | Swagger UI 5 | API documentation from `data/swagger.json` — vendored in `vendor/swagger-ui/`, loaded only when the API page opens |
+| jsPDF 2.5.1 | PDF export of the print view — vendored in `vendor/jspdf/` |
 | swisstopo `api3.geo.admin.ch` | Location search & Geokatalog (no key required) |
-| Material Symbols | Icons |
+| Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
 ## Layout
 
@@ -97,7 +99,8 @@ prototype-main/
 │   └── swagger.json      # OpenAPI 3.0 mock API (generated)
 ├── vendor/
 │   ├── maplibre-gl/      # MapLibre GL JS 5.19.0 (js, css, licence)
-│   └── swagger-ui/       # Swagger UI 5 (js, css, licence)
+│   ├── swagger-ui/       # Swagger UI 5 (js, css, licence)
+│   └── jspdf/            # jsPDF 2.5.1 (js, licence)
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
     ├── DESIGNGUIDE.md    # Design system
@@ -108,5 +111,5 @@ prototype-main/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

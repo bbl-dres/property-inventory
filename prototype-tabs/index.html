@@ -11,7 +11,8 @@
     <link href="vendor/maplibre-gl/maplibre-gl.css" rel="stylesheet" />
     <script src="vendor/maplibre-gl/maplibre-gl.js"></script>
     
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    <!-- Icon font, self-hosted (assets/icons/): no request to Google Fonts -->
+    <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
     
     <link rel="stylesheet" href="css/main.css">
 </head>
@@ -42,6 +43,21 @@
         </div>
     </div>
 
+    <!-- "Thema wechseln": topic grid of map.geo.admin.ch (names and images borrowed from geoadmin/web-mapviewer) -->
+    <div id="topic-modal" class="layer-info-modal topic-modal" role="dialog" aria-modal="true" aria-labelledby="topic-modal-title">
+        <div class="layer-info-modal-content topic-modal-content">
+            <div class="topic-modal-header">
+                <h2 id="topic-modal-title">Thema wechseln</h2>
+                <button type="button" class="layer-info-modal-close topic-modal-close" aria-label="Schliessen">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="topic-grid" class="topic-grid">
+                <div class="layer-info-loading">Lade Themen...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Skip link for keyboard navigation -->
     <a href="#main" class="skip-link">Zum Hauptinhalt springen</a>
 
@@ -66,13 +82,19 @@
                             <span class="material-symbols-outlined" aria-hidden="true">close</span>
                         </button>
                         <div id="search-spinner" class="spinner" role="status" aria-label="Suche läuft"></div>
-                        <select id="search-scope" class="search-scope" aria-label="Suchbereich">
-                            <option value="all">Alle</option>
-                            <option value="objects">Objekte</option>
-                            <option value="places">Orte</option>
-                            <option value="maps">Karten</option>
-                            <option value="ask">Fragen</option>
-                        </select>
+                        <div id="search-scope" class="search-scope">
+                            <button type="button" id="search-scope-btn" class="search-scope-btn" aria-haspopup="true" aria-expanded="false" aria-controls="search-scope-menu" aria-label="Suchbereich">
+                                <span id="search-scope-label">Alle</span>
+                                <span class="material-symbols-outlined" aria-hidden="true">arrow_drop_down</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Scope menu: sits outside #search-container (overflow: hidden) so it can drop below the box -->
+                    <div id="search-scope-menu" class="search-scope-menu" role="group" aria-label="Suchbereich" hidden>
+                        <label class="search-scope-option"><input type="checkbox" value="ask" checked><span>Fragen</span></label>
+                        <label class="search-scope-option"><input type="checkbox" value="objects" checked><span>Objekte</span></label>
+                        <label class="search-scope-option"><input type="checkbox" value="places" checked><span>Orte</span></label>
+                        <label class="search-scope-option"><input type="checkbox" value="maps" checked><span>Karten</span></label>
                     </div>
                     <div id="search-results" role="listbox" aria-label="Suchergebnisse"></div>
                 </div>
@@ -355,8 +377,8 @@
                 <div class="accordion-item" id="geokatalog-accordion">
                     <div class="accordion-header geokatalog-header">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span>Geokatalog</span>
-                        <span class="geokatalog-theme-switch">Thema wechseln</span>
+                        <span id="geokatalog-title">Geokatalog</span>
+                        <button type="button" id="topic-switch-btn" class="geokatalog-theme-switch" title="Thema wechseln">Thema wechseln</button>
                     </div>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
@@ -371,8 +393,30 @@
                         <span>Dargestellte Karten</span>
                     </div>
                     <div class="accordion-content show">
-                        <div id="active-layers-list" class="active-layers-list">
-                            <div class="active-layers-empty">Keine Hintergrundkarten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                        <div class="active-layers-list">
+                            <div class="layer-group">
+                                <div class="layer-group-label">Interne Karten</div>
+                                <div class="active-layer-item" data-internal-layer="buildings">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" title="Gebäude ein-/ausblenden" onchange="toggleInternalLayer('buildings', this.checked)">
+                                    <span class="active-layer-title">Gebäude</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('buildings')" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                                <div class="active-layer-item" data-internal-layer="parcels">
+                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden" onchange="toggleInternalLayer('parcels', this.checked)">
+                                    <span class="active-layer-title">Grundstücke</span>
+                                    <button class="active-layer-info" onclick="showInternalLayerInfo('parcels')" title="Layer-Informationen">
+                                        <span class="material-symbols-outlined">info</span>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="layer-group">
+                                <div class="layer-group-label">Externe Karten</div>
+                                <div id="external-layers-list">
+                                    <div class="active-layers-empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

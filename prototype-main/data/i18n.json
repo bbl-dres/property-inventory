@@ -258,10 +258,10 @@
     "it": "Errore PDF"
   },
   "print.error.library": {
-    "de": "Die PDF-Bibliothek (jsPDF) konnte nicht geladen werden. Bitte Internetverbindung prüfen und Seite neu laden.",
-    "en": "The PDF library (jsPDF) could not be loaded. Please check your internet connection and reload the page.",
-    "fr": "La bibliothèque PDF (jsPDF) n'a pas pu être chargée. Veuillez vérifier votre connexion internet et recharger la page.",
-    "it": "Impossibile caricare la libreria PDF (jsPDF). Verificare la connessione internet e ricaricare la pagina."
+    "de": "Die PDF-Bibliothek (jsPDF) konnte nicht geladen werden. Bitte Seite neu laden.",
+    "en": "The PDF library (jsPDF) could not be loaded. Please reload the page.",
+    "fr": "La bibliothèque PDF (jsPDF) n'a pas pu être chargée. Veuillez recharger la page.",
+    "it": "Impossibile caricare la libreria PDF (jsPDF). Ricaricare la pagina."
   },
   "print.prototype.note": {
     "de": "Prototyp – fiktive Daten",
@@ -1439,6 +1439,198 @@
     "fr": "Changer de thème",
     "it": "Cambiare tema"
   },
+  "topic.loading": {
+    "de": "Lade Themen...",
+    "en": "Loading topics...",
+    "fr": "Chargement des thèmes...",
+    "it": "Caricamento temi..."
+  },
+  "topic.failed": {
+    "de": "Themen konnten nicht geladen werden",
+    "en": "Topics could not be loaded",
+    "fr": "Les thèmes n'ont pas pu être chargés",
+    "it": "Impossibile caricare i temi"
+  },
+  "topic.are": {
+    "de": "ARE",
+    "en": "ARE",
+    "fr": "ARE",
+    "it": "ARE"
+  },
+  "topic.astra": {
+    "de": "ASTRA",
+    "en": "FEDRO",
+    "fr": "OFROU",
+    "it": "USTRA"
+  },
+  "topic.bafu": {
+    "de": "BAFU",
+    "en": "FOEN",
+    "fr": "OFEV",
+    "it": "UFAM"
+  },
+  "topic.blw": {
+    "de": "BLW",
+    "en": "FOAG",
+    "fr": "OFAG",
+    "it": "UFAG"
+  },
+  "topic.swisstopo": {
+    "de": "swisstopo",
+    "en": "swisstopo",
+    "fr": "swisstopo",
+    "it": "swisstopo"
+  },
+  "topic.bfs": {
+    "de": "BFS",
+    "en": "FSO",
+    "fr": "OFS",
+    "it": "UST"
+  },
+  "topic.bav": {
+    "de": "BAV",
+    "en": "FOT",
+    "fr": "OFT",
+    "it": "UFT"
+  },
+  "topic.meteoschweiz": {
+    "de": "MeteoSchweiz",
+    "en": "MeteoSwiss",
+    "fr": "MeteoSuisse",
+    "it": "MeteoSvizzera"
+  },
+  "topic.geodesy": {
+    "de": "Geodäsie",
+    "en": "Geodesy",
+    "fr": "Géodesie",
+    "it": "Geodesia"
+  },
+  "topic.energie": {
+    "de": "Energie",
+    "en": "Energy",
+    "fr": "Énergie",
+    "it": "Energia"
+  },
+  "topic.gewiss": {
+    "de": "Wasser",
+    "en": "Waters",
+    "fr": "Eaux",
+    "it": "Acque"
+  },
+  "topic.ivs": {
+    "de": "Hist. Verkehrswege",
+    "en": "IHR Inventory",
+    "fr": "Voies comm. hist.",
+    "it": "Vie com. storiche"
+  },
+  "topic.kgs": {
+    "de": "KGS Inventar",
+    "en": "KGS Inventory",
+    "fr": "Inventaire PBC",
+    "it": "Inventario PBC"
+  },
+  "topic.luftbilder": {
+    "de": "Luftbilder",
+    "en": "Aerial images",
+    "fr": "Photos aériennes",
+    "it": "Immagini aeree"
+  },
+  "topic.nga": {
+    "de": "Breitbandatlas",
+    "en": "Broadband map",
+    "fr": "Atlas large bande",
+    "it": "Atlante banda larga"
+  },
+  "topic.sachplan": {
+    "de": "Sachpläne/Konzepte",
+    "en": "Sectoral pl./concepts",
+    "fr": "Plans sec./conceptions",
+    "it": "Piani sett./concezioni"
+  },
+  "topic.funksender": {
+    "de": "Funksender",
+    "en": "Radio transmitter",
+    "fr": "Emetteur radio",
+    "it": "Trasmettitore radio"
+  },
+  "topic.verteidigung": {
+    "de": "Verteidigung",
+    "en": "Defence",
+    "fr": "Défense",
+    "it": "Difesa"
+  },
+  "topic.vu": {
+    "de": "Verkehrsunfälle",
+    "en": "Road accidents",
+    "fr": "Accidents de la route",
+    "it": "Incidenti stradali"
+  },
+  "topic.wildruhezonen": {
+    "de": "Wildruhezonen",
+    "en": "Des. Wildlife Areas",
+    "fr": "Zones de tranquillité",
+    "it": "Zone di tranquillità"
+  },
+  "topic.schneesport": {
+    "de": "Schneesport",
+    "en": "Snowsport",
+    "fr": "Sport de neige",
+    "it": "Sport sulla neve"
+  },
+  "topic.aviation": {
+    "de": "Luftfahrt",
+    "en": "Aviation",
+    "fr": "Aviation",
+    "it": "Aviazione"
+  },
+  "topic.georessourcen": {
+    "de": "Georessourcen",
+    "en": "Georesources",
+    "fr": "Géoressources",
+    "it": "Georisorse"
+  },
+  "topic.notruf": {
+    "de": "Notruf",
+    "en": "Emergency call",
+    "fr": "Appel d'urgence",
+    "it": "Chiamata d'emergenza"
+  },
+  "topic.schule": {
+    "de": "Für die Schule",
+    "en": "For schools",
+    "fr": "Pour l'école",
+    "it": "Per la scuola"
+  },
+  "topic.isos": {
+    "de": "ISOS-Ortsbilder",
+    "en": "ISOS Heritage sites",
+    "fr": "Sites construits ISOS",
+    "it": "Insediamenti ISOS"
+  },
+  "topic.cadastre": {
+    "de": "Grundstückinformation",
+    "en": "Land and property",
+    "fr": "Informations foncières",
+    "it": "Informazioni sui fondi"
+  },
+  "topic.geol": {
+    "de": "Geologie",
+    "en": "Geology",
+    "fr": "Géologie",
+    "it": "Geologia"
+  },
+  "topic.inspire": {
+    "de": "INSPIRE",
+    "en": "INSPIRE",
+    "fr": "INSPIRE",
+    "it": "INSPIRE"
+  },
+  "topic.ech": {
+    "de": "Geokatalog",
+    "en": "Geocatalog",
+    "fr": "Géocatalogue",
+    "it": "Geocatalogo"
+  },
   "accordion.layers": {
     "de": "Dargestellte Karten",
     "en": "Displayed maps",
@@ -1546,6 +1738,42 @@
     "en": "No results found",
     "fr": "Aucun résultat trouvé",
     "it": "Nessun risultato trovato"
+  },
+  "search.scope": {
+    "de": "Suchbereich",
+    "en": "Search scope",
+    "fr": "Domaine de recherche",
+    "it": "Ambito di ricerca"
+  },
+  "search.scope.all": {
+    "de": "Alle",
+    "en": "All",
+    "fr": "Tous",
+    "it": "Tutti"
+  },
+  "search.scope.count": {
+    "de": "{n} Bereiche",
+    "en": "{n} sources",
+    "fr": "{n} domaines",
+    "it": "{n} ambiti"
+  },
+  "search.addLayer": {
+    "de": "+ Als Ebene",
+    "en": "+ As layer",
+    "fr": "+ Comme couche",
+    "it": "+ Come livello"
+  },
+  "search.meta.building": {
+    "de": "Gebäude",
+    "en": "Building",
+    "fr": "Bâtiment",
+    "it": "Edificio"
+  },
+  "search.meta.place": {
+    "de": "Ort",
+    "en": "Place",
+    "fr": "Lieu",
+    "it": "Luogo"
   },
   "print.scale": {
     "de": "Massstab 1:{scale}",
@@ -1962,10 +2190,10 @@
     "it": "Inventario PBC"
   },
   "search.section.maps": {
-    "de": "Karten hinzufügen...",
-    "en": "Add maps...",
-    "fr": "Ajouter des cartes...",
-    "it": "Aggiungere carte..."
+    "de": "Karten",
+    "en": "Maps",
+    "fr": "Cartes",
+    "it": "Carte"
   },
   "print.generating": {
     "de": "Wird erstellt...",

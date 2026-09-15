@@ -8,12 +8,11 @@
     <!-- No favicon: an empty data URI suppresses the browser's /favicon.ico request -->
     <link rel="icon" href="data:,">
 
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
 
     <link href="vendor/maplibre-gl/maplibre-gl.css" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+    <!-- Icon font, self-hosted (assets/icons/): no request to Google Fonts -->
+    <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
     <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/styles.css">
 
@@ -86,6 +85,21 @@
         </div>
     </div>
 
+    <!-- "Thema wechseln": topic grid of map.geo.admin.ch (names and images borrowed from geoadmin/web-mapviewer) -->
+    <div id="topic-modal" class="layer-info-modal topic-modal" role="dialog" aria-modal="true" aria-labelledby="topic-modal-title">
+        <div class="layer-info-modal-content topic-modal-content">
+            <div class="topic-modal-header">
+                <h2 id="topic-modal-title" data-i18n="accordion.catalog.theme">Thema wechseln</h2>
+                <button type="button" class="layer-info-modal-close topic-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
+                    <span class="material-symbols-outlined">close</span>
+                </button>
+            </div>
+            <div id="topic-grid" class="topic-grid">
+                <div class="layer-info-loading" data-i18n="topic.loading">Lade Themen...</div>
+            </div>
+        </div>
+    </div>
+
     <!-- Skip link for keyboard navigation -->
     <a href="#main" class="skip-link" data-i18n="skip.main">Zum Hauptinhalt springen</a>
 
@@ -109,6 +123,18 @@
                             <span class="material-symbols-outlined" aria-hidden="true">close</span>
                         </button>
                         <div id="search-spinner" class="spinner" role="status" data-i18n-aria-label="header.search.loading" aria-label="Suche läuft"></div>
+                        <div id="search-scope" class="search-scope">
+                            <button type="button" id="search-scope-btn" class="search-scope-btn" aria-haspopup="true" aria-expanded="false" aria-controls="search-scope-menu" data-i18n-aria-label="search.scope" aria-label="Suchbereich">
+                                <span id="search-scope-label">Alle</span>
+                                <span class="material-symbols-outlined" aria-hidden="true">arrow_drop_down</span>
+                            </button>
+                        </div>
+                    </div>
+                    <!-- Scope menu: sits outside #search-container (overflow: hidden) so it can drop below the box -->
+                    <div id="search-scope-menu" class="search-scope-menu" role="group" data-i18n-aria-label="search.scope" aria-label="Suchbereich" hidden>
+                        <label class="search-scope-option"><input type="checkbox" value="objects" checked><span data-i18n="search.section.objects">Objekte</span></label>
+                        <label class="search-scope-option"><input type="checkbox" value="places" checked><span data-i18n="search.section.places">Orte</span></label>
+                        <label class="search-scope-option"><input type="checkbox" value="maps" checked><span data-i18n="search.section.maps">Karten</span></label>
                     </div>
                     <div id="search-results" role="listbox" data-i18n-aria-label="header.search.results" aria-label="Suchergebnisse"></div>
                 </div>
@@ -345,10 +371,12 @@
                 </div>
 
                 <div class="accordion-item" id="geokatalog-accordion">
+                    <!-- "Thema wechseln" is a sibling of the header (a button cannot contain a button) and comes
+                         before it so the header's nextElementSibling stays the accordion content -->
+                    <button type="button" id="topic-switch-btn" class="geokatalog-theme-switch" data-action="switchTopic" data-i18n="accordion.catalog.theme" data-i18n-title="accordion.catalog.theme" title="Thema wechseln">Thema wechseln</button>
                     <button class="accordion-header geokatalog-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span data-i18n="accordion.catalog">Geokatalog</span>
-                        <span class="geokatalog-theme-switch" data-i18n="accordion.catalog.theme">Thema wechseln</span>
+                        <span id="geokatalog-title" data-i18n="accordion.catalog">Geokatalog</span>
                     </button>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
@@ -1083,7 +1111,8 @@
     <!-- Toast notifications: fixed to the viewport so they are visible in every view -->
     <div id="toast-container" class="toast-container" role="alert" aria-live="polite"></div>
 
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <!-- jsPDF for the PDF export, vendored (vendor/jspdf/): no CDN request -->
+    <script defer src="vendor/jspdf/jspdf.umd.min.js"></script>
     <script type="importmap">
     {
         "imports": {

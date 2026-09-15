@@ -12,7 +12,8 @@ https://bbl-dres.github.io/property-inventory/prototype-tabs/
 
 - **Full-page detail view.** When a building is selected, the map collapses and a structured detail page takes over.
 - **Seven tabs** per property: Übersicht, Bemessungen, Kosten, Verträge, Ausstattung, Dokumente, Kontakte.
-- **KI in the search box.** The search suggestions start with a "Frage stellen" section: one suggested question for the typed term, answered inline (Enter or tap) — mock answers computed from the loaded data, no model. A scope select ("Alle / Objekte / Orte / Karten / Fragen") narrows the sources. This replaced the former AI side panel.
+- **KI in the search box.** The search suggestions start with a "Frage stellen" section: one suggested question for the typed term, answered inline (Enter or tap) — mock answers computed from the loaded data, no model. A scope menu in the search box ("Alle ▾") opens checkboxes for Fragen, Objekte, Orte and Karten; several can be combined. Geokatalog rows carry a "+ Als Ebene" button and an info button that opens the layer info modal. This replaced the former AI side panel.
+- **Thema wechseln.** The Geokatalog accordion can switch between the ~30 topics of map.geo.admin.ch (federal offices and themes, e.g. swisstopo, MeteoSchweiz, Energie): a modal with a topic grid, borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names and `assets/topics.png`), reloads the catalog tree for the chosen topic; the header shows the topic name and the choice is kept in the URL (`topic=`).
 - **Mobile.** Phones (portrait and landscape) get a two-row header, a hamburger menu for the map tools (share, print, export, Geokatalog, external layers), a full-screen filter sheet with a live result count, a swipe-to-dismiss info sheet and a sticky tab strip on the detail page; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ## Running
@@ -31,7 +32,7 @@ Then open <http://localhost:8000/prototype-tabs/>.
 |---|---|
 | Vanilla JS (single `app.js`) | No build, all logic in one file |
 | MapLibre GL JS 5.19 (vendored in `vendor/`) | Map, mini map, markers, popups — same build and basemaps (CARTO Positron/Voyager/Dark Matter, swisstopo SWISSIMAGE) as the main app; no API key |
-| Material Symbols | Icons |
+| Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
 ## Layout
 
@@ -53,6 +54,6 @@ prototype-tabs/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Parent prototype: [`../prototype-main`](../prototype-main) (read-only inventory)
 - Sibling prototypes: [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)
