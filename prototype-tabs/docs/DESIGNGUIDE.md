@@ -644,7 +644,7 @@ KARTEN ……………………………… Geokatalog
 <div class="search-answer">…</div>   <!-- follows the KI row; hidden until requested -->
 ```
 
-The KI answers of the prototype are computed from the loaded data (`suggestAiQuestion()` in `js/app.js`),
+The KI answers of the prototype are computed from the loaded data (`suggestAiQuestion()` in `js/assistant.js`),
 not by a model; the pattern is what matters: the assistant lives in the search box, not in a side panel.
 On phones the dropdown spans the header width and the meta wraps under the title.
 
@@ -787,7 +787,7 @@ On phones the dropdown spans the header width and the meta wraps under the title
 | Touch | `(pointer: coarse)` | Any touch device, independent of width: 44 px targets, 20 px checkboxes, wider resize handles |
 
 The mobile query is a list on purpose: a phone held sideways is 800–950 px wide but only ~390 px tall,
-so a width-only breakpoint would give it the tablet layout. `js/app.js` exposes the same queries as
+so a width-only breakpoint would give it the tablet layout. `js/utils.js` exposes the same queries as
 `isMobileLayout()`, `isLandscapePhone()` and `isCompactLayout()` for behaviour that has to follow the
 layout (menu state, sheet gestures, focus management, map offsets). Change both places together.
 
@@ -849,7 +849,7 @@ Tablets and desktop keep the floating panel with the "Menü öffnen" toggle (col
 }
 ```
 The sheet is dismissed with the close button or by swiping its handle or header down (`initSheetGesture()`
-in `js/app.js`). When it opens, the map keeps the selected object out from under it
+in `js/gestures.js`). When it opens, the map keeps the selected object out from under it
 (`revealSelectionOnMobile()` and the fly-to `offset`).
 
 **Full-screen Sheet with Footer (Mobile filter):**

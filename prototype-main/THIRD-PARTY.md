@@ -19,17 +19,17 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 |---|---|---|---|---|
 | Material Symbols Outlined | [Google Fonts](https://fonts.google.com/icons); static build (opsz 24, wght 400, FILL 0, GRAD 0) of the complete icon set, v372 | Apache-2.0 | `assets/icons/` (`material-symbols-outlined.woff2`, `material-symbols-outlined.css`, `LICENSE`) | All UI icons (`.material-symbols-outlined`) |
 | Topic images and names | [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer): the `topics.png` sprite and the topic names of its locale files (the `topic.*` keys in `data/i18n.json`) | BSD-3-Clause, © 2022 swisstopo | `assets/topics.png`, `assets/LICENSE-web-mapviewer.md` | "Thema wechseln" topic grid |
+| Basemap thumbnails | Rendered from the CARTO styles and the swisstopo SWISSIMAGE layer (same files as prototype-tabs) | Derived from © CARTO / © OpenStreetMap contributors and © swisstopo data | `assets/basemaps/` (`positron.png`, `voyager.png`, `dark-matter.png`, `swissimage.png`) | Style switcher |
 
 ## Loaded from the internet at runtime
 
 | Service | Used for | Notes |
 |---|---|---|
-| CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs; thumbnails of the style switcher | © CARTO, © OpenStreetMap contributors; free tier, no key |
-| swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap and its thumbnail | © swisstopo |
+| CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs | © CARTO, © OpenStreetMap contributors; free tier, no key |
+| swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap | © swisstopo |
 | swisstopo WMS (`wms.geo.admin.ch`) | Rendering of the Geokatalog layers added to the map | © swisstopo |
 | geoadmin API (`api3.geo.admin.ch`) | Location and layer search (SearchServer), topics and catalog trees (CatalogServer), layer legends (MapServer legend), feature identification (identify) | No key required |
 | Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`js/config.js`) and sample values in `data/swagger.json` | [Unsplash License](https://unsplash.com/license); placeholders only |
-| Google Photorealistic 3D Tiles (`tile.googleapis.com`) with three.js 0.183.0 and 3d-tiles-renderer 0.4.21 from jsDelivr and the Draco decoder from unpkg | Optional 3D view (`js/tiles3d.js`, import map in `index.html`) | Dormant: the module is not imported and no API key is shipped, so nothing is downloaded unless the feature is switched on |
 
 ## Outbound links only (nothing is loaded)
 

@@ -63,11 +63,22 @@ php -S localhost:8000
 
 Then open <http://localhost:8000/prototype-main/> (or the repo root, which redirects).
 
+## Tests
+
+A jsdom harness with a fake MapLibre lives in [`../test/`](../test/). It is development tooling only: nothing is shared between the prototypes at runtime.
+
+```bash
+cd test && npm install
+npm test            # all scenarios of both prototypes
+npm run test:main     # this prototype only
+npm run align       # verifies that the common modules are identical in both prototypes
+```
+
 ## Tech
 
 | What | Why |
 |---|---|
-| Vanilla ES modules | No build, easy to read |
+| Vanilla ES modules | No build, easy to read. 17 of the 27 modules are byte-identical with the tabs prototype (see [docs/CODE-REVIEW-2.md](docs/CODE-REVIEW-2.md)) |
 | MapLibre GL JS 5.19 | Map, layers, 3D tiles — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
 | Swagger UI 5 | API documentation from `data/swagger.json` — vendored in `vendor/swagger-ui/`, loaded only when the API page opens |
 | jsPDF 2.5.1 | PDF export of the print view — vendored in `vendor/jspdf/` |
@@ -83,14 +94,16 @@ prototype-main/
 │   ├── tokens.css        # Design tokens
 │   └── styles.css        # Application styles
 ├── js/                   # ES modules
-│   ├── app.js            # Bootstrap
-│   ├── config.js · state.js · utils.js
-│   ├── map.js            # MapLibre setup + layers
-│   ├── list.js           # Table view
-│   ├── detail.js         # Info panel
-│   ├── filters.js · search.js · swisstopo.js
-│   ├── export.js · print.js · measure.js
-│   ├── tiles3d.js · ui.js · i18n.js
+│   ├── app.js            # Bootstrap, data loading, action delegation
+│   ├── config.js · state.js
+│   ├── ui.js             # Views, tabs, tools panel, mobile menu, language, history
+│   ├── map.js            # Data layers, selection, restore after a basemap change
+│   ├── list.js           # Table panel (three tables), gallery
+│   ├── detail.js · filters.js · search.js · export.js
+│   └── common modules, identical with ../prototype-tabs/js:
+│       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
+│       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js
 ├── data/
 │   ├── buildings.geojson
 │   ├── parcels.geojson
@@ -101,15 +114,20 @@ prototype-main/
 │   ├── maplibre-gl/      # MapLibre GL JS 5.19.0 (js, css, licence)
 │   ├── swagger-ui/       # Swagger UI 5 (js, css, licence)
 │   └── jspdf/            # jsPDF 2.5.1 (js, licence)
+├── assets/
+│   ├── basemaps/         # Local thumbnails of the style switcher
+│   ├── icons/            # Material Symbols (self-hosted)
+│   └── topics.png        # Topic sprite of the Geokatalog
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
     ├── DESIGNGUIDE.md    # Design system
-    ├── CODE-REVIEW.md    # Review findings (bugs, performance)
+    ├── CODE-REVIEW.md    # Review 1 (2026-09-11): bugs, performance
+    ├── CODE-REVIEW-2.md  # Review 2 (2026-09-15): dead code, duplication, alignment with prototype-tabs
     ├── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
     └── generate_swagger.py  # DATAMODEL.json -> data/swagger.json
 ```
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review](docs/CODE-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

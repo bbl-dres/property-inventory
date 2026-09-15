@@ -2,6 +2,8 @@
 
 **Date:** 2026-09-14
 **Scope:** `index.html`, `css/main.css`, `js/app.js`, `docs/DESIGNGUIDE.md`, `README.md`
+
+> **Note (2026-09-15):** this review predates the split of `js/app.js` into ES modules (see [CODE-REVIEW.md](CODE-REVIEW.md)). The layout helpers now live in `js/utils.js`, the menu and sheet code in `js/ui.js`, the search in `js/search.js` and `js/assistant.js`.
 **Focus:** responsive layout, touch ergonomics and mobile-specific behaviour of the map, list, gallery, detail (tabs) and filter views
 **Reference:** the sibling review [`../../prototype-main/docs/RESPONSIVE-REVIEW.md`](../../prototype-main/docs/RESPONSIVE-REVIEW.md) — same method, same breakpoints, same patterns, so both prototypes stay one design system
 **Reviewer:** Claude (senior design / UX review requested by the maintainer)

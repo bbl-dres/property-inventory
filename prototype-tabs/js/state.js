@@ -1,0 +1,45 @@
+// Shared application state. Module-local state of the common modules (basemap, measure tool,
+// external layers, carousel, mini map) lives in the respective module.
+
+import { filterConfig } from './config.js';
+
+const activeFilters = {};
+Object.keys(filterConfig).forEach(function(k) { activeFilters[k] = []; });
+
+export const state = {
+  // Data
+  buildingsData: null,
+  parcelData: null,
+  filteredData: null,
+
+  // Entity tables of the detail view (one JSON file each, see config.entityDataFiles)
+  allAreaMeasurements: [],
+  allDocuments: [],
+  allContacts: [],
+  allContracts: [],
+  allAssets: [],
+  allCosts: [],
+
+  // Feature lookup indexes, built on data load for O(1) lookups
+  buildingIndex: new Map(),    // Map<buildingId, feature>
+  parcelIndex: new Map(),      // Map<parcelId, feature>
+
+  // Selection
+  currentDetailBuilding: null,
+  selectedBuildingId: null,
+  selectedParcelId: null,
+
+  // Views: map, list, gallery, detail
+  currentView: 'map',
+  previousView: 'gallery',
+  galleryViewDirty: false,
+  listViewDirty: false,
+
+  // Map
+  map: null,
+  skipFilterZoom: false,
+  searchMarker: null,
+
+  // Filters
+  activeFilters: activeFilters
+};

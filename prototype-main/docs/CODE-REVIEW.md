@@ -4,6 +4,7 @@
 **Scope:** all files under `prototype-main/` (16 ES modules, `index.html`, `styles.css`, `data/i18n.json`)
 **Focus:** bugs and performance, plus loading/error feedback, footer links, and the prototype notice
 **Reviewer:** Claude (senior-developer review requested by the maintainer)
+**Follow-up:** [CODE-REVIEW-2.md](CODE-REVIEW-2.md) (2026-09-15) resolves R3, R4, R5, R7, R8, R9 and R10 of section 5 and aligns the module layout with prototype-tabs.
 
 Every finding below was verified against the code and, where possible, exercised in a test.
 Findings marked **Fixed** were implemented in the same change set as this document.

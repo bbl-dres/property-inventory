@@ -16,6 +16,8 @@ https://bbl-dres.github.io/property-inventory/prototype-tabs/
 - **Thema wechseln.** The Geokatalog accordion can switch between the ~30 topics of map.geo.admin.ch (federal offices and themes, e.g. swisstopo, MeteoSchweiz, Energie): a modal with a topic grid, borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names and `assets/topics.png`), reloads the catalog tree for the chosen topic; the header shows the topic name and the choice is kept in the URL (`topic=`).
 - **Mobile.** Phones (portrait and landscape) get a two-row header, a hamburger menu for the map tools (share, print, export, Geokatalog, external layers), a full-screen filter sheet with a live result count, a swipe-to-dismiss info sheet and a sticky tab strip on the detail page; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
+- **Aligned with the main app.** Same module layout, markup hooks and behaviour for the map tools: PDF export of the print panel, Geokatalog with "Thema wechseln", measure tool, search history, lightbox, URL-owned basemap and selection. The data model still differs (camelCase BuildingMinds schema with `extensionData`, see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)).
+
 ## Running
 
 Static files only — no build step. From the repo root:
@@ -26,12 +28,25 @@ python -m http.server 8000
 
 Then open <http://localhost:8000/prototype-tabs/>.
 
+## Tests
+
+A jsdom harness with a fake MapLibre lives in [`../test/`](../test/). It is development tooling only: nothing is shared between the prototypes at runtime.
+
+```bash
+cd test && npm install
+npm test            # all scenarios of both prototypes
+npm run test:tabs     # this prototype only
+npm run align       # verifies that the common modules are identical in both prototypes
+```
+
 ## Tech
 
 | What | Why |
 |---|---|
-| Vanilla JS (single `app.js`) | No build, all logic in one file |
+| Vanilla ES modules | No build. Same module layout as the main app; 17 of the 29 modules are byte-identical with it (see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)) |
 | MapLibre GL JS 5.19 (vendored in `vendor/`) | Map, mini map, markers, popups — same build and basemaps (CARTO Positron/Voyager/Dark Matter, swisstopo SWISSIMAGE) as the main app; no API key |
+| jsPDF 2.5.1 (vendored in `vendor/jspdf/`) | PDF export of the print panel, same renderer as the main app |
+| `data/i18n.json` | Identical copy of the main app's translation file; the UI stays German, the JS-rendered texts come from this file |
 | Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
 ## Layout
@@ -41,19 +56,29 @@ prototype-tabs/
 ├── index.html
 ├── css/
 │   └── main.css
-├── js/
-│   └── app.js            # All logic (~5k lines)
-├── data/                 # buildings.geojson, parcels, entity tables
-├── assets/               # images, local basemap thumbnails
-├── vendor/maplibre-gl/   # MapLibre GL JS (BSD-3)
+├── js/                   # ES modules (same layout as ../prototype-main/js)
+│   ├── app.js            # Bootstrap, data loading, action delegation
+│   ├── config.js · state.js
+│   ├── ui.js             # Views, detail tabs, tools panel / phone menu, info panel, history
+│   ├── map.js · list.js · detail.js · filters.js · search.js · export.js
+│   ├── entity-tables.js  # Tables of the detail tabs (tabs only)
+│   ├── assistant.js      # KI mock answers in the search (tabs only)
+│   └── common modules, identical with ../prototype-main/js:
+│       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
+│       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js
+├── data/                 # buildings.geojson, parcels, entity tables, i18n.json
+├── assets/               # local basemap thumbnails, icons, topic sprite
+├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT)
 └── docs/
-    ├── DATAMODEL.md          # Same model as main app
+    ├── CODE-REVIEW.md        # Review (2026-09-15): bugs, dead code, alignment with the main app
+    ├── DATAMODEL.md          # BuildingMinds-style model with extensionData (differs from the main app, see CODE-REVIEW.md)
     ├── DESIGNGUIDE.md        # Same design system
     └── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
 ```
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Parent prototype: [`../prototype-main`](../prototype-main) (read-only inventory)
 - Sibling prototypes: [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

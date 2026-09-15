@@ -1,0 +1,84 @@
+// Mini map of the detail view (shared): a small 3D map centred on the building, created once
+// and reused (re-creating a MapLibre instance re-downloads the style and tiles every time).
+
+import { t } from './i18n.js';
+import { getMapStyleUrl } from './basemaps.js';
+import { findVectorSourceId } from './map-controls.js';
+
+let miniMap = null;
+let miniMapMarker = null;
+let pendingCoords = null;
+
+// Building footprints of the CARTO basemap as extrusions, fading in around zoom 15
+const MINI_MAP_3D_LAYER = {
+  'id': '3d-buildings',
+  'source-layer': 'building',
+  'type': 'fill-extrusion',
+  'minzoom': 15,
+  'filter': ['!=', ['get', 'hide_3d'], true],
+  'paint': {
+    'fill-extrusion-color': '#A8B0B7',
+    'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_height'], 5]],
+    'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_min_height'], 0]],
+    'fill-extrusion-opacity': 0.6
+  }
+};
+
+function add3DBuildings() {
+  const style = miniMap.getStyle();
+  const vectorSourceId = findVectorSourceId(style);
+  if (!vectorSourceId) return;
+  const layers = style.layers || [];
+  // Insert below the first label layer so street names stay readable; hide the basemap's own
+  // flat building layers to prevent double-rendering that causes a "transparent" look
+  let labelLayerId;
+  layers.forEach(function(layer) {
+    if (!labelLayerId && layer.type === 'symbol' && layer.layout && layer.layout['text-field']) labelLayerId = layer.id;
+    if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
+      miniMap.setLayoutProperty(layer.id, 'visibility', 'none');
+    }
+  });
+  miniMap.addLayer(Object.assign({}, MINI_MAP_3D_LAYER, { source: vectorSourceId }), labelLayerId);
+}
+
+export function showMiniMap(coords) {
+  pendingCoords = coords;
+  if (!document.getElementById('mini-map')) return;
+
+  if (miniMap) {
+    miniMap.jumpTo({ center: coords, zoom: 17, pitch: 50, bearing: -17 });
+    if (miniMapMarker) miniMapMarker.setLngLat(coords);
+    miniMap.resize();
+    setTimeout(function() { if (miniMap) miniMap.resize(); }, 300);
+    return;
+  }
+
+  miniMap = new maplibregl.Map({
+    container: 'mini-map',
+    style: getMapStyleUrl('positron'),
+    center: coords,
+    zoom: 17,
+    pitch: 50,
+    bearing: -17,
+    // The mini map sits inside a scrolling page: a one-finger drag or a plain scroll wheel keeps
+    // scrolling the page; two fingers / Ctrl+wheel operate the map.
+    cooperativeGestures: true,
+    locale: {
+      'CooperativeGesturesHandler.WindowsHelpText': t('minimap.gesture.desktop'),
+      'CooperativeGesturesHandler.MacHelpText': t('minimap.gesture.mac'),
+      'CooperativeGesturesHandler.MobileHelpText': t('minimap.gesture.mobile')
+    }
+  });
+
+  miniMap.on('load', function() {
+    add3DBuildings();
+    // Marker at the most recently requested position
+    miniMapMarker = new maplibregl.Marker({ color: '#c00' })
+      .setLngLat(pendingCoords || coords)
+      .addTo(miniMap);
+    miniMap.resize();
+  });
+
+  miniMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  setTimeout(function() { if (miniMap) miniMap.resize(); }, 300);
+}

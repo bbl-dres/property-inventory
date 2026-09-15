@@ -49,7 +49,9 @@ prototype is available at the path shown above.
 ## Documentation
 
 Detailed features, setup, technology, and file layouts are documented in the
-prototype READMEs linked in the table. The height-enrichment utility also has a
+prototype READMEs linked in the table. The main app and the tabs prototype share the same module
+layout (17 modules are identical copies); `test/` holds a jsdom regression harness for both and a
+check that reports drift between the copies (`cd test && npm install && npm test && npm run align`). The height-enrichment utility also has a
 [Python implementation guide](osm-height/python_version/README.md).
 
 ## License

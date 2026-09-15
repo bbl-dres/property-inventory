@@ -1,0 +1,381 @@
+// Map: data layers (buildings, parcels), selection and the restore after a basemap change.
+// Map creation, controls, style switcher, context menu and measure tool are common modules.
+
+import { state } from './state.js';
+import { statusColors, getStatusClassName, placeholderImages, parcelColor, internalLayerIds } from './config.js';
+import { escapeHtml, cssUrl, formatNum, extractYear } from './utils.js';
+import { t } from './i18n.js';
+import { getMapStyleUrl, initStyleSwitcher } from './basemaps.js';
+import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings } from './map-controls.js';
+import { getPolygonCentroid } from './geo.js';
+import { isMeasuring } from './measure.js';
+import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
+import { getActiveFilterCount, updateMapFilter } from './filters.js';
+
+// ===== MAP INITIALISATION =====
+
+export function initMap() {
+  const map = createMap('map', getMapStyleUrl());
+  state.map = map;
+  initMapStatusIndicators(map);
+  addStandardControls(map);
+  bindMapUrlSync(map, function() { return state.currentView !== 'detail'; });
+  bindCoordinateDisplay(map, 'coordinates');
+  initStyleSwitcher(map, restoreLayers);
+  return map;
+}
+
+// ===== PULSE ANIMATION OF THE SELECTED BUILDING =====
+// setInterval at ~20 fps instead of rAF at 60 fps: purely cosmetic
+
+let pulseRadius = 24;
+let pulseOpacity = 0.4;
+let pulseDirection = 1;
+let pulseIntervalId = null;
+
+function pulseStep() {
+  if (!state.selectedBuildingId) {
+    stopPulseAnimation();
+    return;
+  }
+  // Skip while the map is not visible (other view / background tab): every paint
+  // property change triggers a full map re-render.
+  if (document.hidden || state.currentView !== 'map') return;
+
+  pulseRadius += 0.9 * pulseDirection;
+  pulseOpacity -= 0.03 * pulseDirection;
+  if (pulseRadius >= 32) pulseDirection = -1;
+  else if (pulseRadius <= 24) pulseDirection = 1;
+
+  if (state.map && state.map.getLayer('buildings-selected-pulse')) {
+    state.map.setPaintProperty('buildings-selected-pulse', 'circle-radius', pulseRadius);
+    state.map.setPaintProperty('buildings-selected-pulse', 'circle-stroke-opacity', Math.max(0.1, pulseOpacity));
+  }
+}
+
+function startPulseAnimation() {
+  if (pulseIntervalId !== null) return;
+  pulseRadius = 24;
+  pulseOpacity = 0.4;
+  pulseDirection = 1;
+  pulseIntervalId = setInterval(pulseStep, 50);
+}
+
+function stopPulseAnimation() {
+  if (pulseIntervalId === null) return;
+  clearInterval(pulseIntervalId);
+  pulseIntervalId = null;
+}
+
+// ===== DATA LAYERS =====
+
+function addParcelLayers(map) {
+  map.addSource('parcels', { type: 'geojson', data: state.parcelData });
+  map.addLayer({
+    id: 'parcels-fill', type: 'fill', source: 'parcels',
+    paint: { 'fill-color': parcelColor, 'fill-opacity': 0.15 }
+  });
+  map.addLayer({
+    id: 'parcels-outline', type: 'line', source: 'parcels',
+    paint: { 'line-color': parcelColor, 'line-width': 2, 'line-opacity': 0.8 }
+  });
+  // Hover highlight and selection are separate layers, so hovering another parcel keeps the selection visible
+  map.addLayer({
+    id: 'parcels-highlight', type: 'fill', source: 'parcels',
+    filter: ['==', ['get', 'parcelId'], ''],
+    paint: { 'fill-color': parcelColor, 'fill-opacity': 0.35 }
+  });
+  map.addLayer({
+    id: 'parcels-selected', type: 'fill', source: 'parcels',
+    filter: ['==', ['get', 'parcelId'], ''],
+    paint: { 'fill-color': parcelColor, 'fill-opacity': 0.45 }
+  });
+  map.addLayer({
+    id: 'parcels-selected-outline', type: 'line', source: 'parcels',
+    filter: ['==', ['get', 'parcelId'], ''],
+    paint: { 'line-color': parcelColor, 'line-width': 3, 'line-opacity': 1 }
+  });
+}
+
+function addBuildingLayers(map) {
+  map.addSource('buildings', { type: 'geojson', data: state.buildingsData });
+
+  const colorExpr = ['match', ['get', 'status']];
+  Object.keys(statusColors).forEach(function(status) { colorExpr.push(status, statusColors[status]); });
+  colorExpr.push('#6C757D');
+
+  map.addLayer({
+    id: 'buildings-points', type: 'circle', source: 'buildings',
+    paint: { 'circle-radius': 10, 'circle-color': colorExpr, 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' }
+  });
+  map.addLayer({
+    id: 'buildings-selected', type: 'circle', source: 'buildings',
+    filter: ['==', ['get', 'buildingId'], ''],
+    paint: { 'circle-radius': 18, 'circle-color': 'transparent', 'circle-stroke-width': 3, 'circle-stroke-color': '#c00', 'circle-stroke-opacity': 0.9 }
+  });
+  map.addLayer({
+    id: 'buildings-selected-pulse', type: 'circle', source: 'buildings',
+    filter: ['==', ['get', 'buildingId'], ''],
+    paint: { 'circle-radius': 24, 'circle-color': 'transparent', 'circle-stroke-width': 2, 'circle-stroke-color': '#c00', 'circle-stroke-opacity': 0.4 }
+  });
+}
+
+export function addMapLayers() {
+  if (!state.buildingsData) return;
+  const map = state.map;
+  if (map.getSource('buildings')) return; // already added
+
+  if (state.parcelData && state.parcelData.features) addParcelLayers(map);
+  addBuildingLayers(map);
+
+  // The "Interne Karten" checkboxes are the source of truth for visibility (also after a basemap change)
+  applyInternalLayerVisibility();
+
+  // Filters may be active from the URL
+  if (state.filteredData && getActiveFilterCount() > 0) updateMapFilter();
+
+  bindMapInteractions();
+  restoreSelectionFromUrl();
+  initIdentifyHighlightLayer();
+  loadLayersFromUrl();
+}
+
+// ===== INTERNAL LAYER VISIBILITY =====
+
+export function setInternalLayerVisibility(layerKey, visible) {
+  const ids = internalLayerIds[layerKey];
+  if (!ids || !state.map) return;
+  ids.forEach(function(id) {
+    if (state.map.getLayer(id)) state.map.setLayoutProperty(id, 'visibility', visible ? 'visible' : 'none');
+  });
+}
+
+export function applyInternalLayerVisibility() {
+  Object.keys(internalLayerIds).forEach(function(layerKey) {
+    const toggle = document.getElementById('layer-toggle-' + layerKey);
+    setInternalLayerVisibility(layerKey, !toggle || toggle.checked);
+  });
+}
+
+// ===== MAP INTERACTIONS =====
+// Bound exactly once. MapLibre keeps layer event listeners across setStyle(), while
+// addMapLayers() runs again after every style change.
+let interactionsBound = false;
+
+function bindMapInteractions() {
+  if (interactionsBound) return;
+  interactionsBound = true;
+  const map = state.map;
+
+  // Hover cursor helper: keeps the crosshair while the measure tool is active
+  function setPointerCursor(on) {
+    map.getCanvas().style.cursor = isMeasuring() ? 'crosshair' : (on ? 'pointer' : '');
+  }
+
+  function queryAround(point, layers) {
+    const bbox = [[point.x - 15, point.y - 15], [point.x + 15, point.y + 15]];
+    return map.queryRenderedFeatures(bbox, { layers: layers.filter(function(l) { return map.getLayer(l); }) });
+  }
+
+  // Buildings
+  map.on('mouseenter', 'buildings-points', function() { setPointerCursor(true); });
+  map.on('mouseleave', 'buildings-points', function() { setPointerCursor(false); });
+  map.on('click', 'buildings-points', function(e) {
+    if (isMeasuring()) return;
+    selectBuilding(e.features[0].properties.buildingId, false);
+  });
+
+  // Parcels yield to buildings (parcels are the bottom layer)
+  if (state.parcelData && state.parcelData.features) {
+    map.on('mouseenter', 'parcels-fill', function(e) {
+      setPointerCursor(true);
+      if (e.features.length > 0) map.setFilter('parcels-highlight', ['==', ['get', 'parcelId'], e.features[0].properties.parcelId]);
+    });
+    map.on('mouseleave', 'parcels-fill', function() {
+      setPointerCursor(false);
+      map.setFilter('parcels-highlight', ['==', ['get', 'parcelId'], '']);
+    });
+    map.on('click', 'parcels-fill', function(e) {
+      if (isMeasuring()) return;
+      if (queryAround(e.point, ['buildings-points']).length > 0) return;
+      selectParcel(e.features[0].properties.parcelId);
+    });
+  }
+
+  // Click on the map (not on a feature): deselect, then identify features of the external layers
+  map.on('click', function(e) {
+    if (isMeasuring()) return; // the measure tool owns map clicks
+    const layers = ['buildings-points', 'parcels-fill'].filter(function(l) { return map.getLayer(l); });
+    const hits = map.queryRenderedFeatures(e.point, { layers: layers });
+    if (hits.length > 0) {
+      clearIdentifyHighlight(); // a portfolio feature was selected
+      return;
+    }
+    clearSelection();
+    if (hasActiveSwisstopoLayers()) identifySwisstopoFeatures(e.lngLat);
+  });
+}
+
+// ===== URL SELECTION RESTORE (first load only) =====
+
+let urlSelectionRestored = false;
+// Captured at module load: the view restore may rewrite the URL before the map has loaded
+const initialUrlParams = new URLSearchParams(window.location.search);
+
+function restoreSelectionFromUrl() {
+  if (urlSelectionRestored) return;
+  urlSelectionRestored = true;
+  const urlParams = initialUrlParams;
+  const urlBuildingId = urlParams.get('id');
+  const urlParcelId = urlParams.get('parcelId');
+  if (urlBuildingId) {
+    if (state.buildingIndex.has(urlBuildingId)) selectBuilding(urlBuildingId, true);
+  } else if (urlParcelId) {
+    if (state.parcelIndex.has(urlParcelId)) selectParcel(urlParcelId, true);
+  }
+}
+
+// ===== SELECTION =====
+
+function infoRow(labelKey, valueHtml, secondary) {
+  return '<div class="info-row' + (secondary ? ' info-row-secondary' : '') + '"><span class="info-label">' + t(labelKey) + '</span><span class="info-value">' + valueHtml + '</span></div>';
+}
+
+function showInfoPanel(titleKey, bodyHtml, previewImageUrl) {
+  document.getElementById('info-header-title').textContent = t(titleKey);
+  const panel = document.getElementById('info-panel');
+  const preview = document.getElementById('info-preview-image');
+  // A class (not an inline display) so the stylesheet can still hide the image on short viewports
+  panel.classList.toggle('has-preview', !!previewImageUrl);
+  if (preview && previewImageUrl) preview.style.backgroundImage = cssUrl(previewImageUrl);
+  document.getElementById('info-body').innerHTML = bodyHtml;
+  panel.classList.add('show');
+}
+
+function hideInfoPanel() {
+  document.getElementById('info-panel').classList.remove('show');
+}
+
+function setSelection(buildingId, parcelId) {
+  state.selectedBuildingId = buildingId;
+  state.selectedParcelId = parcelId;
+  updateSelectedBuilding();
+  updateSelectedParcel();
+  updateUrlWithSelection();
+}
+
+export function clearSelection() {
+  setSelection(null, null);
+  hideInfoPanel();
+}
+
+export function selectBuilding(buildingId, flyToBuilding) {
+  const building = state.buildingIndex.get(buildingId);
+  if (!building) return;
+  const props = building.properties;
+  const ext = props.extensionData || {};
+  setSelection(buildingId, null);
+
+  // Placeholder image by position in the dataset (the mock data carries no photos)
+  const index = state.buildingsData.features.indexOf(building);
+  const imageUrl = placeholderImages[(index < 0 ? 0 : index) % placeholderImages.length];
+
+  const html =
+    infoRow('info.label.id', escapeHtml(props.buildingId)) +
+    infoRow('info.label.name', escapeHtml(props.name)) +
+    infoRow('info.label.location', escapeHtml(props.city) + ', ' + escapeHtml(props.country)) +
+    infoRow('info.label.address', escapeHtml(props.streetName), true) +
+    infoRow('info.label.area_ngf', formatNum(ext.netFloorArea || 0, 0) + ' m²', true) +
+    infoRow('info.label.year', escapeHtml(extractYear(props.constructionYear) || '—'), true) +
+    infoRow('info.label.responsible', escapeHtml(ext.responsiblePerson || '—'), true) +
+    infoRow('info.label.status', '<span class="status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>') +
+    '<div class="info-footer">' +
+      '<button type="button" class="info-detail-link" data-action="showDetailView" data-id="' + escapeHtml(props.buildingId) + '">' +
+        '<span class="material-symbols-outlined">open_in_new</span>' + t('info.details') +
+      '</button>' +
+    '</div>';
+  showInfoPanel('info.title.building', html, imageUrl);
+
+  if (flyToBuilding) {
+    smartFlyTo(state.map, { center: building.geometry.coordinates, zoom: 16 });
+  } else if (building.geometry && building.geometry.coordinates) {
+    revealSelectionOnMobile(state.map, building.geometry.coordinates);
+  }
+}
+
+export function selectParcel(parcelId, flyToParcel) {
+  const parcel = state.parcelIndex.get(parcelId);
+  if (!parcel) return;
+  const props = parcel.properties;
+  setSelection(null, parcelId);
+
+  const html =
+    infoRow('info.label.id', escapeHtml(props.parcelId || '—')) +
+    infoRow('info.label.name', escapeHtml(props.name || '—')) +
+    infoRow('info.label.location', escapeHtml(props.municipality || '—') + ', ' + escapeHtml(props.canton || '—')) +
+    infoRow('info.label.plot', escapeHtml(props.plotNumber || '—'), true) +
+    infoRow('info.label.area', formatNum(props.area || 0, 0) + ' m²', true) +
+    infoRow('info.label.zone', escapeHtml(props.landUseZone || '—'), true) +
+    infoRow('info.label.ownership', escapeHtml(props.ownershipType || '—'), true);
+  showInfoPanel('info.title.parcel', html, null);
+
+  if (parcel.geometry && parcel.geometry.coordinates) {
+    const center = getPolygonCentroid(parcel.geometry.coordinates);
+    if (flyToParcel) smartFlyTo(state.map, { center: center, zoom: 16 });
+    else revealSelectionOnMobile(state.map, center);
+  }
+}
+
+// Selection highlight layers
+export function updateSelectedBuilding() {
+  const map = state.map;
+  const id = state.selectedBuildingId || '';
+  ['buildings-selected', 'buildings-selected-pulse'].forEach(function(layer) {
+    if (map && map.getLayer(layer)) map.setFilter(layer, ['==', ['get', 'buildingId'], id]);
+  });
+  if (state.selectedBuildingId) startPulseAnimation(); else stopPulseAnimation();
+}
+
+export function updateSelectedParcel() {
+  const map = state.map;
+  const id = state.selectedParcelId || '';
+  ['parcels-selected', 'parcels-selected-outline'].forEach(function(layer) {
+    if (map && map.getLayer(layer)) map.setFilter(layer, ['==', ['get', 'parcelId'], id]);
+  });
+}
+
+export function updateUrlWithSelection() {
+  const url = new URL(window.location);
+  if (state.selectedBuildingId) url.searchParams.set('id', state.selectedBuildingId); else url.searchParams.delete('id');
+  if (state.selectedParcelId) url.searchParams.set('parcelId', state.selectedParcelId); else url.searchParams.delete('parcelId');
+  window.history.replaceState({}, '', url);
+}
+
+// Zoom to the selected object (info panel button)
+export function zoomToSelection() {
+  if (state.selectedBuildingId) {
+    const building = state.buildingIndex.get(state.selectedBuildingId);
+    if (building && building.geometry) smartFlyTo(state.map, { center: building.geometry.coordinates, zoom: 16 });
+  } else if (state.selectedParcelId) {
+    const parcel = state.parcelIndex.get(state.selectedParcelId);
+    if (parcel && parcel.geometry) smartFlyTo(state.map, { center: getPolygonCentroid(parcel.geometry.coordinates), zoom: 16 });
+  }
+}
+
+// ===== RESTORE AFTER A BASEMAP CHANGE =====
+// setStyle() drops every custom source and layer: re-add the data layers (without re-zooming to
+// active filters or the selected object), the selection highlight, 3D buildings and external layers.
+function restoreLayers() {
+  if (state.buildingsData) {
+    state.skipFilterZoom = true;
+    try {
+      addMapLayers();
+    } finally {
+      state.skipFilterZoom = false;
+    }
+    updateSelectedBuilding();
+    updateSelectedParcel();
+  }
+  if (is3DActive()) show3DBuildings(state.map);
+  readdSwisstopoLayers();
+}
