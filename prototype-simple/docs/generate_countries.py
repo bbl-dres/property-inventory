@@ -1,9 +1,16 @@
 """
 Builds assets/countries/ and assets/regions/ of both prototypes from Natural Earth 1:10m (public domain):
 one GeoJSON Feature per country (assets/countries/<ISO>.geojson), one per Swiss canton
-(assets/regions/CH-<code>.geojson, from Admin 1 States and Provinces) and assets/countries/index.json with
-the names and the bounding box per country and, for Switzerland, per canton. The location tree loads a
-file only when its country or canton is selected; regions of other countries zoom to their objects.
+(assets/regions/CH-<code>.geojson) and assets/countries/index.json with the names and the bounding box per
+country and, for Switzerland, per canton. The location tree loads a file only when its country or canton is
+selected; regions of other countries zoom to their objects. The apps never query a service for outlines:
+everything is generated here and stored under assets/.
+
+Canton geometries come from swissBOUNDARIES3D (swisstopo, open data: source citation required), fetched
+by this script through the geo.admin.ch REST API, one request per canton (layer
+ch.swisstopo.swissboundaries3d-kanton-flaeche.fill, searchField "ak"). Natural Earth's Admin 1 layer
+supplies the codes and German names and is the fallback when the API is unreachable. Cantons are
+simplified from 10 m up until they fit MAX_REGION_VERTICES.
 
 - iso = ISO 3166-1 alpha-2 from ISO_A2_EH (ISO_A2 is -99 for France and Norway); features that share a
   code are merged.
@@ -26,7 +33,10 @@ from shapely.ops import unary_union
 
 SRC = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_0_countries.geojson"
 SRC_ADMIN1 = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_10m_admin_1_states_provinces.geojson"
+SWISSTOPO_FIND = ("https://api3.geo.admin.ch/rest/services/api/MapServer/find?layer=ch.swisstopo.swissboundaries3d-kanton-flaeche.fill"
+                  "&searchField=ak&searchText=%s&returnGeometry=true&geometryFormat=geojson&sr=4326")
 REGION_COUNTRIES = ["CH"]  # countries whose regions get their own outlines
+MAX_REGION_VERTICES = 8000
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 APPS = [ROOT, os.path.join(os.path.dirname(ROOT), "prototype-tabs")]
 MAX_VERTICES = 6000
@@ -46,13 +56,24 @@ def polygons(geom):
     return [g for g in getattr(geom, "geoms", []) if g.geom_type == "Polygon"]
 
 
-def simplify(geom):
-    tol = 0.0005
+def simplify(geom, max_vertices=MAX_VERTICES, tol=0.0005):
     out = geom.simplify(tol, preserve_topology=True)
-    while vertices(out) > MAX_VERTICES:
+    while vertices(out) > max_vertices:
         tol *= 1.5
         out = geom.simplify(tol, preserve_topology=True)
     return out, tol
+
+
+def fetch_canton(code):
+    """The canton polygon from swissBOUNDARIES3D (WGS84), or None when the API does not answer."""
+    try:
+        with urllib.request.urlopen(SWISSTOPO_FIND % code, timeout=120) as resp:
+            data = json.load(io.TextIOWrapper(resp, encoding="utf-8"))
+        results = data.get("results") or []
+        return shape(results[0]["geometry"]) if results else None
+    except Exception as err:  # offline or throttled: the caller falls back to Natural Earth
+        print("  swisstopo", code, "unavailable:", err)
+        return None
 
 
 def rounded(coords):
@@ -106,9 +127,9 @@ def load_source(path, url):
         return json.load(io.TextIOWrapper(resp, encoding="utf-8"))
 
 
-def build_feature(key, props, geoms):
+def build_feature(key, props, geoms, max_vertices=MAX_VERTICES, tol=0.0005):
     geom = geoms[0] if len(geoms) == 1 else unary_union(geoms)
-    simple, tol = simplify(geom)
+    simple, tol = simplify(geom, max_vertices, tol)
     polys = to_rings(simple)
     if not polys:
         return None, None
@@ -151,10 +172,11 @@ def main():
         files[iso + ".geojson"] = text
         index[iso] = {"name": e["name"], "name_de": e["name_de"], "bbox": bbox}
 
-    # Regions (Swiss cantons): key CH-BE, code BE; the tree matches a region filter value by code, name or name_de
+    # Regions (Swiss cantons): key CH-BE, code BE; the tree matches a region filter value by code, name or name_de.
+    # Geometry from swissBOUNDARIES3D (detailed), codes and German names from Natural Earth (also the fallback).
     admin1 = load_source(sys.argv[2] if len(sys.argv) > 2 else None, SRC_ADMIN1)
     region_files = {}
-    for f in admin1["features"]:
+    for f in sorted(admin1["features"], key=lambda f: f["properties"].get("iso_3166_2") or ""):
         p = f["properties"]
         iso = p.get("iso_a2")
         if iso not in REGION_COUNTRIES or iso not in index:
@@ -162,7 +184,13 @@ def main():
         key = p["iso_3166_2"]                      # CH-BE
         code = key.split("-", 1)[1]
         props = {"iso": iso, "code": code, "name": p["name"], "name_de": p.get("name_de") or p["name"]}
-        text, bbox = build_feature(key, props, [shape(f["geometry"])])
+        detailed = fetch_canton(code) if iso == "CH" else None
+        if detailed is not None:
+            props["source"] = "swisstopo"
+            text, bbox = build_feature(key, props, [detailed], MAX_REGION_VERTICES, 0.0001)
+        else:
+            props["source"] = "naturalearth"
+            text, bbox = build_feature(key, props, [shape(f["geometry"])])
         if not text:
             continue
         region_files[key + ".geojson"] = text

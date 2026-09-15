@@ -232,7 +232,7 @@ module.exports = {
     const outline = map.getLayer('country-highlight-line');
     const zoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
     check('country outlined on the map and zoomed to', !!map.getSource('countries') && map.getSource('countries').data.features.some(f => f.properties.key === 'CH' && f.geometry.coordinates[0].length > 500) && !!outline && JSON.stringify(outline.filter) === JSON.stringify(['==', ['get', 'key'], 'CH']) && !!zoom && zoom.bounds[0] > 5 && zoom.bounds[0] < 7 && zoom.bounds[3] > 47 && zoom.bounds[3] < 48);
-    check('outline layers sit under the data layers', map._layers.findIndex(l => l.id === 'country-highlight-fill') < map._layers.findIndex(l => l.id === 'buildings-points'));
+    check('outline layers sit under the data layers', map._layers.findIndex(l => l.id === 'country-highlight-line') < map._layers.findIndex(l => l.id === 'buildings-points'));
     check('filter button counts it, the Standorte button carries no badge', !!document.querySelector('#filter-panel-btn .filter-count') && !document.querySelector('#tree-panel-btn .filter-count') && !document.getElementById('tree-panel-btn').classList.contains('has-active-filters') && /CH/.test(document.getElementById('filter-pills').textContent));
     check('drawer checkbox follows', !!document.querySelector('#filter-panel input[data-filter="land"][data-value="CH"]:checked'));
     check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 5 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');

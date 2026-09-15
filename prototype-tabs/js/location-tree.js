@@ -65,8 +65,9 @@ function filtersFor(sel) {
 }
 
 // ===== COUNTRY AND REGION OUTLINES =====
-// assets/countries/<ISO>.geojson and assets/regions/<ISO>-<code>.geojson: Natural Earth 1:10m (public
-// domain), one simplified file per country and per Swiss canton (see docs/generate_countries.py), plus
+// assets/countries/<ISO>.geojson: Natural Earth 1:10m (public domain), one simplified file per country;
+// assets/regions/CH-<code>.geojson: the Swiss cantons from swissBOUNDARIES3D (© swisstopo, open data),
+// simplified to about 10-15 m, stored locally (see docs/generate_countries.py: no live query); plus
 // assets/countries/index.json with names and bounding boxes. A file is fetched when its node is selected
 // (the tree's countries are prefetched when the panel opens); regions without a file zoom to their objects.
 // The layers sit under the data layers and are re-added after a basemap change (map.js calls
@@ -75,7 +76,7 @@ function filtersFor(sel) {
 const COUNTRIES_DIR = 'assets/countries/';
 const REGIONS_DIR = 'assets/regions/';
 const COUNTRY_SOURCE = 'countries';
-const COUNTRY_LAYERS = ['country-highlight-fill', 'country-highlight-line'];
+const COUNTRY_LAYERS = ['country-highlight-line']; // outline only: a fill would tint the map under the objects
 const COUNTRY_COLOR = '#1976d2'; // the blue of the parcels and selections
 let countryIndex = null;         // iso -> { name, name_de, bbox, regions: { code: { name, name_de, bbox } } }
 let countryIndexPromise = null;
@@ -145,12 +146,10 @@ export function syncCountryHighlight() {
   if (key) { loadCountryIndex(); if (!shapes.has(key)) loadShape(key); } // drawn as soon as the file is there
   if (!map.getSource(COUNTRY_SOURCE)) {
     if (!shapes.size) return;
-    map.addSource(COUNTRY_SOURCE, { type: 'geojson', data: outlineCollection() });
+    map.addSource(COUNTRY_SOURCE, { type: 'geojson', data: outlineCollection(), attribution: 'Natural Earth · Kantone © swisstopo' });
     drawnCount = shapes.size;
     const before = ['landcovers-fill', 'parcels-fill', 'buildings-clusters'].find(function(id) { return map.getLayer(id); });
-    map.addLayer({ id: COUNTRY_LAYERS[0], type: 'fill', source: COUNTRY_SOURCE, filter: ['==', ['get', 'key'], ''],
-      paint: { 'fill-color': COUNTRY_COLOR, 'fill-opacity': 0.08 } }, before);
-    map.addLayer({ id: COUNTRY_LAYERS[1], type: 'line', source: COUNTRY_SOURCE, filter: ['==', ['get', 'key'], ''],
+    map.addLayer({ id: COUNTRY_LAYERS[0], type: 'line', source: COUNTRY_SOURCE, filter: ['==', ['get', 'key'], ''],
       paint: { 'line-color': COUNTRY_COLOR, 'line-width': 2, 'line-opacity': 0.9 } }, before);
   } else if (drawnCount !== shapes.size) {
     map.getSource(COUNTRY_SOURCE).setData(outlineCollection());

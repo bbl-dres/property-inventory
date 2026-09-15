@@ -119,7 +119,7 @@ prototype-simple/
 │   └── jspdf/            # jsPDF 2.5.1 (js, licence)
 ├── assets/
 │   ├── countries/        # One Natural Earth 1:10m outline per country + index.json (public domain), built by docs/generate_countries.py
-│   ├── regions/          # The 26 Swiss cantons (CH-BE.geojson …), same source and script
+│   ├── regions/          # The 26 Swiss cantons (CH-BE.geojson …) from swissBOUNDARIES3D (© swisstopo), stored by the same script
 │   ├── basemaps/         # Local thumbnails of the style switcher
 │   ├── icons/            # Material Symbols (self-hosted)
 │   └── topics.png        # Topic sprite of the Geokatalog

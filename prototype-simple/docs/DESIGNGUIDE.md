@@ -845,9 +845,9 @@ checkboxes follow. Every node shows the number of objects below it; the counts h
 filters but not the location filters, so every branch stays reachable. The selected path is highlighted
 (bold node, grey path); selecting the same node again removes its filter and folds it (a node row is a
 toggle). A country is also outlined on the map (`assets/countries/<ISO>.geojson`, Natural Earth 1:10m, one file per
-country loaded on demand, in the blue of the parcels) and the map zooms to it — often a country holds a single site, so the outline says where you are.
-Swiss cantons have outlines too (`assets/regions/CH-<code>.geojson`; a region filter value is matched by code, name or
-German name, so both data sets work); regions of other countries and city nodes zoom to their objects. WE nodes are folders (the row toggles them); an object row selects
+country loaded on demand, a 2px line in the blue of the parcels without a fill, so the basemap under the objects stays untouched) and the map zooms to it — often a country holds a single site, so the outline says where you are.
+Swiss cantons have outlines too (`assets/regions/CH-<code>.geojson`, swissBOUNDARIES3D by swisstopo, simplified to
+10–15 m and stored locally; a region filter value is matched by code, name or German name, so both data sets work); regions of other countries and city nodes zoom to their objects. WE nodes are folders (the row toggles them); an object row selects
 the object on the map. Branches
 open one level at a time and every level has one open node: opening a country folds the other, opening a
 region folds its siblings, so the tree never shows more than one path. The chevron only folds. One tab stop,
