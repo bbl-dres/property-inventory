@@ -1,6 +1,6 @@
 /* BBL GIS Immobilienportfolio - prototype-main specific styles */
 /* Requires tokens.css and components.css (identical in both prototypes). This file holds what only
-   the main prototype has: single-column detail page, API documentation view and the share entry of the
+   the main prototype has: the filter search box, the single-column detail page and the share entry of the
    phone menu. */
 
 /* ===== FILTER DRAWER: search box (main only) ===== */
@@ -26,32 +26,6 @@
   background: transparent;
 }
 
-/* ===== PHONE MENU EXTRAS: share entry (inside the tools panel, phones only) ===== */
-.mobile-menu-item {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-  width: 100%;
-  padding: var(--space-3) var(--space-4);
-  border: none;
-  border-bottom: 1px solid var(--grey-200);
-  background: var(--white);
-  font: inherit;
-  font-size: var(--text-sm);
-  color: var(--grey-800);
-  cursor: pointer;
-  text-align: left;
-}
-
-.mobile-menu-item:hover {
-  background: var(--grey-50);
-}
-
-.mobile-menu-item .material-symbols-outlined {
-  color: var(--grey-500);
-  font-size: var(--icon-md);
-}
-
 /* ===== DETAIL PAGE (single column, collapsible cards) ===== */
 .detail-single-col {
   width: 100%;
@@ -59,8 +33,9 @@
   margin: 0 auto;
 }
 
-.detail-single-col .detail-header {
-  padding: var(--space-3) 0;
+/* The view nav lines up with the 720px column */
+#detail-view .view-nav {
+  --view-nav-max-width: 720px;
 }
 
 /* Carousel above the tabs — match card radius */
@@ -241,112 +216,10 @@
   margin: var(--space-2) var(--space-3) 0;
 }
 
-/* ===== API DOCS VIEW (Swagger UI host) ===== */
-#api-docs-view {
-  display: none;
-  flex: 1;
-}
-
-#api-docs-view.active {
-  display: flex;
-  flex-direction: column;
-  overflow-y: auto;
-}
-
-.api-docs-nav {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--white);
-  border-bottom: 1px solid var(--grey-200);
-  padding: var(--space-3) var(--space-5);
-}
-
-.api-docs-nav .detail-header-inner {
-  max-width: 1100px;
-  margin: 0 auto;
-}
-
-.api-docs-content {
-  max-width: 1100px;
-  width: 100%;
-  margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
-  box-sizing: border-box;
-}
-
-.api-docs-header h1 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
-  color: var(--grey-900);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.api-docs-subtitle {
-  font-size: var(--text-sm);
-  color: var(--grey-500);
-  margin: 0 0 var(--space-6) 0;
-}
-
-.api-docs-links a {
-  color: var(--interactive-blue);
-  font-size: var(--text-sm);
-}
-
-.api-docs-loading,
-.api-docs-error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-2);
-  padding: var(--space-8);
-  color: var(--grey-500);
-}
-
-.api-docs-error {
-  flex-direction: column;
-  color: var(--status-error-text);
-}
-
-/* Swagger UI inside the app: no outer box, tighter spacing, app colours for links */
-.swagger-ui-host .swagger-ui .information-container,
-.swagger-ui-host .swagger-ui .scheme-container {
-  padding: 0;
-  margin: 0;
-  background: transparent;
-  box-shadow: none;
-}
-
-.swagger-ui-host .swagger-ui .info {
-  margin: var(--space-4) 0;
-}
-
-.swagger-ui-host .swagger-ui .info .title small {
-  vertical-align: middle;
-}
-
-/* The page header already links to swagger.json (translated); hide Swagger's own link */
-.swagger-ui-host .swagger-ui .info hgroup.main > a {
-  display: none;
-}
-
-.swagger-ui-host .swagger-ui .wrapper {
-  padding: 0;
-}
-
-.swagger-ui-host .swagger-ui .opblock-tag {
-  font-size: var(--text-lg);
-}
-
-.swagger-ui-host .swagger-ui a {
-  color: var(--interactive-blue);
-}
-
 /* ===== RESPONSIVE (main only) ===== */
 
 /* Touch */
 @media (pointer: coarse) {
-  .mobile-menu-item,
   .filter-search {
     min-height: var(--touch-target-min);
   }

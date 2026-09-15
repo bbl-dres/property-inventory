@@ -1,0 +1,2650 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "BBL GIS IMMO API (Prototyp)",
+    "version": "1.0.0",
+    "description": "**Prototyp – fiktive Daten.** Diese API ist ein Platzhalter für zukünftige Entwicklung: der dokumentierte Server existiert nicht, die Beispiele stammen aus den Mock-Daten des Prototyps.\n\nDie API bietet lesenden Zugriff auf Gebäude, Grundstücke und Bodenabdeckungen des Bundesimmobilienportfolios. Alle Endpunkte liefern GeoJSON (RFC 7946) mit Koordinaten in WGS84 (`urn:ogc:def:crs:OGC:1.3:CRS84`). Die Attribute entsprechen dem BBL GIS IMMO Datenmodell (siehe `docs/DATAMODEL.md`); Feldnamen sind Shapefile-kompatibel (max. 10 Zeichen).\n\n**Authentifizierung:** API-Key im Header `X-API-Key`. **Rate Limit:** 100 Anfragen pro Minute.",
+    "contact": {
+      "name": "Bundesamt für Bauten und Logistik BBL",
+      "email": "immobilien@bbl.admin.ch"
+    },
+    "x-prototype": true
+  },
+  "servers": [
+    {
+      "url": "https://api.bbl-immo.admin.ch/v1",
+      "description": "Platzhalter – nicht erreichbar"
+    }
+  ],
+  "security": [
+    {
+      "ApiKeyAuth": []
+    }
+  ],
+  "tags": [
+    {
+      "name": "Gebäude",
+      "description": "Gebäude (Buildings) – Geometrie: Point"
+    },
+    {
+      "name": "Grundstücke",
+      "description": "Grundstück (Parcels) – Geometrie: Polygon"
+    },
+    {
+      "name": "Bodenabdeckung",
+      "description": "Bodenabdeckung (Land covers) – Geometrie: Polygon"
+    }
+  ],
+  "paths": {
+    "/buildings": {
+      "get": {
+        "tags": [
+          "Gebäude"
+        ],
+        "operationId": "listBuildings",
+        "summary": "Gebäude auflisten",
+        "description": "Alle Gebäude als GeoJSON FeatureCollection. Unterstützt Attribut- und Bounding-Box-Filter sowie Paginierung.",
+        "parameters": [
+          {
+            "name": "adr_land",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Land – Land. Werteliste `ISO_3166` (Beispiele: CH, DE, US, JP, BR, AU)",
+            "schema": {
+              "type": "string",
+              "example": "CH"
+            }
+          },
+          {
+            "name": "adr_reg",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Region – Region oder Kanton. Werteliste `REGION` (Beispiele: BE, Berlin, ZH, NY, GE, Tokyo)",
+            "schema": {
+              "type": "string",
+              "example": "BE"
+            }
+          },
+          {
+            "name": "adr_ort",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Ort – Ort",
+            "schema": {
+              "type": "string",
+              "example": "Bern"
+            }
+          },
+          {
+            "name": "bbl_stat",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Status – Status entsprechend SAP",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Aktiv",
+                "In Renovation",
+                "In Planung",
+                "Verkauft"
+              ],
+              "example": "Aktiv"
+            }
+          },
+          {
+            "name": "bbl_eigen",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Eigentum Art – Eigentum Art entsprechend SAP. Werteliste `BBL_PROP_TYPE` (Beispiele: Eigentum Bund, Miete, Verkauft)",
+            "schema": {
+              "type": "string",
+              "example": "Eigentum Bund"
+            }
+          },
+          {
+            "name": "bbl_port",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Teilportfolio – Teilportfolio entsprechend SAP. Werteliste `BBL_PORTFOLIO` (Beispiele: Verwaltungsgebäude, Diplomatische Vertretung, Lager / Logistik, Ausbildung, Wohnliegenschaft, Infrastruktur IT)",
+            "schema": {
+              "type": "string",
+              "example": "Verwaltungsgebäude"
+            }
+          },
+          {
+            "name": "bbl_gbda1",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Gebaudeart 1 – Gebaudeart Stufe 1. Werteliste `BBL_BLDG_TYP1` (Beispiele: Verwaltung, Industrie und Gewerbe, Bildung und Forschung, Wohnen)",
+            "schema": {
+              "type": "string",
+              "example": "Verwaltung"
+            }
+          },
+          {
+            "name": "bfs_gemnr",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BFS Gemeindennummer – BFS Gemeindenummer",
+            "schema": {
+              "type": "string",
+              "example": "351"
+            }
+          },
+          {
+            "name": "kgs_kat",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BABS KGS Kategorie – KGS-Inventar Kategorie",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "A",
+                "B",
+                "C"
+              ],
+              "example": "A"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "Räumlicher Filter als Begrenzungsrechteck in WGS84: `minLon,minLat,maxLon,maxLat`.",
+            "schema": {
+              "type": "string",
+              "example": "7.40,46.90,7.50,47.00"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximale Anzahl Ergebnisse pro Antwort.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Anzahl zu überspringender Ergebnisse (Paginierung).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON FeatureCollection",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingFeatureCollection"
+                },
+                "example": {
+                  "type": "FeatureCollection",
+                  "numberMatched": 11,
+                  "numberReturned": 1,
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "geometry": {
+                        "type": "Point",
+                        "coordinates": [
+                          7.4441,
+                          46.9465
+                        ]
+                      },
+                      "properties": {
+                        "bbl_stat": "Aktiv",
+                        "bbl_id": "1080/4840/AF",
+                        "bbl_buch": "1080",
+                        "bbl_we": "4840",
+                        "bbl_obj": "AF",
+                        "bbl_bez": "Bundeshaus West",
+                        "adr_land": "CH",
+                        "adr_reg": "BE",
+                        "adr_ort": "Bern",
+                        "adr_plz": "3003",
+                        "adr_str": "Bundesplatz",
+                        "adr_hsnr": "3",
+                        "adr_conct": "Bundesplatz 3 3003 Bern",
+                        "wgs84_lat": 46.9465,
+                        "wgs84_lon": 7.4441,
+                        "lv95_e": 2600416.2,
+                        "lv95_n": 1199490.6,
+                        "egm_elev": null,
+                        "bbl_eigen": "Eigentum Bund",
+                        "bbl_ostr": "Erhalten",
+                        "bbl_mietm": "Vollkostenmiete",
+                        "bbl_bjahr": 1902,
+                        "bbl_vjahr": null,
+                        "bbl_port": "Verwaltungsgebäude",
+                        "bbl_port2": "Bundesverwaltung",
+                        "bbl_awrt": 85000000.0,
+                        "bbl_bwrt": 42000000.0,
+                        "bbl_gbda1": "Verwaltung",
+                        "bbl_gbda2": "Parlamentsgebäude",
+                        "bbl_ovtw": "Anna Müller",
+                        "bbl_pvtw": "Thomas Weber",
+                        "av_egid": "301001234",
+                        "av_egrid": "CH938391457759",
+                        "bfs_gem": "Bern",
+                        "bfs_gemnr": "351",
+                        "av_zbez": "Verwaltungszone",
+                        "av_znut": "Zone für öffentliche Nutzung",
+                        "bbl_hist": "Ja",
+                        "bbl_arch": "Ja",
+                        "kgs_kat": "A",
+                        "kgs_nr": 1001,
+                        "garea_gf": 15200.0,
+                        "garea_gfo": 12800.0,
+                        "garea_gfu": 2400.0,
+                        "garea_acu": "Vermessen",
+                        "garea_ngf": 13100.0,
+                        "garea_nf": 11500.0,
+                        "garea_hnf": 9800.0,
+                        "garea_nnf": 1700.0,
+                        "garea_ff": 800.0,
+                        "garea_vf": 800.0,
+                        "garea_vmf": 10200.0,
+                        "garea_ebf": 12500.0,
+                        "gvol_gv": 48500.0,
+                        "gvol_gvo": 39200.0,
+                        "gvol_gvu": 9300.0,
+                        "gvol_acu": "Vermessen",
+                        "gastw": 5,
+                        "gastw_og": 4,
+                        "gastw_ug": 1,
+                        "gastw_acu": "Vermessen",
+                        "larea_ggf": 3200.0,
+                        "larea_gsf": 5100.0,
+                        "larea_uf": 1900.0,
+                        "larea_acu": "AV",
+                        "objectid": 1,
+                        "etl_ts": "2026-03-18T06:00:00Z",
+                        "img_url": [
+                          "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop",
+                          "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+                          "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+                        ]
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/buildings/{bbl_id}": {
+      "get": {
+        "tags": [
+          "Gebäude"
+        ],
+        "operationId": "getBuilding",
+        "summary": "Gebäude nach ID",
+        "description": "Einzelnes Objekt als GeoJSON Feature.",
+        "parameters": [
+          {
+            "name": "bbl_id",
+            "in": "path",
+            "required": true,
+            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1080%2F4840%2FAF`.",
+            "schema": {
+              "type": "string",
+              "example": "1080/4840/AF"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON Feature",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BuildingFeature"
+                },
+                "example": {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Point",
+                    "coordinates": [
+                      7.4441,
+                      46.9465
+                    ]
+                  },
+                  "properties": {
+                    "bbl_stat": "Aktiv",
+                    "bbl_id": "1080/4840/AF",
+                    "bbl_buch": "1080",
+                    "bbl_we": "4840",
+                    "bbl_obj": "AF",
+                    "bbl_bez": "Bundeshaus West",
+                    "adr_land": "CH",
+                    "adr_reg": "BE",
+                    "adr_ort": "Bern",
+                    "adr_plz": "3003",
+                    "adr_str": "Bundesplatz",
+                    "adr_hsnr": "3",
+                    "adr_conct": "Bundesplatz 3 3003 Bern",
+                    "wgs84_lat": 46.9465,
+                    "wgs84_lon": 7.4441,
+                    "lv95_e": 2600416.2,
+                    "lv95_n": 1199490.6,
+                    "egm_elev": null,
+                    "bbl_eigen": "Eigentum Bund",
+                    "bbl_ostr": "Erhalten",
+                    "bbl_mietm": "Vollkostenmiete",
+                    "bbl_bjahr": 1902,
+                    "bbl_vjahr": null,
+                    "bbl_port": "Verwaltungsgebäude",
+                    "bbl_port2": "Bundesverwaltung",
+                    "bbl_awrt": 85000000.0,
+                    "bbl_bwrt": 42000000.0,
+                    "bbl_gbda1": "Verwaltung",
+                    "bbl_gbda2": "Parlamentsgebäude",
+                    "bbl_ovtw": "Anna Müller",
+                    "bbl_pvtw": "Thomas Weber",
+                    "av_egid": "301001234",
+                    "av_egrid": "CH938391457759",
+                    "bfs_gem": "Bern",
+                    "bfs_gemnr": "351",
+                    "av_zbez": "Verwaltungszone",
+                    "av_znut": "Zone für öffentliche Nutzung",
+                    "bbl_hist": "Ja",
+                    "bbl_arch": "Ja",
+                    "kgs_kat": "A",
+                    "kgs_nr": 1001,
+                    "garea_gf": 15200.0,
+                    "garea_gfo": 12800.0,
+                    "garea_gfu": 2400.0,
+                    "garea_acu": "Vermessen",
+                    "garea_ngf": 13100.0,
+                    "garea_nf": 11500.0,
+                    "garea_hnf": 9800.0,
+                    "garea_nnf": 1700.0,
+                    "garea_ff": 800.0,
+                    "garea_vf": 800.0,
+                    "garea_vmf": 10200.0,
+                    "garea_ebf": 12500.0,
+                    "gvol_gv": 48500.0,
+                    "gvol_gvo": 39200.0,
+                    "gvol_gvu": 9300.0,
+                    "gvol_acu": "Vermessen",
+                    "gastw": 5,
+                    "gastw_og": 4,
+                    "gastw_ug": 1,
+                    "gastw_acu": "Vermessen",
+                    "larea_ggf": 3200.0,
+                    "larea_gsf": 5100.0,
+                    "larea_uf": 1900.0,
+                    "larea_acu": "AV",
+                    "objectid": 1,
+                    "etl_ts": "2026-03-18T06:00:00Z",
+                    "img_url": [
+                      "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop",
+                      "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+                      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/parcels": {
+      "get": {
+        "tags": [
+          "Grundstücke"
+        ],
+        "operationId": "listParcels",
+        "summary": "Grundstück auflisten",
+        "description": "Alle Grundstück als GeoJSON FeatureCollection. Unterstützt Attribut- und Bounding-Box-Filter sowie Paginierung.",
+        "parameters": [
+          {
+            "name": "adr_land",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Land – Land. Werteliste `ISO_3166` (Beispiele: CH, DE, US, JP, BR)",
+            "schema": {
+              "type": "string",
+              "example": "CH"
+            }
+          },
+          {
+            "name": "adr_reg",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Region – Region oder Kanton. Werteliste `REGION` (Beispiele: BE, Berlin, ZH, NY, GE, Tokyo)",
+            "schema": {
+              "type": "string",
+              "example": "BE"
+            }
+          },
+          {
+            "name": "bfs_gemnr",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BFS Gemeindennummer – BFS Gemeindenummer",
+            "schema": {
+              "type": "string",
+              "example": "351"
+            }
+          },
+          {
+            "name": "bbl_we",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Wirtschaftseinheit – Wirtschaftseinheit",
+            "schema": {
+              "type": "string",
+              "example": "4840"
+            }
+          },
+          {
+            "name": "bbl_eigen",
+            "in": "query",
+            "required": false,
+            "description": "Filter: BBL Eigentum Art – Eigentum Art entsprechend SAP. Werteliste `BBL_PROP_TYPE` (Beispiele: Eigentum Bund, Miete, Verkauft)",
+            "schema": {
+              "type": "string",
+              "example": "Eigentum Bund"
+            }
+          },
+          {
+            "name": "av_egrid",
+            "in": "query",
+            "required": false,
+            "description": "Filter: AV EGRID – Eidg. Grundstuckidentifikator (nur CH)",
+            "schema": {
+              "type": "string",
+              "example": "CH938391457759"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "Räumlicher Filter als Begrenzungsrechteck in WGS84: `minLon,minLat,maxLon,maxLat`.",
+            "schema": {
+              "type": "string",
+              "example": "7.40,46.90,7.50,47.00"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximale Anzahl Ergebnisse pro Antwort.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Anzahl zu überspringender Ergebnisse (Paginierung).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON FeatureCollection",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParcelFeatureCollection"
+                },
+                "example": {
+                  "type": "FeatureCollection",
+                  "numberMatched": 10,
+                  "numberReturned": 1,
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                          [
+                            [
+                              7.4435,
+                              46.946
+                            ],
+                            [
+                              7.4447,
+                              46.946
+                            ],
+                            [
+                              7.4447,
+                              46.947
+                            ],
+                            [
+                              7.4435,
+                              46.947
+                            ],
+                            [
+                              7.4435,
+                              46.946
+                            ]
+                          ]
+                        ]
+                      },
+                      "properties": {
+                        "bbl_stat": "Aktiv",
+                        "bbl_id": "1080/4840/01",
+                        "bbl_buch": "1080",
+                        "bbl_we": "4840",
+                        "bbl_obj": "01",
+                        "bbl_bez": "Bundesplatz Parzelle A",
+                        "bbl_port": "Verwaltungsgebäude",
+                        "bbl_mietm": "Vollkostenmiete",
+                        "bbl_eigen": "Eigentum Bund",
+                        "bbl_awrt": 35000000.0,
+                        "bbl_bwrt": 12000000.0,
+                        "bbl_hgart": false,
+                        "adr_land": "CH",
+                        "adr_reg": "BE",
+                        "adr_ort": "Bern",
+                        "adr_plz": "3003",
+                        "adr_str": "Bundesplatz",
+                        "adr_hsnr": "3",
+                        "adr_conct": "Bundesplatz 3 3003 Bern",
+                        "wgs84_lat": 46.9465,
+                        "wgs84_lon": 7.4441,
+                        "lv95_e": 2600416.2,
+                        "lv95_n": 1199490.6,
+                        "egm_elev": null,
+                        "av_stat": "Gültig",
+                        "av_egrid": "CH938391457759",
+                        "bfs_gem": "Bern",
+                        "bfs_gemnr": "351",
+                        "av_nr": "1001",
+                        "larea_ggf": 3200.0,
+                        "larea_gsf": 5100.0,
+                        "larea_uf": 1900.0,
+                        "larea_buf": 1200.0,
+                        "larea_uuf": 700.0,
+                        "larea_acu": "AV",
+                        "larea_ver": 3800.0,
+                        "larea_gre": 1300.0,
+                        "av_zbez": "Verwaltungszone",
+                        "av_znut": "Zone für öffentliche Nutzung",
+                        "fid": null,
+                        "fid_src": null,
+                        "objectid": 1,
+                        "etl_ts": "2026-03-18T06:00:00Z"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/parcels/{bbl_id}": {
+      "get": {
+        "tags": [
+          "Grundstücke"
+        ],
+        "operationId": "getParcel",
+        "summary": "Grundstück nach ID",
+        "description": "Einzelnes Objekt als GeoJSON Feature.",
+        "parameters": [
+          {
+            "name": "bbl_id",
+            "in": "path",
+            "required": true,
+            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1080%2F4840%2F01`.",
+            "schema": {
+              "type": "string",
+              "example": "1080/4840/01"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON Feature",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ParcelFeature"
+                },
+                "example": {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                      [
+                        [
+                          7.4435,
+                          46.946
+                        ],
+                        [
+                          7.4447,
+                          46.946
+                        ],
+                        [
+                          7.4447,
+                          46.947
+                        ],
+                        [
+                          7.4435,
+                          46.947
+                        ],
+                        [
+                          7.4435,
+                          46.946
+                        ]
+                      ]
+                    ]
+                  },
+                  "properties": {
+                    "bbl_stat": "Aktiv",
+                    "bbl_id": "1080/4840/01",
+                    "bbl_buch": "1080",
+                    "bbl_we": "4840",
+                    "bbl_obj": "01",
+                    "bbl_bez": "Bundesplatz Parzelle A",
+                    "bbl_port": "Verwaltungsgebäude",
+                    "bbl_mietm": "Vollkostenmiete",
+                    "bbl_eigen": "Eigentum Bund",
+                    "bbl_awrt": 35000000.0,
+                    "bbl_bwrt": 12000000.0,
+                    "bbl_hgart": false,
+                    "adr_land": "CH",
+                    "adr_reg": "BE",
+                    "adr_ort": "Bern",
+                    "adr_plz": "3003",
+                    "adr_str": "Bundesplatz",
+                    "adr_hsnr": "3",
+                    "adr_conct": "Bundesplatz 3 3003 Bern",
+                    "wgs84_lat": 46.9465,
+                    "wgs84_lon": 7.4441,
+                    "lv95_e": 2600416.2,
+                    "lv95_n": 1199490.6,
+                    "egm_elev": null,
+                    "av_stat": "Gültig",
+                    "av_egrid": "CH938391457759",
+                    "bfs_gem": "Bern",
+                    "bfs_gemnr": "351",
+                    "av_nr": "1001",
+                    "larea_ggf": 3200.0,
+                    "larea_gsf": 5100.0,
+                    "larea_uf": 1900.0,
+                    "larea_buf": 1200.0,
+                    "larea_uuf": 700.0,
+                    "larea_acu": "AV",
+                    "larea_ver": 3800.0,
+                    "larea_gre": 1300.0,
+                    "av_zbez": "Verwaltungszone",
+                    "av_znut": "Zone für öffentliche Nutzung",
+                    "fid": null,
+                    "fid_src": null,
+                    "objectid": 1,
+                    "etl_ts": "2026-03-18T06:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/landcovers": {
+      "get": {
+        "tags": [
+          "Bodenabdeckung"
+        ],
+        "operationId": "listLandCovers",
+        "summary": "Bodenabdeckung auflisten",
+        "description": "Alle Bodenabdeckung als GeoJSON FeatureCollection. Unterstützt Attribut- und Bounding-Box-Filter sowie Paginierung.",
+        "parameters": [
+          {
+            "name": "bbl_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Grundstueck ID – Grundstueck-ID (FK zu Parcel bbl_id)",
+            "schema": {
+              "type": "string",
+              "example": "1080/4840/01"
+            }
+          },
+          {
+            "name": "geb_id",
+            "in": "query",
+            "required": false,
+            "description": "Filter: Gebaeude ID – Gebaeude-ID (FK zu Building bbl_id); nur fuer av_type=Gebaeude",
+            "schema": {
+              "type": "string",
+              "example": "1080/4840/AF"
+            }
+          },
+          {
+            "name": "av_type",
+            "in": "query",
+            "required": false,
+            "description": "Filter: AV Typ – Bodenabdeckungstyp",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Gebaeude",
+                "befestigt",
+                "humusiert",
+                "Gewaesser"
+              ],
+              "example": "Gebaeude"
+            }
+          },
+          {
+            "name": "av_egid",
+            "in": "query",
+            "required": false,
+            "description": "Filter: AV EGID – Eidg. Gebaudeidentifikator (nur CH); nur fuer Typ Gebaeude",
+            "schema": {
+              "type": "string",
+              "example": "301001234"
+            }
+          },
+          {
+            "name": "av_egrid",
+            "in": "query",
+            "required": false,
+            "description": "Filter: AV EGRID – Eidg. Grundstuckidentifikator (nur CH)",
+            "schema": {
+              "type": "string",
+              "example": "CH938391457759"
+            }
+          },
+          {
+            "name": "bbox",
+            "in": "query",
+            "required": false,
+            "description": "Räumlicher Filter als Begrenzungsrechteck in WGS84: `minLon,minLat,maxLon,maxLat`.",
+            "schema": {
+              "type": "string",
+              "example": "7.40,46.90,7.50,47.00"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "required": false,
+            "description": "Maximale Anzahl Ergebnisse pro Antwort.",
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 1000,
+              "default": 100
+            }
+          },
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "description": "Anzahl zu überspringender Ergebnisse (Paginierung).",
+            "schema": {
+              "type": "integer",
+              "minimum": 0,
+              "default": 0
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON FeatureCollection",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LandCoverFeatureCollection"
+                },
+                "example": {
+                  "type": "FeatureCollection",
+                  "numberMatched": 12,
+                  "numberReturned": 1,
+                  "features": [
+                    {
+                      "type": "Feature",
+                      "geometry": {
+                        "type": "Polygon",
+                        "coordinates": [
+                          [
+                            [
+                              7.4438,
+                              46.9463
+                            ],
+                            [
+                              7.4444,
+                              46.9463
+                            ],
+                            [
+                              7.4444,
+                              46.9467
+                            ],
+                            [
+                              7.4438,
+                              46.9467
+                            ],
+                            [
+                              7.4438,
+                              46.9463
+                            ]
+                          ]
+                        ]
+                      },
+                      "properties": {
+                        "bbl_id": "1080/4840/01",
+                        "geb_id": "1080/4840/AF",
+                        "av_stat": "Gültig",
+                        "av_egid": "301001234",
+                        "av_egrid": "CH938391457759",
+                        "av_type": "Gebaeude",
+                        "lc_area": 1920.0,
+                        "wgs84_lat": 46.9465,
+                        "wgs84_lon": 7.4441,
+                        "lv95_e": 2600416.2,
+                        "lv95_n": 1199490.6,
+                        "fid": null,
+                        "fid_src": null,
+                        "objectid": 1,
+                        "etl_ts": "2026-03-18T06:00:00Z"
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/BadRequest"
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    },
+    "/landcovers/{objectid}": {
+      "get": {
+        "tags": [
+          "Bodenabdeckung"
+        ],
+        "operationId": "getLandCover",
+        "summary": "Bodenabdeckung nach ID",
+        "description": "Einzelnes Objekt als GeoJSON Feature.",
+        "parameters": [
+          {
+            "name": "objectid",
+            "in": "path",
+            "required": true,
+            "description": "OBJECTID (`objectid`)",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "GeoJSON Feature",
+            "content": {
+              "application/geo+json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LandCoverFeature"
+                },
+                "example": {
+                  "type": "Feature",
+                  "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
+                      [
+                        [
+                          7.4438,
+                          46.9463
+                        ],
+                        [
+                          7.4444,
+                          46.9463
+                        ],
+                        [
+                          7.4444,
+                          46.9467
+                        ],
+                        [
+                          7.4438,
+                          46.9467
+                        ],
+                        [
+                          7.4438,
+                          46.9463
+                        ]
+                      ]
+                    ]
+                  },
+                  "properties": {
+                    "bbl_id": "1080/4840/01",
+                    "geb_id": "1080/4840/AF",
+                    "av_stat": "Gültig",
+                    "av_egid": "301001234",
+                    "av_egrid": "CH938391457759",
+                    "av_type": "Gebaeude",
+                    "lc_area": 1920.0,
+                    "wgs84_lat": 46.9465,
+                    "wgs84_lon": 7.4441,
+                    "lv95_e": 2600416.2,
+                    "lv95_n": 1199490.6,
+                    "fid": null,
+                    "fid_src": null,
+                    "objectid": 1,
+                    "etl_ts": "2026-03-18T06:00:00Z"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "$ref": "#/components/responses/Unauthorized"
+          },
+          "404": {
+            "$ref": "#/components/responses/NotFound"
+          },
+          "429": {
+            "$ref": "#/components/responses/TooManyRequests"
+          },
+          "500": {
+            "$ref": "#/components/responses/ServerError"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "ApiKeyAuth": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-API-Key",
+        "description": "API-Key (Platzhalter)"
+      }
+    },
+    "schemas": {
+      "PointGeometry": {
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Point"
+            ]
+          },
+          "coordinates": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 3,
+            "items": {
+              "type": "number"
+            },
+            "description": "[Longitude, Latitude] in WGS84",
+            "example": [
+              7.4441,
+              46.9465
+            ]
+          }
+        }
+      },
+      "PolygonGeometry": {
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Polygon"
+            ]
+          },
+          "coordinates": {
+            "type": "array",
+            "description": "Ringe aus [Longitude, Latitude]-Paaren; der erste Ring ist die Aussenkontur.",
+            "items": {
+              "type": "array",
+              "items": {
+                "type": "array",
+                "minItems": 2,
+                "items": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "required": [
+          "code",
+          "message"
+        ],
+        "properties": {
+          "code": {
+            "type": "integer",
+            "example": 404
+          },
+          "message": {
+            "type": "string",
+            "example": "Objekt nicht gefunden"
+          }
+        }
+      },
+      "BuildingProperties": {
+        "type": "object",
+        "required": [
+          "bbl_id"
+        ],
+        "properties": {
+          "bbl_id": {
+            "type": "string",
+            "title": "BBL ID",
+            "description": "Interne BBL ID (Buchungskreis/WE/Teilobjekt)\n\nEN: Internal BBL ID (company code / economic unit / subobject)",
+            "example": "1080/4840/AF",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building",
+            "x-key": "PK"
+          },
+          "bbl_buch": {
+            "type": "string",
+            "title": "BBL Buchungskreis",
+            "description": "Buchungskreis entsprechend SAP\n\nEN: Company code per SAP",
+            "nullable": true,
+            "example": "1000",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_we": {
+            "type": "string",
+            "title": "BBL Wirtschaftseinheit",
+            "description": "Wirtschaftseinheit, gruppiert Teilobjekte nach kaufmannischer Logik\n\nEN: Groups subobjects by commercial logic; linked to contracts and cash flows",
+            "nullable": true,
+            "example": "4840",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building",
+            "x-key": "FK"
+          },
+          "bbl_obj": {
+            "type": "string",
+            "title": "BBL Teilobjekt",
+            "description": "Teilobjekt, pro Wirtschaftseinheit indexiert\n\nEN: Subobject number, indexed per economic unit (e.g. AF)",
+            "nullable": true,
+            "example": "AF",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_bez": {
+            "type": "string",
+            "title": "BBL Bezeichnung",
+            "description": "Objektbezeichnung entsprechend SAP\n\nEN: Object name per SAP",
+            "nullable": true,
+            "example": "Bundeshaus West",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_stat": {
+            "type": "string",
+            "title": "BBL Status",
+            "description": "Status entsprechend SAP\n\nEN: Record status per SAP",
+            "enum": [
+              "Aktiv",
+              "In Renovation",
+              "In Planung",
+              "Verkauft"
+            ],
+            "x-value-list": "BBL_STATUS",
+            "nullable": true,
+            "example": "Aktiv",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building"
+          },
+          "adr_land": {
+            "type": "string",
+            "title": "Land",
+            "description": "Land\n\nEN: Country\n\nWerteliste `ISO_3166` (Beispiele: CH, DE, US, JP, BR, AU)",
+            "x-value-list": "ISO_3166",
+            "nullable": true,
+            "example": "CH",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_reg": {
+            "type": "string",
+            "title": "Region",
+            "description": "Region oder Kanton\n\nEN: Region (international) or Canton (CH)\n\nWerteliste `REGION` (Beispiele: BE, Berlin, ZH, NY, GE, Tokyo)",
+            "x-value-list": "REGION",
+            "nullable": true,
+            "example": "BE",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_ort": {
+            "type": "string",
+            "title": "Ort",
+            "description": "Ort\n\nEN: City or town",
+            "nullable": true,
+            "example": "Bern",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_plz": {
+            "type": "string",
+            "title": "Postleitzahl",
+            "description": "Postleitzahl\n\nEN: Postal code",
+            "nullable": true,
+            "example": "3003",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_str": {
+            "type": "string",
+            "title": "Strasse",
+            "description": "Strasse\n\nEN: Street name",
+            "nullable": true,
+            "example": "Bundesplatz",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_hsnr": {
+            "type": "string",
+            "title": "Hausnummer",
+            "description": "Hausnummer\n\nEN: House number",
+            "nullable": true,
+            "example": "3",
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "adr_conct": {
+            "type": "string",
+            "title": "Adresse",
+            "description": "Verkettet aus Adressfeldern, ohne Trennzeichen\n\nEN: Concatenated from adr_str + adr_hsnr + adr_plz + adr_ort, no separators",
+            "nullable": true,
+            "example": "Bundesplatz 3 3003 Bern",
+            "x-group": "Location",
+            "x-source": "Derived"
+          },
+          "wgs84_lat": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Latitude",
+            "description": "Breitengrad WGS84\n\nEN: WGS84 latitude",
+            "nullable": true,
+            "example": 46.9465,
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "wgs84_lon": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Longitude",
+            "description": "Langengrad WGS84\n\nEN: WGS84 longitude",
+            "nullable": true,
+            "example": 7.4441,
+            "x-group": "Location",
+            "x-source": "RE-FX Building"
+          },
+          "lv95_e": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 E",
+            "description": "LV95 Ost, aus WGS84 hergeleitet\n\nEN: LV95 easting, derived from WGS84",
+            "nullable": true,
+            "example": 2600416.2,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "lv95_n": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 N",
+            "description": "LV95 Nord, aus WGS84 hergeleitet\n\nEN: LV95 northing, derived from WGS84",
+            "nullable": true,
+            "example": 1199490.6,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "egm_elev": {
+            "type": "number",
+            "format": "double",
+            "title": "EGM Hohe",
+            "description": "Absolute Hohe in Meter (EGM2008)\n\nEN: Absolute elevation in meters (EGM2008 geoid)",
+            "nullable": true,
+            "x-group": "Location",
+            "x-source": "Elevation Models"
+          },
+          "bbl_eigen": {
+            "type": "string",
+            "title": "BBL Eigentum Art",
+            "description": "Eigentum Art entsprechend SAP\n\nEN: Ownership type per SAP\n\nWerteliste `BBL_PROP_TYPE` (Beispiele: Eigentum Bund, Miete, Verkauft)",
+            "x-value-list": "BBL_PROP_TYPE",
+            "nullable": true,
+            "example": "Eigentum Bund",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_ostr": {
+            "type": "string",
+            "title": "BBL Objektstrategie",
+            "description": "Objektstrategie entsprechend SAP\n\nEN: Object strategy per SAP\n\nWerteliste `BBL_STRATEGY` (Beispiele: Erhalten, Optimieren, Veräussern)",
+            "x-value-list": "BBL_STRATEGY",
+            "nullable": true,
+            "example": "Erhalten",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_mietm": {
+            "type": "string",
+            "title": "BBL Mietmodell",
+            "description": "Mietmodell entsprechend SAP\n\nEN: Rental model per SAP\n\nWerteliste `BBL_RENTAL` (Beispiele: Vollkostenmiete, Kostenmiete, Marktmiete)",
+            "x-value-list": "BBL_RENTAL",
+            "nullable": true,
+            "example": "Vollkostenmiete",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_bjahr": {
+            "type": "integer",
+            "title": "BBL Baujahr",
+            "description": "Baujahr\n\nEN: Year of construction",
+            "nullable": true,
+            "example": 1902,
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_vjahr": {
+            "type": "integer",
+            "title": "BBL Verkaufsjahr",
+            "description": "Verkaufsjahr (leer wenn nicht verkauft)\n\nEN: Year of sale (null if not sold)",
+            "nullable": true,
+            "example": 2024,
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_port": {
+            "type": "string",
+            "title": "BBL Teilportfolio",
+            "description": "Teilportfolio entsprechend SAP\n\nEN: Subportfolio assignment per SAP\n\nWerteliste `BBL_PORTFOLIO` (Beispiele: Verwaltungsgebäude, Diplomatische Vertretung, Lager / Logistik, Ausbildung, Wohnliegenschaft, Infrastruktur IT)",
+            "x-value-list": "BBL_PORTFOLIO",
+            "nullable": true,
+            "example": "Verwaltungsgebäude",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_port2": {
+            "type": "string",
+            "title": "BBL Teilportfoliogruppe",
+            "description": "Teilportfoliogruppe entsprechend SAP\n\nEN: Subportfolio group per SAP\n\nWerteliste `BBL_PORTF_GRP` (Beispiele: Bundesverwaltung, EDA Auslandsvertretungen, Wohnliegenschaften Bund)",
+            "x-value-list": "BBL_PORTF_GRP",
+            "nullable": true,
+            "example": "Bundesverwaltung",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_awrt": {
+            "type": "number",
+            "format": "double",
+            "title": "BBL Anschaffungswert",
+            "description": "Anschaffungswert in CHF\n\nEN: Acquisition value in CHF",
+            "nullable": true,
+            "example": 85000000.0,
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_bwrt": {
+            "type": "number",
+            "format": "double",
+            "title": "BBL Buchwert",
+            "description": "Buchwert des Gebaudeanlageguts in CHF\n\nEN: Net book value of building asset in CHF",
+            "nullable": true,
+            "example": 42000000.0,
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_gbda1": {
+            "type": "string",
+            "title": "BBL Gebaudeart 1",
+            "description": "Gebaudeart Stufe 1\n\nEN: Building type level 1\n\nWerteliste `BBL_BLDG_TYP1` (Beispiele: Verwaltung, Industrie und Gewerbe, Bildung und Forschung, Wohnen)",
+            "x-value-list": "BBL_BLDG_TYP1",
+            "nullable": true,
+            "example": "Verwaltung",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_gbda2": {
+            "type": "string",
+            "title": "BBL Gebaudeart 2",
+            "description": "Gebaudeart Stufe 2\n\nEN: Building type level 2\n\nWerteliste `BBL_BLDG_TYP2` (Beispiele: Parlamentsgebäude, Botschaftsgebäude, Logistikgebäude, Konsulat, Schulungsgebäude, Mehrfamilienhaus)",
+            "x-value-list": "BBL_BLDG_TYP2",
+            "nullable": true,
+            "example": "Parlamentsgebäude",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_ovtw": {
+            "type": "string",
+            "title": "BBL Objektverantwortlich",
+            "description": "Objektverantwortliche Person\n\nEN: Responsible person per SAP",
+            "nullable": true,
+            "example": "Anna Müller",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_pvtw": {
+            "type": "string",
+            "title": "BBL Portfoliomanager",
+            "description": "Portfoliomanager entsprechend SAP\n\nEN: Portfolio manager per SAP",
+            "nullable": true,
+            "example": "Thomas Weber",
+            "x-group": "Internal Master Data 2",
+            "x-source": "RE-FX Building"
+          },
+          "av_egid": {
+            "type": "string",
+            "title": "AV EGID",
+            "description": "Eidg. Gebaudeidentifikator (nur CH)\n\nEN: Federal building ID per GWR (CH only)",
+            "nullable": true,
+            "example": "301001234",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "av_egrid": {
+            "type": "string",
+            "title": "AV EGRID",
+            "description": "Eidg. Grundstuckidentifikator (nur CH)\n\nEN: Federal parcel ID per cadastre.ch (CH only)",
+            "nullable": true,
+            "example": "CH938391457759",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "bfs_gem": {
+            "type": "string",
+            "title": "BFS Gemeindename",
+            "description": "BFS Gemeindename\n\nEN: Municipality name per BFS directory",
+            "nullable": true,
+            "example": "Bern",
+            "x-group": "Official Survey",
+            "x-source": "CH GWR"
+          },
+          "bfs_gemnr": {
+            "type": "string",
+            "title": "BFS Gemeindennummer",
+            "description": "BFS Gemeindenummer\n\nEN: Municipality number per BFS directory",
+            "nullable": true,
+            "example": "351",
+            "x-group": "Official Survey",
+            "x-source": "CH GWR",
+            "x-key": "FK"
+          },
+          "av_zbez": {
+            "type": "string",
+            "title": "AV Bauzone Bezeichnung",
+            "description": "Bauzonenbezeichnung (ARE / Kantone)\n\nEN: Construction zone name (ARE / cantonal)",
+            "nullable": true,
+            "example": "Verwaltungszone",
+            "x-group": "Zoning",
+            "x-source": "CH Zoning"
+          },
+          "av_znut": {
+            "type": "string",
+            "title": "AV Bauzone Nutzung",
+            "description": "Bauzonennutzung\n\nEN: Construction zone usage type",
+            "nullable": true,
+            "example": "Zone für öffentliche Nutzung",
+            "x-group": "Zoning",
+            "x-source": "CH Zoning"
+          },
+          "bbl_hist": {
+            "type": "string",
+            "title": "BBL Historische Ausstattung",
+            "description": "Historische Ausstattung\n\nEN: Historical furnishing classification",
+            "enum": [
+              "Ja",
+              "Nein"
+            ],
+            "x-value-list": "BBL_HISTORICAL",
+            "nullable": true,
+            "example": "Ja",
+            "x-group": "Heritage Protection",
+            "x-source": "RE-FX Building"
+          },
+          "bbl_arch": {
+            "type": "string",
+            "title": "BBL Archivwurdigkeit",
+            "description": "Archivwurdigkeit\n\nEN: Archival value classification",
+            "enum": [
+              "Ja",
+              "Nein"
+            ],
+            "x-value-list": "BBL_ARCHIVAL",
+            "nullable": true,
+            "example": "Ja",
+            "x-group": "Heritage Protection",
+            "x-source": "RE-FX Building"
+          },
+          "kgs_kat": {
+            "type": "string",
+            "title": "BABS KGS Kategorie",
+            "description": "KGS-Inventar Kategorie\n\nEN: Cultural property protection category",
+            "enum": [
+              "A",
+              "B",
+              "C"
+            ],
+            "x-value-list": "KGS_CATEGORY",
+            "nullable": true,
+            "example": "A",
+            "x-group": "Heritage Protection",
+            "x-source": "CH KGS Inventory"
+          },
+          "kgs_nr": {
+            "type": "integer",
+            "title": "BABS KGS Nummer",
+            "description": "KGS-Inventar ID\n\nEN: Cultural property protection ID",
+            "nullable": true,
+            "example": 1001,
+            "x-group": "Heritage Protection",
+            "x-source": "CH KGS Inventory",
+            "x-key": "FK"
+          },
+          "objectid": {
+            "type": "integer",
+            "title": "OBJECTID",
+            "description": "ESRI ID fur GIS-Updates\n\nEN: ESRI system ID for GIS updates",
+            "nullable": true,
+            "example": 1,
+            "x-group": "Other",
+            "x-source": "Auto",
+            "x-key": "UK"
+          },
+          "garea_gf": {
+            "type": "number",
+            "format": "double",
+            "title": "Geschossflache GF",
+            "description": "Geschossflache GF Total in m2\n\nEN: Total floor area GF (SIA 416) in m2",
+            "nullable": true,
+            "example": 15200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_gfo": {
+            "type": "number",
+            "format": "double",
+            "title": "GF Oberirdisch",
+            "description": "GF Oberirdisch in m2\n\nEN: Above-ground GF (SIA 416) in m2",
+            "nullable": true,
+            "example": 12800.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_gfu": {
+            "type": "number",
+            "format": "double",
+            "title": "GF Unterirdisch",
+            "description": "GF Unterirdisch in m2\n\nEN: Underground GF (SIA 416) in m2",
+            "nullable": true,
+            "example": 2400.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_acu": {
+            "type": "string",
+            "title": "Geschossflache Genauigkeit",
+            "description": "Genauigkeit und Datenherkunft\n\nEN: Accuracy and data origin of area",
+            "enum": [
+              "Vermessen",
+              "Geschätzt",
+              "AV"
+            ],
+            "x-value-list": "ACCURACY",
+            "nullable": true,
+            "example": "Vermessen",
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_ngf": {
+            "type": "number",
+            "format": "double",
+            "title": "Netto-Geschossflache NGF",
+            "description": "Netto-Geschossflache in m2\n\nEN: Net floor area NGF (SIA 416) in m2",
+            "nullable": true,
+            "example": 13100.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_nf": {
+            "type": "number",
+            "format": "double",
+            "title": "Nutzflache NF",
+            "description": "Nutzflache in m2\n\nEN: Usable area NF (SIA 416) in m2",
+            "nullable": true,
+            "example": 11500.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_hnf": {
+            "type": "number",
+            "format": "double",
+            "title": "Hauptnutzflache HNF",
+            "description": "Hauptnutzflache in m2\n\nEN: Main usable area HNF (SIA 416) in m2",
+            "nullable": true,
+            "example": 9800.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_nnf": {
+            "type": "number",
+            "format": "double",
+            "title": "Nebennutzflache NNF",
+            "description": "Nebennutzflache in m2\n\nEN: Ancillary usable area NNF (SIA 416) in m2",
+            "nullable": true,
+            "example": 1700.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_ff": {
+            "type": "number",
+            "format": "double",
+            "title": "Funktionsflache FF",
+            "description": "Funktionsflache in m2\n\nEN: Functional area FF (SIA 416) in m2",
+            "nullable": true,
+            "example": 800.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_vf": {
+            "type": "number",
+            "format": "double",
+            "title": "Verkehrsflache VF",
+            "description": "Verkehrsflache in m2\n\nEN: Traffic/circulation area VF (SIA 416) in m2",
+            "nullable": true,
+            "example": 800.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_vmf": {
+            "type": "number",
+            "format": "double",
+            "title": "Vermietbare Flache VMF",
+            "description": "Vermietbare Flache in m2\n\nEN: Rentable area VMF (SIA 416) in m2",
+            "nullable": true,
+            "example": 10200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "garea_ebf": {
+            "type": "number",
+            "format": "double",
+            "title": "Energiebezugsflache EBF",
+            "description": "Energiebezugsflache in m2\n\nEN: Energy reference area EBF (SIA 380) in m2",
+            "nullable": true,
+            "example": 12500.0,
+            "x-group": "Dimensions - SIA 380",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gvol_gv": {
+            "type": "number",
+            "format": "double",
+            "title": "Gebaudevolumen GV",
+            "description": "Gebaudevolumen GV in m3\n\nEN: Building volume GV (SIA 416) in m3",
+            "nullable": true,
+            "example": 48500.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gvol_gvo": {
+            "type": "number",
+            "format": "double",
+            "title": "GV Oberirdisch",
+            "description": "GV Oberirdisch in m3\n\nEN: Above-ground volume (SIA 416) in m3",
+            "nullable": true,
+            "example": 39200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gvol_gvu": {
+            "type": "number",
+            "format": "double",
+            "title": "GV Unterirdisch",
+            "description": "GV Unterirdisch in m3\n\nEN: Underground volume (SIA 416) in m3",
+            "nullable": true,
+            "example": 9300.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gvol_acu": {
+            "type": "string",
+            "title": "Gebaudevolumen Genauigkeit",
+            "description": "Genauigkeit und Datenherkunft\n\nEN: Accuracy and data origin of volume",
+            "enum": [
+              "Vermessen",
+              "Geschätzt",
+              "AV"
+            ],
+            "x-value-list": "ACCURACY",
+            "nullable": true,
+            "example": "Vermessen",
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gastw": {
+            "type": "integer",
+            "title": "Anzahl Geschosse",
+            "description": "Anzahl Geschosse Total\n\nEN: Total floor count",
+            "nullable": true,
+            "example": 5,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gastw_og": {
+            "type": "integer",
+            "title": "Geschosse Oberirdisch",
+            "description": "Geschosse Oberirdisch\n\nEN: Above-ground floor count",
+            "nullable": true,
+            "example": 4,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gastw_ug": {
+            "type": "integer",
+            "title": "Geschosse Unterirdisch",
+            "description": "Geschosse Unterirdisch\n\nEN: Underground floor count",
+            "nullable": true,
+            "example": 1,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "gastw_acu": {
+            "type": "string",
+            "title": "Geschosse Genauigkeit",
+            "description": "Genauigkeit und Datenherkunft\n\nEN: Accuracy and data origin of floor count",
+            "enum": [
+              "Vermessen",
+              "Geschätzt",
+              "AV"
+            ],
+            "x-value-list": "ACCURACY",
+            "nullable": true,
+            "example": "Vermessen",
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "RE-FX, Estimate"
+          },
+          "larea_ggf": {
+            "type": "number",
+            "format": "double",
+            "title": "Gebaudegrundflache GGF",
+            "description": "Gebaudegrundflache in m2\n\nEN: Building footprint GGF (SIA 416) in m2",
+            "nullable": true,
+            "example": 3200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_gsf": {
+            "type": "number",
+            "format": "double",
+            "title": "Grundstucksflache GSF",
+            "description": "Grundstucksflache in m2\n\nEN: Parcel area GSF (SIA 416) in m2",
+            "nullable": true,
+            "example": 5100.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_uf": {
+            "type": "number",
+            "format": "double",
+            "title": "Umgebungsflache UF",
+            "description": "Umgebungsflache in m2\n\nEN: Surrounding area UF (SIA 416) in m2",
+            "nullable": true,
+            "example": 1900.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_acu": {
+            "type": "string",
+            "title": "Grundstucksflache Genauigkeit",
+            "description": "Genauigkeit und Datenherkunft\n\nEN: Accuracy and data origin of land area",
+            "enum": [
+              "Vermessen",
+              "Geschätzt",
+              "AV"
+            ],
+            "x-value-list": "ACCURACY",
+            "nullable": true,
+            "example": "AV",
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "etl_ts": {
+            "type": "string",
+            "format": "date",
+            "title": "ETL Zeitstempel",
+            "description": "Zeitstempel der letzten ETL-Synchronisation\n\nEN: Timestamp of last ETL sync from source systems",
+            "nullable": true,
+            "example": "2026-03-18T06:00:00Z",
+            "x-group": "Other",
+            "x-source": "Auto"
+          },
+          "img_url": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "format": "uri"
+            },
+            "title": "Bild-URLs",
+            "description": "Liste von Bild-URLs fuer Karussell und Galerie (App-spezifisch)\n\nEN: List of image URLs for carousel and gallery (app-specific)",
+            "nullable": true,
+            "example": [
+              "https://images.unsplash.com/photo-1564501049412-61c2a3083791?w=800&h=600&fit=crop",
+              "https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop",
+              "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop"
+            ],
+            "x-group": "Other",
+            "x-source": "App"
+          }
+        }
+      },
+      "BuildingFeature": {
+        "type": "object",
+        "required": [
+          "type",
+          "geometry",
+          "properties"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Feature"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "description": "Entspricht `properties.bbl_id`"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/PointGeometry"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/BuildingProperties"
+          }
+        }
+      },
+      "BuildingFeatureCollection": {
+        "type": "object",
+        "required": [
+          "type",
+          "features"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "FeatureCollection"
+            ]
+          },
+          "numberMatched": {
+            "type": "integer",
+            "description": "Gesamtzahl der Treffer (vor `limit`/`offset`)",
+            "example": 11
+          },
+          "numberReturned": {
+            "type": "integer",
+            "description": "Anzahl Features in dieser Antwort",
+            "example": 11
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/BuildingFeature"
+            }
+          }
+        }
+      },
+      "ParcelProperties": {
+        "type": "object",
+        "required": [
+          "bbl_id"
+        ],
+        "properties": {
+          "bbl_id": {
+            "type": "string",
+            "title": "BBL ID",
+            "description": "Interne BBL ID (Buchungskreis/WE/Teilobjekt)\n\nEN: Internal BBL ID (company code / economic unit / subobject)",
+            "example": "1080/4840/01",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel",
+            "x-key": "PK"
+          },
+          "bbl_buch": {
+            "type": "string",
+            "title": "BBL Buchungskreis",
+            "description": "Buchungskreis entsprechend SAP\n\nEN: Company code per SAP",
+            "nullable": true,
+            "example": "1000",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_we": {
+            "type": "string",
+            "title": "BBL Wirtschaftseinheit",
+            "description": "Wirtschaftseinheit\n\nEN: Groups subobjects by commercial logic",
+            "nullable": true,
+            "example": "4840",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel",
+            "x-key": "FK"
+          },
+          "bbl_obj": {
+            "type": "string",
+            "title": "BBL Teilobjekt",
+            "description": "Teilobjekt\n\nEN: Subobject number (e.g. AF)",
+            "nullable": true,
+            "example": "01",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_bez": {
+            "type": "string",
+            "title": "BBL Bezeichnung",
+            "description": "Objektbezeichnung\n\nEN: Object name per SAP",
+            "nullable": true,
+            "example": "Bundesplatz Parzelle A",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_stat": {
+            "type": "string",
+            "title": "Status",
+            "description": "Status entsprechend SAP\n\nEN: Record status per SAP",
+            "enum": [
+              "Aktiv",
+              "In Renovation",
+              "In Planung",
+              "Verkauft"
+            ],
+            "x-value-list": "BBL_STATUS",
+            "nullable": true,
+            "example": "Aktiv",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_port": {
+            "type": "string",
+            "title": "BBL Teilportfolio",
+            "description": "Teilportfolio-Zuordnung\n\nEN: Subportfolio assignment\n\nWerteliste `BBL_PORTFOLIO` (Beispiele: Verwaltungsgebäude, Diplomatische Vertretung, Lager / Logistik, Ausbildung, Wohnliegenschaft, Infrastruktur IT)",
+            "x-value-list": "BBL_PORTFOLIO",
+            "nullable": true,
+            "example": "Verwaltungsgebäude",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_mietm": {
+            "type": "string",
+            "title": "BBL Mietmodell",
+            "description": "Mietmodell entsprechend SAP\n\nEN: Rental model per SAP\n\nWerteliste `BBL_RENTAL` (Beispiele: Vollkostenmiete, Kostenmiete, Marktmiete)",
+            "x-value-list": "BBL_RENTAL",
+            "nullable": true,
+            "example": "Vollkostenmiete",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_eigen": {
+            "type": "string",
+            "title": "BBL Eigentum Art",
+            "description": "Eigentum Art entsprechend SAP\n\nEN: Ownership type per SAP\n\nWerteliste `BBL_PROP_TYPE` (Beispiele: Eigentum Bund, Miete, Verkauft)",
+            "x-value-list": "BBL_PROP_TYPE",
+            "nullable": true,
+            "example": "Eigentum Bund",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_land": {
+            "type": "string",
+            "title": "Land",
+            "description": "Land\n\nEN: Country\n\nWerteliste `ISO_3166` (Beispiele: CH, DE, US, JP, BR)",
+            "x-value-list": "ISO_3166",
+            "nullable": true,
+            "example": "CH",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_reg": {
+            "type": "string",
+            "title": "Region",
+            "description": "Region oder Kanton\n\nEN: Region (international) or Canton (CH)\n\nWerteliste `REGION` (Beispiele: BE, Berlin, ZH, NY, GE, Tokyo)",
+            "x-value-list": "REGION",
+            "nullable": true,
+            "example": "BE",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_ort": {
+            "type": "string",
+            "title": "Ort",
+            "description": "Ort\n\nEN: City or town",
+            "nullable": true,
+            "example": "Bern",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_plz": {
+            "type": "string",
+            "title": "Postleitzahl",
+            "description": "Postleitzahl\n\nEN: Postal code",
+            "nullable": true,
+            "example": "3003",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_str": {
+            "type": "string",
+            "title": "Strasse",
+            "description": "Strasse\n\nEN: Street name",
+            "nullable": true,
+            "example": "Bundesplatz",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_hsnr": {
+            "type": "string",
+            "title": "Hausnummer",
+            "description": "Hausnummer\n\nEN: House number",
+            "nullable": true,
+            "example": "3",
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "adr_conct": {
+            "type": "string",
+            "title": "Adresse",
+            "description": "Adresse verkettet, ohne Trennzeichen\n\nEN: Concatenated address, no separators",
+            "nullable": true,
+            "example": "Bundesplatz 3 3003 Bern",
+            "x-group": "Location",
+            "x-source": "Derived"
+          },
+          "wgs84_lat": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Latitude",
+            "description": "Breitengrad WGS84 (Punkt im Polygon)\n\nEN: WGS84 latitude (point-in-polygon)",
+            "nullable": true,
+            "example": 46.9465,
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "wgs84_lon": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Longitude",
+            "description": "Langengrad WGS84 (Punkt im Polygon)\n\nEN: WGS84 longitude (point-in-polygon)",
+            "nullable": true,
+            "example": 7.4441,
+            "x-group": "Location",
+            "x-source": "RE-FX Parcel"
+          },
+          "lv95_e": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 E",
+            "description": "LV95 Ost, aus WGS84 hergeleitet\n\nEN: LV95 easting, derived from WGS84",
+            "nullable": true,
+            "example": 2600416.2,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "lv95_n": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 N",
+            "description": "LV95 Nord, aus WGS84 hergeleitet\n\nEN: LV95 northing, derived from WGS84",
+            "nullable": true,
+            "example": 1199490.6,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "egm_elev": {
+            "type": "number",
+            "format": "double",
+            "title": "EGM Hohe",
+            "description": "Absolute Hohe in Meter (EGM2008)\n\nEN: Absolute elevation in meters (EGM2008 geoid)",
+            "nullable": true,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "av_stat": {
+            "type": "string",
+            "title": "AV Status",
+            "description": "Status Amtliche Vermessung\n\nEN: Status per official survey\n\nWerteliste `AV_STATUS` (Beispiele: Gültig)",
+            "x-value-list": "AV_STATUS",
+            "nullable": true,
+            "example": "Gültig",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey"
+          },
+          "av_egrid": {
+            "type": "string",
+            "title": "AV EGRID",
+            "description": "Eidg. Grundstuckidentifikator (nur CH)\n\nEN: Federal parcel ID (CH only)",
+            "nullable": true,
+            "example": "CH938391457759",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "bbl_awrt": {
+            "type": "number",
+            "format": "double",
+            "title": "BBL Anschaffungswert",
+            "description": "Anschaffungswert in CHF\n\nEN: Acquisition value in CHF",
+            "nullable": true,
+            "example": 35000000.0,
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_bwrt": {
+            "type": "number",
+            "format": "double",
+            "title": "BBL Buchwert",
+            "description": "Kumulierte Baumassnahmen am Grundstuck in CHF\n\nEN: Cumulative construction expenditure on parcel in CHF",
+            "nullable": true,
+            "example": 12000000.0,
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel"
+          },
+          "bbl_hgart": {
+            "type": "boolean",
+            "title": "Historischer Garten",
+            "description": "Kennzeichnung als historischer Garten\n\nEN: Designated as historical garden",
+            "nullable": true,
+            "example": false,
+            "x-group": "Internal Master Data",
+            "x-source": "BBL SAP Property Inv."
+          },
+          "larea_ggf": {
+            "type": "number",
+            "format": "double",
+            "title": "Gebaudegrundflache GGF",
+            "description": "Summe Gebaudegrundflache pro Grundstuck in m2\n\nEN: Sum building footprint per parcel in m2",
+            "nullable": true,
+            "example": 3200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_gsf": {
+            "type": "number",
+            "format": "double",
+            "title": "Grundstucksflache GSF",
+            "description": "Grundstucksflache in m2\n\nEN: Parcel area GSF (SIA 416) in m2",
+            "nullable": true,
+            "example": 5100.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_uf": {
+            "type": "number",
+            "format": "double",
+            "title": "Umgebungsflache UF",
+            "description": "Umgebungsflache pro Grundstuck in m2\n\nEN: Surrounding area per parcel in m2",
+            "nullable": true,
+            "example": 1900.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_buf": {
+            "type": "number",
+            "format": "double",
+            "title": "Bearbeitete Umgebungsflache BUF",
+            "description": "Bearbeitete Umgebungsflache in m2\n\nEN: Processed surrounding area per parcel in m2",
+            "nullable": true,
+            "example": 1200.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_uuf": {
+            "type": "number",
+            "format": "double",
+            "title": "Unbearbeitete Umgebungsflache UUF",
+            "description": "Unbearbeitete Umgebungsflache in m2\n\nEN: Unprocessed surrounding area per parcel in m2",
+            "nullable": true,
+            "example": 700.0,
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_acu": {
+            "type": "string",
+            "title": "Grundstucksflache Genauigkeit",
+            "description": "Genauigkeit und Datenherkunft\n\nEN: Accuracy and data origin",
+            "enum": [
+              "Vermessen",
+              "Geschätzt",
+              "AV"
+            ],
+            "x-value-list": "ACCURACY",
+            "nullable": true,
+            "example": "AV",
+            "x-group": "Dimensions - SIA 416",
+            "x-source": "CH Official Survey"
+          },
+          "larea_ver": {
+            "type": "number",
+            "format": "double",
+            "title": "Versiegelte Flache",
+            "description": "Versiegelte Flache pro Grundstuck in m2\n\nEN: Sealed surface per parcel in m2",
+            "nullable": true,
+            "example": 3800.0,
+            "x-group": "Other Dimensions",
+            "x-source": "CH Official Survey"
+          },
+          "larea_gre": {
+            "type": "number",
+            "format": "double",
+            "title": "Grunflache",
+            "description": "Grunflachen, Grundlage fur Auswertung\n\nEN: Green space, basis for nature-oriented care analysis",
+            "nullable": true,
+            "example": 1300.0,
+            "x-group": "Other Dimensions",
+            "x-source": "CH Official Survey"
+          },
+          "bfs_gem": {
+            "type": "string",
+            "title": "BFS Gemeindename",
+            "description": "BFS Gemeindename\n\nEN: Municipality name per BFS",
+            "nullable": true,
+            "example": "Bern",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey"
+          },
+          "bfs_gemnr": {
+            "type": "string",
+            "title": "BFS Gemeindennummer",
+            "description": "BFS Gemeindenummer\n\nEN: Municipality number per BFS",
+            "nullable": true,
+            "example": "351",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "av_nr": {
+            "type": "string",
+            "title": "AV Grundstucksnummer",
+            "description": "Grundstucksnummer pro Gemeinde\n\nEN: Parcel number per municipality (unique with bfs_gemnr)",
+            "nullable": true,
+            "example": "1001",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "UK"
+          },
+          "av_zbez": {
+            "type": "string",
+            "title": "AV Bauzone Bezeichnung",
+            "description": "Bauzonenbezeichnung\n\nEN: Construction zone name (ARE / cantonal)",
+            "nullable": true,
+            "example": "Verwaltungszone",
+            "x-group": "Zoning",
+            "x-source": "CH Zoning"
+          },
+          "av_znut": {
+            "type": "string",
+            "title": "AV Bauzone Nutzung",
+            "description": "Bauzonennutzung\n\nEN: Construction zone usage type",
+            "nullable": true,
+            "example": "Zone für öffentliche Nutzung",
+            "x-group": "Zoning",
+            "x-source": "CH Official Survey"
+          },
+          "fid": {
+            "type": "string",
+            "title": "FID",
+            "description": "Architektur-Objekt-ID fur externe Geometrie\n\nEN: External geometry object ID",
+            "nullable": true,
+            "x-group": "Other",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "fid_src": {
+            "type": "string",
+            "title": "FID Quelle",
+            "description": "Quelle der Geometrie\n\nEN: Source of external geometry",
+            "nullable": true,
+            "x-group": "Other",
+            "x-source": "CH Official Survey"
+          },
+          "objectid": {
+            "type": "integer",
+            "title": "OBJECTID",
+            "description": "ESRI ID fur GIS-Updates\n\nEN: ESRI system ID for GIS updates",
+            "nullable": true,
+            "example": 1,
+            "x-group": "Other",
+            "x-source": "Auto",
+            "x-key": "UK"
+          },
+          "etl_ts": {
+            "type": "string",
+            "format": "date",
+            "title": "ETL Zeitstempel",
+            "description": "Zeitstempel der letzten ETL-Synchronisation\n\nEN: Timestamp of last ETL sync",
+            "nullable": true,
+            "example": "2026-03-18T06:00:00Z",
+            "x-group": "Other",
+            "x-source": "Auto"
+          }
+        }
+      },
+      "ParcelFeature": {
+        "type": "object",
+        "required": [
+          "type",
+          "geometry",
+          "properties"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Feature"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "description": "Entspricht `properties.bbl_id`"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/PolygonGeometry"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/ParcelProperties"
+          }
+        }
+      },
+      "ParcelFeatureCollection": {
+        "type": "object",
+        "required": [
+          "type",
+          "features"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "FeatureCollection"
+            ]
+          },
+          "numberMatched": {
+            "type": "integer",
+            "description": "Gesamtzahl der Treffer (vor `limit`/`offset`)",
+            "example": 10
+          },
+          "numberReturned": {
+            "type": "integer",
+            "description": "Anzahl Features in dieser Antwort",
+            "example": 10
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ParcelFeature"
+            }
+          }
+        }
+      },
+      "LandCoverProperties": {
+        "type": "object",
+        "required": [
+          "objectid"
+        ],
+        "properties": {
+          "bbl_id": {
+            "type": "string",
+            "title": "Grundstueck ID",
+            "description": "Grundstueck-ID (FK zu Parcel bbl_id)\n\nEN: Parcel ID (FK to Parcel bbl_id); always present",
+            "nullable": true,
+            "example": "1080/4840/01",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Parcel",
+            "x-key": "FK"
+          },
+          "geb_id": {
+            "type": "string",
+            "title": "Gebaeude ID",
+            "description": "Gebaeude-ID (FK zu Building bbl_id); nur fuer av_type=Gebaeude\n\nEN: Building ID (FK to Building bbl_id); only for av_type=Gebaeude",
+            "nullable": true,
+            "example": "1080/4840/AF",
+            "x-group": "Internal Master Data",
+            "x-source": "RE-FX Building",
+            "x-key": "FK"
+          },
+          "av_type": {
+            "type": "string",
+            "title": "AV Typ",
+            "description": "Bodenabdeckungstyp\n\nEN: Land cover type per official survey",
+            "enum": [
+              "Gebaeude",
+              "befestigt",
+              "humusiert",
+              "Gewaesser"
+            ],
+            "x-value-list": "AV_COVER_TYPE",
+            "nullable": true,
+            "example": "Gebaeude",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey"
+          },
+          "lc_area": {
+            "type": "number",
+            "format": "double",
+            "title": "Flaeche",
+            "description": "Flaeche der Bodenabdeckung in m2\n\nEN: Land cover area in m2",
+            "nullable": true,
+            "example": 1920.0,
+            "x-group": "Dimensions",
+            "x-source": "CH Official Survey"
+          },
+          "av_stat": {
+            "type": "string",
+            "title": "AV Status",
+            "description": "Status entsprechend GWR (nur CH)\n\nEN: Land cover status per official survey (CH only)\n\nWerteliste `AV_STATUS` (Beispiele: Gültig)",
+            "x-value-list": "AV_STATUS",
+            "nullable": true,
+            "example": "Gültig",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey"
+          },
+          "av_egid": {
+            "type": "string",
+            "title": "AV EGID",
+            "description": "Eidg. Gebaudeidentifikator (nur CH); nur fuer Typ Gebaeude\n\nEN: Federal building ID per GWR (CH only); only for type Gebaeude",
+            "nullable": true,
+            "example": "301001234",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "av_egrid": {
+            "type": "string",
+            "title": "AV EGRID",
+            "description": "Eidg. Grundstuckidentifikator (nur CH)\n\nEN: Federal parcel ID per cadastre.ch (CH only)",
+            "nullable": true,
+            "example": "CH938391457759",
+            "x-group": "Official Survey",
+            "x-source": "CH Official Survey",
+            "x-key": "FK"
+          },
+          "wgs84_lat": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Latitude",
+            "description": "Breitengrad WGS84\n\nEN: WGS84 latitude",
+            "nullable": true,
+            "example": 46.9465,
+            "x-group": "Location",
+            "x-source": "CH Official Survey"
+          },
+          "wgs84_lon": {
+            "type": "number",
+            "format": "double",
+            "title": "WGS84 Longitude",
+            "description": "Langengrad WGS84\n\nEN: WGS84 longitude",
+            "nullable": true,
+            "example": 7.4441,
+            "x-group": "Location",
+            "x-source": "CH Official Survey"
+          },
+          "lv95_e": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 E",
+            "description": "LV95 Ost, aus WGS84 hergeleitet\n\nEN: LV95 easting, derived from WGS84",
+            "nullable": true,
+            "example": 2600416.2,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "lv95_n": {
+            "type": "number",
+            "format": "double",
+            "title": "LV95 N",
+            "description": "LV95 Nord, aus WGS84 hergeleitet\n\nEN: LV95 northing, derived from WGS84",
+            "nullable": true,
+            "example": 1199490.6,
+            "x-group": "Location",
+            "x-source": "Auto"
+          },
+          "fid": {
+            "type": "string",
+            "title": "FID",
+            "description": "Architektur-Objekt-ID fur externe Geometrie\n\nEN: External geometry object ID",
+            "nullable": true,
+            "x-group": "Other",
+            "x-source": "Various",
+            "x-key": "FK"
+          },
+          "fid_src": {
+            "type": "string",
+            "title": "FID Quelle",
+            "description": "Quelle der Geometrie\n\nEN: Source of external geometry",
+            "nullable": true,
+            "x-group": "Other",
+            "x-source": "Various"
+          },
+          "objectid": {
+            "type": "integer",
+            "title": "OBJECTID",
+            "description": "ESRI ID fur GIS-Updates\n\nEN: ESRI system ID for GIS updates",
+            "example": 1,
+            "x-group": "Other",
+            "x-source": "Auto",
+            "x-key": "PK"
+          },
+          "etl_ts": {
+            "type": "string",
+            "format": "date",
+            "title": "ETL Zeitstempel",
+            "description": "Zeitstempel der letzten ETL-Synchronisation\n\nEN: Timestamp of last ETL sync",
+            "nullable": true,
+            "example": "2026-03-18T06:00:00Z",
+            "x-group": "Other",
+            "x-source": "Auto"
+          }
+        }
+      },
+      "LandCoverFeature": {
+        "type": "object",
+        "required": [
+          "type",
+          "geometry",
+          "properties"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Feature"
+            ]
+          },
+          "id": {
+            "type": "string",
+            "description": "Entspricht `properties.objectid`"
+          },
+          "geometry": {
+            "$ref": "#/components/schemas/PolygonGeometry"
+          },
+          "properties": {
+            "$ref": "#/components/schemas/LandCoverProperties"
+          }
+        }
+      },
+      "LandCoverFeatureCollection": {
+        "type": "object",
+        "required": [
+          "type",
+          "features"
+        ],
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "FeatureCollection"
+            ]
+          },
+          "numberMatched": {
+            "type": "integer",
+            "description": "Gesamtzahl der Treffer (vor `limit`/`offset`)",
+            "example": 12
+          },
+          "numberReturned": {
+            "type": "integer",
+            "description": "Anzahl Features in dieser Antwort",
+            "example": 12
+          },
+          "features": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LandCoverFeature"
+            }
+          }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "Ungültige Parameter",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "Unauthorized": {
+        "description": "Fehlender oder ungültiger API-Key",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "NotFound": {
+        "description": "Objekt nicht gefunden",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "TooManyRequests": {
+        "description": "Rate Limit überschritten (100 Anfragen / Minute)",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      },
+      "ServerError": {
+        "description": "Interner Serverfehler",
+        "content": {
+          "application/json": {
+            "schema": {
+              "$ref": "#/components/schemas/Error"
+            }
+          }
+        }
+      }
+    }
+  }
+}

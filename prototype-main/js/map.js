@@ -10,6 +10,7 @@ import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, 
 import { getPolygonCentroid } from './geo.js';
 import { isMeasuring } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
+import { renderLocationTree } from './location-tree.js';
 import { syncTableToBuilding, syncTableToParcel, syncTableToLandCover } from './list.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
 
@@ -359,6 +360,7 @@ function setSelection(buildingId, parcelId, landCoverId) {
   updateSelectedParcel();
   updateSelectedLandCover();
   updateUrlWithSelection();
+  renderLocationTree();
 }
 
 export function clearSelection() {

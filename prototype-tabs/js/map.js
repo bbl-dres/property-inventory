@@ -11,6 +11,7 @@ import { getPolygonCentroid } from './geo.js';
 import { isMeasuring } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
+import { renderLocationTree } from './location-tree.js';
 import { syncTableToBuilding, syncTableToParcel } from './list.js';
 
 // ===== MAP INITIALISATION =====
@@ -304,6 +305,7 @@ function setSelection(buildingId, parcelId) {
   updateSelectedBuilding();
   updateSelectedParcel();
   updateUrlWithSelection();
+  renderLocationTree();
 }
 
 export function clearSelection() {

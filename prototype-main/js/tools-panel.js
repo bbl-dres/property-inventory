@@ -19,6 +19,19 @@ export function closePhoneMenu(restoreFocus) {
   if (menuOpen && isMobileLayout()) setOpenRef(false, restoreFocus);
 }
 
+// Folds the floating panel when another element (the table panel under the map) would overlap it; the
+// reader can open it again with the toggle. Returns true when it folded. Phones: the menu never floats.
+export function collapseToolsPanelIfColliding(el) {
+  const panel = document.getElementById('accordion-panel');
+  if (!menuOpen || !el || !panel || isMobileLayout()) return false;
+  const a = panel.getBoundingClientRect();
+  const b = el.getBoundingClientRect();
+  if (!a.height || !b.height) return false;
+  const overlaps = a.bottom > b.top && a.top < b.bottom && a.right > b.left && a.left < b.right;
+  if (overlaps) setOpenRef(false);
+  return overlaps;
+}
+
 export function initToolsPanel() {
   const menuToggle = document.getElementById('menu-toggle');
   const panel = document.getElementById('accordion-panel');

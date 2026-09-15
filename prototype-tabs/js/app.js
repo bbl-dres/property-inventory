@@ -12,9 +12,10 @@ import { initContextMenu } from './context-menu.js';
 import { initSwisstopo, swisstopoClickActions, swisstopoChangeActions } from './swisstopo.js';
 import { initPrintWidget } from './print.js';
 import { carouselActions } from './carousel.js';
-import { initMap, addMapLayers } from './map.js';
-import { initUI, switchView, showDetailView, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
-import { getFiltersFromURL, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithRegionFilter } from './filters.js';
+import { initMap, addMapLayers, selectBuilding, selectParcel } from './map.js';
+import { initLocationTree } from './location-tree.js';
+import { initUI, switchView, showDetailView, initApiDocs, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
+import { getFiltersFromURL, featureMatchesFilters, setExactFilters, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithRegionFilter } from './filters.js';
 import { initTables, renderTables, initListToolbar, initTableTabs, initGalleryFilter, initTablePanel } from './list.js';
 import { initEntityTables } from './entity-tables.js';
 import { initExportPanel, shareActions } from './export.js';
@@ -25,6 +26,7 @@ import { initSearch, searchActions } from './search.js';
 // UI wiring that must happen exactly once. Kept separate from the data application so a
 // "retry" after a failed fetch does not register every event listener a second time.
 let dataUiInitialized = false;
+const LOCATION_FILTER_KEYS = ['land', 'region', 'ort']; // the location tree's own filters (its counts ignore them)
 
 function initDataDependentUI() {
   if (dataUiInitialized) return;
@@ -36,6 +38,17 @@ function initDataDependentUI() {
   initListToolbar();
   initTableTabs();
   initTablePanel();
+  initLocationTree({
+    buildings: function() { return state.buildingsData ? state.buildingsData.features.filter(function(f) { return featureMatchesFilters(f, LOCATION_FILTER_KEYS); }) : []; },
+    allBuildings: function() { return state.buildingsData ? state.buildingsData.features : []; },
+    parcels: function() { return state.parcelData ? state.parcelData.features : []; },
+    building: function(f) { const p = f.properties; const parts = String(p.buildingId).split('/'); return { id: p.buildingId, code: parts[2] || p.buildingId, label: p.name, country: p.country, region: p.stateProvincePrefecture, city: p.city, we: parts[1] || '' }; },
+    parcel: function(f) { const p = f.properties; const parts = String(p.parcelId).split('/'); return { id: p.parcelId, code: parts[2] || p.parcelId, label: p.name, we: parts[1] || '' }; },
+    filterKeys: { country: 'land', region: 'region', city: 'ort' },
+    getFilter: function(key) { return state.activeFilters[key] || []; },
+    setFilters: setExactFilters,
+    onSelectObject: function(kind, id) { if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true); }
+  });
   initGalleryFilter();
   initEntityTables();
 }
@@ -56,7 +69,7 @@ function restoreViewFromUrl() {
   const initialView = getViewFromURL();
   if (initialView === 'detail' && buildingId && state.buildingIndex.has(buildingId)) {
     showDetailView(buildingId, getTabFromURL());
-  } else if (initialView === 'gallery') {
+  } else if (initialView === 'gallery' || initialView === 'api-docs') {
     switchView(initialView);
   } else {
     setStyleSwitcherVisible(true);
@@ -165,7 +178,8 @@ function boot() {
     navigateWithLandFilter: function() { navigateWithLandFilter(); },
     navigateWithRegionFilter: function() { navigateWithRegionFilter(); },
     toggleMeasure: function() { toggleMeasurement(); },
-    comingSoon: function() { comingSoon(); }
+    comingSoon: function() { comingSoon(); },
+    retryApiDocs: function() { initApiDocs(); }
   }, swisstopoClickActions, carouselActions, searchActions, shareActions);
 
   document.addEventListener('click', function(e) {

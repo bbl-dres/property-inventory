@@ -7,6 +7,7 @@ import { t, onLangChange } from './i18n.js';
 import { onEscape } from './keys.js';
 import { renderTables, renderGalleryView } from './list.js';
 import { switchView } from './ui.js';
+import { renderLocationTree } from './location-tree.js';
 import { updateFilteredExportHeader } from './export.js';
 
 // ===== URL STATE =====
@@ -42,10 +43,12 @@ export function getActiveFilterCount() {
 
 // ===== APPLY =====
 
-function featureMatchesFilters(feature) {
+// ignoreKeys: categories to skip (the location tree counts without its own Land/Region/Ort filters)
+export function featureMatchesFilters(feature, ignoreKeys) {
   const props = feature.properties;
   // AND between categories, OR within a category
   return Object.keys(state.activeFilters).every(function(filterKey) {
+    if (ignoreKeys && ignoreKeys.indexOf(filterKey) !== -1) return true;
     const filterValues = state.activeFilters[filterKey];
     if (filterValues.length === 0) return true;
     const propValue = getNestedProperty(props, filterConfig[filterKey].property);
@@ -59,13 +62,14 @@ export function applyFilters() {
   state.filteredData = {
     type: state.buildingsData.type,
     name: state.buildingsData.name,
-    features: state.buildingsData.features.filter(featureMatchesFilters)
+    features: state.buildingsData.features.filter(function(f) { return featureMatchesFilters(f); })
   };
 
   setFiltersInURL(state.activeFilters);
   updateFilteredExportHeader();
   updateFilterButtonState();
   renderFilterPills();
+  renderLocationTree();
   renderCurrentView();
 
   if (state.map && state.map.getLayer('buildings-points')) {
@@ -183,6 +187,16 @@ function clearFilterState() {
 
 export function resetFilters() {
   clearFilterState();
+  applyFilters();
+}
+
+// Sets categories to exactly one value (or none) and applies — the location tree's way of filtering
+export function setExactFilters(values) {
+  Object.keys(values).forEach(function(key) {
+    if (!state.activeFilters[key]) return;
+    state.activeFilters[key].slice().forEach(function(v) { setFilterValue(key, v, false); });
+    if (values[key] != null && values[key] !== '') setFilterValue(key, String(values[key]), true);
+  });
   applyFilters();
 }
 

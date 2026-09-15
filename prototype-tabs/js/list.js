@@ -1,6 +1,7 @@
 // Table panel (buildings, parcels), table tabs, toolbar and the gallery view.
 
 import { state } from './state.js';
+import { collapseToolsPanelIfColliding } from './tools-panel.js';
 import { placeholderImages, getStatusClassName } from './config.js';
 import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
 import { t } from './i18n.js';
@@ -326,7 +327,11 @@ export function setTablePanelOpen(open) {
   const url = new URL(window.location);
   if (state.tableOpen) url.searchParams.set('table', 'open'); else url.searchParams.delete('table');
   window.history.replaceState({}, '', url);
-  setTimeout(function() { if (state.map) state.map.resize(); }, 280);
+  setTimeout(function() {
+    if (state.map) state.map.resize();
+    // The table takes the bottom of the map: a tools panel reaching into it folds (the toggle reopens it)
+    if (state.tableOpen) collapseToolsPanelIfColliding(panel);
+  }, 350);
 }
 
 export function initTablePanel() {
@@ -344,6 +349,8 @@ export function initTablePanel() {
   }
 
   toggleBtn.addEventListener('click', function() { setTablePanelOpen(!state.tableOpen); });
+  // ?table=open at boot: the tools panel folds when the table would overlap it (same rule as a click)
+  if (state.tableOpen) setTimeout(function() { collapseToolsPanelIfColliding(panel); }, 600);
 
   if (!handle) return;
   const MIN_H = 120;
@@ -362,6 +369,7 @@ export function initTablePanel() {
       const maxH = window.innerHeight * MAX_FRAC;
       panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
       if (state.map) state.map.resize();
+      collapseToolsPanelIfColliding(panel);
     }
 
     function onUp() {

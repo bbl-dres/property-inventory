@@ -47,6 +47,7 @@ npm run visual      # headless-Edge screenshots and computed metrics of both pro
 | Vanilla ES modules | No build. Same module layout as the main app; 18 of the 30 modules and the stylesheets `tokens.css` / `components.css` are byte-identical with it (see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md), [docs/DESIGN-REVIEW.md](docs/DESIGN-REVIEW.md)) |
 | MapLibre GL JS 5.19 (vendored in `vendor/`) | Map, mini map, markers, popups — same build and basemaps (CARTO Positron/Voyager/Dark Matter, swisstopo SWISSIMAGE) as the main app; no API key |
 | jsPDF 2.5.1 (vendored in `vendor/jspdf/`) | PDF export of the print panel, same renderer as the main app |
+| Swagger UI 5 (vendored in `vendor/swagger-ui/`) | API documentation from `data/swagger.json` (footer link "API" or `?view=api-docs`), loaded only when the API page opens. Spec and viewer are identical copies of the main app's; the spec is generated there (`prototype-main/docs/generate_swagger.py`) and documents the target API, not this prototype's mock property names |
 | `data/i18n.json` | Identical copy of the main app's translation file; the UI stays German (the language selector only warns), the JS-rendered texts come from this file |
 | Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
@@ -69,10 +70,10 @@ prototype-tabs/
 │   └── common modules, identical with ../prototype-main/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js
-├── data/                 # buildings.geojson, parcels, entity tables, i18n.json
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js
+├── data/                 # buildings.geojson, parcels, entity tables, i18n.json, swagger.json (identical with ../prototype-main)
 ├── assets/               # local basemap thumbnails, icons, topic sprite
-├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT)
+├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT), Swagger UI (Apache-2.0)
 └── docs/
     ├── CODE-REVIEW.md        # Review (2026-09-15): bugs, dead code, alignment with the main app
     ├── DATAMODEL.md          # BuildingMinds-style model with extensionData (differs from the main app, see CODE-REVIEW.md)

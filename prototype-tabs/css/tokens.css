@@ -142,6 +142,9 @@
   --drawer-max-width: 800px;
 
   --tools-panel-width: 300px;
+  --tree-panel-width: 320px;
+  --tree-panel-min-width: 240px;
+  --tree-panel-max-width: 600px;
   --content-max-width: 1500px;
 
   /* ===== CHECKBOX ACCENT ===== */

@@ -11,6 +11,7 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 |---|---|---|---|---|
 | [MapLibre GL JS](https://maplibre.org/) | 5.19.0 | BSD-3-Clause | `vendor/maplibre-gl/` (`maplibre-gl.js`, `maplibre-gl.css`, `LICENSE.txt`) | Map, mini map, markers, popups |
 | [jsPDF](https://github.com/parallax/jsPDF) | 2.5.1 | MIT | `vendor/jspdf/` (`jspdf.umd.min.js`, `LICENSE`) | PDF export of the print panel |
+| [Swagger UI](https://github.com/swagger-api/swagger-ui) | 5.32.15 | Apache-2.0 | `vendor/swagger-ui/` (`swagger-ui-bundle.js`, `swagger-ui.css`, `LICENSE`, `NOTICE`) | API documentation page, loaded on first open (identical copy of the main prototype's files) |
 
 ## Bundled assets (`assets/`)
 
@@ -30,7 +31,7 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 | Esri World Imagery (`server.arcgisonline.com`) | Global aerial imagery of the "Luftbild" basemap for the objects abroad | Esri, Maxar, Earthstar Geographics, and the GIS User Community — free with this attribution under the [Esri terms of use](https://www.esri.com/en-us/legal/terms/full-master-agreement); the tile service is rate-limited and meant for interactive maps, not for bulk download |
 | swisstopo WMS (`wms.geo.admin.ch`) | Rendering of the Geokatalog layers added to the map | © swisstopo |
 | geoadmin API (`api3.geo.admin.ch`) | Location and layer search (SearchServer), topics and catalog trees (CatalogServer), layer legends (MapServer legend), feature identification (identify) | No key required |
-| Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`placeholderImages` in `js/config.js`) | [Unsplash License](https://unsplash.com/license); placeholders only |
+| Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`placeholderImages` in `js/config.js`) and sample values in `data/swagger.json` | [Unsplash License](https://unsplash.com/license); placeholders only |
 
 ## Outbound links only (nothing is loaded)
 

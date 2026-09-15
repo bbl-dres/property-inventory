@@ -12,9 +12,10 @@ import { initContextMenu } from './context-menu.js';
 import { initSwisstopo, swisstopoClickActions, swisstopoChangeActions } from './swisstopo.js';
 import { initPrintWidget } from './print.js';
 import { carouselActions } from './carousel.js';
-import { initMap, addMapLayers } from './map.js';
+import { initMap, addMapLayers, selectBuilding, selectParcel } from './map.js';
+import { initLocationTree } from './location-tree.js';
 import { initUI, switchView, showDetailView, initApiDocs, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
-import { getFiltersFromURL, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithOrtFilter } from './filters.js';
+import { getFiltersFromURL, featureMatchesFilters, setExactFilters, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithOrtFilter } from './filters.js';
 import { initTables, renderTables, initBuildingTableHeaders, initListToolbar, initTableTabs, initGalleryFilter, initTablePanel } from './list.js';
 import { initSearch, searchActions } from './search.js';
 
@@ -23,6 +24,7 @@ import { initSearch, searchActions } from './search.js';
 // UI wiring that must happen exactly once. Kept separate from the data application so a
 // "retry" after a failed fetch does not register every event listener a second time.
 let dataUiInitialized = false;
+const LOCATION_FILTER_KEYS = ['land', 'region', 'ort']; // the location tree's own filters (its counts ignore them)
 
 function initDataDependentUI() {
   if (dataUiInitialized) return;
@@ -35,6 +37,17 @@ function initDataDependentUI() {
   initGalleryFilter();
   initTableTabs();
   initTablePanel();
+  initLocationTree({
+    buildings: function() { return state.buildingsData ? state.buildingsData.features.filter(function(f) { return featureMatchesFilters(f, LOCATION_FILTER_KEYS); }) : []; },
+    allBuildings: function() { return state.buildingsData ? state.buildingsData.features : []; },
+    parcels: function() { return state.parcelData ? state.parcelData.features : []; },
+    building: function(f) { const p = f.properties; return { id: p.bbl_id, code: p.bbl_obj, label: p.bbl_bez, country: p.adr_land, region: p.adr_reg, city: p.adr_ort, we: p.bbl_we }; },
+    parcel: function(f) { const p = f.properties; return { id: p.bbl_id, code: p.bbl_obj, label: p.bbl_bez, we: p.bbl_we }; },
+    filterKeys: { country: 'land', region: 'region', city: 'ort' },
+    getFilter: function(key) { return state.activeFilters[key] || []; },
+    setFilters: setExactFilters,
+    onSelectObject: function(kind, id) { if (kind === 'parcel') selectParcel(id, true); else selectBuilding(id, true); }
+  });
 }
 
 function buildIndexes() {

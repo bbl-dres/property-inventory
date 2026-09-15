@@ -39,7 +39,8 @@ export const filterConfig = {
   teilportfolio: { property: 'extensionData.portfolio', label: 'Teilportfolio' },
   gebaeudeart: { property: 'primaryTypeOfBuilding', label: 'Gebäudeart' },
   land: { property: 'country', label: 'Land' },
-  region: { property: 'stateProvincePrefecture', label: 'Region' }
+  region: { property: 'stateProvincePrefecture', label: 'Region' },
+  ort: { property: 'city', label: 'Ort' }
 };
 
 export function filterLabel(filterKey) {

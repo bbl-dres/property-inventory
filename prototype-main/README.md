@@ -44,7 +44,8 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 ### API documentation
 - Mock REST API documented as OpenAPI 3.0 in `data/swagger.json`, rendered with Swagger UI
   (footer link “API” or `?view=api-docs`). The endpoints are placeholders and not reachable.
-- The spec is generated from the data model: `python docs/generate_swagger.py`.
+- The spec is generated from the data model: `python docs/generate_swagger.py`. The tabs prototype carries an
+  identical copy of `data/swagger.json` and `vendor/swagger-ui/` (checked by `test/check-alignment.js`).
 
 ## Running
 
@@ -105,7 +106,7 @@ prototype-main/
 │   └── common modules, identical with ../prototype-tabs/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js
 ├── data/
 │   ├── buildings.geojson
 │   ├── parcels.geojson

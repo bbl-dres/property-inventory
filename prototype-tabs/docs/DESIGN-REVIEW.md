@@ -98,7 +98,7 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 |---|----------------|--------|
 | R-1 | Split every stylesheet into `tokens.css` + `components.css` (identical copies in both apps) and `app.css` (per app). Extend `test/check-alignment.js` to the CSS copies and to the design guide. | done |
 | R-2 | One token set with a z-index scale (`--z-*`), layout tokens (`--tools-panel-width`, `--content-max-width`, `--control-height`) and sheet/menu shadows; drop the legacy colour aliases and the unused primitives. | done |
-| R-3 | One header: absolutely centred search on wide screens, flexing search below 1366px, one-line logo and icon-only 44px buttons from 1024px down, two 44px rows on phones (one row on landscape phones), hamburger button inside `#header-right` in both apps. | done |
+| R-3 | One header: three flex columns with a 16px gap (equal side columns keep the search centred, the centre shrinks first so nothing overlaps), icon-only actions and view toggle from 1720px down, flexing search below 1366px, one-line logo and 44px buttons from 1024px down, two 44px rows on phones (one row on landscape phones), hamburger button inside `#header-right` in both apps. | done |
 | R-4 | One phone menu: the tools panel is the hamburger menu in both apps (shared `js/tools-panel.js`); app-specific entries (share, language pills, footer links) sit in `.mobile-menu-extras`. Remove main's duplicate menu and `populateMobileLayers()`. | done |
 | R-5 | One tools panel: 300px, `#accordion-wrapper` with the toggle attached below the panel in CSS (no JavaScript positioning), `<button>` headers, main's grid print form and `.custom-select` in both. | done |
 | R-6 | One button vocabulary: `.btn-primary` / `.btn-secondary` / `.btn-tertiary` (tokens), `.header-btn` pill with `.panel-open` and `.has-active-filters` (grey-900 + red badge), `.panel-btn` for panel actions (grey-900). Red only for selected/active states and the brand. | done |
@@ -116,6 +116,12 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 | R-13f | Header actions: one 12px gap at every width (was 32px above 1366px, then 16/12/8px). | done (requested during the review) |
 | R-13g | Language selector in tabs' header and phone menu, same control as main; tabs has no translations yet, so a choice shows a warning toast (`lang.notImplemented`). | done (requested during the review) |
 | R-13h | Object ids: both data sets use the BBL/SAP scheme `Buchungskreis/Wirtschaftseinheit/Objekt` (letters = building, two digits = parcel) with Buchungskreis 1080; the tabs mock data (`BBL-001`, `PCL-001`, `SITE-BBL-001`) now carries the ids of the same objects in main, composite entity ids (`4840-M1`) are prefixed with the Wirtschaftseinheit. | done (requested during the review) |
+| R-17 | Location tree (new, requested): "Standorte" toggle in the header, left panel with Land → Region → Ort → WE → objects, counts; a country, region or city node sets the Land / Region / Ort filters of the drawer (the Filter button counts them, no badge on the Standorte button, which is a plain panel toggle), WE nodes are folders, object rows select on the map; one level at a time, one open node per level, node rows toggle; width draggable at the right edge (240-600px, remembered); shared `js/location-tree.js` with a per-app data adapter in `app.js`. Phones: entry in the menu, full-screen sheet (first step, to be refined with user feedback). | done (requested during the review) |
+| R-18 | API documentation in tabs: footer link "API", `?view=api-docs`, the same `#api-docs-view` (view nav, header, Swagger UI host); `data/swagger.json` and `vendor/swagger-ui/` are identical copies checked by the alignment test, the loader code in `js/ui.js` is the same. The spec documents the target API (main's property names), not the tabs mock data. | done (requested during the review) |
+| R-19 | One navigation bar for page views: `.view-nav` (the former `.api-docs-nav`) in `components.css` — sticky white bar, grey-300 border, breadcrumb left, actions right — used by the API docs and the detail page of both apps. Main's detail breadcrumb moved out of the content column into this bar; tabs' `.header-detail .detail-header` uses it inside the page header. | done (requested during the review) |
+| R-21 | Tabs gets main's "Ort" filter (`city`), so the tree's city level filters in both apps. | done (requested during the review) |
+| R-20 | Header density: the Standorte button made the actions collide with the centred search on ~1900px screens (the search was absolutely centred over the row). Three flex columns with a guaranteed gap; below 1720px the button labels and the "Karte" label collapse to icons. | done (requested during the review) |
+| R-22 | Table panel vs. tools panel: opening or enlarging the table folds the tools panel when the two would overlap (the reader reopens it with the toggle); the "Menü" toggle is centred under the panel's width also when collapsed (it was left-aligned). | done (requested during the review) |
 | R-13 | Logo = home button in both apps: landing state (map view, filters cleared, selection, search and drawer closed, initial extent); in tabs the logo used to switch to the previous view (gallery by default), which looked like a random tab change. | done (requested during the review) |
 | R-14 | Tablets: hide the object count (tabs) so the search box keeps at least 240px; consider a 3-column gallery at 1024px. | open |
 | R-15 | Replace the `div.info-icon` pseudo-buttons of main's detail rows by real buttons with `aria-expanded`. | open |
@@ -128,9 +134,10 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 | File | Role |
 |------|------|
 | `css/tokens.css` | Tokens, reset, base, focus, reduced motion, primitives. **Identical in both prototypes.** |
-| `css/components.css` | Every shared component and its responsive rules (header, search, view toggle, map controls, basemap switcher, tools panel/phone menu, print form, Geokatalog, layers, info panel, context menu, measure, filter drawer, toolbar, dropdowns, tables, pagination, gallery, detail frame, tabs, carousel, lightbox, mini map, address table, toasts, overlay, modals, banner, footer, print). **Identical in both prototypes.** |
+| `css/components.css` | Every shared component and its responsive rules (header, search, view toggle, map controls, basemap switcher, tools panel/phone menu, location tree, view nav, API documentation, print form, Geokatalog, layers, info panel, context menu, measure, filter drawer, toolbar, dropdowns, tables, pagination, gallery, detail frame, tabs, carousel, lightbox, mini map, address table, toasts, overlay, modals, banner, footer, print). **Identical in both prototypes.** |
 | `css/app.css` | App-specific components and composition only. |
 | `js/tools-panel.js` | Shared tools panel / phone menu controller (open state, hamburger, backdrop, focus, Escape). **Identical in both prototypes.** |
+| `js/location-tree.js` | Shared location tree (left panel, selection filter, ARIA tree). **Identical in both prototypes.** |
 | `docs/DESIGNGUIDE.md` | Version 1.2, identical in both prototypes. |
 | `test/visual.js` | Headless-browser probe used for this review (`node visual.js both <dir>`, `node visual.js eval "<expr>" <prototype> <viewport> <scenario>`). |
 
@@ -179,12 +186,17 @@ Tokens: `--success-green`, `--warning-orange`, `--info-blue`, `.icon-btn*`, `.te
 ## 6. This prototype: prototype-tabs (extended scope)
 
 **Stylesheets.** `css/main.css` was replaced by `css/tokens.css` (identical with main), `css/components.css`
-(identical with main) and `css/app.css` (770 lines: object count, login button, header tab strip and drawer
-offsets, list view card, two-column sections and data grid, entity tables, share and export panels, measure
-text, KI answers, tabs-only responsive rules).
+(identical with main) and `css/app.css` (705 lines: header tab strip and drawer offsets, two-column sections and data grid,
+entity tables, share and export panels, measure text, KI answers, tabs-only responsive rules).
 
 **Header.** The search box is centred like in main (40px high on desktop). The object count and the login
 button are hidden on phones (they already were); the count is no longer padded on tablets.
+
+**API documentation.** Footer link "API" (and the phone menu), `?view=api-docs`: the same view as in main
+(`#api-docs-view` with the view nav, title and Swagger UI host), the same loader in `js/ui.js`;
+`data/swagger.json` and `vendor/swagger-ui/` are identical copies of main's files. The breadcrumb bar of the
+detail page (`.header-detail .detail-header`) is the shared `.view-nav` now (12px × 20px padding, grey-300
+border).
 
 **Tools panel.** `#accordion-panel` is wrapped in `#accordion-wrapper` with `#menu-toggle` attached below it
 in CSS; `updateMenuTogglePosition()` and its MutationObserver were removed from `js/ui.js`, which now calls the

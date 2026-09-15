@@ -65,6 +65,48 @@
     "fr": "Ouvrir les filtres",
     "it": "Aprire i filtri"
   },
+  "tree.title": {
+    "de": "Standorte",
+    "en": "Locations",
+    "fr": "Sites",
+    "it": "Sedi"
+  },
+  "tree.open": {
+    "de": "Standorte öffnen",
+    "en": "Open locations",
+    "fr": "Ouvrir les sites",
+    "it": "Apri sedi"
+  },
+  "tree.we": {
+    "de": "WE",
+    "en": "WE",
+    "fr": "WE",
+    "it": "WE"
+  },
+  "tree.empty": {
+    "de": "Keine Objekte für die aktuellen Filter.",
+    "en": "No objects for the current filters.",
+    "fr": "Aucun objet pour les filtres actuels.",
+    "it": "Nessun oggetto per i filtri attuali."
+  },
+  "tree.expand": {
+    "de": "{name} aufklappen",
+    "en": "Expand {name}",
+    "fr": "Déplier {name}",
+    "it": "Espandi {name}"
+  },
+  "tree.collapse": {
+    "de": "{name} zuklappen",
+    "en": "Collapse {name}",
+    "fr": "Replier {name}",
+    "it": "Comprimi {name}"
+  },
+  "country.CH": { "de": "Schweiz", "en": "Switzerland", "fr": "Suisse", "it": "Svizzera" },
+  "country.DE": { "de": "Deutschland", "en": "Germany", "fr": "Allemagne", "it": "Germania" },
+  "country.US": { "de": "USA", "en": "USA", "fr": "États-Unis", "it": "USA" },
+  "country.JP": { "de": "Japan", "en": "Japan", "fr": "Japon", "it": "Giappone" },
+  "country.BR": { "de": "Brasilien", "en": "Brazil", "fr": "Brésil", "it": "Brasile" },
+  "country.AU": { "de": "Australien", "en": "Australia", "fr": "Australie", "it": "Australia" },
   "lang.notImplemented": {
     "de": "Mehrsprachigkeit ist in diesem Prototyp nicht umgesetzt. Die Oberfläche bleibt auf Deutsch.",
     "en": "Languages are not implemented in this prototype. The interface stays in German.",

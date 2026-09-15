@@ -8,6 +8,7 @@ import { showToast } from './toast.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
 import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
+import { toggleTreePanel } from './location-tree.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
 import { renderTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
@@ -57,7 +58,7 @@ export function setTabInURL(tab) {
 
 // ===== VIEWS =====
 
-const VIEWS = ['map', 'gallery', 'detail'];
+const VIEWS = ['map', 'gallery', 'detail', 'api-docs'];
 
 // Show one view container, sync the toggle buttons and the page scroll mode
 function setActiveView(view) {
@@ -77,7 +78,7 @@ function setActiveView(view) {
 
 // Views the Back button returns to (never the detail page itself)
 function rememberPreviousView() {
-  if (state.currentView !== 'detail') state.previousView = state.currentView;
+  if (state.currentView !== 'detail' && state.currentView !== 'api-docs') state.previousView = state.currentView;
 }
 
 export function switchView(view) {
@@ -101,6 +102,10 @@ export function switchView(view) {
     syncGalleryFilter();
     renderGalleryView();
     state.galleryViewDirty = false;
+  }
+  if (view === 'api-docs') {
+    window.scrollTo(0, 0);
+    initApiDocs();
   }
 }
 
@@ -127,6 +132,10 @@ export function showDetailView(buildingId, tab) {
 }
 
 // ===== DETAIL HEADER (phones: sticky header collapses to the tab strip) =====
+
+export function showApiDocsView() {
+  switchView('api-docs');
+}
 
 function updateDetailHeaderOffset() {
   const header = document.getElementById('header');
@@ -203,8 +212,10 @@ function initDetailTabs() {
 // ===== BACK BUTTON AND VIEW TOGGLE =====
 
 function initBackButtons() {
-  const btn = document.getElementById('btn-back');
-  if (btn) btn.addEventListener('click', function() { switchView(state.previousView || 'map'); });
+  ['btn-back', 'btn-back-api'].forEach(function(id) {
+    const btn = document.getElementById(id);
+    if (btn) btn.addEventListener('click', function() { switchView(state.previousView || 'map'); });
+  });
 }
 
 function initViewToggle() {
@@ -237,6 +248,7 @@ function initPopstate() {
 export function goHome() {
   closePhoneMenu();
   toggleSmartDrawer(false);
+  toggleTreePanel(false);
   clearSearch();
   clearSelection();
   resetFilters();
@@ -289,6 +301,82 @@ function initInternalLayerToggles() {
     if (toggle) {
       toggle.addEventListener('change', function() { setInternalLayerVisibility(key, this.checked); });
     }
+  });
+}
+
+// ===== API DOCS (Swagger UI, loaded on first open) =====
+// The 1.5 MB Swagger UI bundle is only fetched when the API page is opened.
+let swaggerAssetsPromise = null;
+let swaggerInitialized = false;
+
+function loadScriptOnce(src) {
+  return new Promise(function(resolve, reject) {
+    const s = document.createElement('script');
+    s.src = src;
+    s.async = true;
+    s.onload = function() { resolve(); };
+    s.onerror = function() { reject(new Error('Failed to load ' + src)); };
+    document.head.appendChild(s);
+  });
+}
+
+function loadStylesheet(href) {
+  if (document.querySelector('link[href="' + href + '"]')) return;
+  const l = document.createElement('link');
+  l.rel = 'stylesheet';
+  l.href = href;
+  l.onerror = function() { console.warn('[api] stylesheet failed to load:', href); };
+  document.head.appendChild(l);
+}
+
+export function initApiDocs() {
+  if (swaggerInitialized) return;
+  const host = document.getElementById('swagger-ui');
+  if (!host) return;
+
+  if (!swaggerAssetsPromise) {
+    host.innerHTML = '<div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('api.loading') + '</span></div>';
+    loadStylesheet('vendor/swagger-ui/swagger-ui.css');
+    swaggerAssetsPromise = window.SwaggerUIBundle ? Promise.resolve() : loadScriptOnce('vendor/swagger-ui/swagger-ui-bundle.js');
+  }
+
+  swaggerAssetsPromise
+    .then(function() {
+      if (swaggerInitialized) return;
+      if (typeof window.SwaggerUIBundle !== 'function') throw new Error('SwaggerUIBundle not available');
+      swaggerInitialized = true;
+      window.SwaggerUIBundle({
+        url: 'data/swagger.json',
+        dom_id: '#swagger-ui',
+        deepLinking: false,          // the app owns the URL (view/id/filters)
+        docExpansion: 'list',
+        defaultModelsExpandDepth: 1,
+        defaultModelExpandDepth: 2,
+        displayRequestDuration: false,
+        supportedSubmitMethods: [],  // mock API: no "Try it out"
+        showExtensions: true,
+        showCommonExtensions: true
+      });
+    })
+    .catch(function(err) {
+      console.error('[api] Swagger UI failed:', err);
+      swaggerAssetsPromise = null;
+      swaggerInitialized = false;
+      host.innerHTML = '<div class="api-docs-error"><span>' + t('api.error') + '</span>' +
+        '<button type="button" class="geokatalog-retry" data-action="retryApiDocs">' + t('error.retry') + '</button></div>';
+    });
+}
+
+// "API" in the footer and in the phone menu open the documentation view
+function initFooterApiLink() {
+  ['footer-api-link', 'mobile-api-link'].forEach(function(id) {
+    const link = document.getElementById(id);
+    if (!link) return;
+    link.addEventListener('click', function(e) {
+      e.preventDefault();
+      closePhoneMenu();
+      showApiDocsView();
+    });
   });
 }
 
@@ -368,5 +456,6 @@ export function initUI() {
   initLogoHome();
   initPopstate();
   initBackButtons();
+  initFooterApiLink();
   initResponsiveSearchPlaceholder();
 }

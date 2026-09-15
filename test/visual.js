@@ -29,6 +29,7 @@ const VIEWPORTS = {
   'tablet':      { width: 768,  height: 1024, mobile: true, scale: 2, touch: true },
   'tablet-land': { width: 1024, height: 768, mobile: true,  scale: 2, touch: true },
   'laptop':      { width: 1366, height: 768, mobile: false, scale: 1, touch: false },
+  'desktop-s':   { width: 1600, height: 900, mobile: false, scale: 1, touch: false },
   'desktop':     { width: 1920, height: 1080, mobile: false, scale: 1, touch: false }
 };
 
@@ -39,6 +40,8 @@ const SCENARIOS = {
   'filter':     { query: '', setup: 'openFilter' },
   'search':     { query: '', setup: 'search' },
   'tools':      { query: '', setup: 'openTools' },
+  'tree':       { query: 'filter_land=CH', setup: 'openTree' },
+  'api-docs':   { query: 'view=api-docs' },
   'gallery':    { query: 'view=gallery' },
   'table':      { query: 'table=open' },
   'detail':     { query: 'view=detail&id=' },
@@ -148,6 +151,7 @@ const SETUP = {
   // Select the first building through the search box (works in both prototypes)
   selectFirst: `(async () => { const i = document.getElementById('search-input'); i.value = 'Bundeshaus'; i.dispatchEvent(new Event('input', { bubbles: true }));
     ${wait(800)} const el = document.querySelector('#search-results .search-item[data-action="searchLocal"]'); if (el) el.click(); ${wait(1500)} return !!el; })()`,
+  openTree: `(async () => { const b = document.getElementById('tree-panel-btn'); if (getComputedStyle(b).display !== 'none') b.click(); else { document.getElementById('hamburger-btn').click(); ${wait(300)} document.getElementById('mobile-tree-btn').click(); } ${wait(600)} return true; })()`,
   openFilter: `(async () => { document.getElementById('filter-panel-btn').click(); ${wait(600)} return true; })()`,
   search: `(async () => { const i = document.getElementById('search-input'); i.focus(); i.value = 'Bern'; i.dispatchEvent(new Event('input', { bubbles: true })); ${wait(900)} return true; })()`,
   openTools: `(async () => { const h = document.getElementById('hamburger-btn'); const t = document.getElementById('menu-toggle');

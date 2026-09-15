@@ -215,6 +215,79 @@ module.exports = {
     check('measure button starts the tool', modules.measure.isMeasuring());
     modules.measure.clearMeasurement();
 
+
+    // Location tree: country / region / city nodes set the Land / Region / Ort filters of the drawer,
+    // WE nodes are folders, object rows select on the map; one level at a time, one open node per level
+    document.getElementById('tree-panel-btn').click();
+    await settle();
+    check('tree panel opens; the button is a plain toggle', document.getElementById('tree-panel').classList.contains('open') && document.getElementById('tree-panel-btn').classList.contains('panel-open') && document.getElementById('tree-panel-btn').getAttribute('aria-expanded') === 'true');
+    check('tree lists the countries with counts', document.querySelectorAll('#tree-panel-content > .tree > .tree-item').length === 6 && document.querySelector('#tree-panel-content .tree-count').textContent !== '');
+    const rows = function(sel) { return document.querySelectorAll('#tree-panel-content .tree-row' + sel); };
+    const fold = function(key) { document.querySelector('#tree-panel-content .tree-fold[data-fold="' + key + '"]').click(); };
+    const row = function(key) { return document.querySelector('#tree-panel-content .tree-row[data-node="' + key + '"]'); };
+    row('country:CH').click();
+    await settle();
+    check('country node sets the Land filter', state.activeFilters.land.length === 1 && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 5 && /filter_land=CH/.test(window.location.search));
+    check('filter button counts it, the Standorte button carries no badge', !!document.querySelector('#filter-panel-btn .filter-count') && !document.querySelector('#tree-panel-btn .filter-count') && !document.getElementById('tree-panel-btn').classList.contains('has-active-filters') && /CH/.test(document.getElementById('filter-pills').textContent));
+    check('drawer checkbox follows', !!document.querySelector('#filter-panel input[data-filter="land"][data-value="CH"]:checked'));
+    check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 5 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
+    fold('country:DE');
+    check('one open country at a time', rows('[data-node^="region:DE/"]').length === 1 && rows('[data-node^="region:CH/"]').length === 0 && state.activeFilters.land[0] === 'CH');
+    fold('country:CH');
+    row('region:CH/Kanton%20Bern').click();
+    await settle();
+    check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'Kanton Bern' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 1);
+    check('country is on the path, region active, cities shown', document.querySelector('.tree-row[data-node="country:CH"]').closest('.tree-node').classList.contains('is-path') && row('region:CH/Kanton%20Bern').closest('.tree-node').classList.contains('is-active') && rows('[data-node="city:CH/Kanton%20Bern/Bern"]').length === 1 && rows('[data-node^="we:"]').length === 0);
+    fold('city:CH/Kanton%20Bern/Bern');
+    check('city opens its WE nodes', rows('[data-node^="we:CH/"]').length === 1);
+    fold('region:CH/Kanton%20Z%C3%BCrich');
+    check('one open region per country', rows('[data-node^="city:CH/"]').length === 1 && rows('[data-node^="we:"]').length === 0 && rows('[data-node="city:CH/Kanton%20Bern/Bern"]').length === 0);
+    fold('region:CH/Kanton%20Bern');
+    const weRow = Array.from(rows('')).find(r => r.textContent.indexOf('WE 4840') !== -1);
+    check('reopened region remembers its open city', !!weRow);
+    weRow.click();
+    check('WE row is a folder: opens its objects, no filter', rows('[data-kind="building"]').length >= 1 && state.activeFilters.region.length === 1 && !document.querySelector('.tree-row[data-node^="we:"]').closest('.tree-node').classList.contains('is-active'));
+    const leaf = document.querySelector('#tree-panel-content .tree-row[data-kind="building"]');
+    leaf.click();
+    await settle();
+    check('object row selects the building on the map', state.selectedBuildingId === '1080/4840/AF' && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row[data-kind="building"]') !== null);
+    Array.from(rows('')).find(r => r.textContent.indexOf('WE 4840') !== -1).click();
+    check('WE row again folds it', rows('[data-kind="building"]').length === 0);
+    row('region:CH/Kanton%20Bern').click();
+    await settle();
+    check('selected region again removes its filter and folds', state.activeFilters.region.length === 0 && state.activeFilters.land[0] === 'CH' && rows('[data-node^="city:"]').length === 0 && row('country:CH').closest('.tree-node').classList.contains('is-active'));
+    document.querySelector('#filter-pills .filter-pill-remove[data-filter-key="land"]').click();
+    await settle();
+    check('pill removes the filter; nothing highlighted', state.activeFilters.land.length === 0 && state.filteredData.features.length === state.buildingsData.features.length && !document.querySelector('#tree-panel-content .tree-node.is-active') && !/filter_land/.test(window.location.search));
+    // Resizable: dragging the grip on the right edge sets --tree-panel-width (clamped to the tokens)
+    const grip = document.querySelector('#tree-panel .tree-resize-handle');
+    const ptr = function(type, x) { const ev = new window.MouseEvent(type, { bubbles: true, clientX: x, button: 0 }); (type === 'pointerdown' ? grip : document).dispatchEvent(ev); };
+    // (jsdom has no layout: offsetWidth is 0, so only the clamped ends of the range are checked)
+    ptr('pointerdown', 0); ptr('pointermove', 1000); ptr('pointerup', 1000);
+    check('drag to the right widens the panel (clamped to the maximum)', document.documentElement.style.getPropertyValue('--tree-panel-width') === '600px' && !document.getElementById('tree-panel').classList.contains('resizing'));
+    ptr('pointerdown', 1000); ptr('pointermove', 0); ptr('pointerup', 0);
+    check('drag to the left narrows it (clamped to the minimum)', document.documentElement.style.getPropertyValue('--tree-panel-width') === '240px');
+    document.getElementById('tree-close-btn').click();
+    check('tree panel closes; the button returns to its default state', !document.getElementById('tree-panel').classList.contains('open') && !document.getElementById('tree-panel-btn').classList.contains('panel-open'));
+
+    // Tools panel folds when the opening table panel would overlap it (rects stubbed: jsdom has no layout)
+    const toolsPanel = document.getElementById('accordion-panel');
+    const tablePanel = document.getElementById('table-panel');
+    const rectOf = function(top, bottom) { return function() { return { top: top, bottom: bottom, left: 0, right: 400, height: bottom - top, width: 400 }; }; };
+    const origTools = toolsPanel.getBoundingClientRect, origTable = tablePanel.getBoundingClientRect;
+    toolsPanel.getBoundingClientRect = rectOf(100, 700);
+    tablePanel.getBoundingClientRect = rectOf(500, 900);
+    check('tools panel open before the table', !toolsPanel.classList.contains('collapsed'));
+    document.getElementById('tbl-toggle').click();
+    await settle(400);
+    check('tools panel folded by the colliding table', toolsPanel.classList.contains('collapsed') && document.getElementById('menu-toggle').getAttribute('aria-expanded') === 'false');
+    document.getElementById('menu-toggle').click();
+    check('the reader can open it again', !toolsPanel.classList.contains('collapsed'));
+    toolsPanel.getBoundingClientRect = origTools;
+    tablePanel.getBoundingClientRect = origTable;
+    document.getElementById('tbl-toggle').click();
+    await settle(400);
+
     // Logo = home: landing state (map view, no filters, no selection, drawer closed) — not the previous view
     document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
     document.getElementById('filter-panel-btn').click();

@@ -8,6 +8,7 @@ import { showToast } from './toast.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
 import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
+import { toggleTreePanel } from './location-tree.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
 import { renderTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
@@ -283,14 +284,17 @@ export function initApiDocs() {
     });
 }
 
+// "API" in the footer and in the phone menu open the documentation view
 function initFooterApiLink() {
-  const apiLink = document.getElementById('footer-api-link');
-  if (apiLink) {
-    apiLink.addEventListener('click', function(e) {
+  ['footer-api-link', 'mobile-api-link'].forEach(function(id) {
+    const link = document.getElementById(id);
+    if (!link) return;
+    link.addEventListener('click', function(e) {
       e.preventDefault();
+      closePhoneMenu();
       showApiDocsView();
     });
-  }
+  });
 }
 
 // ===== LANGUAGE SELECTOR =====
@@ -352,15 +356,6 @@ function initPhoneMenuExtras() {
       shareCurrentView();
     });
   }
-
-  const apiLink = document.getElementById('mobile-api-link');
-  if (apiLink) {
-    apiLink.addEventListener('click', function(e) {
-      e.preventDefault();
-      closePhoneMenu();
-      showApiDocsView();
-    });
-  }
 }
 
 // ===== SEARCH PLACEHOLDER (phones) =====
@@ -384,6 +379,7 @@ function initResponsiveSearchPlaceholder() {
 export function goHome() {
   closePhoneMenu();
   toggleSmartDrawer(false);
+  toggleTreePanel(false);
   clearSearch();
   clearSelection();
   resetFilters();

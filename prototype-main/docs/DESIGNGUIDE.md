@@ -82,8 +82,8 @@ Design tokens are the foundation of our visual language. All values are defined 
 | File | Content | Shared |
 |------|---------|--------|
 | `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
-| `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, info panel, filter drawer, toolbars, tables, pagination, gallery, detail page frame, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
-| `css/app.css` | What only one prototype has (main: language selector, table panel, single-column detail cards, API docs; tabs: object count, list view, header tab strip, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
+| `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, location tree, info panel, filter drawer, toolbars, tables, table panel, pagination, gallery, view nav, detail page frame, API documentation, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
+| `css/app.css` | What only one prototype has (main: filter search, single-column detail cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
 
 The prototypes stay independent: nothing is loaded across folders. `test/check-alignment.js` reports when
 the two copies of `tokens.css` or `components.css` drift apart. A component that both prototypes use is
@@ -399,8 +399,9 @@ For low-emphasis actions.
 ```
 
 #### Header Button (pill)
-Filter, language and menu buttons in the header. 40px on desktop, icon-only 44px circles from the tablet
-breakpoint down (the label is hidden, the `aria-label` carries the name).
+Standorte, Filter, language and menu buttons in the header. 40px pills with icon and label on wide screens;
+from 1720px down the labels collapse and the buttons are 40px circles (the `title` and `aria-label` carry the
+name), from the tablet breakpoint down 44px circles and the language code is hidden too.
 
 ```css
 .header-btn {
@@ -415,12 +416,16 @@ breakpoint down (the label is hidden, the `aria-label` carries the name).
 }
 ```
 
-The actions sit in `#header-right` with a 12px gap (`--space-3`) at every width: Filter, language (`#lang-selector`,
+The header is three flex columns — logo, search with the view toggle, actions — with a 16px gap between them.
+The centre column is 760px wide (the 550px search box and the view toggle); the two side columns share the
+rest equally, so the search is centred. Each side is never narrower than its content and the centre column
+shrinks first, so the buttons never collide. The actions sit in `#header-right`
+with a 12px gap (`--space-3`) at every width: Filter, language (`#lang-selector`,
 a dropdown with DE/FR/IT/EN; on phones the pills in the menu), login and, on phones, the menu button. The tabs
 prototype shows the same selector but has no translations yet — a choice only warns.
 
 **States:** `.panel-open` (drawer open) — panel-grey fill, white text; `.has-active-filters` — grey-900
-fill with the red `.filter-count` badge (inline on desktop, on the corner of the icon-only button on tablets).
+fill with the red `.filter-count` badge (inline next to the label, on the corner of the icon-only button).
 
 #### Panel Button
 Full-width action at the bottom of a tools-panel form (PDF erstellen, Distanz messen, Exportieren).
@@ -735,13 +740,60 @@ filters and leaves the detail page.
 
 Both prototypes offer the same two views, map and gallery; tables live in the table panel under the map.
 
+### View Nav Pattern
+
+Page views (detail page, API documentation) start with one sticky bar, `.view-nav`: white, 1px grey-300
+bottom border, 12px × 20px padding (12px × 16px from 1024px down), breadcrumb on the left and the actions
+(`.btn-back`, in tabs also `.btn-edit`) on the right. The inner row is as wide as the content below it
+(`--view-nav-max-width`, default `--content-max-width`; 720px on main's single-column detail page). In tabs
+the bar is part of the page header above the tab strip (`.header-detail`), in main it sticks to the top of the
+scrolling view. On phones the back button comes first and spans the width, the breadcrumb wraps below.
+
+```html
+<div class="view-nav">
+  <div class="detail-header-inner">
+    <div class="breadcrumb">…</div>
+    <div class="detail-header-actions"><button class="btn-back">…</button></div>
+  </div>
+</div>
+```
+
+### Location Tree Pattern
+
+"Standorte" in the header opens a left panel (`#tree-panel`, 320px) with the portfolio as a tree:
+Land → Region → Ort → Wirtschaftseinheit → objects (buildings with their letter code, parcels with their
+number). The header button is a plain toggle (`.panel-open` while the panel shows), like the Filter button
+without its count. A country, region or city node sets the matching drawer filters (Land, Region, Ort — in the
+URL `filter_land=CH&filter_region=BE`): the Filter button counts them, the pills show them, the drawer's
+checkboxes follow. Every node shows the number of objects below it; the counts honour the other drawer
+filters but not the location filters, so every branch stays reachable. The selected path is highlighted
+(bold node, grey path); selecting the same node again removes its filter and folds it (a node row is a
+toggle). WE nodes are folders (the row toggles them); an object row selects the object on the map. Branches
+open one level at a time and every level has one open node: opening a country folds the other, opening a
+region folds its siblings, so the tree never shows more than one path. The chevron only folds. One tab stop,
+arrow keys, Home/End (ARIA tree). The grip on the right edge (`.tree-resize-handle`, three lines, vertically
+centred) drags the width between 240 and 600px; the width is remembered like the drawer's. On phones the
+entry sits in the menu and the panel is a full-screen sheet.
+
+```html
+<aside id="tree-panel"><div class="panel-header">…Standorte, close…</div>
+  <div class="tree-panel-content"><ul class="tree" role="tree">
+    <li class="tree-item" style="--tree-ind: 28px"><div class="tree-node is-path">
+      <button class="tree-fold" aria-expanded="true">…</button>
+      <button class="tree-row" role="treeitem"><span class="tree-icon">public</span><span class="tree-label">Schweiz</span><span class="tree-count">16</span></button>
+    </div><ul class="tree-children" role="group">…</ul></li>
+  </ul></div></aside>
+```
+
 ### Table Panel Pattern
 
 The "Tabelle" toggle (grey-900 pill at the bottom centre of the map) opens a resizable panel under the
 map with one tab per data set (Gebäude, Grundstücke; main also Bodenabdeckung), the toolbar (search,
 filter pills, Export and Spalten dropdowns) and the compact `.list-table`. A row selects the object on the
 map and the map selection highlights its row. `?table=open` and `?tableTab=` keep the state in the URL;
-phones hide the panel (the map keeps the info sheet).
+phones hide the panel (the map keeps the info sheet). Opening or enlarging the table folds the tools panel
+when the two would overlap (`collapseToolsPanelIfColliding()` in `js/tools-panel.js`); the "Menü" toggle,
+centred under the panel's width whether open or collapsed, brings it back.
 
 ```html
 <div id="map">…<button id="tbl-toggle" class="tbl-toggle">…Tabelle</button></div>
@@ -967,9 +1019,10 @@ it starts collapsed, on phones the same panel is the hamburger menu (see Respons
 
 | Name | Media query | Target |
 |------|-------------|--------|
-| Desktop | `> 1366px` | Large screens, default: the search box is centred in the header |
+| Desktop | `> 1720px` | Large screens, default: the search box is centred in the header, header buttons with labels |
+| Compact header | `max-width: 1720px` | Icon-only header buttons and view toggle (the labels need about 1700px next to the centred search) |
 | Laptop | `max-width: 1366px` | The search box flexes between logo and actions |
-| Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, icon-only header buttons, tools panel starts collapsed. |
+| Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, 44px header buttons without the language code, tools panel starts collapsed. |
 | Mobile | `max-width: 767px`, **or** `max-height: 500px and (pointer: coarse)` | Phones in portrait **and** landscape. Two-row header (title + actions / search + view toggle), hamburger menu for the map tools, full-screen filter sheet, bottom-sheet info panel, sticky tab strip on the detail page. |
 | Small Mobile | `max-width: 479px` | Small phones |
 | Touch | `(pointer: coarse)` | Any touch device, independent of width: 44 px targets, 20 px checkboxes, wider resize handles |

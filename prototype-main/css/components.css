@@ -10,11 +10,15 @@
   z-index: var(--z-header);
 }
 
+/* Three columns: logo | search + view toggle | actions. The side columns share the free space equally, so
+   the search is centred; each is never narrower than its content and the centre shrinks first, so nothing
+   overlaps. Below 1720px the actions and the view toggle are icon-only (see the responsive rules). */
 .header-main {
   position: relative;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  gap: var(--space-4);
   padding: 0 var(--space-5);
   height: var(--header-main-height);
   border-bottom: 1px solid var(--grey-300);
@@ -28,6 +32,8 @@
   display: flex;
   align-items: flex-start;
   cursor: pointer;
+  flex: 1 1 0;
+  min-width: max-content;
 }
 
 #logo-title {
@@ -54,20 +60,14 @@
   color: var(--grey-900);
 }
 
-/* Search sits in the exact centre of the header on wide screens; below 1366px it flexes between logo and actions */
+/* Search and view toggle in the centre column; below 1366px the column takes the space between logo and actions */
 #search-area {
-  position: absolute;
-  left: 0;
-  right: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   gap: var(--space-4);
-  pointer-events: none;
-}
-
-#search-area > * {
-  pointer-events: auto;
+  flex: 0 1 760px; /* 550px search + view toggle; a fixed basis, since the input has no width of its own */
+  min-width: 0;
 }
 
 /* ===== SEARCH ===== */
@@ -517,7 +517,8 @@
   display: flex;
   align-items: center;
   gap: var(--space-3); /* same gap at every width */
-  min-width: 250px;
+  flex: 1 1 0;
+  min-width: max-content;
   justify-content: flex-end;
 }
 
@@ -946,6 +947,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: var(--tools-panel-width); /* the "Menü" toggle stays centred when the panel is collapsed */
   margin: var(--space-3);
   max-height: calc(100% - 60px);
   pointer-events: none;
@@ -1101,6 +1103,32 @@
   height: 1px;
   background: var(--grey-200);
   margin: var(--space-3) 0;
+}
+
+/* Menu entries inside the phone menu (Standorte, share) */
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: none;
+  border-bottom: 1px solid var(--grey-200);
+  background: var(--white);
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--grey-800);
+  cursor: pointer;
+  text-align: left;
+}
+
+.mobile-menu-item:hover {
+  background: var(--grey-50);
+}
+
+.mobile-menu-item .material-symbols-outlined {
+  color: var(--grey-500);
+  font-size: var(--icon-md);
 }
 
 /* Language pills inside the phone menu (the header selector is hidden on phones) */
@@ -2142,6 +2170,207 @@
   justify-content: center;
 }
 
+/* ===== LOCATION TREE (left panel) ===== */
+#tree-panel {
+  position: relative;
+  width: 0;
+  min-width: 0;
+  height: 100%;
+  background: var(--white);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transition: width var(--transition-slow), min-width var(--transition-slow);
+  flex-shrink: 0;
+}
+
+#tree-panel.open {
+  width: var(--tree-panel-width);
+  min-width: var(--tree-panel-width);
+  border-right: 1px solid var(--grey-300);
+}
+
+#tree-panel.resizing {
+  transition: none;
+}
+
+/* Right edge drags the width (240-600px, remembered); a three-line grip marks it */
+.tree-resize-handle {
+  position: absolute;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 8px;
+  cursor: ew-resize;
+  background: transparent;
+  z-index: 10;
+  transition: background var(--transition-fast);
+  touch-action: none; /* dragging must not scroll the page on touch screens */
+}
+
+.tree-resize-handle::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 5px;
+  height: 18px;
+  transform: translate(-50%, -50%);
+  background: repeating-linear-gradient(90deg, var(--grey-500) 0 1px, transparent 1px 2px);
+}
+
+.tree-resize-handle:hover,
+.tree-resize-handle.dragging {
+  background: var(--interactive-blue);
+}
+
+.tree-resize-handle:hover::before,
+.tree-resize-handle.dragging::before {
+  background: repeating-linear-gradient(90deg, var(--white) 0 1px, transparent 1px 2px);
+}
+
+#tree-panel:not(.open) .tree-resize-handle {
+  display: none;
+}
+
+.tree-panel-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-2) var(--space-2) var(--space-4);
+}
+
+.tree,
+.tree-children {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.tree-children[hidden] {
+  display: none;
+}
+
+.tree-node {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-radius: var(--radius-sm);
+}
+
+.tree-node:hover {
+  background: var(--grey-50);
+}
+
+/* Fold control outside the row: choosing a node and unfolding it are two intentions */
+.tree-fold,
+.tree-fold-slot {
+  position: absolute;
+  left: calc(var(--tree-ind) - 24px);
+  top: 0;
+  bottom: 0;
+  width: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0;
+  padding: 0;
+  border: none;
+  background: none;
+  color: var(--grey-500);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  z-index: 1;
+}
+
+.tree-fold:hover {
+  background: var(--grey-200);
+  color: var(--grey-900);
+}
+
+.tree-fold .material-symbols-outlined {
+  font-size: var(--icon-md);
+  transition: transform var(--transition-fast);
+}
+
+.tree-fold[aria-expanded="true"] .material-symbols-outlined {
+  transform: rotate(90deg);
+}
+
+.tree-row {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-height: 36px;
+  padding: var(--space-1) var(--space-2) var(--space-1) var(--tree-ind);
+  border: none;
+  border-radius: var(--radius-sm);
+  background: none;
+  font: inherit;
+  font-size: var(--text-sm);
+  color: var(--grey-900);
+  text-align: left;
+  cursor: pointer;
+}
+
+.tree-icon {
+  flex: none;
+  font-size: var(--icon-md);
+  color: var(--grey-500);
+}
+
+.tree-id {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  color: var(--grey-600);
+}
+
+.tree-label {
+  flex: 0 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tree-count {
+  flex: none;
+  margin-left: auto;
+  padding-left: var(--space-2);
+  font-size: var(--text-xs);
+  color: var(--grey-500);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Selected branch: grey path with a left rule, bold active node (not colour only) */
+.tree-node.is-path {
+  background: var(--grey-50);
+  box-shadow: inset 3px 0 0 var(--grey-300);
+}
+
+.tree-node.is-active {
+  background: var(--grey-100);
+  box-shadow: inset 3px 0 0 var(--grey-700);
+}
+
+.tree-node.is-active .tree-row {
+  font-weight: var(--font-semibold);
+}
+
+.tree-node.is-active .tree-icon,
+.tree-node.is-active .tree-count {
+  color: var(--grey-800);
+}
+
+.tree-empty {
+  padding: var(--space-4);
+  font-size: var(--text-xs);
+  color: var(--grey-500);
+  text-align: center;
+}
+
 /* ===== TOOLBAR (tables) ===== */
 .toolbar {
   display: flex;
@@ -2898,6 +3127,110 @@
   padding: var(--space-4) 0;
   font-size: var(--text-sm);
   color: var(--grey-600);
+}
+
+/* ===== VIEW NAV (sticky bar above a page view: breadcrumb left, actions right) ===== */
+/* The detail page and the API documentation of both prototypes share this bar. The inner row
+   (.detail-header-inner) is as wide as the content below it (--view-nav-max-width per view). */
+.view-nav {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: var(--white);
+  border-bottom: 1px solid var(--grey-300);
+  padding: var(--space-3) var(--space-5);
+}
+
+.view-nav .detail-header-inner {
+  max-width: var(--view-nav-max-width, var(--content-max-width));
+  margin: 0 auto;
+}
+
+/* ===== API DOCS VIEW (Swagger UI host) ===== */
+#api-docs-view {
+  display: none;
+  flex: 1;
+}
+
+#api-docs-view.active {
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+}
+
+.api-docs-content {
+  max-width: var(--content-max-width);
+  width: 100%;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  box-sizing: border-box;
+}
+
+.api-docs-header h1 {
+  font-size: var(--text-xl);
+  font-weight: var(--font-semibold);
+  color: var(--grey-900);
+  margin: 0 0 var(--space-2) 0;
+}
+
+.api-docs-subtitle {
+  font-size: var(--text-sm);
+  color: var(--grey-500);
+  margin: 0 0 var(--space-6) 0;
+}
+
+.api-docs-links a {
+  color: var(--interactive-blue);
+  font-size: var(--text-sm);
+}
+
+.api-docs-loading,
+.api-docs-error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  padding: var(--space-8);
+  color: var(--grey-500);
+}
+
+.api-docs-error {
+  flex-direction: column;
+  color: var(--status-error-text);
+}
+
+/* Swagger UI inside the app: no outer box, tighter spacing, app colours for links */
+.swagger-ui-host .swagger-ui .information-container,
+.swagger-ui-host .swagger-ui .scheme-container {
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.swagger-ui-host .swagger-ui .info {
+  margin: var(--space-4) 0;
+}
+
+.swagger-ui-host .swagger-ui .info .title small {
+  vertical-align: middle;
+}
+
+/* The page header already links to swagger.json (translated); hide Swagger's own link */
+.swagger-ui-host .swagger-ui .info hgroup.main > a {
+  display: none;
+}
+
+.swagger-ui-host .swagger-ui .wrapper {
+  padding: 0;
+}
+
+.swagger-ui-host .swagger-ui .opblock-tag {
+  font-size: var(--text-lg);
+}
+
+.swagger-ui-host .swagger-ui a {
+  color: var(--interactive-blue);
 }
 
 /* ===== DETAIL VIEW (shared parts) ===== */
@@ -3932,6 +4265,7 @@ body.detail-active #detail-view {
 
 /* ===== RESPONSIVE DESIGN ===== */
 /* Breakpoints (docs/DESIGNGUIDE.md → Responsive Design):
+     Compact header  max-width: 1720px   icon-only header actions and view toggle (the labels need ~1700px)
      Laptop   max-width: 1366px   search flexes between logo and actions
      Tablet   max-width: 1024px   one-line logo, icon-only header buttons, tools panel starts collapsed
      Mobile   max-width: 767px  OR  (max-height: 500px and pointer: coarse)   ← phones in landscape
@@ -3939,26 +4273,59 @@ body.detail-active #detail-view {
      Touch    (pointer: coarse), independent of width: 44px targets, 20px checkboxes
    js/utils.js mirrors the mobile and landscape queries (isMobileLayout(), isLandscapePhone()). Change both places together. */
 
+/* --- Compact header: the labels of the actions and the view toggle need about 1700px next to the centred search --- */
+@media screen and (max-width: 1720px) {
+  .header-btn-label {
+    display: none;
+  }
+
+  /* Buttons without a visible label are circles; the title and aria-label carry the name */
+  #tree-panel-btn,
+  #filter-panel-btn {
+    padding: 0;
+    width: var(--control-height);
+    justify-content: center;
+  }
+
+  /* Active-filter badge sits on the corner of the icon-only button */
+  .header-btn .filter-count {
+    display: inline-flex;
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    margin: 0;
+  }
+
+  .view-toggle-btn {
+    padding: var(--space-2);
+    min-width: 40px;
+    justify-content: center;
+  }
+
+  .view-toggle-btn .view-label {
+    display: none !important;
+  }
+}
+
 /* --- Laptop --- */
 @media screen and (max-width: 1366px) {
   .header-main {
     gap: var(--space-3);
   }
 
+  /* The centre column takes what is left between the logo and the actions */
+  #logo-area,
+  #header-right {
+    flex: 0 0 auto;
+  }
+
   #search-area {
-    position: static;
     flex: 1;
-    min-width: 0;
-    pointer-events: auto;
   }
 
   #search-wrapper {
     max-width: 500px;
     min-width: 200px;
-  }
-
-  #header-right {
-    min-width: auto;
   }
 }
 
@@ -4033,22 +4400,11 @@ body.detail-active #detail-view {
     width: clamp(360px, 60vw, 600px);
   }
 
-  .view-toggle-btn {
-    padding: var(--space-2);
-    min-width: 40px;
-    justify-content: center;
-  }
-
-  .view-toggle-btn .view-label {
-    display: none !important;
-  }
-
   #header-right {
-    min-width: auto;
     flex-shrink: 0;
   }
 
-  /* Icon-only header buttons; the aria-label carries the name */
+  /* Icon-only header buttons incl. the language code; the aria-label carries the name */
   .header-btn span:not(.material-symbols-outlined) {
     display: none;
   }
@@ -4061,18 +4417,17 @@ body.detail-active #detail-view {
     justify-content: center;
   }
 
-  /* Active-filter badge sits on the corner of the icon-only button */
-  .header-btn .filter-count {
-    display: inline-flex;
-    position: absolute;
-    top: -4px;
-    right: -4px;
-    margin: 0;
-  }
-
   #filter-panel.open {
     width: 340px;
     min-width: 340px;
+  }
+
+  :root {
+    --tree-panel-width: 300px; /* a dragged width (inline on <html>) still wins */
+  }
+
+  .view-nav {
+    padding: var(--space-3) var(--space-4);
   }
 
   /* Clear of the 44px map controls (touch) */
@@ -4141,6 +4496,10 @@ body.detail-active #detail-view {
     min-height: var(--touch-target-min);
   }
 
+  .mobile-menu-item {
+    min-height: var(--touch-target-min);
+  }
+
   .tbl-toggle,
   .table-tab,
   .btn-back,
@@ -4162,6 +4521,16 @@ body.detail-active #detail-view {
   #menu-toggle,
   .style-switcher-btn {
     min-height: var(--touch-target-min);
+  }
+
+  .tree-row {
+    min-height: var(--touch-target-min);
+  }
+
+  .tree-fold,
+  .tree-fold-slot {
+    width: 36px;
+    left: calc(var(--tree-ind) - 36px);
   }
 
   /* Filter rows: the label carries the hit area so the whole row toggles the box */
@@ -4237,6 +4606,7 @@ body.detail-active #detail-view {
 
   #header-right {
     order: 2;
+    flex: 0 0 auto;
     margin-left: auto;
   }
 
@@ -4447,6 +4817,36 @@ body.detail-active #detail-view {
   /* The floating "Menü" toggle is replaced by the hamburger button */
   #menu-toggle {
     display: none;
+  }
+
+  /* Location tree: the header button moves into the phone menu; the panel is a full-screen sheet */
+  #tree-panel-btn {
+    display: none;
+  }
+
+  #tree-panel {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: auto;
+    width: 100% !important;
+    min-width: 100% !important;
+    z-index: var(--z-drawer);
+    border-right: none;
+  }
+
+  #tree-panel:not(.open) {
+    display: none;
+  }
+
+  .tree-resize-handle {
+    display: none;
+  }
+
+  .tree-panel-content {
+    padding-bottom: calc(var(--space-4) + env(safe-area-inset-bottom, 0px));
   }
 
   /* Filter drawer: full-screen sheet with the sticky footer */

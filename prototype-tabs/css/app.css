@@ -15,16 +15,10 @@ body.detail-active .header-detail {
   display: flex;
 }
 
+/* The shared .view-nav bar sits inside the page header here: not sticky on its own */
 .header-detail .detail-header {
-  background: var(--white);
-  border-bottom: 1px solid var(--grey-300);
-  padding: var(--space-4) var(--space-5);
+  position: static;
   transition: padding-right var(--transition-slow);
-}
-
-.header-detail .detail-header-inner {
-  max-width: var(--content-max-width);
-  margin: 0 auto;
 }
 
 .header-detail .detail-tabs {
@@ -42,7 +36,8 @@ body.detail-active:has(#filter-panel.open) .detail-content {
 }
 
 /* Drawer in the detail view: fixed below the full header (the page scrolls) */
-body.detail-active #filter-panel:not(.open) {
+body.detail-active #filter-panel:not(.open),
+body.detail-active #tree-panel:not(.open) {
   height: 0;
   min-height: 0;
   width: 0;
@@ -58,6 +53,18 @@ body.detail-active #filter-panel.open {
   right: 0;
   height: calc(100vh - var(--header-total-height));
   z-index: 100;
+}
+
+body.detail-active #tree-panel.open {
+  position: fixed;
+  top: var(--header-total-height);
+  left: 0;
+  height: calc(100vh - var(--header-total-height));
+  z-index: 100;
+}
+
+body.detail-active:has(#tree-panel.open) .detail-content {
+  padding-left: calc(var(--tree-panel-width) + var(--space-6));
 }
 
 .btn-edit {
@@ -587,10 +594,6 @@ body.detail-active #filter-panel.open {
     height: var(--touch-target-min);
   }
 
-  .header-detail .detail-header {
-    padding: var(--space-3) var(--space-4);
-  }
-
   body:has(#filter-panel.open) .header-detail .detail-header,
   body:has(#filter-panel.open) .header-detail .detail-tabs,
   body.detail-active:has(#filter-panel.open) .detail-content {
@@ -640,10 +643,6 @@ body.detail-active #filter-panel.open {
     top: var(--header-sticky-offset, 0px);
   }
 
-  .header-detail .detail-header {
-    padding: var(--space-3) var(--space-4);
-  }
-
   /* No padding adjustment on phones — the drawer is a full-screen sheet */
   body:has(#filter-panel.open) .header-detail .detail-header {
     padding-right: var(--space-4);
@@ -653,10 +652,15 @@ body.detail-active #filter-panel.open {
     padding-right: 0;
   }
 
-  body.detail-active #filter-panel.open {
+  body.detail-active #filter-panel.open,
+  body.detail-active #tree-panel.open {
     position: fixed;
     top: 0;
     height: auto;
+  }
+
+  body.detail-active:has(#tree-panel.open) .detail-content {
+    padding-left: var(--space-3);
   }
 
   body.detail-active:has(#filter-panel.open) .detail-content {
