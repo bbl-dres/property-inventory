@@ -8,8 +8,8 @@ const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const COMMON_JS = ['utils', 'i18n', 'toast', 'geo', 'keys', 'boot', 'basemaps', 'map-controls', 'measure',
-  'context-menu', 'swisstopo', 'print', 'table', 'carousel', 'mini-map', 'gestures', 'accordion'];
-const COMMON_FILES = COMMON_JS.map(n => 'js/' + n + '.js').concat(['data/i18n.json']);
+  'context-menu', 'swisstopo', 'print', 'table', 'carousel', 'mini-map', 'gestures', 'accordion', 'tools-panel'];
+const COMMON_FILES = COMMON_JS.map(n => 'js/' + n + '.js').concat(['data/i18n.json', 'css/tokens.css', 'css/components.css', 'docs/DESIGNGUIDE.md']);
 
 // Per-app modules that share their structure but not their content (schema-specific)
 const ALIGNED_JS = ['app', 'config', 'state', 'ui', 'filters', 'list', 'detail', 'map', 'search', 'export'];

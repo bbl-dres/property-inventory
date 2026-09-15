@@ -5,16 +5,16 @@
       "name": "Grundriss Erdgeschoss",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "validFrom": "2019-03-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "2.4 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-001",
+      "description": "Grundriss für Gebäude 1080/4840/AF",
       "version": "1.0",
-      "legacyId": "BBL-001-D1",
+      "legacyId": "4840-D1",
       "extensionData": {}
     },
     {
@@ -22,16 +22,16 @@
       "name": "Fassadenplan West",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "validFrom": "2019-03-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "DWG",
       "fileSize": "8.1 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-001",
+      "description": "Bauplan für Gebäude 1080/4840/AF",
       "version": "1.0",
-      "legacyId": "BBL-001-D2",
+      "legacyId": "4840-D2",
       "extensionData": {}
     },
     {
@@ -39,16 +39,16 @@
       "name": "GEAK Zertifikat 2019",
       "type": "Energieausweis",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "validFrom": "2019-06-20T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "1.2 MB",
       "url": "#",
-      "description": "Energieausweis für Gebäude BBL-001",
+      "description": "Energieausweis für Gebäude 1080/4840/AF",
       "version": "1.0",
-      "legacyId": "BBL-001-D3",
+      "legacyId": "4840-D3",
       "extensionData": {}
     },
     {
@@ -56,16 +56,16 @@
       "name": "Denkmalschutz-Verfügung",
       "type": "Baubewilligung",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "validFrom": "1950-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "450 KB",
       "url": "#",
-      "description": "Baubewilligung für Gebäude BBL-001",
+      "description": "Baubewilligung für Gebäude 1080/4840/AF",
       "version": "1.0",
-      "legacyId": "BBL-001-D4",
+      "legacyId": "4840-D4",
       "extensionData": {}
     },
     {
@@ -73,16 +73,16 @@
       "name": "Architekturpläne Gesamtobjekt",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
       "validFrom": "2000-09-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "15.3 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-002",
+      "description": "Bauplan für Gebäude 1080/5210/AA",
       "version": "1.0",
-      "legacyId": "BBL-002-D1",
+      "legacyId": "5210-D1",
       "extensionData": {}
     },
     {
@@ -90,16 +90,16 @@
       "name": "Energiepass EnEV",
       "type": "Energieausweis",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
       "validFrom": "2021-06-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "890 KB",
       "url": "#",
-      "description": "Energieausweis für Gebäude BBL-002",
+      "description": "Energieausweis für Gebäude 1080/5210/AA",
       "version": "1.0",
-      "legacyId": "BBL-002-D2",
+      "legacyId": "5210-D2",
       "extensionData": {}
     },
     {
@@ -107,16 +107,16 @@
       "name": "Sicherheitskonzept",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
       "validFrom": "2022-01-10T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "3.2 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-002",
+      "description": "Betriebsanleitung für Gebäude 1080/5210/AA",
       "version": "1.0",
-      "legacyId": "BBL-002-D3",
+      "legacyId": "5210-D3",
       "extensionData": {}
     },
     {
@@ -124,16 +124,16 @@
       "name": "Hallenlayout Lagerbereich",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "validFrom": "2017-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "DWG",
       "fileSize": "12.5 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-003",
+      "description": "Grundriss für Gebäude 1080/3120/AB",
       "version": "1.0",
-      "legacyId": "BBL-003-D1",
+      "legacyId": "3120-D1",
       "extensionData": {}
     },
     {
@@ -141,16 +141,16 @@
       "name": "Brandschutzkonzept",
       "type": "Brandschutzkonzept",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "validFrom": "2017-08-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "4.8 MB",
       "url": "#",
-      "description": "Brandschutzkonzept für Gebäude BBL-003",
+      "description": "Brandschutzkonzept für Gebäude 1080/3120/AB",
       "version": "1.0",
-      "legacyId": "BBL-003-D2",
+      "legacyId": "3120-D2",
       "extensionData": {}
     },
     {
@@ -158,16 +158,16 @@
       "name": "Wartungsprotokoll Heizung 2023",
       "type": "Wartungsprotokoll",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "validFrom": "2023-11-12T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "320 KB",
       "url": "#",
-      "description": "Wartungsprotokoll für Gebäude BBL-003",
+      "description": "Wartungsprotokoll für Gebäude 1080/3120/AB",
       "version": "1.0",
-      "legacyId": "BBL-003-D3",
+      "legacyId": "3120-D3",
       "extensionData": {}
     },
     {
@@ -175,16 +175,16 @@
       "name": "Gebäudefoto Aussenansicht",
       "type": "Foto",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "validFrom": "2020-03-20T00:00:00Z",
       "validUntil": null,
       "fileFormat": "JPG",
       "fileSize": "5.2 MB",
       "url": "#",
-      "description": "Foto für Gebäude BBL-003",
+      "description": "Foto für Gebäude 1080/3120/AB",
       "version": "1.0",
-      "legacyId": "BBL-003-D4",
+      "legacyId": "3120-D4",
       "extensionData": {}
     },
     {
@@ -192,16 +192,16 @@
       "name": "Mietvertrag Third Avenue",
       "type": "Mietvertrag",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "1.8 MB",
       "url": "#",
-      "description": "Mietvertrag für Gebäude BBL-004",
+      "description": "Mietvertrag für Gebäude 1080/5320/AA",
       "version": "1.0",
-      "legacyId": "BBL-004-D1",
+      "legacyId": "5320-D1",
       "extensionData": {}
     },
     {
@@ -209,16 +209,16 @@
       "name": "Grundriss Büroflächen",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "3.4 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-004",
+      "description": "Grundriss für Gebäude 1080/5320/AA",
       "version": "1.0",
-      "legacyId": "BBL-004-D2",
+      "legacyId": "5320-D2",
       "extensionData": {}
     },
     {
@@ -226,16 +226,16 @@
       "name": "Sanierungsprojekt 2024",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "validFrom": "2024-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "28.5 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-005",
+      "description": "Bauplan für Gebäude 1080/4100/AC",
       "version": "1.0",
-      "legacyId": "BBL-005-D1",
+      "legacyId": "4100-D1",
       "extensionData": {}
     },
     {
@@ -243,16 +243,16 @@
       "name": "GEAK Plus Bericht",
       "type": "Energieausweis",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "validFrom": "2023-12-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "2.1 MB",
       "url": "#",
-      "description": "Energieausweis für Gebäude BBL-005",
+      "description": "Energieausweis für Gebäude 1080/4100/AC",
       "version": "1.0",
-      "legacyId": "BBL-005-D2",
+      "legacyId": "4100-D2",
       "extensionData": {}
     },
     {
@@ -260,16 +260,16 @@
       "name": "Denkmalschutz Teilbereich",
       "type": "Baubewilligung",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "validFrom": "1980-05-10T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "650 KB",
       "url": "#",
-      "description": "Baubewilligung für Gebäude BBL-005",
+      "description": "Baubewilligung für Gebäude 1080/4100/AC",
       "version": "1.0",
-      "legacyId": "BBL-005-D3",
+      "legacyId": "4100-D3",
       "extensionData": {}
     },
     {
@@ -277,16 +277,16 @@
       "name": "Raumkonzept Schulungsräume",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "validFrom": "2024-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "DWG",
       "fileSize": "9.8 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-005",
+      "description": "Grundriss für Gebäude 1080/4100/AC",
       "version": "1.0",
-      "legacyId": "BBL-005-D4",
+      "legacyId": "4100-D4",
       "extensionData": {}
     },
     {
@@ -294,16 +294,16 @@
       "name": "Architekturpläne Original",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
       "validFrom": "1991-03-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "18.2 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-006",
+      "description": "Bauplan für Gebäude 1080/5410/AA",
       "version": "1.0",
-      "legacyId": "BBL-006-D1",
+      "legacyId": "5410-D1",
       "extensionData": {}
     },
     {
@@ -311,16 +311,16 @@
       "name": "Erdbebensicherheit Gutachten",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
       "validFrom": "2018-09-20T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "4.5 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-006",
+      "description": "Betriebsanleitung für Gebäude 1080/5410/AA",
       "version": "1.0",
-      "legacyId": "BBL-006-D2",
+      "legacyId": "5410-D2",
       "extensionData": {}
     },
     {
@@ -328,16 +328,16 @@
       "name": "Residenz Grundriss",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
       "validFrom": "1991-03-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "2.8 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-006",
+      "description": "Grundriss für Gebäude 1080/5410/AA",
       "version": "1.0",
-      "legacyId": "BBL-006-D3",
+      "legacyId": "5410-D3",
       "extensionData": {}
     },
     {
@@ -345,16 +345,16 @@
       "name": "Wohnungsspiegel",
       "type": "Grundriss",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "validFrom": "2015-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "5.6 MB",
       "url": "#",
-      "description": "Grundriss für Gebäude BBL-007",
+      "description": "Grundriss für Gebäude 1080/2800/AD",
       "version": "1.0",
-      "legacyId": "BBL-007-D1",
+      "legacyId": "2800-D1",
       "extensionData": {}
     },
     {
@@ -362,16 +362,16 @@
       "name": "GEAK Zertifikat",
       "type": "Energieausweis",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "validFrom": "2015-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "980 KB",
       "url": "#",
-      "description": "Energieausweis für Gebäude BBL-007",
+      "description": "Energieausweis für Gebäude 1080/2800/AD",
       "version": "1.0",
-      "legacyId": "BBL-007-D2",
+      "legacyId": "2800-D2",
       "extensionData": {}
     },
     {
@@ -379,16 +379,16 @@
       "name": "Denkmalschutz Inventar",
       "type": "Baubewilligung",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "validFrom": "1985-03-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "1.2 MB",
       "url": "#",
-      "description": "Baubewilligung für Gebäude BBL-007",
+      "description": "Baubewilligung für Gebäude 1080/2800/AD",
       "version": "1.0",
-      "legacyId": "BBL-007-D3",
+      "legacyId": "2800-D3",
       "extensionData": {}
     },
     {
@@ -396,16 +396,16 @@
       "name": "Sanierungsbericht 2015",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "validFrom": "2015-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "12.3 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-007",
+      "description": "Bauplan für Gebäude 1080/2800/AD",
       "version": "1.0",
-      "legacyId": "BBL-007-D4",
+      "legacyId": "2800-D4",
       "extensionData": {}
     },
     {
@@ -413,16 +413,16 @@
       "name": "Fassadenfoto nach Sanierung",
       "type": "Foto",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "validFrom": "2015-07-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "JPG",
       "fileSize": "4.8 MB",
       "url": "#",
-      "description": "Foto für Gebäude BBL-007",
+      "description": "Foto für Gebäude 1080/2800/AD",
       "version": "1.0",
-      "legacyId": "BBL-007-D5",
+      "legacyId": "2800-D5",
       "extensionData": {}
     },
     {
@@ -430,16 +430,16 @@
       "name": "Sanierungspläne 2022",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
       "validFrom": "2022-03-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "22.4 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-008",
+      "description": "Bauplan für Gebäude 1080/5510/AA",
       "version": "1.0",
-      "legacyId": "BBL-008-D1",
+      "legacyId": "5510-D1",
       "extensionData": {}
     },
     {
@@ -447,16 +447,16 @@
       "name": "Klimaanlagen-Dokumentation",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
       "validFrom": "2022-05-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "3.1 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-008",
+      "description": "Betriebsanleitung für Gebäude 1080/5510/AA",
       "version": "1.0",
-      "legacyId": "BBL-008-D2",
+      "legacyId": "5510-D2",
       "extensionData": {}
     },
     {
@@ -464,16 +464,16 @@
       "name": "Gartenpflege-Konzept",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
       "validFrom": "2022-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "1.5 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-008",
+      "description": "Betriebsanleitung für Gebäude 1080/5510/AA",
       "version": "1.0",
-      "legacyId": "BBL-008-D3",
+      "legacyId": "5510-D3",
       "extensionData": {}
     },
     {
@@ -481,16 +481,16 @@
       "name": "Bauprojekt Datacenter",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "validFrom": "2023-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "85.2 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-009",
+      "description": "Bauplan für Gebäude 1080/1950/AE",
       "version": "1.0",
-      "legacyId": "BBL-009-D1",
+      "legacyId": "1950-D1",
       "extensionData": {}
     },
     {
@@ -498,16 +498,16 @@
       "name": "BIM Modell Hauptgebäude",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "validFrom": "2023-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "IFC",
       "fileSize": "156.8 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-009",
+      "description": "Bauplan für Gebäude 1080/1950/AE",
       "version": "1.0",
-      "legacyId": "BBL-009-D2",
+      "legacyId": "1950-D2",
       "extensionData": {}
     },
     {
@@ -515,16 +515,16 @@
       "name": "Baubewilligung Kanton TI",
       "type": "Baubewilligung",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "validFrom": "2023-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "2.3 MB",
       "url": "#",
-      "description": "Baubewilligung für Gebäude BBL-009",
+      "description": "Baubewilligung für Gebäude 1080/1950/AE",
       "version": "1.0",
-      "legacyId": "BBL-009-D3",
+      "legacyId": "1950-D3",
       "extensionData": {}
     },
     {
@@ -532,16 +532,16 @@
       "name": "Energiekonzept Tier IV",
       "type": "Energieausweis",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "validFrom": "2023-04-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "8.7 MB",
       "url": "#",
-      "description": "Energieausweis für Gebäude BBL-009",
+      "description": "Energieausweis für Gebäude 1080/1950/AE",
       "version": "1.0",
-      "legacyId": "BBL-009-D4",
+      "legacyId": "1950-D4",
       "extensionData": {}
     },
     {
@@ -549,16 +549,16 @@
       "name": "Sicherheitskonzept IT",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "validFrom": "2023-06-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "5.4 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-009",
+      "description": "Betriebsanleitung für Gebäude 1080/1950/AE",
       "version": "1.0",
-      "legacyId": "BBL-009-D5",
+      "legacyId": "1950-D5",
       "extensionData": {}
     },
     {
@@ -566,16 +566,16 @@
       "name": "Originalbaupläne 1968",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
       "validFrom": "1968-09-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "6.8 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-010",
+      "description": "Bauplan für Gebäude 1080/5620/AA",
       "version": "1.0",
-      "legacyId": "BBL-010-D1",
+      "legacyId": "5620-D1",
       "extensionData": {}
     },
     {
@@ -583,16 +583,16 @@
       "name": "Sanierungsdokumentation 2016",
       "type": "Bauplan",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
       "validFrom": "2016-01-01T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "14.5 MB",
       "url": "#",
-      "description": "Bauplan für Gebäude BBL-010",
+      "description": "Bauplan für Gebäude 1080/5620/AA",
       "version": "1.0",
-      "legacyId": "BBL-010-D2",
+      "legacyId": "5620-D2",
       "extensionData": {}
     },
     {
@@ -600,16 +600,16 @@
       "name": "Solar-Warmwasser Anlage",
       "type": "Betriebsanleitung",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
       "validFrom": "2016-03-15T00:00:00Z",
       "validUntil": null,
       "fileFormat": "PDF",
       "fileSize": "2.1 MB",
       "url": "#",
-      "description": "Betriebsanleitung für Gebäude BBL-010",
+      "description": "Betriebsanleitung für Gebäude 1080/5620/AA",
       "version": "1.0",
-      "legacyId": "BBL-010-D3",
+      "legacyId": "5620-D3",
       "extensionData": {}
     }
   ]

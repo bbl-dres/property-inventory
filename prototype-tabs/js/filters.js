@@ -5,7 +5,7 @@ import { filterConfig, filterLabel } from './config.js';
 import { escapeHtml, getNestedProperty, storageGet, storageSet, isMobileLayout } from './utils.js';
 import { t, onLangChange } from './i18n.js';
 import { onEscape } from './keys.js';
-import { renderListView, renderGalleryView } from './list.js';
+import { renderTables, renderGalleryView } from './list.js';
 import { switchView } from './ui.js';
 import { updateFilteredExportHeader, updateExportCount } from './export.js';
 
@@ -63,7 +63,6 @@ export function applyFilters() {
   };
 
   setFiltersInURL(state.activeFilters);
-  updateObjectCount();
   updateExportCount();
   updateFilteredExportHeader();
   updateFilterButtonState();
@@ -101,10 +100,10 @@ export function zoomToFilteredPoints() {
   state.map.fitBounds(bounds, { padding: 80, duration: 800, maxZoom: 16 });
 }
 
-// Table and gallery are re-rendered only while visible; hidden views are marked dirty
+// Tables and gallery are re-rendered only while visible; hidden views are marked dirty
 export function renderCurrentView() {
-  if (state.currentView === 'list') {
-    renderListView();
+  if (state.currentView === 'map' && state.tableOpen) {
+    renderTables();
   } else {
     state.listViewDirty = true;
   }
@@ -113,13 +112,6 @@ export function renderCurrentView() {
   } else {
     state.galleryViewDirty = true;
   }
-}
-
-// Header count ("10 Objekte")
-export function updateObjectCount() {
-  const count = state.filteredData ? state.filteredData.features.length : (state.buildingsData ? state.buildingsData.features.length : 0);
-  const countEl = document.getElementById('object-count');
-  if (countEl) countEl.textContent = t('header.objectCount', { count: count });
 }
 
 // ===== FILTER PILLS (table toolbar, when present) =====
@@ -196,16 +188,16 @@ export function resetFilters() {
 
 export function navigateToAllObjects() {
   resetFilters();
-  switchView(state.previousView || 'gallery');
+  switchView('map');
 }
 
-// Replace all filters by a single value of one category and return to the previous view (breadcrumb links)
+// Replace all filters by a single value of one category and show the map (breadcrumb links)
 export function navigateWithFilter(filterKey, value) {
   if (!value) return;
   clearFilterState();
   setFilterValue(filterKey, value, true);
   applyFilters();
-  switchView(state.previousView || 'gallery');
+  switchView('map');
 }
 
 export function navigateWithLandFilter() {
@@ -379,8 +371,7 @@ export function initFilterPane() {
 
   onLangChange(function() {
     updateFilterButtonState();
-    updateObjectCount();
-    renderFilterPills();
+      renderFilterPills();
   });
 
   // Filter section accordion toggle
@@ -395,9 +386,6 @@ export function initFilterPane() {
     toggleSmartDrawer(false);
     return true;
   }, 30);
-
-  // Logo click: back to all objects
-  document.getElementById('logo-area').addEventListener('click', navigateToAllObjects);
 
   // Filter search (only when the drawer has one)
   const filterSearchInput = document.getElementById('filter-search-input');

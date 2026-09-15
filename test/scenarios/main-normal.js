@@ -36,10 +36,10 @@ module.exports = {
     // Selection via the table row
     document.querySelector('#list-body tr[data-id]').click();
     await settle();
-    check('table row selects building', state.selectedBuildingId === '1000/4840/AF');
+    check('table row selects building', state.selectedBuildingId === '1080/4840/AF');
     check('info panel shown', document.getElementById('info-panel').classList.contains('show'));
     check('info panel escaped content', document.getElementById('info-body').innerHTML.indexOf('Bundeshaus West') !== -1);
-    check('selection written to URL', window.location.search.indexOf('id=1000%2F4840%2FAF') !== -1 || window.location.search.indexOf('id=1000/4840/AF') !== -1);
+    check('selection written to URL', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1 || window.location.search.indexOf('id=1080/4840/AF') !== -1);
     check('row selection flies to the building', map.calls.flyTo.length === flyBefore + 1);
     check('row highlighted', document.querySelector('#list-body tr.row-active') !== null);
 
@@ -65,7 +65,7 @@ module.exports = {
     check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 11);
     check('style switcher hidden outside map', !document.getElementById('style-switcher').classList.contains('visible'));
     check('gallery view in URL', window.location.search.indexOf('view=gallery') !== -1);
-    check('map selection kept in URL across views', window.location.search.indexOf('id=1000%2F4840%2FAF') !== -1);
+    check('map selection kept in URL across views', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1);
 
     // Detail view from a gallery card
     document.querySelector('#gallery-grid .gallery-card').click();
@@ -128,7 +128,7 @@ module.exports = {
     modules.measure.startMeasurement();
     check('measuring', modules.measure.isMeasuring() && map.getCanvas().style.cursor === 'crosshair');
     const selectedBefore = state.selectedBuildingId;
-    map.fire('click', { features: [{ properties: { bbl_id: '1000/4840/AF' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
+    map.fire('click', { features: [{ properties: { bbl_id: '1080/4840/AF' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     map.fire('click', { point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } });
     check('selection unchanged while measuring', state.selectedBuildingId === selectedBefore);
     check('measure point added', fake.Marker.instances.some(m => m.options.draggable));
@@ -171,5 +171,19 @@ module.exports = {
     await settle();
     check('language switched', document.documentElement.lang === 'en' && /lang=en/.test(window.location.search));
     check('table header re-rendered in English', document.querySelector('#list-table-header-row th').textContent.indexOf('ID') !== -1);
+
+    // Logo = home: landing state (map view, no filters, no selection, drawer and table closed)
+    document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
+    document.getElementById('filter-panel-btn').click();
+    document.getElementById('tbl-toggle').click();
+    await settle();
+    const flyHomeBefore = map.calls.flyTo.length;
+    document.getElementById('logo-area').click();
+    await settle(400);
+    check('logo returns to the map view', state.currentView === 'map' && document.getElementById('map-view').classList.contains('active'));
+    check('logo clears filters and selection', state.filteredData.features.length === state.buildingsData.features.length && state.selectedBuildingId === null && !document.getElementById('info-panel').classList.contains('show'));
+    check('logo closes the drawer and the table panel', !document.getElementById('filter-panel').classList.contains('open') && !state.tableOpen);
+    check('logo cleans the URL', !/filter_|id=|view=detail|table=open/.test(window.location.search));
+    check('logo flies to the initial extent', map.calls.flyTo.length === flyHomeBefore + 1);
   }
 };

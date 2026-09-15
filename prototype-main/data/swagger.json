@@ -204,8 +204,8 @@
                       },
                       "properties": {
                         "bbl_stat": "Aktiv",
-                        "bbl_id": "1000/4840/AF",
-                        "bbl_buch": "1000",
+                        "bbl_id": "1080/4840/AF",
+                        "bbl_buch": "1080",
                         "bbl_we": "4840",
                         "bbl_obj": "AF",
                         "bbl_bez": "Bundeshaus West",
@@ -310,10 +310,10 @@
             "name": "bbl_id",
             "in": "path",
             "required": true,
-            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1000%2F4840%2FAF`.",
+            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1080%2F4840%2FAF`.",
             "schema": {
               "type": "string",
-              "example": "1000/4840/AF"
+              "example": "1080/4840/AF"
             }
           }
         ],
@@ -336,8 +336,8 @@
                   },
                   "properties": {
                     "bbl_stat": "Aktiv",
-                    "bbl_id": "1000/4840/AF",
-                    "bbl_buch": "1000",
+                    "bbl_id": "1080/4840/AF",
+                    "bbl_buch": "1080",
                     "bbl_we": "4840",
                     "bbl_obj": "AF",
                     "bbl_bez": "Bundeshaus West",
@@ -574,8 +574,8 @@
                       },
                       "properties": {
                         "bbl_stat": "Aktiv",
-                        "bbl_id": "1000/4840/01",
-                        "bbl_buch": "1000",
+                        "bbl_id": "1080/4840/01",
+                        "bbl_buch": "1080",
                         "bbl_we": "4840",
                         "bbl_obj": "01",
                         "bbl_bez": "Bundesplatz Parzelle A",
@@ -651,10 +651,10 @@
             "name": "bbl_id",
             "in": "path",
             "required": true,
-            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1000%2F4840%2F01`.",
+            "description": "BBL ID (`bbl_id`). Enthält Schrägstriche und muss URL-codiert werden, z.B. `1080%2F4840%2F01`.",
             "schema": {
               "type": "string",
-              "example": "1000/4840/01"
+              "example": "1080/4840/01"
             }
           }
         ],
@@ -697,8 +697,8 @@
                   },
                   "properties": {
                     "bbl_stat": "Aktiv",
-                    "bbl_id": "1000/4840/01",
-                    "bbl_buch": "1000",
+                    "bbl_id": "1080/4840/01",
+                    "bbl_buch": "1080",
                     "bbl_we": "4840",
                     "bbl_obj": "01",
                     "bbl_bez": "Bundesplatz Parzelle A",
@@ -775,7 +775,7 @@
             "description": "Filter: Grundstueck ID – Grundstueck-ID (FK zu Parcel bbl_id)",
             "schema": {
               "type": "string",
-              "example": "1000/4840/01"
+              "example": "1080/4840/01"
             }
           },
           {
@@ -785,7 +785,7 @@
             "description": "Filter: Gebaeude ID – Gebaeude-ID (FK zu Building bbl_id); nur fuer av_type=Gebaeude",
             "schema": {
               "type": "string",
-              "example": "1000/4840/AF"
+              "example": "1080/4840/AF"
             }
           },
           {
@@ -901,8 +901,8 @@
                         ]
                       },
                       "properties": {
-                        "bbl_id": "1000/4840/01",
-                        "geb_id": "1000/4840/AF",
+                        "bbl_id": "1080/4840/01",
+                        "geb_id": "1080/4840/AF",
                         "av_stat": "Gültig",
                         "av_egid": "301001234",
                         "av_egrid": "CH938391457759",
@@ -996,8 +996,8 @@
                     ]
                   },
                   "properties": {
-                    "bbl_id": "1000/4840/01",
-                    "geb_id": "1000/4840/AF",
+                    "bbl_id": "1080/4840/01",
+                    "geb_id": "1080/4840/AF",
                     "av_stat": "Gültig",
                     "av_egid": "301001234",
                     "av_egrid": "CH938391457759",
@@ -1126,7 +1126,7 @@
             "type": "string",
             "title": "BBL ID",
             "description": "Interne BBL ID (Buchungskreis/WE/Teilobjekt)\n\nEN: Internal BBL ID (company code / economic unit / subobject)",
-            "example": "1000/4840/AF",
+            "example": "1080/4840/AF",
             "x-group": "Internal Master Data",
             "x-source": "RE-FX Building",
             "x-key": "PK"
@@ -1897,7 +1897,7 @@
             "type": "string",
             "title": "BBL ID",
             "description": "Interne BBL ID (Buchungskreis/WE/Teilobjekt)\n\nEN: Internal BBL ID (company code / economic unit / subobject)",
-            "example": "1000/4840/01",
+            "example": "1080/4840/01",
             "x-group": "Internal Master Data",
             "x-source": "RE-FX Parcel",
             "x-key": "PK"
@@ -2387,7 +2387,7 @@
             "title": "Grundstueck ID",
             "description": "Grundstueck-ID (FK zu Parcel bbl_id)\n\nEN: Parcel ID (FK to Parcel bbl_id); always present",
             "nullable": true,
-            "example": "1000/4840/01",
+            "example": "1080/4840/01",
             "x-group": "Internal Master Data",
             "x-source": "RE-FX Parcel",
             "x-key": "FK"
@@ -2397,7 +2397,7 @@
             "title": "Gebaeude ID",
             "description": "Gebaeude-ID (FK zu Building bbl_id); nur fuer av_type=Gebaeude\n\nEN: Building ID (FK to Building bbl_id); only for av_type=Gebaeude",
             "nullable": true,
-            "example": "1000/4840/AF",
+            "example": "1080/4840/AF",
             "x-group": "Internal Master Data",
             "x-source": "RE-FX Building",
             "x-key": "FK"

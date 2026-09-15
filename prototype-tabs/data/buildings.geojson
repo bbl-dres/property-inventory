@@ -5,8 +5,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-001",
-        "siteId": "SITE-BBL-001",
+        "buildingId": "1080/4840/AF",
+        "siteId": "1080/4840",
         "name": "Bundeshaus West",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Parlamentsgebäude",
@@ -41,7 +41,7 @@
           "plotId": "BE-3003-1001",
           "netFloorArea": 12500
         },
-        "legacyId": "BBL-001"
+        "legacyId": "1080/4840/AF"
       },
       "geometry": {
         "type": "Point",
@@ -54,8 +54,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-002",
-        "siteId": "SITE-BBL-002",
+        "buildingId": "1080/5210/AA",
+        "siteId": "1080/5210",
         "name": "Schweizer Botschaft Berlin",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Botschaftsgebäude",
@@ -90,7 +90,7 @@
           "plotId": "DE-BER-10557-041",
           "netFloorArea": 3200
         },
-        "legacyId": "BBL-002"
+        "legacyId": "1080/5210/AA"
       },
       "geometry": {
         "type": "Point",
@@ -103,8 +103,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-003",
-        "siteId": "SITE-BBL-003",
+        "buildingId": "1080/3120/AB",
+        "siteId": "1080/3120",
         "name": "Logistikzentrum Zürich",
         "primaryTypeOfBuilding": "Lager-/Logistikgebäude",
         "secondaryTypeOfBuilding": "Zentrallager",
@@ -139,7 +139,7 @@
           "plotId": "ZH-8004-2045",
           "netFloorArea": 8750
         },
-        "legacyId": "BBL-003"
+        "legacyId": "1080/3120/AB"
       },
       "geometry": {
         "type": "Point",
@@ -152,8 +152,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-004",
-        "siteId": "SITE-BBL-004",
+        "buildingId": "1080/5320/AA",
+        "siteId": "1080/5320",
         "name": "Schweizer Generalkonsulat New York",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Konsulat",
@@ -188,7 +188,7 @@
           "plotId": "US-NY-10017-633",
           "netFloorArea": 1850
         },
-        "legacyId": "BBL-004"
+        "legacyId": "1080/5320/AA"
       },
       "geometry": {
         "type": "Point",
@@ -201,8 +201,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-005",
-        "siteId": "SITE-BBL-005",
+        "buildingId": "1080/4100/AC",
+        "siteId": "1080/4100",
         "name": "Ausbildungszentrum Genf",
         "primaryTypeOfBuilding": "Bildungsgebäude",
         "secondaryTypeOfBuilding": "Schulungsgebäude",
@@ -237,7 +237,7 @@
           "plotId": "GE-1202-0120",
           "netFloorArea": 4200
         },
-        "legacyId": "BBL-005"
+        "legacyId": "1080/4100/AC"
       },
       "geometry": {
         "type": "Point",
@@ -250,8 +250,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-006",
-        "siteId": "SITE-BBL-006",
+        "buildingId": "1080/5410/AA",
+        "siteId": "1080/5410",
         "name": "Schweizer Botschaft Tokyo",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Botschaftsgebäude",
@@ -286,7 +286,7 @@
           "plotId": "JP-TKY-MNTK-5912",
           "netFloorArea": 2100
         },
-        "legacyId": "BBL-006"
+        "legacyId": "1080/5410/AA"
       },
       "geometry": {
         "type": "Point",
@@ -299,8 +299,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-007",
-        "siteId": "SITE-BBL-007",
+        "buildingId": "1080/2800/AD",
+        "siteId": "1080/2800",
         "name": "Wohnliegenschaft Basel",
         "primaryTypeOfBuilding": "Wohngebäude",
         "secondaryTypeOfBuilding": "Mehrfamilienhaus",
@@ -335,7 +335,7 @@
           "plotId": "BS-4051-0022",
           "netFloorArea": 2800
         },
-        "legacyId": "BBL-007"
+        "legacyId": "1080/2800/AD"
       },
       "geometry": {
         "type": "Point",
@@ -348,8 +348,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-008",
-        "siteId": "SITE-BBL-008",
+        "buildingId": "1080/5510/AA",
+        "siteId": "1080/5510",
         "name": "Schweizer Botschaft Brasília",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Botschaftsgebäude",
@@ -384,7 +384,7 @@
           "plotId": "BR-BSB-SES-041",
           "netFloorArea": 1650
         },
-        "legacyId": "BBL-008"
+        "legacyId": "1080/5510/AA"
       },
       "geometry": {
         "type": "Point",
@@ -397,8 +397,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-009",
-        "siteId": "SITE-BBL-009",
+        "buildingId": "1080/1950/AE",
+        "siteId": "1080/1950",
         "name": "Datacenter Lugano",
         "primaryTypeOfBuilding": "Technisches Gebäude",
         "secondaryTypeOfBuilding": "Rechenzentrum",
@@ -433,7 +433,7 @@
           "plotId": "TI-6934-0015",
           "netFloorArea": 5400
         },
-        "legacyId": "BBL-009"
+        "legacyId": "1080/1950/AE"
       },
       "geometry": {
         "type": "Point",
@@ -446,8 +446,8 @@
     {
       "type": "Feature",
       "properties": {
-        "buildingId": "BBL-010",
-        "siteId": "SITE-BBL-010",
+        "buildingId": "1080/5620/AA",
+        "siteId": "1080/5620",
         "name": "Schweizer Botschaft Canberra",
         "primaryTypeOfBuilding": "Bürogebäude",
         "secondaryTypeOfBuilding": "Botschaftsgebäude",
@@ -482,7 +482,7 @@
           "plotId": "AU-ACT-FOR-007",
           "netFloorArea": 1200
         },
-        "legacyId": "BBL-010"
+        "legacyId": "1080/5620/AA"
       },
       "geometry": {
         "type": "Point",

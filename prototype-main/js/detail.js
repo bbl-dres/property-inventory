@@ -65,6 +65,13 @@ export function populateDetailView(building) {
   setText('detail-street', props.adr_str);
   setText('detail-housenumber', props.adr_hsnr);
   setText('mini-map-address', props.adr_conct);
+  // Row labels of the stacked address layout (narrow columns): the translated column headers
+  document.querySelectorAll('.address-table').forEach(function(table) {
+    const heads = table.querySelectorAll('thead th');
+    table.querySelectorAll('tbody td').forEach(function(td, i) {
+      if (heads[i]) td.setAttribute('data-label', heads[i].textContent.trim());
+    });
+  });
 
   // Coordinates
   setText('detail-wgs84', props.wgs84_lat != null && props.wgs84_lon != null

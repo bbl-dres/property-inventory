@@ -11,6 +11,7 @@ import { getPolygonCentroid } from './geo.js';
 import { isMeasuring } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
+import { syncTableToBuilding, syncTableToParcel } from './list.js';
 
 // ===== MAP INITIALISATION =====
 
@@ -71,17 +72,18 @@ function stopPulseAnimation() {
 
 function addParcelLayers(map) {
   map.addSource('parcels', { type: 'geojson', data: state.parcelData });
+  // Parcels appear from zoom 12 and fade in until 13 (same stack as prototype-main)
   map.addLayer({
-    id: 'parcels-fill', type: 'fill', source: 'parcels',
-    paint: { 'fill-color': parcelColor, 'fill-opacity': 0.15 }
+    id: 'parcels-fill', type: 'fill', source: 'parcels', minzoom: 12,
+    paint: { 'fill-color': parcelColor, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.15] }
   });
   map.addLayer({
-    id: 'parcels-outline', type: 'line', source: 'parcels',
-    paint: { 'line-color': parcelColor, 'line-width': 2, 'line-opacity': 0.8 }
+    id: 'parcels-outline', type: 'line', source: 'parcels', minzoom: 12,
+    paint: { 'line-color': parcelColor, 'line-width': 2, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.8] }
   });
   // Hover highlight and selection are separate layers, so hovering another parcel keeps the selection visible
   map.addLayer({
-    id: 'parcels-highlight', type: 'fill', source: 'parcels',
+    id: 'parcels-highlight', type: 'fill', source: 'parcels', minzoom: 12,
     filter: ['==', ['get', 'parcelId'], ''],
     paint: { 'fill-color': parcelColor, 'fill-opacity': 0.35 }
   });
@@ -98,25 +100,52 @@ function addParcelLayers(map) {
 }
 
 function addBuildingLayers(map) {
-  map.addSource('buildings', { type: 'geojson', data: state.buildingsData });
+  map.addSource('buildings', {
+    type: 'geojson',
+    data: state.buildingsData,
+    cluster: true,
+    clusterMaxZoom: 14,
+    clusterRadius: 50
+  });
+
+  // Cluster circles sized by point count
+  map.addLayer({
+    id: 'buildings-clusters', type: 'circle', source: 'buildings', filter: ['has', 'point_count'],
+    paint: {
+      'circle-color': ['step', ['get', 'point_count'], '#42A5F5', 10, '#1976d2', 50, '#0D47A1'],
+      'circle-radius': ['step', ['get', 'point_count'], 18, 10, 24, 50, 32],
+      'circle-stroke-width': 2,
+      'circle-stroke-color': '#ffffff'
+    }
+  });
+  map.addLayer({
+    id: 'buildings-cluster-count', type: 'symbol', source: 'buildings', filter: ['has', 'point_count'],
+    layout: { 'text-field': ['get', 'point_count_abbreviated'], 'text-font': ['Open Sans Bold', 'Noto Sans Bold'], 'text-size': 13, 'text-allow-overlap': true },
+    paint: { 'text-color': '#ffffff' }
+  });
 
   const colorExpr = ['match', ['get', 'status']];
   Object.keys(statusColors).forEach(function(status) { colorExpr.push(status, statusColors[status]); });
   colorExpr.push('#6C757D');
 
   map.addLayer({
-    id: 'buildings-points', type: 'circle', source: 'buildings',
+    id: 'buildings-points', type: 'circle', source: 'buildings', filter: ['!', ['has', 'point_count']],
     paint: { 'circle-radius': 10, 'circle-color': colorExpr, 'circle-stroke-width': 2, 'circle-stroke-color': '#ffffff' }
   });
   map.addLayer({
     id: 'buildings-selected', type: 'circle', source: 'buildings',
-    filter: ['==', ['get', 'buildingId'], ''],
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'buildingId'], '']],
     paint: { 'circle-radius': 18, 'circle-color': 'transparent', 'circle-stroke-width': 3, 'circle-stroke-color': '#c00', 'circle-stroke-opacity': 0.9 }
   });
   map.addLayer({
     id: 'buildings-selected-pulse', type: 'circle', source: 'buildings',
-    filter: ['==', ['get', 'buildingId'], ''],
+    filter: ['all', ['!', ['has', 'point_count']], ['==', ['get', 'buildingId'], '']],
     paint: { 'circle-radius': 24, 'circle-color': 'transparent', 'circle-stroke-width': 2, 'circle-stroke-color': '#c00', 'circle-stroke-opacity': 0.4 }
+  });
+  map.addLayer({
+    id: 'buildings-labels', type: 'symbol', source: 'buildings', filter: ['!', ['has', 'point_count']], minzoom: 16,
+    layout: { 'text-field': ['get', 'buildingId'], 'text-font': ['Open Sans Bold', 'Noto Sans Bold'], 'text-size': 13, 'text-anchor': 'bottom', 'text-offset': [0, -1.5], 'text-allow-overlap': false },
+    paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 2 }
   });
 }
 
@@ -177,6 +206,19 @@ function bindMapInteractions() {
     return map.queryRenderedFeatures(bbox, { layers: layers.filter(function(l) { return map.getLayer(l); }) });
   }
 
+  // Clusters: click to zoom in
+  map.on('click', 'buildings-clusters', function(e) {
+    if (isMeasuring()) return;
+    const features = map.queryRenderedFeatures(e.point, { layers: ['buildings-clusters'] });
+    if (!features.length) return;
+    map.getSource('buildings').getClusterExpansionZoom(features[0].properties.cluster_id, function(err, zoom) {
+      if (err) return;
+      smartFlyTo(map, { center: features[0].geometry.coordinates, zoom: zoom });
+    });
+  });
+  map.on('mouseenter', 'buildings-clusters', function() { setPointerCursor(true); });
+  map.on('mouseleave', 'buildings-clusters', function() { setPointerCursor(false); });
+
   // Buildings
   map.on('mouseenter', 'buildings-points', function() { setPointerCursor(true); });
   map.on('mouseleave', 'buildings-points', function() { setPointerCursor(false); });
@@ -185,7 +227,7 @@ function bindMapInteractions() {
     selectBuilding(e.features[0].properties.buildingId, false);
   });
 
-  // Parcels yield to buildings (parcels are the bottom layer)
+  // Parcels yield to buildings and clusters (parcels are the bottom layer)
   if (state.parcelData && state.parcelData.features) {
     map.on('mouseenter', 'parcels-fill', function(e) {
       setPointerCursor(true);
@@ -197,7 +239,7 @@ function bindMapInteractions() {
     });
     map.on('click', 'parcels-fill', function(e) {
       if (isMeasuring()) return;
-      if (queryAround(e.point, ['buildings-points']).length > 0) return;
+      if (queryAround(e.point, ['buildings-points', 'buildings-clusters']).length > 0) return;
       selectParcel(e.features[0].properties.parcelId);
     });
   }
@@ -205,7 +247,7 @@ function bindMapInteractions() {
   // Click on the map (not on a feature): deselect, then identify features of the external layers
   map.on('click', function(e) {
     if (isMeasuring()) return; // the measure tool owns map clicks
-    const layers = ['buildings-points', 'parcels-fill'].filter(function(l) { return map.getLayer(l); });
+    const layers = ['buildings-clusters', 'buildings-points', 'parcels-fill'].filter(function(l) { return map.getLayer(l); });
     const hits = map.queryRenderedFeatures(e.point, { layers: layers });
     if (hits.length > 0) {
       clearIdentifyHighlight(); // a portfolio feature was selected
@@ -288,13 +330,17 @@ export function selectBuilding(buildingId, flyToBuilding) {
     infoRow('info.label.area_ngf', formatNum(ext.netFloorArea || 0, 0) + ' m²', true) +
     infoRow('info.label.year', escapeHtml(extractYear(props.constructionYear) || '—'), true) +
     infoRow('info.label.responsible', escapeHtml(ext.responsiblePerson || '—'), true) +
-    infoRow('info.label.status', '<span class="status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>') +
+    infoRow('info.label.status', '<span class="badge status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>') +
     '<div class="info-footer">' +
       '<button type="button" class="info-detail-link" data-action="showDetailView" data-id="' + escapeHtml(props.buildingId) + '">' +
         '<span class="material-symbols-outlined">open_in_new</span>' + t('info.details') +
       '</button>' +
     '</div>';
   showInfoPanel('info.title.building', html, imageUrl);
+  syncTableToBuilding(buildingId);
+  syncTableToBuilding(buildingId);
+  syncTableToBuilding(buildingId);
+  syncTableToBuilding(buildingId);
 
   if (flyToBuilding) {
     smartFlyTo(state.map, { center: building.geometry.coordinates, zoom: 16 });
@@ -318,6 +364,10 @@ export function selectParcel(parcelId, flyToParcel) {
     infoRow('info.label.zone', escapeHtml(props.landUseZone || '—'), true) +
     infoRow('info.label.ownership', escapeHtml(props.ownershipType || '—'), true);
   showInfoPanel('info.title.parcel', html, null);
+  syncTableToParcel(parcelId);
+  syncTableToParcel(parcelId);
+  syncTableToParcel(parcelId);
+  syncTableToParcel(parcelId);
 
   if (parcel.geometry && parcel.geometry.coordinates) {
     const center = getPolygonCentroid(parcel.geometry.coordinates);
@@ -326,12 +376,12 @@ export function selectParcel(parcelId, flyToParcel) {
   }
 }
 
-// Selection highlight layers
+// Selection highlight layers (cluster-aware filters for buildings)
 export function updateSelectedBuilding() {
   const map = state.map;
   const id = state.selectedBuildingId || '';
   ['buildings-selected', 'buildings-selected-pulse'].forEach(function(layer) {
-    if (map && map.getLayer(layer)) map.setFilter(layer, ['==', ['get', 'buildingId'], id]);
+    if (map && map.getLayer(layer)) map.setFilter(layer, ['all', ['!', ['has', 'point_count']], ['==', ['get', 'buildingId'], id]]);
   });
   if (state.selectedBuildingId) startPulseAnimation(); else stopPulseAnimation();
 }

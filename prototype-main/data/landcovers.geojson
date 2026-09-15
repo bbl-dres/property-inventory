@@ -5,8 +5,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4840/01",
-        "geb_id": "1000/4840/AF",
+        "bbl_id": "1080/4840/01",
+        "geb_id": "1080/4840/AF",
         "av_stat": "Gültig",
         "av_egid": "301001234",
         "av_egrid": "CH938391457759",
@@ -29,7 +29,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4840/01",
+        "bbl_id": "1080/4840/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,
@@ -53,7 +53,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4840/01",
+        "bbl_id": "1080/4840/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,
@@ -77,8 +77,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4850/01",
-        "geb_id": "1000/4850/AG",
+        "bbl_id": "1080/4850/01",
+        "geb_id": "1080/4850/AG",
         "av_stat": "Gültig",
         "av_egid": "301098765",
         "av_egrid": "CH111222333444",
@@ -101,7 +101,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4850/01",
+        "bbl_id": "1080/4850/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,
@@ -125,8 +125,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/3120/01",
-        "geb_id": "1000/3120/AB",
+        "bbl_id": "1080/3120/01",
+        "geb_id": "1080/3120/AB",
         "av_stat": "Gültig",
         "av_egid": "100345678",
         "av_egrid": "CH672819345012",
@@ -149,7 +149,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/3120/01",
+        "bbl_id": "1080/3120/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,
@@ -173,8 +173,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/4100/01",
-        "geb_id": "1000/4100/AC",
+        "bbl_id": "1080/4100/01",
+        "geb_id": "1080/4100/AC",
         "av_stat": "Gültig",
         "av_egid": "400567890",
         "av_egrid": "CH456789123456",
@@ -197,8 +197,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/2800/01",
-        "geb_id": "1000/2800/AD",
+        "bbl_id": "1080/2800/01",
+        "geb_id": "1080/2800/AD",
         "av_stat": "Gültig",
         "av_egid": "200123456",
         "av_egrid": "CH789012345678",
@@ -221,7 +221,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/2800/01",
+        "bbl_id": "1080/2800/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,
@@ -245,8 +245,8 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/1950/01",
-        "geb_id": "1000/1950/AE",
+        "bbl_id": "1080/1950/01",
+        "geb_id": "1080/1950/AE",
         "av_stat": "Gültig",
         "av_egid": "500678901",
         "av_egrid": "CH345678901234",
@@ -269,7 +269,7 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1000/1950/01",
+        "bbl_id": "1080/1950/01",
         "geb_id": null,
         "av_stat": "Gültig",
         "av_egid": null,

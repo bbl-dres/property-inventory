@@ -5,7 +5,7 @@
       "name": "Anna Müller",
       "role": "Objektverantwortliche",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "organisation": "BBL Immobilienmanagement",
       "phone": "+41 58 462 12 34",
@@ -13,7 +13,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-001-K1",
+      "legacyId": "4840-K1",
       "extensionData": {}
     },
     {
@@ -21,7 +21,7 @@
       "name": "Peter Gerber",
       "role": "Hauswart",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 12 50",
@@ -29,7 +29,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-001-K2",
+      "legacyId": "4840-K2",
       "extensionData": {}
     },
     {
@@ -37,7 +37,7 @@
       "name": "Sandra Keller",
       "role": "Portfolioverantwortliche",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
       "organisation": "BBL Portfoliomanagement",
       "phone": "+41 58 462 10 01",
@@ -45,7 +45,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-001-K3",
+      "legacyId": "4840-K3",
       "extensionData": {}
     },
     {
@@ -53,7 +53,7 @@
       "name": "Peter Schmidt",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
       "organisation": "EDA Auslandsvertretungen",
       "phone": "+49 30 390 4000",
@@ -61,7 +61,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-002-K1",
+      "legacyId": "5210-K1",
       "extensionData": {}
     },
     {
@@ -69,7 +69,7 @@
       "name": "Klaus Weber",
       "role": "Facility Manager",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+49 30 390 4010",
@@ -77,7 +77,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-002-K2",
+      "legacyId": "5210-K2",
       "extensionData": {}
     },
     {
@@ -85,7 +85,7 @@
       "name": "Marco Bernasconi",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "organisation": "BBL Logistik",
       "phone": "+41 58 462 45 00",
@@ -93,7 +93,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-003-K1",
+      "legacyId": "3120-K1",
       "extensionData": {}
     },
     {
@@ -101,7 +101,7 @@
       "name": "Thomas Huber",
       "role": "Technischer Dienst",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 45 20",
@@ -109,7 +109,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-003-K2",
+      "legacyId": "3120-K2",
       "extensionData": {}
     },
     {
@@ -117,7 +117,7 @@
       "name": "Sandra Keller",
       "role": "Portfolioverantwortliche",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
       "organisation": "BBL Portfoliomanagement",
       "phone": "+41 58 462 10 01",
@@ -125,7 +125,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-003-K3",
+      "legacyId": "3120-K3",
       "extensionData": {}
     },
     {
@@ -133,7 +133,7 @@
       "name": "Sarah Johnson",
       "role": "Objektverantwortliche",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
       "organisation": "EDA Auslandsvertretungen",
       "phone": "+1 212 599 5700",
@@ -141,7 +141,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-004-K1",
+      "legacyId": "5320-K1",
       "extensionData": {}
     },
     {
@@ -149,7 +149,7 @@
       "name": "Michael Brown",
       "role": "Sicherheitsbeauftragter",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
       "organisation": "EDA Sicherheit",
       "phone": "+1 212 599 5710",
@@ -157,7 +157,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-004-K2",
+      "legacyId": "5320-K2",
       "extensionData": {}
     },
     {
@@ -165,7 +165,7 @@
       "name": "Claire Dubois",
       "role": "Objektverantwortliche",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "organisation": "BBL Immobilienmanagement",
       "phone": "+41 58 462 80 00",
@@ -173,7 +173,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-005-K1",
+      "legacyId": "4100-K1",
       "extensionData": {}
     },
     {
@@ -181,7 +181,7 @@
       "name": "François Martin",
       "role": "Facility Manager",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 80 15",
@@ -189,7 +189,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-005-K2",
+      "legacyId": "4100-K2",
       "extensionData": {}
     },
     {
@@ -197,7 +197,7 @@
       "name": "René Favre",
       "role": "Hauswart",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 80 20",
@@ -205,7 +205,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-005-K3",
+      "legacyId": "4100-K3",
       "extensionData": {}
     },
     {
@@ -213,7 +213,7 @@
       "name": "Kenji Yamamoto",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
       "organisation": "EDA Auslandsvertretungen",
       "phone": "+81 3 5449 8400",
@@ -221,7 +221,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-006-K1",
+      "legacyId": "5410-K1",
       "extensionData": {}
     },
     {
@@ -229,7 +229,7 @@
       "name": "Yuki Tanaka",
       "role": "Facility Manager",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+81 3 5449 8410",
@@ -237,7 +237,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-006-K2",
+      "legacyId": "5410-K2",
       "extensionData": {}
     },
     {
@@ -245,7 +245,7 @@
       "name": "Thomas Weber",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "organisation": "BBL Immobilienmanagement",
       "phone": "+41 58 462 55 00",
@@ -253,7 +253,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-007-K1",
+      "legacyId": "2800-K1",
       "extensionData": {}
     },
     {
@@ -261,7 +261,7 @@
       "name": "Barbara Steiner",
       "role": "Hauswart",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 55 10",
@@ -269,7 +269,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-007-K2",
+      "legacyId": "2800-K2",
       "extensionData": {}
     },
     {
@@ -277,7 +277,7 @@
       "name": "Carlos Silva",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
       "organisation": "EDA Auslandsvertretungen",
       "phone": "+55 61 3443 5500",
@@ -285,7 +285,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-008-K1",
+      "legacyId": "5510-K1",
       "extensionData": {}
     },
     {
@@ -293,7 +293,7 @@
       "name": "Maria Santos",
       "role": "Facility Manager",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+55 61 3443 5510",
@@ -301,7 +301,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-008-K2",
+      "legacyId": "5510-K2",
       "extensionData": {}
     },
     {
@@ -309,7 +309,7 @@
       "name": "Elena Bentivoglio",
       "role": "Objektverantwortliche",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "organisation": "BBL IT Infrastruktur",
       "phone": "+41 58 462 90 00",
@@ -317,7 +317,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-009-K1",
+      "legacyId": "1950-K1",
       "extensionData": {}
     },
     {
@@ -325,7 +325,7 @@
       "name": "Luca Ferretti",
       "role": "Technischer Dienst",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+41 58 462 90 20",
@@ -333,7 +333,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-009-K2",
+      "legacyId": "1950-K2",
       "extensionData": {}
     },
     {
@@ -341,7 +341,7 @@
       "name": "Marco Rossi",
       "role": "Sicherheitsbeauftragter",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
       "organisation": "BBL IT Sicherheit",
       "phone": "+41 58 462 90 30",
@@ -349,7 +349,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-009-K3",
+      "legacyId": "1950-K3",
       "extensionData": {}
     },
     {
@@ -357,7 +357,7 @@
       "name": "Michael Thompson",
       "role": "Objektverantwortlicher",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
       "organisation": "EDA Auslandsvertretungen",
       "phone": "+61 2 6162 8400",
@@ -365,7 +365,7 @@
       "isPrimary": true,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-010-K1",
+      "legacyId": "5620-K1",
       "extensionData": {}
     },
     {
@@ -373,7 +373,7 @@
       "name": "Emily Wilson",
       "role": "Facility Manager",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
       "organisation": "BBL Objektmanagement",
       "phone": "+61 2 6162 8410",
@@ -381,7 +381,7 @@
       "isPrimary": false,
       "validFrom": "2020-01-01T00:00:00Z",
       "validUntil": null,
-      "legacyId": "BBL-010-K2",
+      "legacyId": "5620-K2",
       "extensionData": {}
     }
   ]

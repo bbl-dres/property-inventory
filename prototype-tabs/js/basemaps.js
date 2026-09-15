@@ -8,6 +8,8 @@ import { t } from './i18n.js';
 const THUMBNAIL_BASE = new URL('../assets/basemaps/', import.meta.url);
 
 export const SWISSIMAGE_TILES = 'https://wmts.geo.admin.ch/1.0.0/ch.swisstopo.swissimage/default/current/3857/{z}/{x}/{y}.jpeg';
+// Global aerial imagery for the objects abroad (Esri World Imagery: free with attribution, see THIRD-PARTY.md)
+export const WORLD_IMAGERY_TILES = 'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}';
 
 // Same basemaps in every prototype: CARTO vector styles (OpenMapTiles schema) and the swisstopo
 // SWISSIMAGE raster. `url` is a style URL or an inline style object; `thumbnail` a local PNG rendered
@@ -25,6 +27,7 @@ export const mapStyles = {
     url: 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json',
     thumbnail: new URL('voyager.png', THUMBNAIL_BASE).href
   },
+  // Aerial: Esri World Imagery worldwide, the higher-resolution swisstopo SWISSIMAGE on top within Switzerland
   'swissimage': {
     name: 'Luftbild',
     urlValue: 'aerial',
@@ -32,6 +35,13 @@ export const mapStyles = {
       version: 8,
       glyphs: 'https://tiles.basemaps.cartocdn.com/fonts/{fontstack}/{range}.pbf',
       sources: {
+        'world-imagery': {
+          type: 'raster',
+          tiles: [WORLD_IMAGERY_TILES],
+          tileSize: 256,
+          maxzoom: 19,
+          attribution: 'Esri, Maxar, Earthstar Geographics, and the GIS User Community'
+        },
         'swissimage': {
           type: 'raster',
           tiles: [SWISSIMAGE_TILES],
@@ -42,7 +52,10 @@ export const mapStyles = {
           attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
         }
       },
-      layers: [{ id: 'swissimage', type: 'raster', source: 'swissimage' }]
+      layers: [
+        { id: 'world-imagery', type: 'raster', source: 'world-imagery' },
+        { id: 'swissimage', type: 'raster', source: 'swissimage' }
+      ]
     },
     thumbnail: new URL('swissimage.png', THUMBNAIL_BASE).href
   },

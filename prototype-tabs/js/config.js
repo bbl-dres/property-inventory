@@ -72,7 +72,7 @@ export const parcelColor = '#1976d2';
 
 // Map layer ids of each internal dataset (shown/hidden together by the "Interne Karten" toggles)
 export const internalLayerIds = {
-  buildings: ['buildings-points', 'buildings-selected', 'buildings-selected-pulse'],
+  buildings: ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels'],
   parcels: ['parcels-fill', 'parcels-outline', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline']
 };
 

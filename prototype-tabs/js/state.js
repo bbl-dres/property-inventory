@@ -29,11 +29,13 @@ export const state = {
   selectedBuildingId: null,
   selectedParcelId: null,
 
-  // Views: map, list, gallery, detail
+  // Views: map, gallery, detail; the table panel lives under the map
   currentView: 'map',
-  previousView: 'gallery',
+  previousView: 'map',
   galleryViewDirty: false,
   listViewDirty: false,
+  tableOpen: false,
+  activeTableTab: 'buildings',
 
   // Map
   map: null,

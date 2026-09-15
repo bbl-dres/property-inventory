@@ -8,6 +8,11 @@ import { t } from './i18n.js';
 export const DEFAULT_CENTER = [8.2275, 46.8182]; // Switzerland
 export const DEFAULT_ZOOM = 2;
 
+// Initial extent (Home control, logo click)
+export function flyHome(map) {
+  map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 1000 });
+}
+
 // ===== URL -> INITIAL VIEW =====
 
 export function readMapViewFromUrl() {
@@ -54,9 +59,7 @@ HomeControl.prototype.onAdd = function(map) {
   button.type = 'button';
   button.title = t('map.home');
   button.innerHTML = '<span class="material-symbols-outlined">home</span>';
-  button.onclick = function() {
-    map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 1000 });
-  };
+  button.onclick = function() { flyHome(map); };
   this._container.appendChild(button);
   return this._container;
 };

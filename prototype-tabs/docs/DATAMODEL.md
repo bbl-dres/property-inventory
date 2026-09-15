@@ -4,6 +4,8 @@ This document describes the data model for the BBL Immobilienportfolio applicati
 
 ---
 
+> **Object ids.** Buildings and parcels carry the BBL/SAP ids of the main prototype: `Buchungskreis/Wirtschaftseinheit/Objekt`, e.g. `1080/4840/AF` (letters = building) and `1080/4840/01` (digits = parcel); `siteId` is the Wirtschaftseinheit (`1080/4840`). Composite ids (`4840-M1`, `4840-ADDR-1`) are prefixed with the Wirtschaftseinheit; the remaining entity records use UUIDs.
+
 ## 1. Introduction
 
 ### 1.1 Purpose & Scope
@@ -269,7 +271,7 @@ A site represents a logical grouping of buildings, such as a campus, property, o
   "siteId": "BE-3003-1001",
   "name": "Bundesplatz Parzelle A",
   "type": "Büro",
-  "addressIds": ["BBL-001-ADDR-1"],
+  "addressIds": ["4840-ADDR-1"],
   "validFrom": "1900-01-01T00:00:00Z",
   "validUntil": null,
   "siteCode": "BPL-A",
@@ -328,8 +330,8 @@ Parcels use **Polygon** geometry type (unlike buildings which use Point geometry
 {
   "type": "Feature",
   "properties": {
-    "parcelId": "PCL-001",
-    "buildingId": "BBL-001",
+    "parcelId": "1080/4840/01",
+    "buildingId": "1080/4840/AF",
     "plotNumber": "BE-3003-1001",
     "name": "Bundesplatz Parzelle A",
     "municipality": "Bern",
@@ -416,7 +418,7 @@ The building is the core entity representing a physical structure in the portfol
 
 ```json
 {
-  "buildingId": "BBL-001",
+  "buildingId": "1080/4840/AF",
   "name": "Bundeshaus West",
   "primaryTypeOfBuilding": "Büro Unternehmenssitz",
   "secondaryTypeOfBuilding": "Mischnutzung Büro/Einzelhandel",
@@ -484,7 +486,7 @@ Addresses represent the physical location of a building. A building can have mul
 
 ```json
 {
-  "addressId": "BBL-001-ADDR-1",
+  "addressId": "4840-ADDR-1",
   "type": "Primär",
   "streetName": "Bundesplatz",
   "houseNumber": "3",
@@ -493,7 +495,7 @@ Addresses represent the physical location of a building. A building can have mul
   "stateProvincePrefecture": "Kanton Bern",
   "country": "CH",
   "geoCoordinates": {
-    "geoCoordinateId": "BBL-001-GEO-1",
+    "geoCoordinateId": "4840-GEO-1",
     "coordinateReferenceSystem": "WGS84",
     "latitude": 46.9466,
     "longitude": 7.4448
@@ -532,8 +534,8 @@ A floor represents a level within a building. Spaces belong to exactly one floor
 
 ```json
 {
-  "floorId": "BBL-001-FL-EG",
-  "buildingId": "BBL-001",
+  "floorId": "4840-FL-EG",
+  "buildingId": "1080/4840/AF",
   "name": "Erdgeschoss",
   "floorNumber": "0",
   "floorCode": "EG",
@@ -600,8 +602,8 @@ A space represents a room or area within a floor. Spaces are the smallest spatia
 
 ```json
 {
-  "spaceId": "BBL-001-SP-101",
-  "floorId": "BBL-001-FL-EG",
+  "spaceId": "4840-SP-101",
+  "floorId": "4840-FL-EG",
   "name": "Konferenzraum A",
   "type": "Besprechungsraum",
   "validFrom": "2019-01-01T00:00:00Z",
@@ -667,7 +669,7 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
 
 ```json
 {
-  "areaMeasurementId": "BBL-001-M1",
+  "areaMeasurementId": "4840-M1",
   "type": "Bruttogeschossfläche",
   "value": 15000,
   "unit": "m²",
@@ -676,7 +678,7 @@ Area measurements capture floor areas, volumes, and other quantitative measureme
   "bmEstimation": false,
   "accuracy": "Gemessen",
   "standard": "SIA 416",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "extensionData": {
     "source": "CAD/BIM",
     "originalUnit": "m²"
@@ -692,7 +694,7 @@ For measurements that don't fit the standard area types (volumes, counts):
 
 ```json
 {
-  "areaMeasurementId": "BBL-001-M4",
+  "areaMeasurementId": "4840-M4",
   "type": "Volumen",
   "value": 52500,
   "unit": "m³",
@@ -701,7 +703,7 @@ For measurements that don't fit the standard area types (volumes, counts):
   "bmEstimation": false,
   "accuracy": "Gemessen",
   "standard": "SIA 416",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "extensionData": {
     "source": "CAD/BIM",
     "originalUnit": "m³",
@@ -751,8 +753,8 @@ Operational measurements track resource consumption (energy, water, waste) and e
 
 ```json
 {
-  "operationalMeasurementId": "BBL-001-OPM-001",
-  "buildingId": "BBL-001",
+  "operationalMeasurementId": "4840-OPM-001",
+  "buildingId": "1080/4840/AF",
   "type": "Energie",
   "subType": "Fernwärme",
   "value": 125000,
@@ -802,14 +804,14 @@ Documents represent files and records associated with a building, such as floor 
 
 ```json
 {
-  "documentId": "BBL-001-D1",
+  "documentId": "4840-D1",
   "name": "Grundriss Erdgeschoss",
   "type": "Grundriss",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "validFrom": "2019-03-15T00:00:00Z",
   "fileFormat": "PDF",
   "fileSize": "2.4 MB",
-  "url": "/documents/BBL-001/grundriss-eg.pdf"
+  "url": "/documents/1080/4840/AF/grundriss-eg.pdf"
 }
 ```
 
@@ -842,10 +844,10 @@ Contacts represent persons associated with a building, such as property managers
 
 ```json
 {
-  "contactId": "BBL-001-K1",
+  "contactId": "4840-K1",
   "name": "Anna Müller",
   "role": "Objektverantwortliche",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "organisation": "BBL Immobilienmanagement",
   "phone": "+41 58 462 12 34",
   "email": "anna.mueller@bbl.admin.ch",
@@ -884,10 +886,10 @@ Assets represent technical equipment, installations, and building components tha
 
 ```json
 {
-  "assetId": "BBL-001-A1",
+  "assetId": "4840-A1",
   "name": "Fernwärmeübergabestation",
   "category": "HLK",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "manufacturer": "Siemens AG",
   "installationYear": 2019,
   "location": "Untergeschoss Technikraum",
@@ -924,9 +926,9 @@ Contracts represent service agreements, maintenance contracts, and other contrac
 
 ```json
 {
-  "contractId": "BBL-001-V1",
+  "contractId": "4840-V1",
   "type": "Wartungsvertrag",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "validFrom": "2020-01-01T00:00:00Z",
   "validUntil": "2025-12-31T00:00:00Z",
   "contractPartner": "Siemens Building Technologies AG",
@@ -964,10 +966,10 @@ Costs represent operating expenses, utility costs, and other recurring costs ass
 
 ```json
 {
-  "costId": "BBL-001-K1",
+  "costId": "4840-K1",
   "costGroup": "311",
   "costType": "Stromversorgung",
-  "buildingIds": ["BBL-001"],
+  "buildingIds": ["1080/4840/AF"],
   "amount": 185000,
   "unit": "CHF/Jahr",
   "currency": "CHF",

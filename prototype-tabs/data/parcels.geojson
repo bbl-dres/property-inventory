@@ -5,8 +5,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-001",
-        "buildingId": "BBL-001",
+        "parcelId": "1080/4840/01",
+        "buildingId": "1080/4840/AF",
         "plotNumber": "BE-3003-1001",
         "name": "Bundesplatz Parzelle A",
         "municipality": "Bern",
@@ -29,8 +29,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-002",
-        "buildingId": "BBL-002",
+        "parcelId": "1080/5210/01",
+        "buildingId": "1080/5210/AA",
         "plotNumber": "DE-BER-10557-041",
         "name": "Diplomatenviertel Lot 41",
         "municipality": "Berlin",
@@ -53,8 +53,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-003",
-        "buildingId": "BBL-003",
+        "parcelId": "1080/3120/01",
+        "buildingId": "1080/3120/AB",
         "plotNumber": "ZH-8004-2045",
         "name": "Industriegebiet Lagerstrasse",
         "municipality": "Zürich",
@@ -77,8 +77,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-004",
-        "buildingId": "BBL-004",
+        "parcelId": "1080/5320/01",
+        "buildingId": "1080/5320/AA",
         "plotNumber": "US-NY-10017-633",
         "name": "Third Avenue Tower Unit 12-14",
         "municipality": "New York",
@@ -101,8 +101,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-005",
-        "buildingId": "BBL-005",
+        "parcelId": "1080/4100/01",
+        "buildingId": "1080/4100/AC",
         "plotNumber": "GE-1202-0120",
         "name": "Parcelle Lausanne-Nord",
         "municipality": "Genf",
@@ -125,8 +125,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-006",
-        "buildingId": "BBL-006",
+        "parcelId": "1080/5410/01",
+        "buildingId": "1080/5410/AA",
         "plotNumber": "JP-TKY-MNTK-5912",
         "name": "Minami-Azabu Block 5",
         "municipality": "Tokyo",
@@ -149,8 +149,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-007",
-        "buildingId": "BBL-007",
+        "parcelId": "1080/2800/01",
+        "buildingId": "1080/2800/AD",
         "plotNumber": "BS-4051-0022",
         "name": "Steinenvorstadt Eckparzelle",
         "municipality": "Basel",
@@ -173,8 +173,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-008",
-        "buildingId": "BBL-008",
+        "parcelId": "1080/5510/01",
+        "buildingId": "1080/5510/AA",
         "plotNumber": "BR-BSB-SES-041",
         "name": "Setor de Embaixadas Sul Lote 41",
         "municipality": "Brasília",
@@ -197,8 +197,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-009",
-        "buildingId": "BBL-009",
+        "parcelId": "1080/1950/01",
+        "buildingId": "1080/1950/AE",
         "plotNumber": "TI-6934-0015",
         "name": "Zona Industriale Bioggio",
         "municipality": "Lugano",
@@ -221,8 +221,8 @@
     {
       "type": "Feature",
       "properties": {
-        "parcelId": "PCL-010",
-        "buildingId": "BBL-010",
+        "parcelId": "1080/5620/01",
+        "buildingId": "1080/5620/AA",
         "plotNumber": "AU-ACT-FOR-007",
         "name": "Forrest Diplomatic Precinct",
         "municipality": "Canberra",

@@ -11,9 +11,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M1",
+      "legacyId": "4840-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -30,9 +30,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M2",
+      "legacyId": "4840-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -49,9 +49,9 @@
       "accuracy": "Berechnet",
       "standard": "SIA 380/1",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M3",
+      "legacyId": "4840-M3",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -68,9 +68,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M4",
+      "legacyId": "4840-M4",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -87,9 +87,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M5",
+      "legacyId": "4840-M5",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -106,9 +106,9 @@
       "accuracy": "Geschätzt",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-001"
+        "1080/4840/AF"
       ],
-      "legacyId": "BBL-001-M6",
+      "legacyId": "4840-M6",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -125,9 +125,9 @@
       "accuracy": "Gemessen",
       "standard": "DIN 277",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M1",
+      "legacyId": "5210-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -144,9 +144,9 @@
       "accuracy": "Gemessen",
       "standard": "DIN 277",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M2",
+      "legacyId": "5210-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -163,9 +163,9 @@
       "accuracy": "Berechnet",
       "standard": "EnEV",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M3",
+      "legacyId": "5210-M3",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -182,9 +182,9 @@
       "accuracy": "Gemessen",
       "standard": "DIN 277",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M4",
+      "legacyId": "5210-M4",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -201,9 +201,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M5",
+      "legacyId": "5210-M5",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -220,9 +220,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-002"
+        "1080/5210/AA"
       ],
-      "legacyId": "BBL-002-M6",
+      "legacyId": "5210-M6",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -239,9 +239,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M1",
+      "legacyId": "3120-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -258,9 +258,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M2",
+      "legacyId": "3120-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -277,9 +277,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M3",
+      "legacyId": "3120-M3",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -296,9 +296,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M4",
+      "legacyId": "3120-M4",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -315,9 +315,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M5",
+      "legacyId": "3120-M5",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -334,9 +334,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M6",
+      "legacyId": "3120-M6",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -353,9 +353,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-003"
+        "1080/3120/AB"
       ],
-      "legacyId": "BBL-003-M7",
+      "legacyId": "3120-M7",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -372,9 +372,9 @@
       "accuracy": "Gemessen",
       "standard": "BOMA",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
-      "legacyId": "BBL-004-M1",
+      "legacyId": "5320-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -391,9 +391,9 @@
       "accuracy": "Gemessen",
       "standard": "BOMA",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
-      "legacyId": "BBL-004-M2",
+      "legacyId": "5320-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -410,9 +410,9 @@
       "accuracy": "Gemessen",
       "standard": "BOMA",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
-      "legacyId": "BBL-004-M3",
+      "legacyId": "5320-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -429,9 +429,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
-      "legacyId": "BBL-004-M4",
+      "legacyId": "5320-M4",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -448,9 +448,9 @@
       "accuracy": "Geschätzt",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-004"
+        "1080/5320/AA"
       ],
-      "legacyId": "BBL-004-M5",
+      "legacyId": "5320-M5",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -467,9 +467,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M1",
+      "legacyId": "4100-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -486,9 +486,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M2",
+      "legacyId": "4100-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -505,9 +505,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M3",
+      "legacyId": "4100-M3",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -524,9 +524,9 @@
       "accuracy": "Berechnet",
       "standard": "SIA 380/1",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M4",
+      "legacyId": "4100-M4",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -543,9 +543,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M5",
+      "legacyId": "4100-M5",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -562,9 +562,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M6",
+      "legacyId": "4100-M6",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -581,9 +581,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-005"
+        "1080/4100/AC"
       ],
-      "legacyId": "BBL-005-M7",
+      "legacyId": "4100-M7",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -600,9 +600,9 @@
       "accuracy": "Gemessen",
       "standard": "JIS A",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M1",
+      "legacyId": "5410-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -619,9 +619,9 @@
       "accuracy": "Gemessen",
       "standard": "JIS A",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M2",
+      "legacyId": "5410-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -638,9 +638,9 @@
       "accuracy": "Gemessen",
       "standard": "JIS A",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M3",
+      "legacyId": "5410-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -657,9 +657,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M4",
+      "legacyId": "5410-M4",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -676,9 +676,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M5",
+      "legacyId": "5410-M5",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -695,9 +695,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-006"
+        "1080/5410/AA"
       ],
-      "legacyId": "BBL-006-M6",
+      "legacyId": "5410-M6",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -714,9 +714,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M1",
+      "legacyId": "2800-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -733,9 +733,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M2",
+      "legacyId": "2800-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -752,9 +752,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M3",
+      "legacyId": "2800-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -771,9 +771,9 @@
       "accuracy": "Berechnet",
       "standard": "SIA 380/1",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M4",
+      "legacyId": "2800-M4",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -790,9 +790,9 @@
       "accuracy": "Gemessen",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M5",
+      "legacyId": "2800-M5",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -809,9 +809,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M6",
+      "legacyId": "2800-M6",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -828,9 +828,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-007"
+        "1080/2800/AD"
       ],
-      "legacyId": "BBL-007-M7",
+      "legacyId": "2800-M7",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -847,9 +847,9 @@
       "accuracy": "Gemessen",
       "standard": "ABNT NBR",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M1",
+      "legacyId": "5510-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -866,9 +866,9 @@
       "accuracy": "Gemessen",
       "standard": "ABNT NBR",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M2",
+      "legacyId": "5510-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -885,9 +885,9 @@
       "accuracy": "Gemessen",
       "standard": "ABNT NBR",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M3",
+      "legacyId": "5510-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -904,9 +904,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M4",
+      "legacyId": "5510-M4",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -923,9 +923,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M5",
+      "legacyId": "5510-M5",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -942,9 +942,9 @@
       "accuracy": "Geschätzt",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-008"
+        "1080/5510/AA"
       ],
-      "legacyId": "BBL-008-M6",
+      "legacyId": "5510-M6",
       "extensionData": {
         "source": "Schätzmodell",
         "originalUnit": "m²"
@@ -961,9 +961,9 @@
       "accuracy": "Projektiert",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M1",
+      "legacyId": "1950-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -980,9 +980,9 @@
       "accuracy": "Projektiert",
       "standard": "SIA 416",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M2",
+      "legacyId": "1950-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -999,9 +999,9 @@
       "accuracy": "Projektiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M3",
+      "legacyId": "1950-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -1018,9 +1018,9 @@
       "accuracy": "Projektiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M4",
+      "legacyId": "1950-M4",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "MW"
@@ -1037,9 +1037,9 @@
       "accuracy": "Projektiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M5",
+      "legacyId": "1950-M5",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "Stk"
@@ -1056,9 +1056,9 @@
       "accuracy": "Projektiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M6",
+      "legacyId": "1950-M6",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "Stk"
@@ -1075,9 +1075,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-009"
+        "1080/1950/AE"
       ],
-      "legacyId": "BBL-009-M7",
+      "legacyId": "1950-M7",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -1094,9 +1094,9 @@
       "accuracy": "Gemessen",
       "standard": "AS/NZS",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M1",
+      "legacyId": "5620-M1",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -1113,9 +1113,9 @@
       "accuracy": "Gemessen",
       "standard": "AS/NZS",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M2",
+      "legacyId": "5620-M2",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m²"
@@ -1132,9 +1132,9 @@
       "accuracy": "Gemessen",
       "standard": "AS/NZS",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M3",
+      "legacyId": "5620-M3",
       "extensionData": {
         "source": "CAD/BIM",
         "originalUnit": "m³"
@@ -1151,9 +1151,9 @@
       "accuracy": "Aggregiert",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M4",
+      "legacyId": "5620-M4",
       "extensionData": {
         "source": "Manuell",
         "originalUnit": "Stk"
@@ -1170,9 +1170,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M5",
+      "legacyId": "5620-M5",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"
@@ -1189,9 +1189,9 @@
       "accuracy": "Gemessen",
       "standard": "n/a",
       "buildingIds": [
-        "BBL-010"
+        "1080/5620/AA"
       ],
-      "legacyId": "BBL-010-M6",
+      "legacyId": "5620-M6",
       "extensionData": {
         "source": "Vermessung",
         "originalUnit": "m²"

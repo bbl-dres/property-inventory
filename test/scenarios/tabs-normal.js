@@ -1,4 +1,4 @@
-// prototype-tabs: normal boot, views, selection, detail tabs, filters, basemap switch, search with KI, export
+// prototype-tabs: normal boot, table panel, selection, detail tabs, filters, basemap switch, search with KI, export
 module.exports = {
   name: 'tabs: normal boot and interactions',
   boot: { prototype: 'prototype-tabs', url: 'http://localhost/prototype-tabs/' },
@@ -13,35 +13,38 @@ module.exports = {
     check('buildings loaded (10)', state.buildingsData && state.buildingsData.features.length === 10);
     check('parcels loaded (10)', state.parcelData && state.parcelData.features.length === 10);
     check('entity data loaded', state.allAreaMeasurements.length > 0 && state.allContracts.length > 0 && state.allCosts.length > 0);
-    check('object count in header', document.getElementById('object-count').textContent === '10 Objekte');
     check('no lang parameter added to the URL', window.location.search.indexOf('lang=') === -1);
     check('basemap normalised in URL', window.location.search.indexOf('basemap=light') !== -1);
     check('list rows rendered', document.querySelectorAll('#list-body tr[data-id]').length === 10);
+    check('parcel rows rendered', document.querySelectorAll('#parcels-body tr[data-parcel-id]').length === 10);
+    check('table hidden by default', document.getElementById('table-panel').classList.contains('collapsed') && state.tableOpen === false);
     check('filter options with counts', document.querySelectorAll('#filter-status-options .filter-option').length === 3 && !!document.querySelector('#filter-teilportfolio-options .filter-option-count'));
     check('style switcher visible', document.getElementById('style-switcher').classList.contains('visible'));
 
     // Map layers and handlers
     check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels'));
-    check('layers present', ['buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'parcels-fill', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline'].every(id => !!map.getLayer(id)));
+    check('cluster + point + selection layers', ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'parcels-fill', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline'].every(id => !!map.getLayer(id)));
+    check('buildings source clustered', map.getSource('buildings').cluster === true && map.getSource('buildings').clusterMaxZoom === 14);
+    check('cluster click handler bound', map.listenerCount('click', 'buildings-clusters') === 1);
     check('point click handler bound once', map.listenerCount('click', 'buildings-points') === 1);
 
     // Selection via the map
-    map.fire('click', { features: [{ properties: { buildingId: 'BBL-001' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
+    map.fire('click', { features: [{ properties: { buildingId: '1080/4840/AF' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     await settle();
-    check('map click selects building', state.selectedBuildingId === 'BBL-001');
+    check('map click selects building', state.selectedBuildingId === '1080/4840/AF');
     check('info panel shown with preview', document.getElementById('info-panel').classList.contains('show') && document.getElementById('info-panel').classList.contains('has-preview'));
     check('info panel content', document.getElementById('info-body').innerHTML.indexOf('Bundeshaus West') !== -1);
-    check('selection in URL', window.location.search.indexOf('id=BBL-001') !== -1);
-    check('selection highlight filter', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('BBL-001') !== -1);
+    check('selection in URL', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1);
+    check('selection highlight filter', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('1080/4840/AF') !== -1);
 
     // Parcel selection keeps a separate highlight layer
-    map.fire('click', { features: [{ properties: { parcelId: 'PCL-001' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'parcels-fill');
+    map.fire('click', { features: [{ properties: { parcelId: '1080/4840/01' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'parcels-fill');
     await settle();
-    check('parcel selected', state.selectedParcelId === 'PCL-001' && state.selectedBuildingId === null);
-    check('parcel selection highlighted', JSON.stringify(map.getLayer('parcels-selected').filter).indexOf('PCL-001') !== -1);
-    check('parcel in URL', window.location.search.indexOf('parcelId=PCL-001') !== -1);
+    check('parcel selected', state.selectedParcelId === '1080/4840/01' && state.selectedBuildingId === null);
+    check('parcel selection highlighted', JSON.stringify(map.getLayer('parcels-selected').filter).indexOf('1080/4840/01') !== -1);
+    check('parcel in URL', window.location.search.indexOf('parcelId=1080%2F4840%2F01') !== -1);
     map.fire('mouseleave', {}, 'parcels-fill');
-    check('hover reset does not clear the selection', JSON.stringify(map.getLayer('parcels-selected').filter).indexOf('PCL-001') !== -1);
+    check('hover reset does not clear the selection', JSON.stringify(map.getLayer('parcels-selected').filter).indexOf('1080/4840/01') !== -1);
 
     // Info panel close clears everything
     document.getElementById('info-close').click();
@@ -54,20 +57,33 @@ module.exports = {
     cb.dispatchEvent(new window.Event('change', { bubbles: true }));
     await settle();
     check('filter applied', state.filteredData.features.length < 10 && state.filteredData.features.length > 0);
-    check('object count updated', document.getElementById('object-count').textContent === state.filteredData.features.length + ' Objekte');
     check('filters do not push history', window.history.length === histBefore);
     check('map source filtered', map.getSource('buildings').data.features.length === state.filteredData.features.length);
     document.getElementById('drawer-reset-btn').click();
     await settle();
     check('reset restores all buildings', state.filteredData.features.length === 10 && !cb.checked);
 
-    // List view: row opens the detail view
-    document.querySelector('.view-toggle-btn[data-view="list"]').click();
+    // Table panel under the map: toggle opens it, a row selects the object on the map
+    document.getElementById('tbl-toggle').click();
     await settle();
-    check('list view active', state.currentView === 'list' && document.getElementById('list-view').classList.contains('active'));
+    check('table toggle opens the panel', state.tableOpen === true && !document.getElementById('table-panel').classList.contains('collapsed') && /table=open/.test(window.location.search));
     document.querySelector('#list-body tr[data-id]').click();
     await settle(50);
-    check('row opens detail', state.currentView === 'detail' && document.getElementById('detail-view').classList.contains('active'));
+    check('row selects the building on the map', state.selectedBuildingId === '1080/4840/AF' && document.getElementById('info-panel').classList.contains('show'));
+    check('row highlighted', document.querySelector('#list-body tr.row-active') !== null);
+    document.querySelector('.table-tab[data-table-tab="parcels"]').click();
+    check('parcels tab switches the table', state.activeTableTab === 'parcels' && document.getElementById('parcels-table-content').classList.contains('active') && /tableTab=parcels/.test(window.location.search));
+    document.querySelector('#parcels-body tr[data-parcel-id]').click();
+    await settle(50);
+    check('parcel row selects the parcel', state.selectedParcelId === '1080/4840/01' && state.selectedBuildingId === null);
+    document.querySelector('.table-tab[data-table-tab="buildings"]').click();
+    document.getElementById('tbl-toggle').click();
+    check('table toggle closes the panel', state.tableOpen === false && document.getElementById('table-panel').classList.contains('collapsed'));
+
+    // Detail view
+    modules.ui.showDetailView('1080/4840/AF');
+    await settle(50);
+    check('detail view active', state.currentView === 'detail' && document.getElementById('detail-view').classList.contains('active'));
     check('detail populated', document.getElementById('detail-name').textContent === 'Bundeshaus West' && document.getElementById('detail-baujahr').textContent === '1902');
     check('address parsed', document.getElementById('detail-street').textContent === 'Bundesplatz' && document.getElementById('detail-plz').textContent === '3003');
     check('breadcrumb populated', document.getElementById('breadcrumb-name').textContent === 'Bundeshaus West');
@@ -91,15 +107,15 @@ module.exports = {
     filterInput.dispatchEvent(new window.Event('input'));
 
     // Second detail view reuses the mini map
-    modules.ui.showDetailView('BBL-002');
+    modules.ui.showDetailView('1080/5210/AA');
     await settle(50);
     check('mini map reused', fake.Map.instances.length === 2 && fake.Map.instances[1].calls.jumpTo.length === 1);
     check('entity tables reloaded for the new building', document.querySelectorAll('#measurements-tbody tr[data-id]').length > 0 || !!document.querySelector('#measurements-tbody .table-empty-state'));
 
-    // Back returns to the list view
+    // Back returns to the map
     document.getElementById('btn-back').click();
     await settle();
-    check('back returns to list', state.currentView === 'list');
+    check('back returns to the map', state.currentView === 'map');
 
     // Gallery
     document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
@@ -109,14 +125,14 @@ module.exports = {
     // Map view + basemap switch
     document.querySelector('.view-toggle-btn[data-view="map"]').click();
     await settle(150);
-    map.fire('click', { features: [{ properties: { buildingId: 'BBL-003' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
+    map.fire('click', { features: [{ properties: { buildingId: '1080/3120/AB' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     const flyBeforeStyle = map.calls.flyTo.length;
     document.querySelector('.style-option[data-style="voyager"]').click();
     await settle(50);
     check('setStyle called', map.calls.setStyle.length === 1);
     check('layers restored after style change', !!map.getSource('buildings') && !!map.getLayer('buildings-points') && !!map.getLayer('parcels-fill'));
     check('handlers still bound once', map.listenerCount('click', 'buildings-points') === 1);
-    check('selection highlight restored', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('BBL-003') !== -1);
+    check('selection highlight restored', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('1080/3120/AB') !== -1);
     check('no fly-to on style change', map.calls.flyTo.length === flyBeforeStyle);
     check('basemap in URL, not in localStorage', window.location.search.indexOf('basemap=standard') !== -1 && window.localStorage.getItem('mapStyle') === null);
 
@@ -132,7 +148,7 @@ module.exports = {
     // Measure tool guard
     modules.measure.startMeasurement();
     const selectedBefore = state.selectedBuildingId;
-    map.fire('click', { features: [{ properties: { buildingId: 'BBL-001' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
+    map.fire('click', { features: [{ properties: { buildingId: '1080/4840/AF' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     map.fire('click', { point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } });
     check('selection unchanged while measuring', state.selectedBuildingId === selectedBefore);
     check('measure point added', fake.Marker.instances.some(m => m.options.draggable));
@@ -188,9 +204,29 @@ module.exports = {
     check('export panel downloads a file', downloads === 1);
     check('export success toast', !!document.querySelector('#toast-container .toast-success'));
 
+    // Language selector: same control as main, but this prototype only warns
+    document.getElementById('lang-btn').click();
+    check('language dropdown opens', document.getElementById('lang-dropdown').classList.contains('open'));
+    document.querySelector('.lang-option[data-lang="en"]').click();
+    check('language choice warns instead of switching', !document.getElementById('lang-dropdown').classList.contains('open') && !!document.querySelector('#toast-container .toast-warning') && document.documentElement.lang === 'de');
+
     // Measure accordion button starts the tool
     document.querySelector('[data-action="toggleMeasure"]').click();
     check('measure button starts the tool', modules.measure.isMeasuring());
     modules.measure.clearMeasurement();
+
+    // Logo = home: landing state (map view, no filters, no selection, drawer closed) — not the previous view
+    document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
+    document.getElementById('filter-panel-btn').click();
+    document.getElementById('tbl-toggle').click();
+    await settle();
+    const flyHomeBefore = map.calls.flyTo.length;
+    document.getElementById('logo-area').click();
+    await settle(400);
+    check('logo returns to the map view', state.currentView === 'map' && document.getElementById('map-view').classList.contains('active'));
+    check('logo clears filters and selection', state.filteredData.features.length === 10 && state.selectedBuildingId === null && state.selectedParcelId === null && !document.getElementById('info-panel').classList.contains('show'));
+    check('logo closes the drawer and the table panel', !document.getElementById('filter-panel').classList.contains('open') && !state.tableOpen);
+    check('logo cleans the URL', !/filter_|id=|parcelId=|view=detail|table=open/.test(window.location.search));
+    check('logo flies to the initial extent', map.calls.flyTo.length === flyHomeBefore + 1);
   }
 };

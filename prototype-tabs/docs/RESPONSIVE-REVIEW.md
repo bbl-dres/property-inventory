@@ -1,5 +1,8 @@
 # Responsive & Mobile Design Review — prototype-tabs
 
+> **Update 2026-09-15.** The design review (`DESIGN-REVIEW.md`) unified the phone layout of both prototypes: two-row header, the tools panel as the hamburger menu, identical `components.css`. Where this document and the design review differ, the design review is current.
+
+
 **Date:** 2026-09-14
 **Scope:** `index.html`, `css/main.css`, `js/app.js`, `docs/DESIGNGUIDE.md`, `README.md`
 

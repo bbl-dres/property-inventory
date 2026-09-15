@@ -13,7 +13,9 @@
     <link href="vendor/maplibre-gl/maplibre-gl.css" rel="stylesheet" />
     <!-- Icon font, self-hosted (assets/icons/): no request to Google Fonts -->
     <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/tokens.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
 
     <script defer src="vendor/maplibre-gl/maplibre-gl.js"></script>
     <script>
@@ -145,10 +147,6 @@
                         <span class="material-symbols-outlined" aria-hidden="true">map</span>
                         <span class="view-label">Karte</span>
                     </button>
-                    <button class="view-toggle-btn" data-view="list" title="Tabelle" aria-label="Tabellenansicht" role="tab" aria-selected="false">
-                        <span class="material-symbols-outlined" aria-hidden="true">view_list</span>
-                        <span class="view-label">Tabelle</span>
-                    </button>
                     <button class="view-toggle-btn" data-view="gallery" title="Galerie" aria-label="Galerieansicht" role="tab" aria-selected="false">
                         <span class="material-symbols-outlined" aria-hidden="true">grid_view</span>
                         <span class="view-label">Galerie</span>
@@ -157,11 +155,23 @@
             </div>
 
             <div id="header-right">
-                <span id="object-count" aria-live="polite">10 Objekte</span>
                 <button class="header-btn" id="filter-panel-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
                     <span class="header-btn-label">Filter</span>
                 </button>
+                <!-- Same selector as the main prototype; this prototype is German only (the options warn) -->
+                <div id="lang-selector">
+                    <button id="lang-btn" class="header-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
+                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                        <span id="lang-current">DE</span>
+                    </button>
+                    <div id="lang-dropdown" class="lang-dropdown" role="menu">
+                        <button class="lang-option active" data-lang="de" role="menuitem">DE</button>
+                        <button class="lang-option" data-lang="fr" role="menuitem">FR</button>
+                        <button class="lang-option" data-lang="it" role="menuitem">IT</button>
+                        <button class="lang-option" data-lang="en" role="menuitem">EN</button>
+                    </div>
+                </div>
                 <div id="login-area">
                     <!-- Mock: authentication is not part of the prototype -->
                     <button id="login-btn" title="Anmelden" aria-label="Anmelden" data-action="comingSoon">
@@ -204,13 +214,13 @@
 
             <div class="detail-tabs">
                 <div class="detail-tabs-inner" role="tablist" aria-label="Objektbereiche">
-                    <div class="detail-tab active" data-tab="overview" role="tab" tabindex="0" aria-selected="true">Übersicht</div>
-                    <div class="detail-tab" data-tab="measurements" role="tab" tabindex="-1" aria-selected="false">Bemessungen</div>
-                    <div class="detail-tab" data-tab="costs" role="tab" tabindex="-1" aria-selected="false">Kosten</div>
-                    <div class="detail-tab" data-tab="contracts" role="tab" tabindex="-1" aria-selected="false">Verträge</div>
-                    <div class="detail-tab" data-tab="assets" role="tab" tabindex="-1" aria-selected="false">Ausstattung</div>
-                    <div class="detail-tab" data-tab="documents" role="tab" tabindex="-1" aria-selected="false">Dokumente</div>
-                    <div class="detail-tab" data-tab="contacts" role="tab" tabindex="-1" aria-selected="false">Kontakte</div>
+                    <button class="detail-tab active" data-tab="overview" role="tab" tabindex="0" aria-selected="true">Übersicht</button>
+                    <button class="detail-tab" data-tab="measurements" role="tab" tabindex="-1" aria-selected="false">Bemessungen</button>
+                    <button class="detail-tab" data-tab="costs" role="tab" tabindex="-1" aria-selected="false">Kosten</button>
+                    <button class="detail-tab" data-tab="contracts" role="tab" tabindex="-1" aria-selected="false">Verträge</button>
+                    <button class="detail-tab" data-tab="assets" role="tab" tabindex="-1" aria-selected="false">Ausstattung</button>
+                    <button class="detail-tab" data-tab="documents" role="tab" tabindex="-1" aria-selected="false">Dokumente</button>
+                    <button class="detail-tab" data-tab="contacts" role="tab" tabindex="-1" aria-selected="false">Kontakte</button>
                 </div>
             </div>
         </div>
@@ -225,11 +235,17 @@
                     <span class="spinner inline-spinner" aria-hidden="true"></span>
                     <span>Karte wird geladen…</span>
                 </div>
+            <!-- Table toggle button (inside #map for correct positioning) -->
+            <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden">
+                <span class="material-symbols-outlined">expand_more</span>
+                <span class="tbl-toggle-label">Tabelle</span>
+            </button>
             </div>
 
             <!-- Map tools. Desktop/tablet: floating panel with the "Menü" toggle. Phones: slide-in hamburger menu. -->
             <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
-            <nav id="accordion-panel" aria-label="Kartenwerkzeuge">
+            <div id="accordion-wrapper">
+            <aside id="accordion-panel" aria-label="Kartenwerkzeuge">
                 <div class="mobile-menu-header">
                     <span class="mobile-menu-title">Liegenschaften Inventar</span>
                     <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
@@ -237,10 +253,10 @@
                     </button>
                 </div>
                 <div class="accordion-item" data-accordion="share">
-                    <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">
+                    <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Teilen</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
                         <div class="share-panel">
                             <div class="share-icons" role="group" aria-label="Teilen über soziale Medien">
@@ -277,15 +293,15 @@
                 </div>
 
                 <div class="accordion-item" data-accordion="print">
-                    <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">
+                    <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Drucken</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
-                        <div class="print-panel">
+                        <div class="print-form">
                             <div class="print-form-row">
-                                <label for="print-orientation" class="print-label">Format</label>
-                                <select id="print-orientation" class="print-select">
+                                <label for="print-orientation">Format</label>
+                                <select id="print-orientation" class="custom-select print-select">
                                     <option value="landscape-a4" selected>A4 Querformat</option>
                                     <option value="portrait-a4">A4 Hochformat</option>
                                     <option value="landscape-a3">A3 Querformat</option>
@@ -299,8 +315,8 @@
                                 </select>
                             </div>
                             <div class="print-form-row">
-                                <label for="print-scale" class="print-label">Massstab</label>
-                                <select id="print-scale" class="print-select">
+                                <label for="print-scale">Massstab</label>
+                                <select id="print-scale" class="custom-select print-select">
                                     <option value="auto" selected>Automatisch</option>
                                     <option value="500">1:500</option>
                                     <option value="1000">1:1'000</option>
@@ -313,27 +329,22 @@
                                 </select>
                             </div>
                             <div class="print-form-row">
-                                <label for="print-dpi" class="print-label">Auflösung</label>
-                                <select id="print-dpi" class="print-select">
+                                <label for="print-dpi">Auflösung</label>
+                                <select id="print-dpi" class="custom-select print-select">
                                     <option value="150">150 DPI (schnell)</option>
                                     <option value="300" selected>300 DPI (Standard)</option>
                                 </select>
                             </div>
-                            <div class="print-checkboxes">
-                                <label class="print-checkbox-label">
-                                    <input type="checkbox" id="print-legend" checked>
-                                    <span>Legende anzeigen</span>
-                                </label>
-                                <label class="print-checkbox-label">
-                                    <input type="checkbox" id="print-title" checked>
-                                    <span>Titel und Datum</span>
-                                </label>
-                                <label class="print-checkbox-label">
-                                    <input type="checkbox" id="print-labels" checked>
-                                    <span>Gebäudebeschriftung</span>
-                                </label>
-                            </div>
-                            <button id="print-generate-btn" class="print-btn">
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-legend" checked> <span>Legende anzeigen</span>
+                            </label>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-title" checked> <span>Titel und Datum</span>
+                            </label>
+                            <label class="print-checkbox-label">
+                                <input type="checkbox" id="print-labels" checked> <span>Gebäudebeschriftung</span>
+                            </label>
+                            <button class="panel-btn" id="print-generate-btn">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
                                 <span>PDF erstellen</span>
                             </button>
@@ -346,13 +357,13 @@
                 </div>
 
                 <div class="accordion-item" id="measure-accordion" data-accordion="measure">
-                    <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">
+                    <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Zeichnen &amp; Messen auf der Karte</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
                         <p class="measure-panel-text">Messen Sie Distanzen entlang eines Pfads und Flächen von geschlossenen Polygonen direkt auf der Karte. Klicken Sie auf den ersten Punkt, um das Polygon zu schliessen.</p>
-                        <button type="button" class="print-btn" data-action="toggleMeasure">
+                        <button type="button" class="panel-btn" data-action="toggleMeasure">
                             <span class="material-symbols-outlined">straighten</span>
                             <span>Distanz messen</span>
                         </button>
@@ -360,15 +371,15 @@
                 </div>
 
                 <div class="accordion-item" data-accordion="export">
-                    <div class="accordion-header" role="button" tabindex="0" aria-expanded="false">
+                    <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Export</span>
-                    </div>
+                    </button>
                     <div class="accordion-content">
                         <div class="export-panel">
                             <div class="export-section">
                                 <label class="export-section-label" for="export-data-selection">Datenauswahl</label>
-                                <select id="export-data-selection" class="export-select">
+                                <select id="export-data-selection" class="custom-select export-select">
                                     <option value="filtered">Aktuelle Ansicht</option>
                                     <option value="all">Alle Objekte</option>
                                     <option value="selected">Nur ausgewähltes Objekt</option>
@@ -420,7 +431,7 @@
                                 </div>
                             </div>
 
-                            <button id="export-btn" class="export-btn">
+                            <button id="export-btn" class="panel-btn">
                                 <span class="material-symbols-outlined">download</span>
                                 <span>Exportieren</span>
                             </button>
@@ -432,10 +443,10 @@
                     <!-- "Thema wechseln" is a sibling of the header (its click must not toggle the accordion) and comes
                          before it so the header's nextElementSibling stays the accordion content -->
                     <button type="button" id="topic-switch-btn" class="geokatalog-theme-switch" data-action="switchTopic" title="Thema wechseln">Thema wechseln</button>
-                    <div class="accordion-header geokatalog-header" role="button" tabindex="0" aria-expanded="false">
+                    <button class="accordion-header geokatalog-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span id="geokatalog-title">Geokatalog</span>
-                    </div>
+                    </button>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
                             <div class="geokatalog-loading">Lade Katalog...</div>
@@ -444,10 +455,10 @@
                 </div>
 
                 <div class="accordion-item" id="active-layers-accordion" data-accordion="layers">
-                    <div class="accordion-header active" role="button" tabindex="0" aria-expanded="true">
+                    <button class="accordion-header active" aria-expanded="true">
                         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
                         <span>Dargestellte Karten</span>
-                    </div>
+                    </button>
                     <div class="accordion-content show">
                         <div class="active-layers-list">
                             <div class="layer-group">
@@ -476,12 +487,29 @@
                         </div>
                     </div>
                 </div>
-            </nav>
+                <!-- Phones only: the panel is the hamburger menu; language pills and the footer links live here -->
+                <div class="mobile-menu-extras">
+                    <div class="mobile-menu-lang">
+                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                        <div class="mobile-lang-pills" id="mobile-lang-pills">
+                            <button class="mobile-lang-pill active" data-lang="de">DE</button>
+                            <button class="mobile-lang-pill" data-lang="fr">FR</button>
+                            <button class="mobile-lang-pill" data-lang="it">IT</button>
+                            <button class="mobile-lang-pill" data-lang="en">EN</button>
+                        </div>
+                    </div>
+                    <div class="mobile-menu-divider"></div>
+                    <div class="mobile-menu-links">
+                        <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener">Quellcode</a>
+                    </div>
+                </div>
+            </aside>
 
             <div id="menu-toggle" role="button" tabindex="0" aria-controls="accordion-panel" aria-expanded="true">
                 <span class="material-symbols-outlined" aria-hidden="true">expand_less</span>
                 <span id="menu-toggle-text">Menü schliessen</span>
             </div>
+            </div><!-- /#accordion-wrapper -->
 
             <aside id="info-panel" role="complementary" aria-label="Objektinformation">
                 <div class="sheet-handle" aria-hidden="true"></div>
@@ -566,100 +594,168 @@
                     </div>
                 </div>
             </div>
-        </div>
-
-        <div id="list-view">
-            <div class="list-table-container">
-                <div class="toolbar">
-                    <div class="toolbar-search list-toolbar-search">
-                        <span class="material-symbols-outlined">search</span>
-                        <input type="text" id="list-search-input" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
-                        <button class="toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
-                            <span class="material-symbols-outlined">close</span>
-                        </button>
-                    </div>
-                    <div class="toolbar-actions">
-                        <!-- Export Dropdown -->
-                        <div class="dropdown-container">
-                            <button class="dropdown-btn" id="export-dropdown-btn" data-dropdown="export-dropdown-menu">
-                                <span class="material-symbols-outlined">download</span>
-                                Export
-                                <span class="material-symbols-outlined">expand_more</span>
-                            </button>
-                            <div class="dropdown-menu" id="export-dropdown-menu">
-                                <div class="dropdown-menu-header">Alle exportieren</div>
-                                <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all">CSV (.csv)</div>
-                                <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all">CSV für Excel (.csv)</div>
-                                <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all">GeoJSON (.geojson)</div>
-                                <div class="dropdown-menu-header" id="export-filtered-header">Gefiltert exportieren</div>
-                                <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered">CSV (.csv)</div>
-                                <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered">CSV für Excel (.csv)</div>
-                                <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered">GeoJSON (.geojson)</div>
-                            </div>
+            <!-- Resize handle between map and table -->
+            <div id="tbl-resize-handle" class="tbl-resize-handle" title="Grösse ändern"></div>
+            <!-- Table panel (below map) -->
+            <div id="table-panel" class="table-panel">
+                <div class="list-table-container">
+                    <div class="toolbar">
+                        <div class="table-tabs" role="tablist">
+                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true">Gebäude</button>
+                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false">Grundstücke</button>
                         </div>
-                        <!-- Columns Dropdown -->
-                        <div class="dropdown-container">
-                            <button class="dropdown-btn" id="columns-dropdown-btn" data-dropdown="columns-dropdown-menu">
-                                <span class="material-symbols-outlined">view_column</span>
-                                Spalten
-                                <span class="material-symbols-outlined">expand_more</span>
+                        <div class="toolbar-search list-toolbar-search">
+                            <span class="material-symbols-outlined">search</span>
+                            <input type="text" id="list-search-input" placeholder="Gebäude durchsuchen..." aria-label="Tabelle durchsuchen">
+                            <button class="toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                <span class="material-symbols-outlined">close</span>
                             </button>
-                            <div class="dropdown-menu" id="columns-dropdown-menu">
-                                <div class="dropdown-menu-header">Spalten anzeigen</div>
-                                <div class="dropdown-menu-toggle-row">
-                                    <button class="dropdown-toggle-btn" id="columns-toggle-all">Alle</button>
-                                    <button class="dropdown-toggle-btn" id="columns-toggle-none">Keine</button>
-                                </div>
-                                <div class="dropdown-menu-divider"></div>
-                                <div class="columns-list" id="columns-list">
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-id"> ID</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-name"> Bezeichnung</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-land"> Land</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-ort"> Ort</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adresse"> Adresse</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-portfolio"> Teilportfolio</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-flaeche"> Fläche NGF</label>
-                                    <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-status"> Status</label>
+                        </div>
+                        <div class="filter-pills" id="filter-pills"></div>
+                        <div class="toolbar-actions">
+                            <!-- Export Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="export-dropdown-btn" data-dropdown="export-dropdown-menu">
+                                    <span class="material-symbols-outlined">download</span>
+                                    Export
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu" id="export-dropdown-menu">
+                                    <div class="dropdown-menu-header">Alle exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all">CSV für Excel (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all">GeoJSON (.geojson)</div>
+                                    <div class="dropdown-menu-header" id="export-filtered-header">Gefiltert exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered">CSV für Excel (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered">GeoJSON (.geojson)</div>
                                 </div>
                             </div>
+                            <!-- Columns Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="columns-dropdown-btn" data-dropdown="columns-dropdown-menu">
+                                    <span class="material-symbols-outlined">view_column</span>
+                                    Spalten
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
+                                    <div class="dropdown-menu-header">Spalten anzeigen</div>
+                                    <div class="dropdown-menu-toggle-row">
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-all">Alle</button>
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-none">Keine</button>
+                                    </div>
+                                    <div class="columns-search">
+                                        <span class="material-symbols-outlined">search</span>
+                                        <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen">
+                                        <button class="toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                            <span class="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                    <!-- Building columns (shown when Gebäude tab active) -->
+                                    <div class="columns-list" id="columns-list" data-columns-tab="buildings">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-id"> ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-name"> Bezeichnung</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-land"> Land</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-ort"> Ort</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adresse"> Adresse</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-portfolio"> Teilportfolio</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-flaeche"> Fläche NGF</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-status"> Status</label>
+                                    </div>
+                                    <!-- Parcel columns (shown when Grundstücke tab active) -->
+                                    <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> ID</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> Grundstück-Nr.</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> Bezeichnung</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> Gemeinde</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> Kanton</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> Fläche</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> Nutzungszone</label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> Eigentum</label>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div class="list-table-wrapper">
-                    <table class="list-table" id="list-table">
-                        <thead>
-                            <tr>
-                                <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
-                                <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
-                            </tr>
-                        </thead>
-                        <tbody id="list-body"></tbody>
-                    </table>
-                </div>
-                <div class="pagination-footer" id="list-pagination">
-                    <div class="pagination-rows">
-                        <span>Zeilen pro Seite:</span>
-                        <select id="list-rows-per-page">
-                            <option value="25">25</option>
-                            <option value="50" selected>50</option>
-                            <option value="100">100</option>
-                        </select>
+                    <!-- Buildings table -->
+                    <div class="table-tab-content active" id="buildings-table-content">
+                    <div class="list-table-wrapper">
+                        <table class="list-table" id="list-table">
+                            <thead>
+                                <tr>
+                                    <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
+                                    <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
+                                </tr>
+                            </thead>
+                            <tbody id="list-body"></tbody>
+                        </table>
                     </div>
-                    <div class="pagination-info" id="list-pagination-info" aria-live="polite">0 von 0 Objekte</div>
-                    <div class="pagination-nav">
-                        <button class="pagination-btn" id="list-prev-btn" disabled>
-                            <span class="material-symbols-outlined">chevron_left</span>
-                        </button>
-                        <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
-                        <button class="pagination-btn" id="list-next-btn" disabled>
-                            <span class="material-symbols-outlined">chevron_right</span>
-                        </button>
+                    <div class="pagination-footer" id="list-pagination">
+                        <div class="pagination-info" id="list-pagination-info" aria-live="polite">0 von 0 Objekte</div>
+                        <div class="pagination-nav">
+                            <button class="pagination-btn" id="list-prev-btn" disabled>
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
+                            <button class="pagination-btn" id="list-next-btn" disabled>
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <div class="pagination-rows">
+                            <span>Zeilen pro Seite:</span>
+                            <select id="list-rows-per-page" class="custom-select">
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- Parcels table -->
+                    <div class="table-tab-content" id="parcels-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="list-table" id="parcels-table">
+                                <thead>
+                                    <tr>
+                                        <th class="col-parcel-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-plot">Grundstück-Nr. <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-municipality">Gemeinde <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-canton">Kanton <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-area">Fläche <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-zone">Nutzungszone <span class="material-symbols-outlined">unfold_more</span></th>
+                                        <th class="col-parcel-ownership">Eigentum <span class="material-symbols-outlined">unfold_more</span></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="parcels-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="parcels-pagination">
+                            <div class="pagination-info" id="parcels-pagination-info" aria-live="polite">0 von 0 Grundstücke</div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="parcels-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="parcels-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="parcels-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span>Zeilen pro Seite:</span>
+                                <select id="parcels-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -814,10 +910,12 @@
                         <div class="detail-section detail-section--address">
                             <div class="detail-section-title">Adresse</div>
                             <div class="detail-section-content">
-                                <div class="mini-map-container">
-                                    <div id="mini-map" class="mini-map"></div>
+                                <div class="mini-map-wrapper">
+                                    <div class="mini-map-header" id="mini-map-address">–</div>
+                                    <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
                                 </div>
                                 <!-- data-label: shown as row labels when the column is too narrow for 7 table columns (container query) -->
+                                <div class="address-table-wrap">
                                 <table class="address-table">
                                     <thead>
                                         <tr>
@@ -846,6 +944,7 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -922,14 +1021,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="measurements-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="measurements">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="measurements" disabled>
@@ -938,6 +1029,14 @@
                                     <button class="pagination-btn pagination-next" data-table="measurements" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="measurements">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1012,14 +1111,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="costs-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="costs">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="costs" disabled>
@@ -1028,6 +1119,14 @@
                                     <button class="pagination-btn pagination-next" data-table="costs" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="costs">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1106,14 +1205,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="contracts-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contracts">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="contracts" disabled>
@@ -1122,6 +1213,14 @@
                                     <button class="pagination-btn pagination-next" data-table="contracts" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="contracts">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1196,14 +1295,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="assets-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="assets">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="assets" disabled>
@@ -1212,6 +1303,14 @@
                                     <button class="pagination-btn pagination-next" data-table="assets" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="assets">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1280,14 +1379,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="documents-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="documents">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="documents" disabled>
@@ -1296,6 +1387,14 @@
                                     <button class="pagination-btn pagination-next" data-table="documents" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="documents">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1364,14 +1463,6 @@
                                 </table>
                             </div>
                             <div class="pagination-footer" id="contacts-pagination">
-                                <div class="pagination-rows">
-                                    <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contacts">
-                                        <option value="25">25</option>
-                                        <option value="50" selected>50</option>
-                                        <option value="100">100</option>
-                                    </select>
-                                </div>
                                 <div class="pagination-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
                                     <button class="pagination-btn pagination-prev" data-table="contacts" disabled>
@@ -1380,6 +1471,14 @@
                                     <button class="pagination-btn pagination-next" data-table="contacts" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
+                                </div>
+                                <div class="pagination-rows">
+                                    <span>Zeilen pro Seite:</span>
+                                    <select class="pagination-rows-select" data-table="contacts">
+                                        <option value="25">25</option>
+                                        <option value="50" selected>50</option>
+                                        <option value="100">100</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -1393,7 +1492,7 @@
         <!-- Filter drawer (same ids and classes as prototype-main) -->
         <aside id="filter-panel" role="complementary" aria-label="Filter">
             <div class="filter-panel-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
-            <div class="filter-panel-header">
+            <div class="panel-header filter-panel-header">
                 <div class="panel-header-title" id="filter-panel-title">
                     <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
                     <span>Filter Stammdaten</span>

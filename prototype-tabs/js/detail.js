@@ -60,6 +60,7 @@ export function populateDetailView(building) {
   setText('detail-plz', props.postalCode);
   setText('detail-street', addressParts.street);
   setText('detail-housenumber', props.houseNumber);
+  setText('mini-map-address', props.streetName);
 
   // Building data
   setText('detail-sanierung', extractYear(props.yearOfLastRefurbishment));

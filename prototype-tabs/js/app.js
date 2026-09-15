@@ -15,7 +15,7 @@ import { carouselActions } from './carousel.js';
 import { initMap, addMapLayers } from './map.js';
 import { initUI, switchView, showDetailView, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
 import { getFiltersFromURL, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithRegionFilter } from './filters.js';
-import { initTables, renderListView, initListToolbar, initGalleryFilter } from './list.js';
+import { initTables, renderTables, initListToolbar, initTableTabs, initGalleryFilter, initTablePanel } from './list.js';
 import { initEntityTables } from './entity-tables.js';
 import { initExportPanel, shareActions } from './export.js';
 import { initSearch, searchActions } from './search.js';
@@ -34,6 +34,8 @@ function initDataDependentUI() {
   initExportPanel();
   initTables();
   initListToolbar();
+  initTableTabs();
+  initTablePanel();
   initGalleryFilter();
   initEntityTables();
 }
@@ -54,7 +56,7 @@ function restoreViewFromUrl() {
   const initialView = getViewFromURL();
   if (initialView === 'detail' && buildingId && state.buildingIndex.has(buildingId)) {
     showDetailView(buildingId, getTabFromURL());
-  } else if (initialView === 'list' || initialView === 'gallery') {
+  } else if (initialView === 'gallery') {
     switchView(initialView);
   } else {
     setStyleSwitcherVisible(true);
@@ -81,7 +83,7 @@ function applyLoadedData(buildings, parcels, entities) {
   initDataDependentUI();
 
   applyFilters();
-  renderListView();
+  renderTables();
 
   if (state.map.loaded()) addMapLayers();
   else state.map.once('load', addMapLayers);

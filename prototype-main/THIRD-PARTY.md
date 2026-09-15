@@ -26,7 +26,8 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 | Service | Used for | Notes |
 |---|---|---|
 | CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs | © CARTO, © OpenStreetMap contributors; free tier, no key |
-| swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap | © swisstopo |
+| swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap within Switzerland (drawn above the world imagery) | © swisstopo |
+| Esri World Imagery (`server.arcgisonline.com`) | Global aerial imagery of the "Luftbild" basemap for the objects abroad | Esri, Maxar, Earthstar Geographics, and the GIS User Community — free with this attribution under the [Esri terms of use](https://www.esri.com/en-us/legal/terms/full-master-agreement); the tile service is rate-limited and meant for interactive maps, not for bulk download |
 | swisstopo WMS (`wms.geo.admin.ch`) | Rendering of the Geokatalog layers added to the map | © swisstopo |
 | geoadmin API (`api3.geo.admin.ch`) | Location and layer search (SearchServer), topics and catalog trees (CatalogServer), layer legends (MapServer legend), feature identification (identify) | No key required |
 | Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`js/config.js`) and sample values in `data/swagger.json` | [Unsplash License](https://unsplash.com/license); placeholders only |

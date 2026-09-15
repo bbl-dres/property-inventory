@@ -7,7 +7,8 @@
     "test": "node all.js",
     "test:main": "node all.js main",
     "test:tabs": "node all.js tabs",
-    "align": "node check-alignment.js"
+    "align": "node check-alignment.js",
+    "visual": "node visual.js both ../visual-out"
   },
   "devDependencies": {
     "jsdom": "^24.1.3"

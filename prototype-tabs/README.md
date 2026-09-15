@@ -36,17 +36,18 @@ A jsdom harness with a fake MapLibre lives in [`../test/`](../test/). It is deve
 cd test && npm install
 npm test            # all scenarios of both prototypes
 npm run test:tabs     # this prototype only
-npm run align       # verifies that the common modules are identical in both prototypes
+npm run align       # verifies that the common modules, stylesheets and the design guide are identical in both prototypes
+npm run visual      # headless-Edge screenshots and computed metrics of both prototypes at six viewports (needs a static server on :8123)
 ```
 
 ## Tech
 
 | What | Why |
 |---|---|
-| Vanilla ES modules | No build. Same module layout as the main app; 17 of the 29 modules are byte-identical with it (see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)) |
+| Vanilla ES modules | No build. Same module layout as the main app; 18 of the 30 modules and the stylesheets `tokens.css` / `components.css` are byte-identical with it (see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md), [docs/DESIGN-REVIEW.md](docs/DESIGN-REVIEW.md)) |
 | MapLibre GL JS 5.19 (vendored in `vendor/`) | Map, mini map, markers, popups — same build and basemaps (CARTO Positron/Voyager/Dark Matter, swisstopo SWISSIMAGE) as the main app; no API key |
 | jsPDF 2.5.1 (vendored in `vendor/jspdf/`) | PDF export of the print panel, same renderer as the main app |
-| `data/i18n.json` | Identical copy of the main app's translation file; the UI stays German, the JS-rendered texts come from this file |
+| `data/i18n.json` | Identical copy of the main app's translation file; the UI stays German (the language selector only warns), the JS-rendered texts come from this file |
 | Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
 ## Layout
@@ -55,30 +56,33 @@ npm run align       # verifies that the common modules are identical in both pro
 prototype-tabs/
 ├── index.html
 ├── css/
-│   └── main.css
+│   ├── tokens.css        # Design tokens, base, primitives (identical with ../prototype-main)
+│   ├── components.css    # Shared components incl. responsive rules (identical with ../prototype-main)
+│   └── app.css           # Tabs-only: header tab strip, sections, entity tables, share/export panels
 ├── js/                   # ES modules (same layout as ../prototype-main/js)
 │   ├── app.js            # Bootstrap, data loading, action delegation
 │   ├── config.js · state.js
-│   ├── ui.js             # Views, detail tabs, tools panel / phone menu, info panel, history
+│   ├── ui.js             # Views (map, gallery, detail), detail tabs, home, info panel, history
 │   ├── map.js · list.js · detail.js · filters.js · search.js · export.js
 │   ├── entity-tables.js  # Tables of the detail tabs (tabs only)
 │   ├── assistant.js      # KI mock answers in the search (tabs only)
 │   └── common modules, identical with ../prototype-main/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js
 ├── data/                 # buildings.geojson, parcels, entity tables, i18n.json
 ├── assets/               # local basemap thumbnails, icons, topic sprite
 ├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT)
 └── docs/
     ├── CODE-REVIEW.md        # Review (2026-09-15): bugs, dead code, alignment with the main app
     ├── DATAMODEL.md          # BuildingMinds-style model with extensionData (differs from the main app, see CODE-REVIEW.md)
-    ├── DESIGNGUIDE.md        # Same design system
+    ├── DESIGNGUIDE.md        # Design system (identical with ../prototype-main)
+    ├── DESIGN-REVIEW.md      # Design review (2026-09-15): alignment of both prototypes
     └── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
 ```
 
 ## See also
 
-- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Parent prototype: [`../prototype-main`](../prototype-main) (read-only inventory)
 - Sibling prototypes: [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

@@ -14,7 +14,8 @@
     <!-- Icon font, self-hosted (assets/icons/): no request to Google Fonts -->
     <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
     <link rel="stylesheet" href="css/tokens.css">
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/app.css">
 
     <script defer src="vendor/maplibre-gl/maplibre-gl.js"></script>
     <script>
@@ -109,6 +110,7 @@
                 <div id="logo-title">
                     <strong data-i18n="app.logo.org">Bundesamt für Bauten und Logistik BBL</strong>
                     <span class="logo-subtitle"><br><span data-i18n="app.logo.subtitle">Liegenschaften Inventar</span></span>
+                    <span class="logo-title-short"><strong>BBL</strong> <span data-i18n="app.logo.subtitle">Liegenschaften Inventar</span></span>
                 </div>
             </div>
 
@@ -154,7 +156,7 @@
             <div id="header-right">
                 <button class="header-btn" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
-                    <span data-i18n="header.filter">Filter</span>
+                    <span class="header-btn-label" data-i18n="header.filter">Filter</span>
                 </button>
                 <div id="lang-selector">
                     <button id="lang-btn" class="header-btn" data-i18n-title="header.lang" data-i18n-aria-label="header.lang" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
@@ -168,74 +170,20 @@
                         <button class="lang-option" data-lang="en" role="menuitem">EN</button>
                     </div>
                 </div>
+                <div id="login-area">
+                    <!-- Mock: authentication is not part of the prototype -->
+                    <button id="login-btn" data-i18n-title="header.login" data-i18n-aria-label="header.login" title="Anmelden" aria-label="Anmelden" data-action="comingSoon">
+                        <span class="material-symbols-outlined" aria-hidden="true">person</span>
+                    </button>
+                </div>
+                <button id="hamburger-btn" class="hamburger-btn" data-i18n-aria-label="menu.open" aria-label="Menü öffnen" aria-expanded="false" aria-controls="accordion-panel">
+                    <span class="material-symbols-outlined">menu</span>
+                </button>
             </div>
-            <button id="hamburger-btn" class="hamburger-btn" data-i18n-aria-label="menu.open" aria-label="Menü öffnen" aria-expanded="false" aria-controls="mobile-menu">
-                <span class="material-symbols-outlined">menu</span>
-            </button>
         </div>
 
     </header>
 
-    <!-- Mobile hamburger menu (slide-in from right) -->
-    <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
-    <nav id="mobile-menu" class="mobile-menu" aria-label="Hauptmenü">
-        <div class="mobile-menu-header">
-            <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
-            <button id="mobile-menu-close" class="mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
-                <span class="material-symbols-outlined">close</span>
-            </button>
-        </div>
-        <div class="mobile-menu-body">
-            <!-- View toggle -->
-            <div class="mobile-menu-view-toggle" id="mobile-view-toggle">
-                <button class="mobile-view-btn active" data-view="map">
-                    <span class="material-symbols-outlined">map</span>
-                    <span data-i18n="view.map">Karte</span>
-                </button>
-                <button class="mobile-view-btn" data-view="gallery">
-                    <span class="material-symbols-outlined">grid_view</span>
-                    <span data-i18n="view.gallery">Galerie</span>
-                </button>
-            </div>
-            <!-- Filter button -->
-            <button class="mobile-menu-item" id="mobile-filter-btn">
-                <span class="material-symbols-outlined">tune</span>
-                <span data-i18n="header.filter">Filter</span>
-                <span class="material-symbols-outlined mobile-menu-arrow">chevron_right</span>
-            </button>
-            <!-- Share: the map context menu (right-click) is unreachable on touch screens -->
-            <button class="mobile-menu-item" id="mobile-share-btn">
-                <span class="material-symbols-outlined">share</span>
-                <span data-i18n="map.context.share">Teilen</span>
-            </button>
-            <!-- Language selector -->
-            <div class="mobile-menu-lang">
-                <span class="material-symbols-outlined">language</span>
-                <div class="mobile-lang-pills" id="mobile-lang-pills">
-                    <button class="mobile-lang-pill active" data-lang="de">DE</button>
-                    <button class="mobile-lang-pill" data-lang="fr">FR</button>
-                    <button class="mobile-lang-pill" data-lang="it">IT</button>
-                    <button class="mobile-lang-pill" data-lang="en">EN</button>
-                </div>
-            </div>
-            <div class="mobile-menu-divider"></div>
-            <!-- Layer toggles (populated from accordion via JS) -->
-            <div id="mobile-layers-section"></div>
-            <!-- External layers + Geokatalog -->
-            <div id="mobile-external-section">
-                <div class="mobile-layers-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
-                <div id="mobile-external-layers-list" class="mobile-external-layers-list">
-                    <div class="mobile-external-empty" data-i18n="accordion.layers.external.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
-                </div>
-            </div>
-            <div class="mobile-menu-divider"></div>
-            <!-- Footer links -->
-            <div class="mobile-menu-links">
-                <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
-                <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
-            </div>
-        </div>
-    </nav>
 
     <main id="main">
         <div class="main-content">
@@ -304,8 +252,15 @@
             </button>
             </div>
             
+            <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
             <div id="accordion-wrapper">
             <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
+                <div class="mobile-menu-header">
+                    <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
+                    <button id="mobile-menu-close" class="mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
+                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                    </button>
+                </div>
                 <div class="accordion-item" id="print-accordion-item" data-accordion="print">
                     <button class="accordion-header" aria-expanded="false">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
@@ -358,7 +313,7 @@
                             <label class="print-checkbox-label">
                                 <input type="checkbox" id="print-labels" checked> <span data-i18n="print.labels">Gebäudebeschriftung</span>
                             </label>
-                            <button class="print-btn" id="print-generate-btn">
+                            <button class="panel-btn" id="print-generate-btn">
                                 <span class="material-symbols-outlined">picture_as_pdf</span>
                                 <span data-i18n="accordion.print.button">PDF erstellen</span>
                             </button>
@@ -425,9 +380,30 @@
                         </div>
                     </div>
                 </div>
+                <!-- Phones only: the panel is the hamburger menu; share, language and the footer links live here -->
+                <div class="mobile-menu-extras">
+                    <button type="button" class="mobile-menu-item" id="mobile-share-btn">
+                        <span class="material-symbols-outlined" aria-hidden="true">share</span>
+                        <span data-i18n="map.context.share">Teilen</span>
+                    </button>
+                    <div class="mobile-menu-lang">
+                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                        <div class="mobile-lang-pills" id="mobile-lang-pills">
+                            <button class="mobile-lang-pill active" data-lang="de">DE</button>
+                            <button class="mobile-lang-pill" data-lang="fr">FR</button>
+                            <button class="mobile-lang-pill" data-lang="it">IT</button>
+                            <button class="mobile-lang-pill" data-lang="en">EN</button>
+                        </div>
+                    </div>
+                    <div class="mobile-menu-divider"></div>
+                    <div class="mobile-menu-links">
+                        <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+                        <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
+                    </div>
+                </div>
             </aside>
             
-            <div id="menu-toggle">
+            <div id="menu-toggle" role="button" tabindex="0" aria-controls="accordion-panel" aria-expanded="true">
                 <span class="material-symbols-outlined">expand_less</span>
                 <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
             </div>
@@ -654,7 +630,7 @@
                     <!-- Buildings table -->
                     <div class="table-tab-content active" id="buildings-table-content">
                         <div class="list-table-wrapper">
-                            <table class="base-table list-table" id="list-table">
+                            <table class="list-table" id="list-table">
                                 <thead>
                                     <tr id="list-table-header-row"></tr>
                                 </thead>
@@ -688,7 +664,7 @@
                     <!-- Parcels table -->
                     <div class="table-tab-content" id="parcels-table-content">
                         <div class="list-table-wrapper">
-                            <table class="base-table list-table" id="parcels-table">
+                            <table class="list-table" id="parcels-table">
                                 <thead>
                                     <tr>
                                         <th class="col-parcel-id"><span data-i18n="col.parcel.id">ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
@@ -730,7 +706,7 @@
 
                     <div class="table-tab-content" id="landcovers-table-content">
                         <div class="list-table-wrapper">
-                            <table class="base-table list-table" id="landcovers-table">
+                            <table class="list-table" id="landcovers-table">
                                 <thead>
                                     <tr>
                                         <th class="col-lc-bbl_id"><span data-i18n="col.lc.bbl_id">Grundstück ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
@@ -850,9 +826,11 @@
                 </div>
 
                 <!-- Tabs (inside content, scrollable) -->
-                <div class="detail-tabs-inline" role="tablist" aria-label="Detailansicht Tabs">
+                <div class="detail-tabs detail-tabs--inline">
+                <div class="detail-tabs-inner" role="tablist" aria-label="Detailansicht Tabs">
                     <button class="detail-tab active" data-tab="overview" role="tab" aria-selected="true" tabindex="0" data-i18n="detail.tab.overview">Übersicht</button>
                     <button class="detail-tab" data-tab="measurements" role="tab" aria-selected="false" tabindex="-1" data-i18n="detail.tab.measurements">Bemessungen</button>
+                </div>
                 </div>
 
                 <!-- ===== Tab: Übersicht ===== -->
@@ -896,6 +874,7 @@
                             <div class="mini-map-header" id="mini-map-address">–</div>
                             <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
                         </div>
+                        <div class="address-table-wrap">
                         <table class="address-table">
                             <thead>
                                 <tr>
@@ -918,6 +897,7 @@
                                 </tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
 
                     <div class="detail-overline" data-i18n="columns.group.survey">Amtliche Vermessung</div>
@@ -1016,7 +996,7 @@
         <aside id="filter-panel" role="complementary" aria-label="Filter">
             <div class="filter-panel-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
             <div class="panel-header filter-panel-header">
-                <span class="filter-panel-title">
+                <span class="panel-header-title" id="filter-panel-title">
                     <span class="material-symbols-outlined">filter_list</span>
                     <span data-i18n="filter.title">Filter</span>
                 </span>

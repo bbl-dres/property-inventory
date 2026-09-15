@@ -1,10 +1,11 @@
-// List view (buildings table with toolbar) and gallery view.
+// Table panel (buildings, parcels), table tabs, toolbar and the gallery view.
 
 import { state } from './state.js';
 import { placeholderImages, getStatusClassName } from './config.js';
-import { formatNum, escapeHtml, cssUrl } from './utils.js';
+import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
 import { t } from './i18n.js';
-import { createFeatureTable, initColumnVisibility, toggleAllColumns, initDropdowns, initTableSearch } from './table.js';
+import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumnsSearch, initDropdowns, initTableSearch } from './table.js';
+import { selectBuilding, selectParcel } from './map.js';
 import { showDetailView } from './ui.js';
 import { initQuickExportMenu } from './export.js';
 
@@ -16,7 +17,7 @@ function ext(props) {
 
 function statusBadge(v) {
   if (!v) return '–';
-  return '<span class="status-badge ' + getStatusClassName(v) + '">' + escapeHtml(v) + '</span>';
+  return '<span class="badge status-badge ' + getStatusClassName(v) + '">' + escapeHtml(v) + '</span>';
 }
 
 const buildingColumns = [
@@ -30,9 +31,21 @@ const buildingColumns = [
   { field: 'status', cls: 'col-status', format: statusBadge }
 ];
 
-const BUILDING_SEARCH_FIELDS = ['buildingId', 'name', 'country', 'city', 'streetName', 'extensionData.portfolio', 'status'];
+const parcelColumns = [
+  { field: 'parcelId', cls: 'col-parcel-id' },
+  { field: 'plotNumber', cls: 'col-parcel-plot' },
+  { field: 'name', cls: 'col-parcel-name' },
+  { field: 'municipality', cls: 'col-parcel-municipality' },
+  { field: 'canton', cls: 'col-parcel-canton' },
+  { field: 'area', cls: 'col-parcel-area', format: function(v) { return formatArea(v || 0); } },
+  { field: 'landUseZone', cls: 'col-parcel-zone' },
+  { field: 'ownershipType', cls: 'col-parcel-ownership' }
+];
 
-// ===== EMPTY STATE (table and gallery) =====
+const BUILDING_SEARCH_FIELDS = ['buildingId', 'name', 'country', 'city', 'streetName', 'extensionData.portfolio', 'status'];
+const PARCEL_SEARCH_FIELDS = ['parcelId', 'plotNumber', 'name', 'municipality', 'canton', 'landUseZone', 'ownershipType'];
+
+// ===== EMPTY STATE (buildings table and gallery) =====
 
 function emptyStateHtml() {
   return '<div class="empty-state">' +
@@ -58,26 +71,94 @@ export const tables = {
     columns: buildingColumns,
     getFeatures: filteredBuildings,
     searchFields: BUILDING_SEARCH_FIELDS,
-    onRowSelect: function(id) { showDetailView(id); },
+    onRowSelect: function(id) { selectBuilding(id, true); },
     pagination: { infoId: 'list-pagination-info', pageInfoId: 'list-page-info', prevId: 'list-prev-btn', nextId: 'list-next-btn', rowsSelectId: 'list-rows-per-page', infoKey: 'pagination.info', emptyKey: 'pagination.empty' },
-    empty: { type: 'block', afterSelector: '#list-view .list-table-wrapper', html: emptyStateHtml }
+    empty: { type: 'block', afterSelector: '#buildings-table-content .list-table-wrapper', html: emptyStateHtml }
+  }),
+  parcels: createFeatureTable({
+    tbodyId: 'parcels-body',
+    rowIdAttr: 'data-parcel-id',
+    getRowId: function(p) { return p.parcelId; },
+    columns: parcelColumns,
+    getFeatures: function() { return state.parcelData ? state.parcelData.features : []; },
+    searchFields: PARCEL_SEARCH_FIELDS,
+    onRowSelect: function(id) { selectParcel(id, true); },
+    pagination: { infoId: 'parcels-pagination-info', pageInfoId: 'parcels-page-info', prevId: 'parcels-prev-btn', nextId: 'parcels-next-btn', rowsSelectId: 'parcels-rows-per-page', infoKey: 'pagination.parcels.info', emptyKey: 'pagination.parcels.empty' },
+    empty: { type: 'row', colspan: parcelColumns.length, key: 'empty.parcels' }
   })
 };
 
+const TABLE_TABS = ['buildings', 'parcels'];
+
 export function initTables() {
-  Object.keys(tables).forEach(function(name) { tables[name].init(); });
+  TABLE_TABS.forEach(function(tab) { tables[tab].init(); });
 }
 
-export function renderListView() {
+export function renderTables() {
   if (!state.buildingsData) return;
-  tables.buildings.render();
+  TABLE_TABS.forEach(function(tab) { tables[tab].render(); });
 }
+
+// ===== TABLE TABS =====
+
+function columnsListFor(tab) {
+  return document.getElementById(tab === 'parcels' ? 'parcel-columns-list' : 'columns-list');
+}
+
+function activeColumnsList() {
+  return columnsListFor(state.activeTableTab);
+}
+
+function switchTableTab(tabName) {
+  if (TABLE_TABS.indexOf(tabName) === -1) tabName = 'buildings';
+  state.activeTableTab = tabName;
+
+  document.querySelectorAll('.table-tab').forEach(function(tab) {
+    const active = tab.dataset.tableTab === tabName;
+    tab.classList.toggle('active', active);
+    tab.setAttribute('aria-selected', active ? 'true' : 'false');
+  });
+  TABLE_TABS.forEach(function(tab) {
+    const content = document.getElementById(tab + '-table-content');
+    if (content) content.classList.toggle('active', tab === tabName);
+    const list = columnsListFor(tab);
+    if (list) list.style.display = tab === tabName ? '' : 'none';
+  });
+
+  // The toolbar search belongs to the visible table
+  const searchInput = document.getElementById('list-search-input');
+  const searchClear = document.getElementById('list-search-clear');
+  if (searchInput) {
+    searchInput.placeholder = t('table.search.' + tabName);
+    searchInput.value = '';
+  }
+  if (searchClear) searchClear.hidden = true;
+  TABLE_TABS.forEach(function(tab) { tables[tab].setSearchTerm(''); });
+
+  const url = new URL(window.location);
+  url.searchParams.set('tableTab', tabName);
+  window.history.replaceState({}, '', url);
+}
+
+export function initTableTabs() {
+  document.querySelectorAll('.table-tab').forEach(function(tab) {
+    tab.addEventListener('click', function() { switchTableTab(this.dataset.tableTab); });
+  });
+  const savedTab = new URLSearchParams(window.location.search).get('tableTab');
+  if (TABLE_TABS.indexOf(savedTab) !== -1 && savedTab !== state.activeTableTab) switchTableTab(savedTab);
+}
+
+// ===== SYNC TABLE TO MAP SELECTION =====
+
+function syncTableTo(tab, id) {
+  if (state.activeTableTab !== tab) switchTableTab(tab);
+  tables[tab].syncTo(id);
+}
+
+export function syncTableToBuilding(buildingId) { if (state.buildingsData) syncTableTo('buildings', buildingId); }
+export function syncTableToParcel(parcelId) { if (state.parcelData) syncTableTo('parcels', parcelId); }
 
 // ===== TOOLBAR =====
-
-function columnsList() {
-  return document.getElementById('columns-list');
-}
 
 export function initListToolbar() {
   initDropdowns();
@@ -85,12 +166,13 @@ export function initListToolbar() {
 
   const toggleAllBtn = document.getElementById('columns-toggle-all');
   const toggleNoneBtn = document.getElementById('columns-toggle-none');
-  if (toggleAllBtn) toggleAllBtn.addEventListener('click', function() { toggleAllColumns(columnsList(), true); });
-  if (toggleNoneBtn) toggleNoneBtn.addEventListener('click', function() { toggleAllColumns(columnsList(), false); });
+  if (toggleAllBtn) toggleAllBtn.addEventListener('click', function() { toggleAllColumns(activeColumnsList(), true); });
+  if (toggleNoneBtn) toggleNoneBtn.addEventListener('click', function() { toggleAllColumns(activeColumnsList(), false); });
 
-  initColumnVisibility('#list-view', '#columns-dropdown-menu');
+  initColumnVisibility('#table-panel', '#columns-dropdown-menu');
+  initColumnsSearch('columns-search-input', 'columns-search-clear', activeColumnsList);
   initTableSearch('list-search-input', 'list-search-clear', function(term) {
-    tables.buildings.setSearchTerm(term);
+    tables[state.activeTableTab].setSearchTerm(term);
   });
 }
 
@@ -200,7 +282,7 @@ export function renderGalleryView() {
         '<div class="gallery-meta">' +
           '<span class="gallery-tag">' + escapeHtml(ext(props).portfolio || '—') + '</span>' +
           '<span class="gallery-tag">' + flaeche + ' m²</span>' +
-          '<span class="status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>' +
+          '<span class="badge status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>' +
         '</div>' +
       '</div>' +
     '</div>';
@@ -223,3 +305,78 @@ export function renderGalleryView() {
 
   galleryGrid.innerHTML = html;
 }
+
+// ===== TABLE PANEL (below the map): toggle, URL state, drag resize =====
+
+// Opens or collapses the panel; ?table=open records the open state in the URL
+export function setTablePanelOpen(open) {
+  const toggleBtn = document.getElementById('tbl-toggle');
+  const panel = document.getElementById('table-panel');
+  const handle = document.getElementById('tbl-resize-handle');
+  if (!toggleBtn || !panel) return;
+  state.tableOpen = !!open;
+  panel.style.height = ''; // clear any drag-resize height so the CSS classes take effect
+  panel.classList.toggle('collapsed', !state.tableOpen);
+  toggleBtn.classList.toggle('collapsed', !state.tableOpen);
+  if (handle) handle.style.display = state.tableOpen ? '' : 'none';
+  if (state.tableOpen && state.listViewDirty) {
+    renderTables();
+    state.listViewDirty = false;
+  }
+  const url = new URL(window.location);
+  if (state.tableOpen) url.searchParams.set('table', 'open'); else url.searchParams.delete('table');
+  window.history.replaceState({}, '', url);
+  setTimeout(function() { if (state.map) state.map.resize(); }, 280);
+}
+
+export function initTablePanel() {
+  const toggleBtn = document.getElementById('tbl-toggle');
+  const panel = document.getElementById('table-panel');
+  const handle = document.getElementById('tbl-resize-handle');
+  if (!toggleBtn || !panel) return;
+
+  // Hidden by default on every screen size; ?table=open opts in
+  state.tableOpen = new URLSearchParams(window.location.search).get('table') === 'open';
+  if (!state.tableOpen) {
+    panel.classList.add('collapsed');
+    toggleBtn.classList.add('collapsed');
+    if (handle) handle.style.display = 'none';
+  }
+
+  toggleBtn.addEventListener('click', function() { setTablePanelOpen(!state.tableOpen); });
+
+  if (!handle) return;
+  const MIN_H = 120;
+  const MAX_FRAC = 0.75;
+  let startY, startH;
+
+  handle.addEventListener('pointerdown', function(e) {
+    e.preventDefault();
+    handle.setPointerCapture(e.pointerId);
+    handle.classList.add('dragging');
+    panel.style.transition = 'none';
+    startY = e.clientY;
+    startH = panel.getBoundingClientRect().height;
+
+    function onMove(ev) {
+      const maxH = window.innerHeight * MAX_FRAC;
+      panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
+      if (state.map) state.map.resize();
+    }
+
+    function onUp() {
+      handle.classList.remove('dragging');
+      panel.style.transition = '';
+      handle.removeEventListener('pointermove', onMove);
+      handle.removeEventListener('pointerup', onUp);
+      handle.removeEventListener('lostpointercapture', onUp);
+      if (state.map) state.map.resize();
+    }
+
+    handle.addEventListener('pointermove', onMove);
+    handle.addEventListener('pointerup', onUp);
+    handle.addEventListener('lostpointercapture', onUp);
+  });
+}
+
+

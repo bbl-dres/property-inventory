@@ -338,13 +338,13 @@ function infoRow(labelKey, valueHtml, secondary) {
 
 function showInfoPanel(titleKey, bodyHtml, previewImageUrl) {
   document.getElementById('info-header-title').textContent = t(titleKey);
+  const panel = document.getElementById('info-panel');
   const preview = document.getElementById('info-preview-image');
-  if (preview) {
-    preview.style.display = previewImageUrl ? 'block' : 'none';
-    if (previewImageUrl) preview.style.backgroundImage = cssUrl(previewImageUrl);
-  }
+  // A class (not an inline display) so the stylesheet can still hide the image on short viewports
+  panel.classList.toggle('has-preview', !!previewImageUrl);
+  if (preview && previewImageUrl) preview.style.backgroundImage = cssUrl(previewImageUrl);
   document.getElementById('info-body').innerHTML = bodyHtml;
-  document.getElementById('info-panel').classList.add('show');
+  panel.classList.add('show');
 }
 
 function hideInfoPanel() {

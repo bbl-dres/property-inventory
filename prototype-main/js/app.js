@@ -13,76 +13,10 @@ import { initSwisstopo, swisstopoClickActions, swisstopoChangeActions } from './
 import { initPrintWidget } from './print.js';
 import { carouselActions } from './carousel.js';
 import { initMap, addMapLayers } from './map.js';
-import { initUI, switchView, showDetailView, initApiDocs, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
+import { initUI, switchView, showDetailView, initApiDocs, comingSoon, getViewFromURL, getBuildingIdFromURL, getTabFromURL } from './ui.js';
 import { getFiltersFromURL, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithOrtFilter } from './filters.js';
-import { initTables, renderTables, initBuildingTableHeaders, initListToolbar, initTableTabs, initGalleryFilter } from './list.js';
+import { initTables, renderTables, initBuildingTableHeaders, initListToolbar, initTableTabs, initGalleryFilter, initTablePanel } from './list.js';
 import { initSearch, searchActions } from './search.js';
-
-// ===== TABLE PANEL TOGGLE & RESIZE =====
-
-function initTablePanel() {
-  const toggleBtn = document.getElementById('tbl-toggle');
-  const panel = document.getElementById('table-panel');
-  const handle = document.getElementById('tbl-resize-handle');
-  if (!toggleBtn || !panel) return;
-
-  // Hidden by default on every screen size; ?table=open opts in
-  state.tableOpen = new URLSearchParams(window.location.search).get('table') === 'open';
-  if (!state.tableOpen) {
-    panel.classList.add('collapsed');
-    toggleBtn.classList.add('collapsed');
-    if (handle) handle.style.display = 'none';
-  }
-
-  toggleBtn.addEventListener('click', function() {
-    state.tableOpen = !state.tableOpen;
-    panel.style.height = ''; // clear any drag-resize height so the CSS classes take effect
-    panel.classList.toggle('collapsed', !state.tableOpen);
-    toggleBtn.classList.toggle('collapsed', !state.tableOpen);
-    if (handle) handle.style.display = state.tableOpen ? '' : 'none';
-    if (state.tableOpen && state.listViewDirty) {
-      renderTables();
-      state.listViewDirty = false;
-    }
-    const url = new URL(window.location);
-    url.searchParams.set('table', state.tableOpen ? 'open' : 'closed');
-    window.history.replaceState({}, '', url);
-    setTimeout(function() { if (state.map) state.map.resize(); }, 280);
-  });
-
-  if (!handle) return;
-  const MIN_H = 120;
-  const MAX_FRAC = 0.75;
-  let startY, startH;
-
-  handle.addEventListener('pointerdown', function(e) {
-    e.preventDefault();
-    handle.setPointerCapture(e.pointerId);
-    handle.classList.add('dragging');
-    panel.style.transition = 'none';
-    startY = e.clientY;
-    startH = panel.getBoundingClientRect().height;
-
-    function onMove(ev) {
-      const maxH = window.innerHeight * MAX_FRAC;
-      panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
-      if (state.map) state.map.resize();
-    }
-
-    function onUp() {
-      handle.classList.remove('dragging');
-      panel.style.transition = '';
-      handle.removeEventListener('pointermove', onMove);
-      handle.removeEventListener('pointerup', onUp);
-      handle.removeEventListener('lostpointercapture', onUp);
-      if (state.map) state.map.resize();
-    }
-
-    handle.addEventListener('pointermove', onMove);
-    handle.addEventListener('pointerup', onUp);
-    handle.addEventListener('lostpointercapture', onUp);
-  });
-}
 
 // ===== DATA LOADING =====
 
@@ -225,6 +159,7 @@ function boot() {
     showDetailView: function(el) { showDetailView(el.dataset.id); },
     resetAllFilters: function() { resetFilters(); },
     navigateToAllObjects: function() { navigateToAllObjects(); },
+    comingSoon: function() { comingSoon(); },
     navigateWithLandFilter: function() { navigateWithLandFilter(); },
     navigateWithOrtFilter: function() { navigateWithOrtFilter(); },
     retryApiDocs: function() { initApiDocs(); }

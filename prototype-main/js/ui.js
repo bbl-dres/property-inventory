@@ -2,18 +2,21 @@
 // language selector, info panel and browser history.
 
 import { state } from './state.js';
-import { isMobileLayout, isLandscapePhone, isCompactLayout } from './utils.js';
-import { setLang, getLang, t } from './i18n.js';
-import { onEscape } from './keys.js';
+import { isMobileLayout, isLandscapePhone } from './utils.js';
+import { setLang, getLang, t, onLangChange } from './i18n.js';
+import { showToast } from './toast.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
+import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
-import { renderTables, renderGalleryView, syncGalleryFilter } from './list.js';
+import { renderTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
 import { populateDetailView } from './detail.js';
-import { updateMapFilter } from './filters.js';
+import { updateMapFilter, resetFilters, toggleSmartDrawer } from './filters.js';
 import { getShareUrl } from './export.js';
 import { clearSelection, zoomToSelection, setInternalLayerVisibility } from './map.js';
+import { flyHome } from './map-controls.js';
+import { clearSearch } from './search.js';
 
 // ===== URL HELPERS =====
 
@@ -65,9 +68,6 @@ function setActiveView(view) {
     const active = btn.dataset.view === view;
     btn.classList.toggle('active', active);
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
-  });
-  document.querySelectorAll('.mobile-view-btn').forEach(function(btn) {
-    btn.classList.toggle('active', btn.dataset.view === view);
   });
   document.body.classList.toggle('detail-active', view === 'detail');
   setStyleSwitcherVisible(view === 'map');
@@ -132,13 +132,35 @@ export function showApiDocsView() {
 
 // ===== DETAIL TABS =====
 
+function tabStrip() {
+  return document.querySelector('.detail-tabs');
+}
+
+// Phones: the tab strip is wider than the screen and scrolls horizontally
+function isTabStripScrollable() {
+  const strip = tabStrip();
+  return !!strip && strip.scrollWidth > strip.clientWidth + 1;
+}
+
+// Fade hint at the right edge while more tabs are hidden (css: .detail-tabs.can-scroll-right)
+function updateTabStripFade() {
+  const strip = tabStrip();
+  if (!strip) return;
+  const more = isTabStripScrollable() && strip.scrollLeft + strip.clientWidth < strip.scrollWidth - 1;
+  strip.classList.toggle('can-scroll-right', more);
+}
+
 export function activateTab(tab) {
   document.querySelectorAll('.detail-tab').forEach(function(el) {
     const active = el.dataset.tab === tab;
     el.classList.toggle('active', active);
     el.setAttribute('aria-selected', active ? 'true' : 'false');
     el.setAttribute('tabindex', active ? '0' : '-1');
+    if (active && el.scrollIntoView && isTabStripScrollable()) {
+      el.scrollIntoView({ block: 'nearest', inline: 'center' });
+    }
   });
+  updateTabStripFade();
   document.querySelectorAll('.tab-content').forEach(function(content) {
     content.classList.toggle('active', content.dataset.content === tab);
   });
@@ -159,6 +181,11 @@ function initDetailTabs() {
       }
     });
   });
+  const strip = tabStrip();
+  if (strip) {
+    strip.addEventListener('scroll', updateTabStripFade, { passive: true });
+    window.addEventListener('resize', updateTabStripFade);
+  }
 }
 
 // ===== BACK BUTTONS AND VIEW TOGGLE =====
@@ -314,147 +341,60 @@ function initLanguageSelector() {
   });
 }
 
-// ===== TOOLS PANEL TOGGLE (desktop / tablet) =====
+// ===== PHONE MENU EXTRAS (share, language pills and footer links inside the tools panel) =====
 
-let menuOpen = true;
-
-function initMenuToggle() {
-  const menuToggle = document.getElementById('menu-toggle');
-  const accordionPanel = document.getElementById('accordion-panel');
-  const menuToggleText = document.getElementById('menu-toggle-text');
-  if (!menuToggle || !accordionPanel) return;
-  const menuToggleIcon = menuToggle.querySelector('.material-symbols-outlined');
-
-  function renderMenuToggle() {
-    accordionPanel.classList.toggle('collapsed', !menuOpen);
-    // data-i18n keeps the label correct after a language change
-    if (menuToggleText) {
-      menuToggleText.setAttribute('data-i18n', menuOpen ? 'menu.close' : 'menu.open');
-      menuToggleText.textContent = t(menuOpen ? 'menu.close' : 'menu.open');
-    }
-    if (menuToggleIcon) menuToggleIcon.textContent = menuOpen ? 'expand_less' : 'expand_more';
-    menuToggle.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
-  }
-
-  // Tablets start collapsed so the panel does not cover a third of the map by default.
-  // (On phones the panel is hidden entirely; its layer toggles live in the hamburger menu.)
-  menuOpen = !isCompactLayout();
-  renderMenuToggle();
-
-  menuToggle.addEventListener('click', function() {
-    menuOpen = !menuOpen;
-    renderMenuToggle();
-  });
-}
-
-// ===== MOBILE HAMBURGER MENU =====
-
-function initMobileMenu() {
-  const hamburgerBtn = document.getElementById('hamburger-btn');
-  const menu = document.getElementById('mobile-menu');
-  const backdrop = document.getElementById('mobile-menu-backdrop');
-  const closeBtn = document.getElementById('mobile-menu-close');
-  if (!hamburgerBtn || !menu) return;
-
-  function openMenu() {
-    menu.classList.add('active');
-    if (backdrop) backdrop.classList.add('active');
-    hamburgerBtn.setAttribute('aria-expanded', 'true');
-    document.body.style.overflow = 'hidden';
-    if (closeBtn) closeBtn.focus(); // screen readers, external keyboards on tablets
-  }
-
-  // restoreFocus: true when the menu is dismissed without choosing an entry
-  function closeMenu(restoreFocus) {
-    const wasOpen = menu.classList.contains('active');
-    menu.classList.remove('active');
-    if (backdrop) backdrop.classList.remove('active');
-    hamburgerBtn.setAttribute('aria-expanded', 'false');
-    document.body.style.overflow = '';
-    if (restoreFocus && wasOpen) hamburgerBtn.focus();
-  }
-
-  hamburgerBtn.addEventListener('click', openMenu);
-  if (closeBtn) closeBtn.addEventListener('click', function() { closeMenu(true); });
-  if (backdrop) backdrop.addEventListener('click', function() { closeMenu(true); });
-
-  onEscape(function() {
-    if (!menu.classList.contains('active')) return false;
-    closeMenu(true);
-    return true;
-  }, 40);
-
+function initPhoneMenuExtras() {
   // Share the current view: the map context menu (right-click) is not reachable on touch screens
-  const mobileShareBtn = document.getElementById('mobile-share-btn');
-  if (mobileShareBtn) {
-    mobileShareBtn.addEventListener('click', function() {
-      closeMenu();
+  const shareBtn = document.getElementById('mobile-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      closePhoneMenu();
       shareCurrentView();
     });
   }
 
-  const mobileFilterBtn = document.getElementById('mobile-filter-btn');
-  if (mobileFilterBtn) {
-    mobileFilterBtn.addEventListener('click', function() {
-      closeMenu();
-      const filterBtn = document.getElementById('filter-panel-btn');
-      if (filterBtn) filterBtn.click();
-    });
-  }
-
-  document.querySelectorAll('.mobile-view-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      closeMenu();
-      switchView(this.dataset.view);
-    });
-  });
-
-  const mobileApiLink = document.getElementById('mobile-api-link');
-  if (mobileApiLink) {
-    mobileApiLink.addEventListener('click', function(e) {
+  const apiLink = document.getElementById('mobile-api-link');
+  if (apiLink) {
+    apiLink.addEventListener('click', function(e) {
       e.preventDefault();
-      closeMenu();
+      closePhoneMenu();
       showApiDocsView();
     });
   }
-
-  populateMobileLayers();
 }
 
-// Internal layer toggles of the mobile menu (synced with the checkboxes of the tools panel)
-function populateMobileLayers() {
-  const container = document.getElementById('mobile-layers-section');
-  if (!container) return;
+// ===== SEARCH PLACEHOLDER (phones) =====
 
-  const layers = [
-    { key: 'buildings', label: 'accordion.layers.buildings' },
-    { key: 'landcovers', label: 'accordion.layers.landcovers' },
-    { key: 'parcels', label: 'accordion.layers.parcels' }
-  ];
+// The long placeholder is cut to "Suche nach Objekten, O" in a narrow field: shorter hint on phones
+function initResponsiveSearchPlaceholder() {
+  const searchInput = document.getElementById('search-input');
+  if (!searchInput) return;
+  function update() {
+    searchInput.setAttribute('placeholder', t(isMobileLayout() ? 'header.search.placeholder.short' : 'header.search.placeholder'));
+  }
+  update();
+  window.addEventListener('resize', update);
+  onLangChange(update);
+}
 
-  let html = '<div class="mobile-layers-group-label" data-i18n="accordion.layers.internal">' + t('accordion.layers.internal') + '</div>';
-  layers.forEach(function(layer) {
-    const desktopCheckbox = document.getElementById('layer-toggle-' + layer.key);
-    const checked = desktopCheckbox && desktopCheckbox.checked ? ' checked' : '';
-    html += '<div class="mobile-layer-item">' +
-      '<input type="checkbox" id="mobile-layer-toggle-' + layer.key + '"' + checked + ' data-sync-toggle="layer-toggle-' + layer.key + '">' +
-      '<label class="mobile-layer-title" for="mobile-layer-toggle-' + layer.key + '" data-i18n="' + layer.label + '">' + t(layer.label) + '</label>' +
-      '<button type="button" class="mobile-layer-info" data-action="showInternalLayerInfo" data-layer-key="' + layer.key + '">' +
-        '<span class="material-symbols-outlined">info</span>' +
-      '</button>' +
-    '</div>';
-  });
-  container.innerHTML = html;
+// ===== HOME (logo) =====
 
-  container.querySelectorAll('input[data-sync-toggle]').forEach(function(cb) {
-    cb.addEventListener('change', function() {
-      const desktopCb = document.getElementById(this.dataset.syncToggle);
-      if (desktopCb) {
-        desktopCb.checked = this.checked;
-        desktopCb.dispatchEvent(new Event('change'));
-      }
-    });
-  });
+// The logo is the home button: landing state of the app — map view, no filters, no selection,
+// search and drawer closed, initial map extent. Basemap and language stay (user preferences).
+export function goHome() {
+  closePhoneMenu();
+  toggleSmartDrawer(false);
+  clearSearch();
+  clearSelection();
+  resetFilters();
+  setTablePanelOpen(false);
+  switchView('map');
+  if (state.map) flyHome(state.map);
+}
+
+function initLogoHome() {
+  const logo = document.getElementById('logo-area');
+  if (logo) logo.addEventListener('click', goHome);
 }
 
 // ===== INFO PANEL =====
@@ -499,18 +439,25 @@ function initInternalLayerToggles() {
   });
 }
 
+// Placeholder buttons of the prototype (login)
+export function comingSoon() {
+  showToast({ type: 'info', message: t('detail.coming_soon'), duration: 4000 });
+}
+
 // ===== INIT =====
 
 export function initUI() {
   initLanguageSelector();
   initAccordion();
-  initMenuToggle();
+  initToolsPanel();
   initInfoPanel();
   initInternalLayerToggles();
   initDetailTabs();
   initViewToggle();
+  initLogoHome();
   initPopstate();
   initBackButtons();
   initFooterApiLink();
-  initMobileMenu();
+  initPhoneMenuExtras();
+  initResponsiveSearchPlaceholder();
 }

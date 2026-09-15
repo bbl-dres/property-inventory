@@ -387,9 +387,6 @@ export function initFilterPane() {
     return true;
   }, 30);
 
-  // Logo click: back to the map with all objects
-  document.getElementById('logo-area').addEventListener('click', navigateToAllObjects);
-
   // Filter search: shows only the sections whose title matches
   const filterSearchInput = document.getElementById('filter-search-input');
   const filterSearchClear = document.getElementById('filter-search-clear');

@@ -17,7 +17,7 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 - **List** — sortable, searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
 - **Detail panel** — building dashboard with images, basic info, mini-map, and area data (SIA 416 compliant).
-- **Mobile** — phones (portrait and landscape) get a compact header with a hamburger menu, a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
+- **Mobile** — phones (portrait and landscape) get a two-row header, the tools panel as a hamburger menu (print, Geokatalog, layers, share, language), a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ### Search & filtering
 - Multi-source search: local buildings + swisstopo location API + Geokatalog layers. Rows show an icon, the highlighted term and a meta line; Geokatalog rows carry a "+ Als Ebene" button and an info button that opens the layer info modal. A scope menu ("Alle ▾") with checkboxes narrows the sources (several can be combined).
@@ -71,15 +71,16 @@ A jsdom harness with a fake MapLibre lives in [`../test/`](../test/). It is deve
 cd test && npm install
 npm test            # all scenarios of both prototypes
 npm run test:main     # this prototype only
-npm run align       # verifies that the common modules are identical in both prototypes
+npm run align       # verifies that the common modules, stylesheets and the design guide are identical in both prototypes
+npm run visual      # headless-Edge screenshots and computed metrics of both prototypes at six viewports (needs a static server on :8123)
 ```
 
 ## Tech
 
 | What | Why |
 |---|---|
-| Vanilla ES modules | No build, easy to read. 17 of the 27 modules are byte-identical with the tabs prototype (see [docs/CODE-REVIEW-2.md](docs/CODE-REVIEW-2.md)) |
-| MapLibre GL JS 5.19 | Map, layers, 3D tiles — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
+| Vanilla ES modules | No build, easy to read. 18 of the 28 modules and the stylesheets `tokens.css` / `components.css` are byte-identical with the tabs prototype (see [docs/CODE-REVIEW-2.md](docs/CODE-REVIEW-2.md), [docs/DESIGN-REVIEW.md](docs/DESIGN-REVIEW.md)) |
+| MapLibre GL JS 5.19 | Map, layers, clustered points, 3D buildings — vendored in `vendor/maplibre-gl/` so the app does not depend on a CDN |
 | Swagger UI 5 | API documentation from `data/swagger.json` — vendored in `vendor/swagger-ui/`, loaded only when the API page opens |
 | jsPDF 2.5.1 | PDF export of the print view — vendored in `vendor/jspdf/` |
 | swisstopo `api3.geo.admin.ch` | Location search & Geokatalog (no key required) |
@@ -91,19 +92,20 @@ npm run align       # verifies that the common modules are identical in both pro
 prototype-main/
 ├── index.html
 ├── css/
-│   ├── tokens.css        # Design tokens
-│   └── styles.css        # Application styles
+│   ├── tokens.css        # Design tokens, base, primitives (identical with ../prototype-tabs)
+│   ├── components.css    # Shared components incl. responsive rules (identical with ../prototype-tabs)
+│   └── app.css           # Main-only: language selector, table panel, detail cards, API docs
 ├── js/                   # ES modules
 │   ├── app.js            # Bootstrap, data loading, action delegation
 │   ├── config.js · state.js
-│   ├── ui.js             # Views, tabs, tools panel, mobile menu, language, history
+│   ├── ui.js             # Views, tabs, phone-menu extras, language, history
 │   ├── map.js            # Data layers, selection, restore after a basemap change
 │   ├── list.js           # Table panel (three tables), gallery
 │   ├── detail.js · filters.js · search.js · export.js
 │   └── common modules, identical with ../prototype-tabs/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js
 ├── data/
 │   ├── buildings.geojson
 │   ├── parcels.geojson
@@ -120,7 +122,8 @@ prototype-main/
 │   └── topics.png        # Topic sprite of the Geokatalog
 └── docs/
     ├── DATAMODEL.md      # Attribute reference
-    ├── DESIGNGUIDE.md    # Design system
+    ├── DESIGNGUIDE.md    # Design system (identical with ../prototype-tabs)
+    ├── DESIGN-REVIEW.md  # Design review (2026-09-15): alignment of both prototypes
     ├── CODE-REVIEW.md    # Review 1 (2026-09-11): bugs, performance
     ├── CODE-REVIEW-2.md  # Review 2 (2026-09-15): dead code, duplication, alignment with prototype-tabs
     ├── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
@@ -129,5 +132,5 @@ prototype-main/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

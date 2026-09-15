@@ -133,6 +133,17 @@ export const searchActions = {
 
 // ===== INIT =====
 
+// Clears the field, hides the results and removes the location marker (clear button, logo/home)
+export function clearSearch() {
+  if (!searchInput) return;
+  searchInput.value = '';
+  if (searchClearBtn) searchClearBtn.classList.remove('visible');
+  hideResults();
+  // Dispatch input so the gallery filter reacts to the cleared value
+  searchInput.dispatchEvent(new Event('input'));
+  removeSearchMarker();
+}
+
 export function initSearch() {
   searchInput = document.getElementById('search-input');
   searchResults = document.getElementById('search-results');
@@ -191,13 +202,8 @@ export function initSearch() {
   });
 
   searchClearBtn.addEventListener('click', function() {
-    searchInput.value = '';
-    searchClearBtn.classList.remove('visible');
-    hideResults();
+    clearSearch();
     searchInput.focus();
-    // Dispatch input so the gallery filter reacts to the cleared value
-    searchInput.dispatchEvent(new Event('input'));
-    removeSearchMarker();
   });
 
   // Scope menu inside the search box ("Alle" opens checkboxes Objekte / Orte / Karten).

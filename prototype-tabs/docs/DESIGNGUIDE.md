@@ -1,7 +1,9 @@
 # Design Guide
 
 **BBL GIS Immobilienportfolio**
-Version 1.1 | Last Updated: September 2026
+Version 1.2 | Last Updated: September 2026
+
+One design system for both prototypes (`prototype-main`, `prototype-tabs`). This guide is identical in both `docs/` folders; see `DESIGN-REVIEW.md` for the review that aligned them.
 
 ---
 
@@ -75,6 +77,19 @@ DON'T: Rely solely on color to convey information
 
 Design tokens are the foundation of our visual language. All values are defined as CSS custom properties in `:root` for consistency and maintainability.
 
+### Stylesheets
+
+| File | Content | Shared |
+|------|---------|--------|
+| `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
+| `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, info panel, filter drawer, toolbars, tables, pagination, gallery, detail page frame, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
+| `css/app.css` | What only one prototype has (main: language selector, table panel, single-column detail cards, API docs; tabs: object count, list view, header tab strip, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
+
+The prototypes stay independent: nothing is loaded across folders. `test/check-alignment.js` reports when
+the two copies of `tokens.css` or `components.css` drift apart. A component that both prototypes use is
+styled once, in `components.css`; `app.css` may only add composition rules (where a component sits, how
+wide its container is), never restyle a shared component.
+
 ### Token Categories
 
 | Category | Purpose | Example |
@@ -85,6 +100,8 @@ Design tokens are the foundation of our visual language. All values are defined 
 | Radius | Border corner rounding | `--radius-md`, `--radius-lg` |
 | Shadow | Elevation and depth | `--shadow-md`, `--shadow-lg` |
 | Motion | Transition timing | `--transition-fast` |
+| Layers | Stacking order | `--z-panel`, `--z-modal` |
+| Layout | Panel and content widths, control height | `--drawer-width`, `--tools-panel-width`, `--control-height` |
 
 ### Usage Rules
 
@@ -116,6 +133,11 @@ We use system fonts for:
 - **Performance** — No font loading delay
 - **Native feel** — Matches platform conventions
 - **Legibility** — Optimized for screens
+
+The stack is the token `--font-sans` (`--font-mono` for coordinates). `tokens.css` makes buttons, inputs and
+selects inherit it (`button, input, select, textarea { font: inherit; color: inherit }`) — without that
+reset, controls render in the browser's default Arial 13.33px. Floating map widgets (basemap switcher,
+measure display, context menu) set the stack explicitly because the MapLibre container uses Helvetica.
 
 ### Type Scale
 
@@ -263,21 +285,42 @@ Based on a **4px base unit** for consistent rhythm.
 | `--shadow-lg` | 0 4px 12px rgba(0,0,0,0.15) | Floating elements |
 | `--shadow-xl` | 0 4px 16px rgba(0,0,0,0.2) | Modals, panels |
 
+### Z-Index Scale
+
+Every stacked element uses one of these tokens; no other z-index values are allowed in shared components.
+
+| Token | Value | Use Case |
+|-------|-------|----------|
+| `--z-map-overlay` | 400 | Print crop preview over the map |
+| `--z-panel` | 500 | Tools panel, info panel, basemap switcher |
+| `--z-sheet` | 650 | Info panel as a bottom sheet (phones) |
+| `--z-header` | 1000 | Header, measure display |
+| `--z-popover` | 1001 | Context menu, dropdown menus, prototype banner |
+| `--z-drawer` | 2000 | Filter drawer (phones), search results |
+| `--z-menu` | 2100 | Slide-in phone menu (its backdrop is 2099) |
+| `--z-overlay` | 9999 | Loading overlay, lightbox |
+| `--z-toast` | 10000 | Toasts |
+| `--z-modal` | 10001 | Layer info and topic modals |
+
 ### Layout Structure
 
 ```
 ┌─────────────────────────────────────────────────────┐
-│ Header (90px)                                       │
+│ Header (90px, 70px on tablets, two 44px rows on phones)
 ├─────────────────────────────────────────────────────┤
-│                                                     │
-│  Main Content Area                      Filter     │
-│  (Map/List/Gallery/Detail)             Pane       │
-│                                        (340px)     │
-│                                                     │
+│ ┌ Tools panel (300px) ┐                             │
+│ │ Karte drucken … │   Map / List / Gallery / Detail │  Filter drawer
+│ └ Menü schliessen ┘                                 │  (450px, resizable
+│                                    Info panel (320px)│   300–800px; 340px
+│                                                     │   on tablets)
 ├─────────────────────────────────────────────────────┤
-│ Footer                                              │
+│ Footer (27px, hidden on phones)                     │
 └─────────────────────────────────────────────────────┘
 ```
+
+Layout tokens: `--header-main-height`, `--footer-height`, `--drawer-width` (+ min/max), `--tools-panel-width`,
+`--content-max-width` (1500px for lists, galleries and the detail grid), `--control-height` (40px header
+controls, 44px on touch screens).
 
 ### Grid Systems
 
@@ -288,19 +331,22 @@ grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
 gap: var(--space-6);
 ```
 
-**Detail Grid:**
+**Detail Grid (tabs prototype):**
 ```css
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: var(--space-6);
 ```
 
-**Data Grid:**
+**Data Grid (tabs prototype):**
 ```css
 display: grid;
 grid-template-columns: 1fr 1fr;
 gap: var(--space-8);
 ```
+
+**Detail Column (main prototype):** one 720px column (`.detail-single-col`) of collapsible cards
+(`.detail-overline` + `.detail-card` with `.detail-grid-row` label | value | info icon).
 
 ---
 
@@ -352,35 +398,62 @@ For low-emphasis actions.
 }
 ```
 
-#### Icon Button
-For toolbar and floating actions.
+#### Header Button (pill)
+Filter, language and menu buttons in the header. 40px on desktop, icon-only 44px circles from the tablet
+breakpoint down (the label is hidden, the `aria-label` carries the name).
 
 ```css
-.icon-btn {
+.header-btn {
   background: white;
   border: 1px solid var(--grey-300);
-  padding: 8px 12px;
-  border-radius: var(--radius-sm);
-  height: 40px;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-full);
+  height: var(--control-height);       /* 40px, 44px on touch screens */
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--space-2);
 }
 ```
 
-### Status Badges
+The actions sit in `#header-right` with a 12px gap (`--space-3`) at every width: Filter, language (`#lang-selector`,
+a dropdown with DE/FR/IT/EN; on phones the pills in the menu), login and, on phones, the menu button. The tabs
+prototype shows the same selector but has no translations yet — a choice only warns.
 
-Pill-shaped badges indicating building state.
+**States:** `.panel-open` (drawer open) — panel-grey fill, white text; `.has-active-filters` — grey-900
+fill with the red `.filter-count` badge (inline on desktop, on the corner of the icon-only button on tablets).
+
+#### Panel Button
+Full-width action at the bottom of a tools-panel form (PDF erstellen, Distanz messen, Exportieren).
+Same colours as the primary button, 40px high.
 
 ```css
-.status-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 10px;
-  border-radius: 12px;
+.panel-btn {
+  width: 100%;
+  min-height: var(--control-height);
+  background: var(--grey-900);
+  color: white;
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center; gap: var(--space-2);
+}
+```
+
+Red is reserved for selected and active states (tabs, table headers on hover, the active basemap,
+the active topic card) and for the brand; buttons are grey-900 or white.
+
+### Status Badges
+
+`.badge` (tokens.css) is the inline label primitive; `.status-badge` adds the colour variants. Always use
+both classes: `class="badge status-badge status-active"`.
+
+```css
+.badge {
+  display: inline-block;
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-sm);
   font-size: var(--text-xs);
-  font-weight: var(--font-semibold);
+  font-weight: var(--font-medium);
+  line-height: 1;
+  white-space: nowrap;
 }
 
 .status-badge.status-active {
@@ -388,6 +461,9 @@ Pill-shaped badges indicating building state.
   color: var(--status-active-text);
 }
 ```
+
+Variants: `status-active`, `status-renovation`, `status-planning`, `status-inactive` / `status-expired`,
+`status-terminated` (warning colours). `getStatusClassName()` in `js/config.js` maps data values to them.
 
 ### Cards
 
@@ -409,7 +485,7 @@ For grid view property display.
 }
 ```
 
-#### Detail Section
+#### Detail Section (tabs prototype)
 For grouped information display.
 
 ```css
@@ -418,9 +494,10 @@ For grouped information display.
   border: 1px solid var(--grey-300);
   border-radius: var(--radius-sm);
   overflow: hidden;
+  container-type: inline-size;         /* its content adapts to the column, not the viewport */
 }
 
-.detail-section-header {
+.detail-section-title {
   background: var(--grey-100);
   padding: var(--space-3) var(--space-4);
   font-weight: var(--font-semibold);
@@ -428,67 +505,101 @@ For grouped information display.
 }
 ```
 
-### Tables
+#### Detail Card (main prototype)
+Collapsible card with an overline title; rows are label | value | info icon.
 
 ```css
-.data-table {
+.detail-overline { font-size: var(--text-xs); font-weight: var(--font-semibold); text-transform: uppercase;
+                   letter-spacing: var(--tracking-wide); color: var(--grey-500); background: var(--grey-50); }
+.detail-card     { background: white; border: 1px solid var(--grey-200); border-radius: var(--radius-sm); }
+.detail-grid-row { display: grid; grid-template-columns: 1fr 1fr 24px; padding: var(--space-2) var(--space-3); }
+```
+
+Overline labels (section titles, layer groups, column groups, dropdown headers) always use
+`--text-xs`, semibold, uppercase, `--tracking-wide`, `--grey-500`.
+
+### Tables
+
+One density for every data table (`.list-table` in both prototypes, `.detail-table` of the entity tabs):
+compact 37px rows, uppercase-free semibold headers, sticky header row.
+
+```css
+.list-table {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13px;
+  font-size: var(--text-sm);
 }
 
-.data-table th {
+.list-table thead {
   position: sticky;
   top: 0;
-  background: white;
-  padding: 12px 16px;
+  background: var(--grey-100);
+}
+
+.list-table th {
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--grey-700);
   border-bottom: 1px solid var(--grey-300);
-  font-weight: var(--font-medium);
-  color: var(--grey-600);
   text-align: left;
+  white-space: nowrap;
 }
 
-.data-table td {
-  padding: 14px 16px;
+.list-table th:hover { color: var(--primary-red); }      /* sortable */
+
+.list-table td {
+  padding: var(--space-2) var(--space-4);
   border-bottom: 1px solid var(--grey-100);
+  color: var(--grey-800);
 }
 
-.data-table tr:hover {
-  background: var(--grey-50);
-}
+.list-table tbody tr:hover td { background: var(--grey-50); }
+.list-table tbody tr.row-active td { background: var(--primary-red-tint); }
 ```
+
+The toolbar above a table (`.toolbar`: search box, filter pills, Export and Spalten dropdowns) and the
+pagination footer below it use the compact scale too: 32px controls with `--text-xs` labels.
 
 ### Tabs
 
+`.detail-tabs > .detail-tabs-inner > button.detail-tab`. The strip sits in the page header (tabs prototype)
+or inside the content column (`.detail-tabs--inline`, main prototype); the tab itself is the same.
+
 ```css
-.tabs {
-  display: flex;
-  border-bottom: 1px solid var(--grey-300);
+.detail-tabs {
   background: white;
+  border-bottom: 1px solid var(--grey-300);
+  padding: 0 var(--space-6);
 }
 
-.tab {
-  padding: 14px 20px;
+.detail-tab {
+  padding: var(--space-3) var(--space-5);
   font-size: var(--text-sm);
-  color: var(--grey-600);
-  border-bottom: 3px solid transparent;
-  cursor: pointer;
-  transition: all 0.2s;
+  font-weight: var(--font-medium);
+  color: var(--grey-500);
+  border: none;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+  background: none;
+  transition: color 0.2s, border-color 0.2s;
 }
 
-.tab:hover {
-  color: var(--grey-900);
-  background: var(--grey-50);
-}
+.detail-tab:hover { color: var(--grey-900); }
 
-.tab.active {
+.detail-tab.active {
   color: var(--primary-red);
   border-bottom-color: var(--primary-red);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
 }
 ```
 
+The table tabs of the main prototype's table panel (`.table-tab`) follow the same rule at `--text-xs`.
+
 ### Accordions
+
+Accordion headers are `<button>` elements (keyboard and screen-reader support for free); one item is open
+at a time (`js/accordion.js`).
 
 ```css
 .accordion-header {
@@ -520,57 +631,92 @@ For grouped information display.
 
 ### Form Inputs
 
+Selects use `.custom-select` (tokens.css): 32px minimum height, chevron background, `--text-sm`.
+Checkboxes are 16px with the brand-red accent, 20px on touch screens. Text inputs are unstyled inside
+their bordered container (search box, toolbar search, filter search); on phones every field is 16px so
+iOS Safari does not zoom into the page on focus.
+
 ```css
-.input {
-  height: 44px;
+.custom-select {
+  appearance: none;
+  min-height: 32px;
+  padding: var(--space-2) var(--space-8) var(--space-2) var(--space-3);
   border: 1px solid var(--grey-300);
   border-radius: var(--radius-sm);
-  padding: var(--space-2) var(--space-3);
   font-size: var(--text-sm);
-  transition: border-color 0.2s;
 }
 
-.input:hover {
-  border-color: var(--grey-500);
-}
+.custom-select:hover { border-color: var(--grey-500); }
+.custom-select:focus { border-color: var(--interactive-blue); }
 
-.input:focus {
-  outline: 2px solid var(--focus-ring);
-  outline-offset: 2px;
-  border-color: var(--interactive-blue);
-}
+input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--checkbox-accent); }
 ```
+
+Panel forms (print) are two-column grids: label | control, checkboxes and the panel button spanning both
+columns (`.print-form`, `.print-form-row`, `.print-checkbox-label`, `.panel-btn`).
 
 ### Dropdowns
 
 ```css
+.dropdown-btn {                        /* toolbar trigger: 32px, --text-xs */
+  display: flex; align-items: center; gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  min-height: 32px;
+  border: 1px solid var(--grey-300);
+  border-radius: var(--radius-sm);
+  font-size: var(--text-xs);
+}
+
 .dropdown-menu {
   position: absolute;
   top: 100%;
   right: 0;
-  margin-top: 4px;
+  margin-top: var(--space-1);
   background: white;
   border: 1px solid var(--grey-200);
-  border-radius: 6px;
+  border-radius: var(--radius-md);
   box-shadow: var(--shadow-lg);
   min-width: 200px;
-  z-index: 1000;
+  z-index: var(--z-popover);
 }
 
-.dropdown-item {
-  padding: 10px 14px;
-  cursor: pointer;
+.dropdown-menu-item,
+.context-menu-item {                   /* the map context menu shares the row style */
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--text-sm);
   transition: background 0.15s;
 }
 
-.dropdown-item:hover {
-  background: var(--grey-50);
-}
+.dropdown-menu-item:hover { background: var(--grey-50); }
 ```
 
 ---
 
 ## Patterns
+
+### Map Layers Pattern
+
+Both prototypes draw the same layer stack on the same basemaps (`js/map.js`, ids in `internalLayerIds`):
+
+| Layer | Style |
+|-------|-------|
+| Basemaps | CARTO Positron (Light, default), Voyager (Standard), Dark Matter (Dark) and "Luftbild": Esri World Imagery worldwide with swisstopo SWISSIMAGE on top inside Switzerland |
+| `buildings-clusters` + `buildings-cluster-count` | Clustered up to zoom 14 (radius 50px): blue circles 18/24/32px for <10 / <50 / 50+ objects, white count |
+| `buildings-points` | 10px circle in the status colour (`statusColors`), 2px white stroke |
+| `buildings-selected` + `buildings-selected-pulse` | 18px red ring (3px) with a pulsing 24px ring around the selected object |
+| `buildings-labels` | Object id above the point from zoom 16 (13px bold, white halo) |
+| `parcels-fill` / `-outline` / `-highlight` / `-selected` (+ `-outline`) | Blue-grey parcel colour; visible from zoom 12, fading in until 13; hover 35 %, selected 45 % with a 3px outline |
+| `landcovers-*` (main only) | Land-cover polygons from zoom 14 in the land-cover colours |
+
+Clicking a cluster zooms to its expansion zoom; clicking a point selects the object (info panel); clicking
+empty map deselects and identifies the external swisstopo layers.
+
+### Home Pattern
+
+The logo (`#logo-area`) is the home button in both prototypes. It returns to the landing state: map view,
+all filters cleared, no selection, search and drawer closed, initial map extent (`goHome()` in `js/ui.js`).
+Basemap and language are user preferences and stay. The breadcrumb link "Alle Objekte" only clears the
+filters and leaves the detail page.
 
 ### View Toggle Pattern
 
@@ -580,10 +726,32 @@ For grouped information display.
     <span class="material-symbols-outlined">map</span>
     <span class="view-label">Karte</span>
   </button>
-  <button class="view-toggle-btn" data-view="list">
-    <span class="material-symbols-outlined">view_list</span>
-    <span class="view-label">Liste</span>
+  <button class="view-toggle-btn" data-view="gallery">
+    <span class="material-symbols-outlined">grid_view</span>
+    <span class="view-label">Galerie</span>
   </button>
+</div>
+```
+
+Both prototypes offer the same two views, map and gallery; tables live in the table panel under the map.
+
+### Table Panel Pattern
+
+The "Tabelle" toggle (grey-900 pill at the bottom centre of the map) opens a resizable panel under the
+map with one tab per data set (Gebäude, Grundstücke; main also Bodenabdeckung), the toolbar (search,
+filter pills, Export and Spalten dropdowns) and the compact `.list-table`. A row selects the object on the
+map and the map selection highlights its row. `?table=open` and `?tableTab=` keep the state in the URL;
+phones hide the panel (the map keeps the info sheet).
+
+```html
+<div id="map">…<button id="tbl-toggle" class="tbl-toggle">…Tabelle</button></div>
+<div id="tbl-resize-handle" class="tbl-resize-handle"></div>
+<div id="table-panel" class="table-panel collapsed">
+  <div class="list-table-container">
+    <div class="toolbar"><div class="table-tabs">…</div><div class="toolbar-search">…</div><div class="filter-pills"></div><div class="toolbar-actions">…</div></div>
+    <div class="table-tab-content active" id="buildings-table-content">…table + pagination…</div>
+    <div class="table-tab-content" id="parcels-table-content">…</div>
+  </div>
 </div>
 ```
 
@@ -605,7 +773,7 @@ For grouped information display.
   </div>
 </div>
 <div class="search-scope-menu" role="group" hidden>       <!-- checkboxes, several can be combined -->
-  <label class="search-scope-option"><input type="checkbox" value="ask" checked><span>Fragen</span></label>
+  <label class="search-scope-option"><input type="checkbox" value="ask" checked><span>Fragen</span></label>   <!-- tabs prototype -->
   <label class="search-scope-option"><input type="checkbox" value="objects" checked><span>Objekte</span></label> …
 </div>
 ```
@@ -615,7 +783,7 @@ source, or "N Bereiche". The menu lives outside the search container so it can d
 
 ### Search Suggestions Pattern
 
-One dropdown, several sources. Each section names its source on the right; each row is
+One dropdown, several sources (the "Frage stellen" section with the KI answer exists in the tabs prototype only). Each section names its source on the right; each row is
 *icon · title (+ subtitle) · meta or action*. The matched term is highlighted in the title.
 
 ```
@@ -623,7 +791,7 @@ FRAGE STELLEN ………………………… KI          ← one suggested quest
 ✦  Wie viele Objekte gibt es in Bern?     ↵ Antwort
    In Bern gibt es 2 Objekte mit total …  [chips that select the object on the map]
 OBJEKTE
-▦  Bundeshaus West                        Gebäude · Bern CH · BBL-001
+▦  Bundeshaus West                        Gebäude · Bern CH · 1080/4840/AF
 ▢  Bundesplatz Parzelle A                 Parzelle · Bern · Nr. BE-3003-1001
 ORT ……………………………………… swisstopo
 ◉  Bern (BE)                              Ort
@@ -639,7 +807,7 @@ KARTEN ……………………………… Geokatalog
     <span class="search-item-title">Bundeshaus <b>West</b></span>
     <span class="search-item-subtitle">Bundesplatz 3, Bern</span>
   </span>
-  <span class="search-item-meta">Gebäude · Bern CH · BBL-001</span>
+  <span class="search-item-meta">Gebäude · Bern CH · 1080/4840/AF</span>
 </div>
 <div class="search-answer">…</div>   <!-- follows the KI row; hidden until requested -->
 ```
@@ -648,38 +816,59 @@ The KI answers of the prototype are computed from the loaded data (`suggestAiQue
 not by a model; the pattern is what matters: the assistant lives in the search box, not in a side panel.
 On phones the dropdown spans the header width and the meta wraps under the title.
 
-### Filter Panel Pattern
+### Filter Drawer Pattern
 
 ```html
-<aside class="filter-pane">
-  <header class="filter-header">
-    <h2>Filter</h2>
-    <button class="close-btn">
-      <span class="material-symbols-outlined">close</span>
-    </button>
-  </header>
-
-  <div class="filter-content">
-    <section class="filter-section">
-      <button class="filter-section-header">
-        <span>Status</span>
-        <span class="material-symbols-outlined">expand_more</span>
-      </button>
-      <div class="filter-section-content">
-        <label class="filter-option">
-          <input type="checkbox" checked>
-          <span>In Betrieb</span>
-        </label>
-      </div>
-    </section>
+<aside id="filter-panel">                                   <!-- .open: 450px wide, resizable -->
+  <div class="filter-panel-resize-handle"></div>
+  <div class="panel-header filter-panel-header">
+    <span class="panel-header-title"><span class="material-symbols-outlined">filter_list</span><span>Filter</span></span>
+    <div class="filter-panel-actions">
+      <button class="filter-panel-btn"><span class="material-symbols-outlined">replay</span></button>
+      <button class="filter-panel-btn"><span class="material-symbols-outlined">close</span></button>
+    </div>
   </div>
-
-  <footer class="filter-footer">
+  <div class="filter-panel-content">
+    <div class="filter-section open">
+      <div class="filter-section-header"><span class="filter-section-title">Status</span> …</div>
+      <div class="filter-section-content">
+        <div class="filter-option"><input type="checkbox" id="f1"><label for="f1">In Betrieb <span class="filter-option-count">8</span></label></div>
+      </div>
+    </div>
+  </div>
+  <div class="filter-panel-footer">                          <!-- phones only -->
     <button class="btn-secondary">Zurücksetzen</button>
-    <button class="btn-primary">Anwenden</button>
-  </footer>
+    <button class="btn-primary">10 Objekte anzeigen</button>
+  </div>
 </aside>
 ```
+
+Filters apply instantly; the active ones appear as `.filter-pill`s in the table toolbar and as the red
+`.filter-count` badge on the header button.
+
+### Tools Panel Pattern
+
+```html
+<div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
+<div id="accordion-wrapper">                                <!-- floats at the top left of the map -->
+  <aside id="accordion-panel">
+    <div class="mobile-menu-header">…title, close button…</div>   <!-- phones only -->
+    <div class="accordion-item" data-accordion="print">
+      <button class="accordion-header" aria-expanded="false">
+        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+        <span>Karte drucken</span>
+      </button>
+      <div class="accordion-content">…</div>
+    </div>
+    …
+    <div class="mobile-menu-extras">…footer links…</div>      <!-- phones only -->
+  </aside>
+  <div id="menu-toggle" role="button">…Menü schliessen…</div>  <!-- attached below the panel -->
+</div>
+```
+
+`js/tools-panel.js` (shared) owns the open state: on desktop the toggle collapses the panel, on tablets
+it starts collapsed, on phones the same panel is the hamburger menu (see Responsive Patterns).
 
 ### Empty State Pattern
 
@@ -694,10 +883,8 @@ On phones the dropdown spans the header width and the meta wraps under the title
 ### Loading State Pattern
 
 ```html
-<div class="loading-state">
-  <div class="spinner"></div>
-  <p>Laden...</p>
-</div>
+<div class="loading-overlay"><div class="loading-spinner"></div><div class="loading-text">Daten werden geladen...</div></div>
+<span class="spinner inline-spinner"></span> Lade Katalog...        <!-- inside buttons and panel rows -->
 ```
 
 ### Breadcrumb Pattern
@@ -780,7 +967,8 @@ On phones the dropdown spans the header width and the meta wraps under the title
 
 | Name | Media query | Target |
 |------|-------------|--------|
-| Desktop | `> 1024px` | Large screens, default |
+| Desktop | `> 1366px` | Large screens, default: the search box is centred in the header |
+| Laptop | `max-width: 1366px` | The search box flexes between logo and actions |
 | Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, icon-only header buttons, tools panel starts collapsed. |
 | Mobile | `max-width: 767px`, **or** `max-height: 500px and (pointer: coarse)` | Phones in portrait **and** landscape. Two-row header (title + actions / search + view toggle), hamburger menu for the map tools, full-screen filter sheet, bottom-sheet info panel, sticky tab strip on the detail page. |
 | Small Mobile | `max-width: 479px` | Small phones |
@@ -796,17 +984,21 @@ Landscape phones additionally dock the info panel to the right (`max-height: 500
 ### Responsive Patterns
 
 **Header Transformation (Mobile):** two 44 px rows — title, filter and menu button; search and view toggle.
+Landscape phones fold both rows back into one.
 ```css
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
   .header-main { flex-wrap: wrap; height: auto; padding: 8px 16px; }
   #logo-area   { order: 1; }                   /* short title: "BBL Liegenschaften Inventar" */
-  #header-right { order: 2; margin-left: auto; }
-  #search-area { order: 3; flex: 0 0 100%; }   /* flex-basis, not width: the base rule is flex: 1 */
+  #header-right { order: 2; margin-left: auto; } /* filter, hamburger (language and login hidden) */
+  #search-area { order: 3; flex: 0 0 100%; }   /* flex-basis, not width: the laptop rule is flex: 1 */
+  .hamburger-btn { display: flex; }            /* 44px bordered circle like the other header buttons */
 }
 ```
 
 **Hamburger Menu (Mobile):** on phones the map tools panel (`#accordion-panel`) is the menu itself,
-so share, print, export, Geokatalog and the external layers stay available without a second markup.
+so print, Geokatalog and the layers (tabs: also share, measure and export) stay available without a second
+markup; `.mobile-menu-extras` at the bottom holds what only phones need (main: share, language pills and the
+footer links; tabs: the footer links).
 ```css
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
   .hamburger-btn { display: flex; width: 44px; height: 44px; }
@@ -855,8 +1047,8 @@ in `js/gestures.js`). When it opens, the map keeps the selected object out from 
 **Full-screen Sheet with Footer (Mobile filter):**
 ```css
 @media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
-  #smart-drawer { position: fixed; inset: 0; z-index: 2000; }
-  .smart-drawer-footer { display: flex; }     /* "Zurücksetzen" + "N Objekte anzeigen" (live count) */
+  #filter-panel { position: fixed; inset: 0; z-index: var(--z-drawer); }
+  .filter-panel-footer { display: flex; }     /* "Zurücksetzen" + "N Objekte anzeigen" (live count) */
 }
 ```
 
@@ -871,15 +1063,15 @@ in `js/gestures.js`). When it opens, the map keeps the selected object out from 
 Visual size may stay small (an 18 px icon, a 10 px carousel dot) as long as the hit area is 44 px.
 Inputs use `font-size: 16px` on phones so iOS Safari does not zoom into the page when they receive focus.
 
-**Sticky Tab Strip (Mobile detail page):** `#header` is `position: sticky` with a negative `top`
-(`--header-sticky-offset`, set by `updateDetailHeaderOffset()`), so the header collapses on scroll until
-only the tab strip is pinned. The strip scrolls horizontally, snaps to tabs and fades at the right edge
-while more tabs are hidden.
+**Sticky Tab Strip (Mobile detail page, tabs prototype):** `#header` is `position: sticky` with a negative
+`top` (`--header-sticky-offset`, set by `updateDetailHeaderOffset()`), so the header collapses on scroll
+until only the tab strip is pinned. In both prototypes the strip scrolls horizontally on phones, snaps to
+tabs and fades at the right edge while more tabs are hidden (`.can-scroll-right`).
 
 **Wide Tables in Narrow Columns:** the address table becomes stacked label/value rows below a
-container width of 640 px (`@container` on `.detail-section--address`), so it also works next to the open
-drawer on a desktop. Entity tables scroll horizontally in their wrapper; flex/grid children that contain
-tables need `min-width: 0`, otherwise they push the page past the viewport.
+container width of 640 px (`@container` on `.address-table-wrap`; cells carry `data-label`), so it also
+works next to the open drawer on a desktop. Entity tables scroll horizontally in their wrapper; flex/grid
+children that contain tables need `min-width: 0`, otherwise they push the page past the viewport.
 
 ### Mobile-First Approach
 
@@ -1119,6 +1311,7 @@ Decorative icons should be hidden from screen readers:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.2 | Sep 2026 | Design review (see `DESIGN-REVIEW.md`): one stylesheet set for both prototypes (`tokens.css` + `components.css` identical, `app.css` per app), z-index scale, header button and panel button specs, one table density, 2px tabs, `.badge` primitive, phone menu = tools panel in both apps, inverted table toggle |
 | 1.1 | Sep 2026 | Responsive review: landscape-phone breakpoint, touch-target rules, two-row phone header, hamburger menu, bottom-sheet / filter-footer / sticky-tab patterns, container query for the address table; search suggestions with inline KI answer (see `RESPONSIVE-REVIEW.md`) |
 | 1.0 | Dec 2024 | Initial design guide release |
 

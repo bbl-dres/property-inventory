@@ -23,6 +23,12 @@
     "fr": "Rechercher des objets, lieux ou cartes",
     "it": "Cercare oggetti, luoghi o carte"
   },
+  "header.search.placeholder.short": {
+    "de": "Objekt, Ort oder Karte",
+    "en": "Object, place or map",
+    "fr": "Objet, lieu ou carte",
+    "it": "Oggetto, luogo o carta"
+  },
   "header.search.start": {
     "de": "Suche starten",
     "en": "Start search",
@@ -58,6 +64,18 @@
     "en": "Open filters",
     "fr": "Ouvrir les filtres",
     "it": "Aprire i filtri"
+  },
+  "lang.notImplemented": {
+    "de": "Mehrsprachigkeit ist in diesem Prototyp nicht umgesetzt. Die Oberfläche bleibt auf Deutsch.",
+    "en": "Languages are not implemented in this prototype. The interface stays in German.",
+    "fr": "Le multilinguisme n'est pas mis en œuvre dans ce prototype. L'interface reste en allemand.",
+    "it": "Il multilinguismo non è implementato in questo prototipo. L'interfaccia rimane in tedesco."
+  },
+  "header.login": {
+    "de": "Anmelden",
+    "en": "Sign in",
+    "fr": "Se connecter",
+    "it": "Accedi"
   },
   "header.lang": {
     "de": "Sprache wählen",
@@ -2560,11 +2578,5 @@
     "fr": "Image de {name}",
     "it": "Immagine di {name}",
     "en": "Image of {name}"
-  },
-  "header.objectCount": {
-    "de": "{count} Objekte",
-    "fr": "{count} objets",
-    "it": "{count} oggetti",
-    "en": "{count} objects"
   }
 }

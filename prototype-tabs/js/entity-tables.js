@@ -219,7 +219,7 @@ function createEntityTable(config) {
 // ===== TABLE DEFINITIONS =====
 
 function badge(className, value) {
-  return '<span class="status-badge ' + className + '">' + escapeHtml(value || '—') + '</span>';
+  return '<span class="badge status-badge ' + className + '">' + escapeHtml(value || '—') + '</span>';
 }
 
 export const entityTables = {
@@ -413,7 +413,7 @@ export const entityTables = {
     columns: [
       { key: 'id', className: 'col-asset-id' },
       { key: 'bezeichnung', className: 'col-asset-name' },
-      { key: 'kategorie', className: 'col-asset-category', render: function(a) { return '<span class="kategorie-badge">' + escapeHtml(a.kategorie || '—') + '</span>'; } },
+      { key: 'kategorie', className: 'col-asset-category', render: function(a) { return '<span class="badge kategorie-badge">' + escapeHtml(a.kategorie || '—') + '</span>'; } },
       { key: 'hersteller', className: 'col-asset-manufacturer' },
       { key: 'baujahr', className: 'col-asset-year' },
       { key: 'standort', className: 'col-asset-location' }

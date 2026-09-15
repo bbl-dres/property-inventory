@@ -1,21 +1,23 @@
-// UI: views (map, list, gallery, detail), detail tabs, tools panel / phone menu, info panel
+// UI: views (map, gallery, detail), detail tabs, tools panel / phone menu, info panel
 // and browser history.
 
 import { state } from './state.js';
-import { isMobileLayout, isLandscapePhone, isCompactLayout } from './utils.js';
-import { t } from './i18n.js';
+import { isMobileLayout, isLandscapePhone } from './utils.js';
+import { t, onLangChange } from './i18n.js';
 import { showToast } from './toast.js';
-import { onEscape } from './keys.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
+import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
-import { renderListView, renderGalleryView, syncGalleryFilter } from './list.js';
+import { renderTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
 import { populateDetailView } from './detail.js';
 import { renderEntityTable } from './entity-tables.js';
-import { updateMapFilter } from './filters.js';
+import { updateMapFilter, resetFilters, toggleSmartDrawer } from './filters.js';
 import { getShareUrl, updateShareLink, updateExportCount } from './export.js';
 import { clearSelection, zoomToSelection, setInternalLayerVisibility } from './map.js';
+import { flyHome } from './map-controls.js';
+import { clearSearch } from './search.js';
 
 // ===== URL HELPERS =====
 
@@ -55,7 +57,7 @@ export function setTabInURL(tab) {
 
 // ===== VIEWS =====
 
-const VIEWS = ['map', 'list', 'gallery', 'detail'];
+const VIEWS = ['map', 'gallery', 'detail'];
 
 // Show one view container, sync the toggle buttons and the page scroll mode
 function setActiveView(view) {
@@ -90,10 +92,10 @@ export function switchView(view) {
       state.map.resize();
       if (state.map.getLayer('buildings-points')) updateMapFilter();
     }, 100);
-  }
-  if (view === 'list' && state.listViewDirty) {
-    renderListView();
-    state.listViewDirty = false;
+    if (state.listViewDirty && state.tableOpen) {
+      renderTables();
+      state.listViewDirty = false;
+    }
   }
   if (view === 'gallery') {
     syncGalleryFilter();
@@ -202,7 +204,7 @@ function initDetailTabs() {
 
 function initBackButtons() {
   const btn = document.getElementById('btn-back');
-  if (btn) btn.addEventListener('click', function() { switchView(state.previousView || 'gallery'); });
+  if (btn) btn.addEventListener('click', function() { switchView(state.previousView || 'map'); });
 }
 
 function initViewToggle() {
@@ -228,106 +230,25 @@ function initPopstate() {
   });
 }
 
-// ===== TOOLS PANEL: "Menü" toggle on desktop/tablet, slide-in hamburger menu on phones =====
+// ===== HOME (logo) =====
 
-let menuOpen = true;
-let menuToggleDebounceTimer = null;
-
-function initMenuToggle() {
-  const menuToggle = document.getElementById('menu-toggle');
-  const accordionPanel = document.getElementById('accordion-panel');
-  const menuToggleText = document.getElementById('menu-toggle-text');
-  const hamburgerBtn = document.getElementById('hamburger-btn');
-  const mobileMenuClose = document.getElementById('mobile-menu-close');
-  const mobileMenuBackdrop = document.getElementById('mobile-menu-backdrop');
-  if (!menuToggle || !accordionPanel) return;
-  const menuToggleIcon = menuToggle.querySelector('.material-symbols-outlined');
-
-  // Tablets and phones start with the tools panel collapsed: open, it covers 40 to 80 % of the map
-  menuOpen = !isCompactLayout();
-
-  // Backdrop and hamburger state only apply to the phone layout
-  function syncMobileMenuChrome() {
-    const mobileOpen = menuOpen && isMobileLayout();
-    if (mobileMenuBackdrop) mobileMenuBackdrop.classList.toggle('active', mobileOpen);
-    if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', mobileOpen ? 'true' : 'false');
-  }
-
-  function renderMenuToggle() {
-    accordionPanel.classList.toggle('collapsed', !menuOpen);
-    if (menuToggleText) menuToggleText.textContent = t(menuOpen ? 'menu.close' : 'menu.open');
-    if (menuToggleIcon) menuToggleIcon.textContent = menuOpen ? 'expand_less' : 'expand_more';
-    menuToggle.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
-    syncMobileMenuChrome();
-  }
-
-  // The floating toggle sits below the panel (its height depends on the open accordion item)
-  function updateMenuTogglePosition() {
-    if (isMobileLayout()) {
-      menuToggle.style.top = ''; // phones: the panel is the hamburger menu, the toggle is hidden
-      return;
-    }
-    const mainRect = document.getElementById('map-view').getBoundingClientRect();
-    if (menuOpen) {
-      const panelRect = accordionPanel.getBoundingClientRect();
-      if (panelRect.height < 50) { // not rendered yet: retry
-        setTimeout(updateMenuTogglePosition, 50);
-        return;
-      }
-      menuToggle.style.top = (panelRect.bottom - mainRect.top) + 'px';
-    } else {
-      menuToggle.style.top = '10px';
-    }
-  }
-
-  function setMenuOpen(open, restoreFocus) {
-    menuOpen = open;
-    renderMenuToggle();
-    updateMenuTogglePositionDebounced();
-    if (!isMobileLayout()) return;
-    // Phone menu: move focus into the menu, and back to the hamburger when it closes
-    if (open && mobileMenuClose) {
-      mobileMenuClose.focus();
-    } else if (!open && restoreFocus && hamburgerBtn && accordionPanel.contains(document.activeElement)) {
-      hamburgerBtn.focus();
-    }
-  }
-
-  renderMenuToggle();
-  setTimeout(updateMenuTogglePosition, 100);
-
-  menuToggle.addEventListener('click', function() { setMenuOpen(!menuOpen); });
-  menuToggle.addEventListener('keydown', function(e) {
-    if (e.key === 'Enter' || e.key === ' ') {
-      e.preventDefault();
-      menuToggle.click();
-    }
-  });
-  if (hamburgerBtn) hamburgerBtn.addEventListener('click', function() { setMenuOpen(true); });
-  if (mobileMenuClose) mobileMenuClose.addEventListener('click', function() { setMenuOpen(false, true); });
-  if (mobileMenuBackdrop) mobileMenuBackdrop.addEventListener('click', function() { setMenuOpen(false, true); });
-
-  window.addEventListener('resize', function() {
-    syncMobileMenuChrome();
-    updateMenuTogglePositionDebounced();
-  });
-
-  onEscape(function() {
-    if (!(menuOpen && isMobileLayout())) return false;
-    setMenuOpen(false, true);
-    return true;
-  }, 40);
-
-  new MutationObserver(updateMenuTogglePositionDebounced).observe(accordionPanel, { attributes: true, childList: true, subtree: true });
-
-  function updateMenuTogglePositionDebounced() {
-    clearTimeout(menuToggleDebounceTimer);
-    menuToggleDebounceTimer = setTimeout(updateMenuTogglePosition, 10);
-  }
-  updateMenuTogglePositionDebouncedRef = updateMenuTogglePositionDebounced;
+// The logo is the home button: landing state of the app — map view, no filters, no selection,
+// search and drawer closed, initial map extent. Basemap and language stay (user preferences).
+export function goHome() {
+  closePhoneMenu();
+  toggleSmartDrawer(false);
+  clearSearch();
+  clearSelection();
+  resetFilters();
+  setTablePanelOpen(false);
+  switchView('map');
+  if (state.map) flyHome(state.map);
 }
 
-let updateMenuTogglePositionDebouncedRef = function() {};
+function initLogoHome() {
+  const logo = document.getElementById('logo-area');
+  if (logo) logo.addEventListener('click', goHome);
+}
 
 // ===== INFO PANEL =====
 
@@ -371,18 +292,57 @@ function initInternalLayerToggles() {
   });
 }
 
+// ===== LANGUAGE SELECTOR (same control as the main prototype; languages are not implemented here) =====
+
+function initLanguageSelector() {
+  const langBtn = document.getElementById('lang-btn');
+  const langDropdown = document.getElementById('lang-dropdown');
+  if (!langBtn || !langDropdown) return;
+
+  function close() {
+    langDropdown.classList.remove('open');
+    langBtn.setAttribute('aria-expanded', 'false');
+  }
+
+  langBtn.addEventListener('click', function(e) {
+    e.stopPropagation();
+    const isOpen = langDropdown.classList.contains('open');
+    langDropdown.classList.toggle('open', !isOpen);
+    langBtn.setAttribute('aria-expanded', String(!isOpen));
+  });
+
+  // This prototype has no translations: the interface stays German, the choice only warns
+  function notImplemented() {
+    close();
+    showToast({ type: 'warning', message: t('lang.notImplemented'), duration: 6000 });
+  }
+
+  langDropdown.addEventListener('click', function(e) {
+    if (e.target.closest('.lang-option')) notImplemented();
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!e.target.closest('#lang-selector')) close();
+  });
+
+  // Language pills in the phone menu
+  document.querySelectorAll('.mobile-lang-pill').forEach(function(pill) {
+    pill.addEventListener('click', notImplemented);
+  });
+}
+
 // ===== SEARCH PLACEHOLDER (phones) =====
 
 // The long placeholder is cut to "Suche nach Objekten, O" in a narrow field: shorter hint on phones
 function initResponsiveSearchPlaceholder() {
   const searchInput = document.getElementById('search-input');
   if (!searchInput) return;
-  const long = searchInput.getAttribute('placeholder');
   function update() {
-    searchInput.setAttribute('placeholder', isMobileLayout() ? 'Objekt, Ort oder Karte' : long);
+    searchInput.setAttribute('placeholder', t(isMobileLayout() ? 'header.search.placeholder.short' : 'header.search.placeholder'));
   }
   update();
   window.addEventListener('resize', update);
+  onLangChange(update);
 }
 
 // Placeholder buttons of the prototype (login, edit)
@@ -397,14 +357,15 @@ export function initUI() {
     onOpen: function(key) {
       if (key === 'share') updateShareLink();
       if (key === 'export') updateExportCount();
-    },
-    onChange: function() { updateMenuTogglePositionDebouncedRef(); }
+    }
   });
-  initMenuToggle();
+  initLanguageSelector();
+  initToolsPanel();
   initInfoPanel();
   initInternalLayerToggles();
   initDetailTabs();
   initViewToggle();
+  initLogoHome();
   initPopstate();
   initBackButtons();
   initResponsiveSearchPlaceholder();

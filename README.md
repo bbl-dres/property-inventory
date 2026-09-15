@@ -50,8 +50,9 @@ prototype is available at the path shown above.
 
 Detailed features, setup, technology, and file layouts are documented in the
 prototype READMEs linked in the table. The main app and the tabs prototype share the same module
-layout (17 modules are identical copies); `test/` holds a jsdom regression harness for both and a
-check that reports drift between the copies (`cd test && npm install && npm test && npm run align`). The height-enrichment utility also has a
+layout and the same design system (18 modules, `css/tokens.css`, `css/components.css` and the design
+guide are identical copies); `test/` holds a jsdom regression harness for both, a headless-browser probe
+(`visual.js`) and a check that reports drift between the copies (`cd test && npm install && npm test && npm run align`). The height-enrichment utility also has a
 [Python implementation guide](osm-height/python_version/README.md).
 
 ## License

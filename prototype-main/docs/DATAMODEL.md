@@ -194,8 +194,8 @@ The core entity representing a physical structure in the portfolio.
   "type": "Feature",
   "properties": {
     "bbl_stat": "Aktiv",
-    "bbl_id": "1000/4840/AF",
-    "bbl_buch": "1000",
+    "bbl_id": "1080/4840/AF",
+    "bbl_buch": "1080",
     "bbl_we": "4840",
     "bbl_obj": "AF",
     "bbl_bez": "Bundeshaus West",
@@ -329,8 +329,8 @@ Land parcels with master data, survey identifiers, zoning, and area dimensions.
   "type": "Feature",
   "properties": {
     "bbl_stat": "Aktiv",
-    "bbl_id": "1000/4840/01",
-    "bbl_buch": "1000",
+    "bbl_id": "1080/4840/01",
+    "bbl_buch": "1080",
     "bbl_we": "4840",
     "bbl_obj": "01",
     "bbl_bez": "Bundesplatz Parzelle A",
