@@ -11,7 +11,7 @@ import { getPolygonCentroid } from './geo.js';
 import { isMeasuring } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
-import { renderLocationTree } from './location-tree.js';
+import { renderLocationTree, syncCountryHighlight } from './location-tree.js';
 import { syncTableToBuilding, syncTableToParcel } from './list.js';
 
 // ===== MAP INITIALISATION =====
@@ -73,7 +73,7 @@ function stopPulseAnimation() {
 
 function addParcelLayers(map) {
   map.addSource('parcels', { type: 'geojson', data: state.parcelData });
-  // Parcels appear from zoom 12 and fade in until 13 (same stack as prototype-main)
+  // Parcels appear from zoom 12 and fade in until 13 (same stack as prototype-simple)
   map.addLayer({
     id: 'parcels-fill', type: 'fill', source: 'parcels', minzoom: 12,
     paint: { 'fill-color': parcelColor, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.15] }
@@ -168,6 +168,7 @@ export function addMapLayers() {
   restoreSelectionFromUrl();
   initIdentifyHighlightLayer();
   loadLayersFromUrl();
+  syncCountryHighlight(); // outline of the country chosen in the location tree (gone after a style change)
 }
 
 // ===== INTERNAL LAYER VISIBILITY =====

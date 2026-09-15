@@ -1,14 +1,14 @@
 # Design & UX Review — prototype-tabs
 
-**Date:** 2026-09-15 · **Scope:** `prototype-main` (minimal scope) and `prototype-tabs` (extended scope) ·
+**Date:** 2026-09-15 · **Scope:** `prototype-simple` (minimal scope) and `prototype-tabs` (extended scope) ·
 **Goal:** one design system, pixel-perfectly aligned, while both apps stay independent (no shared files at runtime)
 
-The sibling document in `../../prototype-main/docs/DESIGN-REVIEW.md` is the same review from the other prototype's point of view;
+The sibling document in `../../prototype-simple/docs/DESIGN-REVIEW.md` is the same review from the other prototype's point of view;
 sections 1–5 are identical, section 6 describes what changed in this prototype.
 
 ## 1. Method
 
-- Read both stylesheets rule by rule (`prototype-main/css/tokens.css` + `styles.css`, 5,900 lines; `prototype-tabs/css/main.css`, 5,800 lines), both design guides and both responsive reviews.
+- Read both stylesheets rule by rule (`prototype-simple/css/tokens.css` + `styles.css`, 5,900 lines; `prototype-tabs/css/main.css`, 5,800 lines), both design guides and both responsive reviews.
 - Rendered both apps in headless Edge through the DevTools protocol (`test/visual.js`) at six viewports — 375×667 and 390×844 phones, 844×390 landscape phone, 768×1024 and 1024×768 tablets, 1366×768 laptop — in nine states each (map, selection, filter drawer, search results, tools panel, gallery, list/table, detail, detail tab). Screenshots plus the computed styles of ~90 shared elements (size, padding, font, colour, radius, shadow) were compared between the two apps.
 - Baseline: 108 captures per app; the comparison script listed every property where the same component rendered differently.
 
@@ -20,7 +20,7 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 |---|---------|----------|
 | T1 | The tabs prototype carried its own copy of the tokens inline in `main.css` (with legacy aliases `--success-green`, `--warning-orange`, `--info-blue`) instead of a `tokens.css`; the sets had drifted (`--primary-red-tint`, `--tracking-wide`, `--font-mono`, `--checkbox-accent` missing in tabs). | `main.css` lines 5–136 vs `tokens.css` |
 | T2 | No z-index scale. Values were scattered (500, 501, 600, 650, 1000, 1001, 2000, 2099, 2100, 3000, 3001, 9999, 10000, 10001) and differed per app for the same element (phone info sheet 600 vs 650; phone menu 3001 vs 2100). | both stylesheets |
-| T3 | Checkbox accent colour was red in main (global rule) but mixed in tabs: red for filters and print, **blue** for the layer toggles, the export options and the search scope menu. | tabs `main.css` `.active-layer-checkbox`, `.export-checkbox-label`, `.search-scope-option` |
+| T3 | Checkbox accent colour was red in simple (global rule) but mixed in tabs: red for filters and print, **blue** for the layer toggles, the export options and the search scope menu. | tabs `main.css` `.active-layer-checkbox`, `.export-checkbox-label`, `.search-scope-option` |
 | T4 | Overline labels (layer groups, column groups, dropdown headers, section overlines, address table headers) used four different combinations of tracking (0.5px, 0.05em, 0.08em) and colour (grey-400/500/600). | grep of `text-transform: uppercase` |
 | T5 | Unused primitives in `tokens.css`: `.icon-btn*`, `.text-overline`, `.base-table`, `.loading-state`, the skeleton classes. | dead-CSS check |
 
@@ -29,15 +29,15 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 | # | Finding |
 |---|---------|
 | C1 | Same font stack, type scale and weights in both apps (no finding beyond C6). |
-| C2 | Links were red in some places (main detail values, tabs legend tables in main) and blue in others (footer, API links, tabs legend tables). The guide reserves blue for links. |
-| C3 | The print button was brand-red in main and a white secondary button in tabs; the export button in tabs used the panel grey as a button colour. Three styles for the same "run this panel action" role. |
-| C4 | Active-filter state of the header button: light red tint in main, grey-900 pill with a red count badge in tabs. |
-| C5 | Breadcrumb links grey-700 (main) vs grey-600 (tabs); detail tabs grey-500 vs grey-600. |
+| C2 | Links were red in some places (simple detail values, tabs legend tables in simple) and blue in others (footer, API links, tabs legend tables). The guide reserves blue for links. |
+| C3 | The print button was brand-red in simple and a white secondary button in tabs; the export button in tabs used the panel grey as a button colour. Three styles for the same "run this panel action" role. |
+| C4 | Active-filter state of the header button: light red tint in simple, grey-900 pill with a red count badge in tabs. |
+| C5 | Breadcrumb links grey-700 (simple) vs grey-600 (tabs); detail tabs grey-500 vs grey-600. |
 | C6 | Buttons, inputs and selects without an explicit font-family rendered in the browser default (Arial 13.33px) in both apps — the basemap switcher label, the language options, the pagination select, the header buttons' text on some platforms. Neither stylesheet had the `font: inherit` reset for form controls. |
 
 ### 2.3 Components (rendered differences, laptop 1366×768 unless noted)
 
-| Component | prototype-main | prototype-tabs |
+| Component | prototype-simple | prototype-tabs |
 |-----------|----------------|----------------|
 | Search box | 40px high | 44px high |
 | Tools panel | 300px wide, 43px headers, toggle attached below the panel (CSS) | 380px wide, 45px headers, toggle positioned by JavaScript after every DOM change |
@@ -48,7 +48,7 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 | Columns dropdown | scrollable 400px list with group labels | class present in the markup but **no CSS** (list unbounded) |
 | Detail tabs | 2px underline, medium/semibold, 42px | 3px underline, regular, 56px |
 | Carousel | 340px, 200px on phones, 240px on short screens | 340px; the phone rule was overridden by a later rule (340px on phones) |
-| Address table | compact variant with 10px uppercase headers | two definitions in the same file; the later one (copied from main) overrode the first and added a 12px inset inside a padded section |
+| Address table | compact variant with 10px uppercase headers | two definitions in the same file; the later one (copied from simple) overrode the first and added a 12px inset inside a padded section |
 | Mini map | wrapper with address header | bare container |
 | Footer | no top border, 26px | 1px top border, 27px |
 | Toasts | slide up from bottom, 44px above the edge (touching the "Tabelle" toggle) | slide in from the right, 60px |
@@ -64,33 +64,33 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 
 | # | Finding |
 |---|---------|
-| L1 | Header: main centred the search box absolutely (exactly centred on wide screens); tabs let it float in the space between logo and actions, so the box sat 30–50px further left. |
-| L2 | Tablet: main kept the two-line logo and its 320px search box shrank to 200px; tabs used a one-line logo, icon-only 44px header buttons and the filter count on the button corner. |
-| L3 | The map view in main was a column (map + table panel); in tabs `#map { height: 100% }`. Harmless, but two ways to write the same layout. |
-| L4 | Detail page: composition differs by design (main: one 720px column of collapsible cards; tabs: header tab strip and a two-column grid of sections). The shared parts — breadcrumb, back button, tab strip, carousel, mini map, address table — differed in every metric listed above. |
+| L1 | Header: simple centred the search box absolutely (exactly centred on wide screens); tabs let it float in the space between logo and actions, so the box sat 30–50px further left. |
+| L2 | Tablet: simple kept the two-line logo and its 320px search box shrank to 200px; tabs used a one-line logo, icon-only 44px header buttons and the filter count on the button corner. |
+| L3 | The map view in simple was a column (map + table panel); in tabs `#map { height: 100% }`. Harmless, but two ways to write the same layout. |
+| L4 | Detail page: composition differs by design (simple: one 720px column of collapsible cards; tabs: header tab strip and a two-column grid of sections). The shared parts — breadcrumb, back button, tab strip, carousel, mini map, address table — differed in every metric listed above. |
 | L5 | `min-width: 0` guards for flex/grid children existed only in tabs. |
-| L6 | **Map layers:** main clustered the building points (clusters up to zoom 14, click to expand), labelled points from zoom 16 and faded parcels in from zoom 12; tabs drew every point individually at every zoom, without labels, with parcels always visible. Same basemaps, point and selection styles otherwise. |
+| L6 | **Map layers:** simple clustered the building points (clusters up to zoom 14, click to expand), labelled points from zoom 16 and faded parcels in from zoom 12; tabs drew every point individually at every zoom, without labels, with parcels always visible. Same basemaps, point and selection styles otherwise. |
 
 ### 2.5 Responsive and mobile
 
 | # | Finding |
 |---|---------|
-| R1 | **Phone header:** main used one 56px row (title hidden, view toggle hidden, everything else in the hamburger menu); tabs used two 44px rows (title, filter and menu / search and view toggle). Two different phone products. |
-| R2 | **Phone menu:** main had a second, JavaScript-populated menu (`#mobile-menu` with copies of the layer toggles, `populateMobileLayers()`); tabs turned the tools panel itself into the slide-in menu. The main version duplicated state and hid the print form and the Geokatalog on phones. |
-| R3 | Small phones (<480px): main shrank header buttons to 32×32 while the touch rule set the height to 44 → 32×44 buttons. |
-| R4 | Basemap switcher on phones: column list (main) vs 2×2 grid, hidden while a sheet is open (tabs). |
+| R1 | **Phone header:** simple used one 56px row (title hidden, view toggle hidden, everything else in the hamburger menu); tabs used two 44px rows (title, filter and menu / search and view toggle). Two different phone products. |
+| R2 | **Phone menu:** simple had a second, JavaScript-populated menu (`#mobile-menu` with copies of the layer toggles, `populateMobileLayers()`); tabs turned the tools panel itself into the slide-in menu. The simple version duplicated state and hid the print form and the Geokatalog on phones. |
+| R3 | Small phones (<480px): simple shrank header buttons to 32×32 while the touch rule set the height to 44 → 32×44 buttons. |
+| R4 | Basemap switcher on phones: column list (simple) vs 2×2 grid, hidden while a sheet is open (tabs). |
 | R5 | Landscape phone rules matched; the info sheet z-index did not (600 vs 650), so the sheet sat under/over the tools panel differently. |
-| R6 | Detail page on phones: main's back button was not full width; tabs' was. Main's tab strip had a static gradient hint; tabs toggled it only when the strip overflows. |
-| R7 | Search placeholder: tabs shortened it on phones ("Objekt, Ort oder Karte"), main showed "Suche nach Objekten, Orten ode…". |
+| R6 | Detail page on phones: simple's back button was not full width; tabs' was. Simple's tab strip had a static gradient hint; tabs toggled it only when the strip overflows. |
+| R7 | Search placeholder: tabs shortened it on phones ("Objekt, Ort oder Karte"), simple showed "Suche nach Objekten, Orten ode…". |
 | R8 | Print media rules existed only in tabs. |
 
 ### 2.6 Accessibility
 
 | # | Finding |
 |---|---------|
-| A1 | Accordion headers were `<button>`s in main but `<div role="button" tabindex="0">` in tabs (keyboard handling reimplemented in JavaScript); detail tabs likewise (`button` vs `div`). |
+| A1 | Accordion headers were `<button>`s in simple but `<div role="button" tabindex="0">` in tabs (keyboard handling reimplemented in JavaScript); detail tabs likewise (`button` vs `div`). |
 | A2 | Both apps met the 44px touch-target rule on coarse pointers, with slightly different element lists (toast close, table tabs, pagination select). |
-| A3 | Focus styles: main `*:focus:not(:focus-visible)`, tabs `*:focus { outline: none }` (equivalent in practice). |
+| A3 | Focus styles: simple `*:focus:not(:focus-visible)`, tabs `*:focus { outline: none }` (equivalent in practice). |
 
 ## 3. Recommendations
 
@@ -99,32 +99,37 @@ sections 1–5 are identical, section 6 describes what changed in this prototype
 | R-1 | Split every stylesheet into `tokens.css` + `components.css` (identical copies in both apps) and `app.css` (per app). Extend `test/check-alignment.js` to the CSS copies and to the design guide. | done |
 | R-2 | One token set with a z-index scale (`--z-*`), layout tokens (`--tools-panel-width`, `--content-max-width`, `--control-height`) and sheet/menu shadows; drop the legacy colour aliases and the unused primitives. | done |
 | R-3 | One header: three flex columns with a 16px gap (equal side columns keep the search centred, the centre shrinks first so nothing overlaps), icon-only actions and view toggle from 1720px down, flexing search below 1366px, one-line logo and 44px buttons from 1024px down, two 44px rows on phones (one row on landscape phones), hamburger button inside `#header-right` in both apps. | done |
-| R-4 | One phone menu: the tools panel is the hamburger menu in both apps (shared `js/tools-panel.js`); app-specific entries (share, language pills, footer links) sit in `.mobile-menu-extras`. Remove main's duplicate menu and `populateMobileLayers()`. | done |
-| R-5 | One tools panel: 300px, `#accordion-wrapper` with the toggle attached below the panel in CSS (no JavaScript positioning), `<button>` headers, main's grid print form and `.custom-select` in both. | done |
-| R-6 | One button vocabulary: `.btn-primary` / `.btn-secondary` / `.btn-tertiary` (tokens), `.header-btn` pill with `.panel-open` and `.has-active-filters` (grey-900 + red badge), `.panel-btn` for panel actions (grey-900). Red only for selected/active states and the brand. | done |
+| R-4 | One phone menu: the tools panel is the hamburger menu in both apps (shared `js/tools-panel.js`); app-specific entries (share, language pills, footer links) sit in `.mobile-menu-extras`. Remove simple's duplicate menu and `populateMobileLayers()`. | done |
+| R-5 | One tools panel: 300px, `#accordion-wrapper` with the toggle attached below the panel in CSS (no JavaScript positioning), `<button>` headers, simple's grid print form and `.custom-select` in both. | done |
+| R-6 | One button vocabulary: `.btn-primary` / `.btn-secondary` / `.btn-tertiary` (tokens), `.header-btn` pill with `.panel-open` (panel-grey fill) and `.has-active-filters` (default pill + red badge), `.panel-btn` for panel actions (grey-900). Red only for selected/active states and the brand. | done |
 | R-7 | One table density (compact), one toolbar, one pagination (info · nav · rows), `.badge` + `.status-badge` everywhere, `.row-active` in both. | done |
 | R-8 | Detail page parts shared: breadcrumb, back button, 2px tab strip with the same fade hint, 340/240/220px carousel, mini map with address header, address table in a size container (`.address-table-wrap`) that stacks label/value rows below 640px in both apps. | done |
 | R-9 | Info panel: `has-preview` class in both, always clear of the map controls, one z-index as a bottom sheet. | done |
 | R-10 | Links blue everywhere; checkbox accent red everywhere; one overline style; form controls inherit the app font (`--font-sans`), floating map widgets set it explicitly. | done |
 | R-11 | Phones: 2×2 basemap grid hidden while a sheet or the menu is open, full-width back button, short search placeholder (i18n key `header.search.placeholder.short`), toasts sliding up, no 32px buttons on small phones, print media rules in both. | done |
-| R-12 | "Tabelle" toggle under the map (main): grey-900 with white text like the "Menü" toggle — the white pill was hard to see on the map. | done (requested during the review) |
-| R-13a | Same map layer stack in both apps: clustered building source, cluster and count layers, id labels from zoom 16, parcels from zoom 12 (tabs adopted main's layers; `internalLayerIds` and the print module already handle them). | done (requested during the review) |
-| R-13b | Same table in both apps: the tabs prototype's "Tabelle" view (a third view with a full-page table whose rows opened the detail page) is replaced by main's table panel under the map — "Tabelle" toggle, Gebäude / Grundstücke tabs, toolbar with filter pills and column search, rows select on the map, `?table=open` / `?tableTab=`. The view toggle has the same two views (Karte, Galerie) in both apps. | done (requested during the review) |
-| R-13c | Login button in main's header, same as tabs (mock, "coming soon" toast; hidden on phones); the object count of the tabs header removed — main never had one, both headers now hold the same controls. | done (requested during the review) |
+| R-12 | "Tabelle" toggle under the map (simple): grey-900 with white text like the "Menü" toggle — the white pill was hard to see on the map. | done (requested during the review) |
+| R-13a | Same map layer stack in both apps: clustered building source, cluster and count layers, id labels from zoom 16, parcels from zoom 12 (tabs adopted simple's layers; `internalLayerIds` and the print module already handle them). | done (requested during the review) |
+| R-13b | Same table in both apps: the tabs prototype's "Tabelle" view (a third view with a full-page table whose rows opened the detail page) is replaced by simple's table panel under the map — "Tabelle" toggle, Gebäude / Grundstücke tabs, toolbar with filter pills and column search, rows select on the map, `?table=open` / `?tableTab=`. The view toggle has the same two views (Karte, Galerie) in both apps. | done (requested during the review) |
+| R-13c | Login button in simple's header, same as tabs (mock, "coming soon" toast; hidden on phones); the object count of the tabs header removed — simple never had one, both headers now hold the same controls. | done (requested during the review) |
 | R-13d | 3D toggle: both apps already share `map-controls.js` (2D/3D button, OpenStreetMap-based building extrusions of the CARTO basemaps, `?3d=1`); nothing to port. | verified |
 | R-13e | "Luftbild" basemap with global coverage: Esri World Imagery worldwide, swisstopo SWISSIMAGE on top within Switzerland (the objects abroad had no imagery). Free with attribution under Esri's terms; see THIRD-PARTY.md. | done (requested during the review) |
 | R-13f | Header actions: one 12px gap at every width (was 32px above 1366px, then 16/12/8px). | done (requested during the review) |
-| R-13g | Language selector in tabs' header and phone menu, same control as main; tabs has no translations yet, so a choice shows a warning toast (`lang.notImplemented`). | done (requested during the review) |
-| R-13h | Object ids: both data sets use the BBL/SAP scheme `Buchungskreis/Wirtschaftseinheit/Objekt` (letters = building, two digits = parcel) with Buchungskreis 1080; the tabs mock data (`BBL-001`, `PCL-001`, `SITE-BBL-001`) now carries the ids of the same objects in main, composite entity ids (`4840-M1`) are prefixed with the Wirtschaftseinheit. | done (requested during the review) |
+| R-13g | Language selector in tabs' header and phone menu, same control as simple; tabs has no translations yet, so a choice shows a warning toast (`lang.notImplemented`). | done (requested during the review) |
+| R-13h | Object ids: both data sets use the BBL/SAP scheme `Buchungskreis/Wirtschaftseinheit/Objekt` (letters = building, two digits = parcel) with Buchungskreis 1080; the tabs mock data (`BBL-001`, `PCL-001`, `SITE-BBL-001`) now carries the ids of the same objects in simple, composite entity ids (`4840-M1`) are prefixed with the Wirtschaftseinheit. | done (requested during the review) |
 | R-17 | Location tree (new, requested): "Standorte" toggle in the header, left panel with Land → Region → Ort → WE → objects, counts; a country, region or city node sets the Land / Region / Ort filters of the drawer (the Filter button counts them, no badge on the Standorte button, which is a plain panel toggle), WE nodes are folders, object rows select on the map; one level at a time, one open node per level, node rows toggle; width draggable at the right edge (240-600px, remembered); shared `js/location-tree.js` with a per-app data adapter in `app.js`. Phones: entry in the menu, full-screen sheet (first step, to be refined with user feedback). | done (requested during the review) |
-| R-18 | API documentation in tabs: footer link "API", `?view=api-docs`, the same `#api-docs-view` (view nav, header, Swagger UI host); `data/swagger.json` and `vendor/swagger-ui/` are identical copies checked by the alignment test, the loader code in `js/ui.js` is the same. The spec documents the target API (main's property names), not the tabs mock data. | done (requested during the review) |
-| R-19 | One navigation bar for page views: `.view-nav` (the former `.api-docs-nav`) in `components.css` — sticky white bar, grey-300 border, breadcrumb left, actions right — used by the API docs and the detail page of both apps. Main's detail breadcrumb moved out of the content column into this bar; tabs' `.header-detail .detail-header` uses it inside the page header. | done (requested during the review) |
-| R-21 | Tabs gets main's "Ort" filter (`city`), so the tree's city level filters in both apps. | done (requested during the review) |
+| R-18 | API documentation in tabs: footer link "API", `?view=api-docs`, the same `#api-docs-view` (view nav, header, Swagger UI host); `data/swagger.json` and `vendor/swagger-ui/` are identical copies checked by the alignment test, the loader code in `js/ui.js` is the same. The spec documents the target API (simple's property names), not the tabs mock data. | done (requested during the review) |
+| R-19 | One navigation bar for page views: `.view-nav` (the former `.api-docs-nav`) in `components.css` — sticky white bar, grey-300 border, breadcrumb left, actions right — used by the API docs and the detail page of both apps. Simple's detail breadcrumb moved out of the content column into this bar; tabs' `.header-detail .detail-header` uses it inside the page header. | done (requested during the review) |
+| R-21 | Tabs gets simple's "Ort" filter (`city`), so the tree's city level filters in both apps. | done (requested during the review) |
 | R-20 | Header density: the Standorte button made the actions collide with the centred search on ~1900px screens (the search was absolutely centred over the row). Three flex columns with a guaranteed gap; below 1720px the button labels and the "Karte" label collapse to icons. | done (requested during the review) |
 | R-22 | Table panel vs. tools panel: opening or enlarging the table folds the tools panel when the two would overlap (the reader reopens it with the toggle); the "Menü" toggle is centred under the panel's width also when collapsed (it was left-aligned). | done (requested during the review) |
+| R-23 | Country outline: selecting a country in the tree outlines it on the map and zooms to it. Natural Earth 1:10m, one simplified file per country (`assets/countries/<ISO>.geojson`, mostly 20-120 KB, loaded on demand and prefetched for the tree's countries) plus `index.json` with the bounding boxes; identical in both apps, layers under the data layers, re-added after a basemap change. | done (requested during the review) |
+| R-24 | Filter drawer header: the reset icon became a labelled tertiary button "Zurücksetzen" (`.filter-panel-reset`) in both apps. | done (requested during the review) |
+| R-25 | One resize grip for both side panels (`.panel-resize-handle`, a zero-width sibling on the panel edge): hit area, blue hover bar and the three-line glyph are centred on the border line — inside the panels they were clipped 4px inward, and the drawer had no glyph. Fixed with the panels in tabs' detail view. | done (requested during the review) |
+| R-26 | Filter button with active filters: default pill plus the red count only — the grey-900 fill clashed with the open state of the neighbouring Standorte toggle. | done (requested during the review) |
+| R-27 | Canton outlines: the 26 Swiss cantons from Natural Earth 1:10m admin-1 (`assets/regions/CH-<code>.geojson`, 3-12 KB each, on demand); a Swiss region node outlines and zooms to its canton, matched by code (simple: `BE`) or German name (tabs: `Kanton Bern`); regions abroad zoom to their objects. | done (requested during the review) |
 | R-13 | Logo = home button in both apps: landing state (map view, filters cleared, selection, search and drawer closed, initial extent); in tabs the logo used to switch to the previous view (gallery by default), which looked like a random tab change. | done (requested during the review) |
 | R-14 | Tablets: hide the object count (tabs) so the search box keeps at least 240px; consider a 3-column gallery at 1024px. | open |
-| R-15 | Replace the `div.info-icon` pseudo-buttons of main's detail rows by real buttons with `aria-expanded`. | open |
+| R-15 | Replace the `div.info-icon` pseudo-buttons of simple's detail rows by real buttons with `aria-expanded`. | open |
 | R-16 | Give both apps a light "no-map" state for the detail page on phones (the mini map loads a second MapLibre instance). | open |
 
 ## 4. Implementation
@@ -168,7 +173,7 @@ restyle it. `npm run align` (in `test/`) fails when the copies drift.
 
 ### 4.3 Removed
 
-Main: `#mobile-menu` and its backdrop markup, `populateMobileLayers()`, `initMobileMenu()`, `initMenuToggle()`,
+Simple: `#mobile-menu` and its backdrop markup, `populateMobileLayers()`, `initMobileMenu()`, `initMenuToggle()`,
 the 32px small-phone header buttons, the `:has` tint for active filters, `.base-table`, the static tab-strip
 gradient. Tabs: the inline `:root` token block, `updateMenuTogglePosition()` and its MutationObserver, the
 second address-table and carousel definitions, `.filter-pane-*`, `.filter-chip*`, `.gallery-skeleton*`,
@@ -185,23 +190,23 @@ Tokens: `--success-green`, `--warning-orange`, `--info-blue`, `.icon-btn*`, `.te
 
 ## 6. This prototype: prototype-tabs (extended scope)
 
-**Stylesheets.** `css/main.css` was replaced by `css/tokens.css` (identical with main), `css/components.css`
-(identical with main) and `css/app.css` (705 lines: header tab strip and drawer offsets, two-column sections and data grid,
+**Stylesheets.** `css/main.css` was replaced by `css/tokens.css` (identical with simple), `css/components.css`
+(identical with simple) and `css/app.css` (705 lines: header tab strip and drawer offsets, two-column sections and data grid,
 entity tables, share and export panels, measure text, KI answers, tabs-only responsive rules).
 
-**Header.** The search box is centred like in main (40px high on desktop). The object count and the login
+**Header.** The search box is centred like in simple (40px high on desktop). The object count and the login
 button are hidden on phones (they already were); the count is no longer padded on tablets.
 
-**API documentation.** Footer link "API" (and the phone menu), `?view=api-docs`: the same view as in main
+**API documentation.** Footer link "API" (and the phone menu), `?view=api-docs`: the same view as in simple
 (`#api-docs-view` with the view nav, title and Swagger UI host), the same loader in `js/ui.js`;
-`data/swagger.json` and `vendor/swagger-ui/` are identical copies of main's files. The breadcrumb bar of the
+`data/swagger.json` and `vendor/swagger-ui/` are identical copies of simple's files. The breadcrumb bar of the
 detail page (`.header-detail .detail-header`) is the shared `.view-nav` now (12px × 20px padding, grey-300
 border).
 
 **Tools panel.** `#accordion-panel` is wrapped in `#accordion-wrapper` with `#menu-toggle` attached below it
 in CSS; `updateMenuTogglePosition()` and its MutationObserver were removed from `js/ui.js`, which now calls the
 shared `initToolsPanel()`. Accordion headers are `<button>`s. The panel is 300px wide (was 380px). The print
-form is main's grid form (`.print-form`, `.custom-select`), so the three checkboxes no longer wrap onto three
+form is simple's grid form (`.print-form`, `.custom-select`), so the three checkboxes no longer wrap onto three
 lines in the phone menu; the print, measure and export actions use `.panel-btn`. The footer link moved into
 `.mobile-menu-extras` for phones.
 
@@ -209,7 +214,7 @@ lines in the phone menu; the print, measure and export actions use `.panel-btn`.
 again (the later 340px rule is gone); the mini map got the wrapper with the address header
 (`#mini-map-address`, filled from `streetName` in `js/detail.js`); the address table sits in
 `.address-table-wrap` (shared container query, marker column hidden when stacked). The fixed footer in the
-detail view was dropped — the footer flows after the content like in main.
+detail view was dropped — the footer flows after the content like in simple.
 
 **List view and entity tables.** Compact table density, `.badge status-badge` markup in `js/list.js`,
 `js/map.js` and `js/entity-tables.js` (`.kategorie-badge` extends `.badge` too), pagination footers in the
@@ -223,17 +228,17 @@ order info · navigation · rows per page with a `.custom-select`. The list card
 filters, selection, search and the drawer, shows the map and flies to the initial extent.
 
 **Language.** `#lang-selector` (header pill with the DE/FR/IT/EN dropdown) and the language pills of the phone
-menu exist like in main; `initLanguageSelector()` in `js/ui.js` only opens and closes the menu and shows a
+menu exist like in simple; `initLanguageSelector()` in `js/ui.js` only opens and closes the menu and shows a
 warning toast on a choice — translations are not part of this prototype yet.
 
 **Table panel.** `#list-view`, the "Tabelle" view-toggle button and the object count are gone. The table lives
 in `#table-panel` under the map (`js/list.js`: `initTablePanel()`, `setTablePanelOpen()`, `renderTables()`,
 `initTableTabs()`, `syncTableToBuilding()` / `syncTableToParcel()`), with a second table for the parcels and
-the column lists per tab. Rows select on the map (as in main) instead of opening the detail page; the detail
+the column lists per tab. Rows select on the map (as in simple) instead of opening the detail page; the detail
 page is reached through the info panel, the gallery or a link. `navigateToAllObjects()` and the breadcrumb
-filters show the map (as in main); `previousView` defaults to `map`.
+filters show the map (as in simple); `previousView` defaults to `map`.
 
-**Map.** `js/map.js` now builds the same layer stack as main: the buildings source is clustered
+**Map.** `js/map.js` now builds the same layer stack as simple: the buildings source is clustered
 (`clusterMaxZoom` 14, radius 50), `buildings-clusters` / `buildings-cluster-count` zoom into the cluster on
 click, `buildings-labels` show the object id from zoom 16, the selection filters are cluster-aware, and the
 parcel layers start at zoom 12 with the same fade-in. `internalLayerIds.buildings` lists the new layers so

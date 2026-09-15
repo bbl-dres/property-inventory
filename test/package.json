@@ -2,10 +2,10 @@
   "name": "property-inventory-tests",
   "version": "1.0.0",
   "private": true,
-  "description": "jsdom regression harness for prototype-main and prototype-tabs (fake MapLibre, no browser)",
+  "description": "jsdom regression harness for prototype-simple and prototype-tabs (fake MapLibre, no browser)",
   "scripts": {
     "test": "node all.js",
-    "test:main": "node all.js main",
+    "test:simple": "node all.js simple",
     "test:tabs": "node all.js tabs",
     "align": "node check-alignment.js",
     "visual": "node visual.js both ../visual-out"

@@ -228,6 +228,11 @@ module.exports = {
     row('country:CH').click();
     await settle();
     check('country node sets the Land filter', state.activeFilters.land.length === 1 && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 5 && /filter_land=CH/.test(window.location.search));
+    await settle(200); // assets/countries/index.json and CH.geojson are fetched on the first use
+    const outline = map.getLayer('country-highlight-line');
+    const zoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
+    check('country outlined on the map and zoomed to', !!map.getSource('countries') && map.getSource('countries').data.features.some(f => f.properties.key === 'CH' && f.geometry.coordinates[0].length > 500) && !!outline && JSON.stringify(outline.filter) === JSON.stringify(['==', ['get', 'key'], 'CH']) && !!zoom && zoom.bounds[0] > 5 && zoom.bounds[0] < 7 && zoom.bounds[3] > 47 && zoom.bounds[3] < 48);
+    check('outline layers sit under the data layers', map._layers.findIndex(l => l.id === 'country-highlight-fill') < map._layers.findIndex(l => l.id === 'buildings-points'));
     check('filter button counts it, the Standorte button carries no badge', !!document.querySelector('#filter-panel-btn .filter-count') && !document.querySelector('#tree-panel-btn .filter-count') && !document.getElementById('tree-panel-btn').classList.contains('has-active-filters') && /CH/.test(document.getElementById('filter-pills').textContent));
     check('drawer checkbox follows', !!document.querySelector('#filter-panel input[data-filter="land"][data-value="CH"]:checked'));
     check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 5 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
@@ -236,6 +241,9 @@ module.exports = {
     fold('country:CH');
     row('region:CH/Kanton%20Bern').click();
     await settle();
+    await settle(200); // assets/regions/CH-BE.geojson is fetched on the first use
+    const cantonZoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
+    check('canton outlined and zoomed to (Bern)', JSON.stringify(map.getLayer('country-highlight-line').filter) === JSON.stringify(['==', ['get', 'key'], 'CH-BE']) && map.getSource('countries').data.features.some(f => f.properties.key === 'CH-BE') && cantonZoom.bounds[0] > 6.7 && cantonZoom.bounds[0] < 7.2 && cantonZoom.bounds[2] > 8.3 && cantonZoom.bounds[2] < 8.6);
     check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'Kanton Bern' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 1);
     check('country is on the path, region active, cities shown', document.querySelector('.tree-row[data-node="country:CH"]').closest('.tree-node').classList.contains('is-path') && row('region:CH/Kanton%20Bern').closest('.tree-node').classList.contains('is-active') && rows('[data-node="city:CH/Kanton%20Bern/Bern"]').length === 1 && rows('[data-node^="we:"]').length === 0);
     fold('city:CH/Kanton%20Bern/Bern');
@@ -258,15 +266,22 @@ module.exports = {
     check('selected region again removes its filter and folds', state.activeFilters.region.length === 0 && state.activeFilters.land[0] === 'CH' && rows('[data-node^="city:"]').length === 0 && row('country:CH').closest('.tree-node').classList.contains('is-active'));
     document.querySelector('#filter-pills .filter-pill-remove[data-filter-key="land"]').click();
     await settle();
-    check('pill removes the filter; nothing highlighted', state.activeFilters.land.length === 0 && state.filteredData.features.length === state.buildingsData.features.length && !document.querySelector('#tree-panel-content .tree-node.is-active') && !/filter_land/.test(window.location.search));
+    check('pill removes the filter; nothing highlighted', state.activeFilters.land.length === 0 && state.filteredData.features.length === state.buildingsData.features.length && !document.querySelector('#tree-panel-content .tree-node.is-active') && !/filter_land/.test(window.location.search) && JSON.stringify(map.getLayer('country-highlight-line').filter) === JSON.stringify(['==', ['get', 'key'], '']));
     // Resizable: dragging the grip on the right edge sets --tree-panel-width (clamped to the tokens)
-    const grip = document.querySelector('#tree-panel .tree-resize-handle');
+    const grip = document.getElementById('tree-resize-handle');
     const ptr = function(type, x) { const ev = new window.MouseEvent(type, { bubbles: true, clientX: x, button: 0 }); (type === 'pointerdown' ? grip : document).dispatchEvent(ev); };
     // (jsdom has no layout: offsetWidth is 0, so only the clamped ends of the range are checked)
     ptr('pointerdown', 0); ptr('pointermove', 1000); ptr('pointerup', 1000);
     check('drag to the right widens the panel (clamped to the maximum)', document.documentElement.style.getPropertyValue('--tree-panel-width') === '600px' && !document.getElementById('tree-panel').classList.contains('resizing'));
     ptr('pointerdown', 1000); ptr('pointermove', 0); ptr('pointerup', 0);
     check('drag to the left narrows it (clamped to the minimum)', document.documentElement.style.getPropertyValue('--tree-panel-width') === '240px');
+    check('both side panels carry the same grip next to them', document.getElementById('tree-panel').nextElementSibling === grip && document.getElementById('filter-resize-handle').nextElementSibling === document.getElementById('filter-panel') && grip.className === 'panel-resize-handle');
+    // The drawer's grip drives --drawer-width the same way (dragging left = wider)
+    const dgrip = document.getElementById('filter-resize-handle');
+    const dptr = function(type, x) { const ev = new window.MouseEvent(type, { bubbles: true, clientX: x, button: 0 }); (type === 'pointerdown' ? dgrip : document).dispatchEvent(ev); };
+    dptr('pointerdown', 1000); dptr('pointermove', 0); dptr('pointerup', 0);
+    check('drawer grip widens the drawer (clamped to the maximum)', document.documentElement.style.getPropertyValue('--drawer-width') === '800px');
+    check('drawer reset is a labelled button', /Zurücksetzen|Reset/.test(document.getElementById('drawer-reset-btn').textContent) && document.getElementById('drawer-reset-btn').classList.contains('btn-tertiary'));
     document.getElementById('tree-close-btn').click();
     check('tree panel closes; the button returns to its default state', !document.getElementById('tree-panel').classList.contains('open') && !document.getElementById('tree-panel-btn').classList.contains('panel-open'));
 

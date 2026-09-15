@@ -1,6 +1,6 @@
 // Runs every scenario in ./scenarios, one Node process each (module state is per process).
 //   node all.js            all scenarios
-//   node all.js main       only scenarios whose file name starts with "main"
+//   node all.js simple     only scenarios whose file name starts with "simple"
 const fs = require('fs');
 const path = require('path');
 const { spawnSync } = require('child_process');

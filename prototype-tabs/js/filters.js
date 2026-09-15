@@ -81,7 +81,7 @@ export function applyFilters() {
 export function updateMapFilter() {
   if (!state.map || !state.map.getSource('buildings')) return;
 
-  // Update the source data (same approach as prototype-main, where clusters need it)
+  // Update the source data (same approach as prototype-simple, where clusters need it)
   const dataToShow = getActiveFilterCount() === 0 ? state.buildingsData : state.filteredData;
   state.map.getSource('buildings').setData(dataToShow);
 
@@ -279,7 +279,7 @@ export function toggleSmartDrawer(open) {
 
 export function initDrawerResize() {
   const drawer = document.getElementById('filter-panel');
-  const handle = drawer ? drawer.querySelector('.filter-panel-resize-handle') : null;
+  const handle = drawer ? document.getElementById('filter-resize-handle') : null; // the grip is the drawer's sibling
   if (!handle) return;
 
   let startX, startWidth;

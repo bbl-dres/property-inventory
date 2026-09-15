@@ -16,7 +16,7 @@ approval workflows, GIS data management, and building-height enrichment.
 
 ## Demo
 
-**Main app:** https://bbl-dres.github.io/property-inventory/
+**Simple app:** https://bbl-dres.github.io/property-inventory/
 
 <p align="center">
   <img src="assets/images/preview-6.jpg" alt="Property Inventory worldwide map with building table" width="49%" align="top"/>
@@ -29,7 +29,7 @@ The repository root opens the read-only property inventory.
 
 | Prototype | Purpose | Demo | Details |
 |---|---|---|---|
-| Main App | Read-only portfolio with map, list, and gallery views | [Open app](https://bbl-dres.github.io/property-inventory/prototype-main/) | [README](prototype-main/README.md) |
+| Simple App | Read-only portfolio with map, list, and gallery views | [Open app](https://bbl-dres.github.io/property-inventory/prototype-simple/) | [README](prototype-simple/README.md) |
 | Tabs Views | Structured property details and portfolio-query assistant | [Open app](https://bbl-dres.github.io/property-inventory/prototype-tabs/) | [README](prototype-tabs/README.md) |
 | CR Workflows | Create, change, and delete flows with four-eyes approval | [Open app](https://bbl-dres.github.io/property-inventory/prototype-workflows/) | [README](prototype-workflows/README.md) |
 | GIS Server | Layer, schema, and feature management frontend | [Open app](https://bbl-dres.github.io/property-inventory/prototype-backend/) | [README](prototype-backend/README.md) |
@@ -43,13 +43,13 @@ Serve the repository root with any static web server:
 python -m http.server 8000
 ```
 
-Then open <http://localhost:8000/>. The root redirects to the main app; each other
+Then open <http://localhost:8000/>. The root redirects to the simple app; each other
 prototype is available at the path shown above.
 
 ## Documentation
 
 Detailed features, setup, technology, and file layouts are documented in the
-prototype READMEs linked in the table. The main app and the tabs prototype share the same module
+prototype READMEs linked in the table. The simple app and the tabs prototype share the same module
 layout and the same design system (18 modules, `css/tokens.css`, `css/components.css` and the design
 guide are identical copies); `test/` holds a jsdom regression harness for both, a headless-browser probe
 (`visual.js`) and a check that reports drift between the copies (`cd test && npm install && npm test && npm run align`). The height-enrichment utility also has a

@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://basemaps.cartocdn.com" crossorigin>
 
-    <!-- MapLibre GL JS (vendored, same build as prototype-main): no API key needed -->
+    <!-- MapLibre GL JS (vendored, same build as prototype-simple): no API key needed -->
     <link href="vendor/maplibre-gl/maplibre-gl.css" rel="stylesheet" />
     <!-- Icon font, self-hosted (assets/icons/): no request to Google Fonts -->
     <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
@@ -163,7 +163,7 @@
                     <span class="material-symbols-outlined" aria-hidden="true">tune</span>
                     <span class="header-btn-label">Filter</span>
                 </button>
-                <!-- Same selector as the main prototype; this prototype is German only (the options warn) -->
+                <!-- Same selector as the simple prototype; this prototype is German only (the options warn) -->
                 <div id="lang-selector">
                     <button id="lang-btn" class="header-btn" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
                         <span class="material-symbols-outlined" aria-hidden="true">language</span>
@@ -182,7 +182,7 @@
                         <span class="material-symbols-outlined" aria-hidden="true">person</span>
                     </button>
                 </div>
-                <!-- Phones only: opens the map tools (#accordion-panel) as a slide-in menu, like the main prototype -->
+                <!-- Phones only: opens the map tools (#accordion-panel) as a slide-in menu, like the simple prototype -->
                 <button id="hamburger-btn" class="hamburger-btn" aria-label="Menü öffnen" aria-expanded="false" aria-controls="accordion-panel">
                     <span class="material-symbols-outlined" aria-hidden="true">menu</span>
                 </button>
@@ -245,8 +245,8 @@
                 </div>
             </div>
             <div class="tree-panel-content" id="tree-panel-content" aria-labelledby="tree-panel-title"></div>
-            <div class="tree-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
         </aside>
+        <div class="panel-resize-handle" id="tree-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
         <div class="main-content">
             <div id="map-view" class="active">
             <div id="map">
@@ -553,7 +553,7 @@
             <!-- Style Switcher (visible only in map view) -->
             <div class="style-switcher" id="style-switcher">
                 <div class="style-switcher-panel" id="style-panel">
-                    <!-- Basemaps: same set as prototype-main (CARTO vector styles + swisstopo SWISSIMAGE raster) -->
+                    <!-- Basemaps: same set as prototype-simple (CARTO vector styles + swisstopo SWISSIMAGE raster) -->
                     <button class="style-option active" data-style="positron" title="Light">
                         <img id="thumb-positron" src="data:image/gif;base64,R0lGODlhAQABAAD/ACwAAAAAAQABAAACADs=" alt="Light">
                         <span>Light</span>
@@ -1544,17 +1544,18 @@
 
         </div><!-- /.main-content -->
 
-        <!-- Filter drawer (same ids and classes as prototype-main) -->
+        <!-- Filter drawer (same ids and classes as prototype-simple) -->
+        <div class="panel-resize-handle" id="filter-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
         <aside id="filter-panel" role="complementary" aria-label="Filter">
-            <div class="filter-panel-resize-handle" title="Grösse ändern" aria-hidden="true"></div>
             <div class="panel-header filter-panel-header">
                 <div class="panel-header-title" id="filter-panel-title">
                     <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
                     <span>Filter Stammdaten</span>
                 </div>
                 <div class="filter-panel-actions">
-                    <button class="filter-panel-btn" id="drawer-reset-btn" title="Filter zurücksetzen" aria-label="Filter zurücksetzen">
+                    <button type="button" class="btn-tertiary filter-panel-reset" id="drawer-reset-btn" title="Alle Filter zurücksetzen">
                         <span class="material-symbols-outlined" aria-hidden="true">replay</span>
+                        <span>Zurücksetzen</span>
                     </button>
                     <button class="filter-panel-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>

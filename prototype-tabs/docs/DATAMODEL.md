@@ -4,7 +4,7 @@ This document describes the data model for the BBL Immobilienportfolio applicati
 
 ---
 
-> **Object ids.** Buildings and parcels carry the BBL/SAP ids of the main prototype: `Buchungskreis/Wirtschaftseinheit/Objekt`, e.g. `1080/4840/AF` (letters = building) and `1080/4840/01` (digits = parcel); `siteId` is the Wirtschaftseinheit (`1080/4840`). Composite ids (`4840-M1`, `4840-ADDR-1`) are prefixed with the Wirtschaftseinheit; the remaining entity records use UUIDs.
+> **Object ids.** Buildings and parcels carry the BBL/SAP ids of the simple prototype: `Buchungskreis/Wirtschaftseinheit/Objekt`, e.g. `1080/4840/AF` (letters = building) and `1080/4840/01` (digits = parcel); `siteId` is the Wirtschaftseinheit (`1080/4840`). Composite ids (`4840-M1`, `4840-ADDR-1`) are prefixed with the Wirtschaftseinheit; the remaining entity records use UUIDs.
 
 ## 1. Introduction
 

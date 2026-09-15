@@ -67,6 +67,23 @@ body.detail-active:has(#tree-panel.open) .detail-content {
   padding-left: calc(var(--tree-panel-width) + var(--space-6));
 }
 
+/* Their resize grips follow the fixed panels */
+body.detail-active #tree-panel.open + .panel-resize-handle,
+body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
+  position: fixed;
+  top: var(--header-total-height);
+  bottom: 0;
+  z-index: 101;
+}
+
+body.detail-active #tree-panel.open + .panel-resize-handle {
+  left: var(--tree-panel-width);
+}
+
+body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
+  right: var(--drawer-width);
+}
+
 .btn-edit {
   background: var(--grey-900);
   color: var(--white);
@@ -598,6 +615,10 @@ body.detail-active:has(#tree-panel.open) .detail-content {
   body:has(#filter-panel.open) .header-detail .detail-tabs,
   body.detail-active:has(#filter-panel.open) .detail-content {
     padding-right: calc(340px + var(--space-6));
+  }
+
+  body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
+    right: 340px;
   }
 
   .detail-grid {

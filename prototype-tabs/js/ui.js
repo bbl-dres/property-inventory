@@ -380,7 +380,7 @@ function initFooterApiLink() {
   });
 }
 
-// ===== LANGUAGE SELECTOR (same control as the main prototype; languages are not implemented here) =====
+// ===== LANGUAGE SELECTOR (same control as the simple prototype; languages are not implemented here) =====
 
 function initLanguageSelector() {
   const langBtn = document.getElementById('lang-btn');

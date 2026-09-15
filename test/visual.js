@@ -48,7 +48,7 @@ const SCENARIOS = {
   'detail-tab': { query: 'view=detail&tab=measurements&id=' }
 };
 
-const IDS = { 'prototype-main': '1080%2F4840%2FAF', 'prototype-tabs': '1080/4840/AF' };
+const IDS = { 'prototype-simple': '1080%2F4840%2FAF', 'prototype-tabs': '1080/4840/AF' };
 
 // ---------- DevTools protocol client ----------
 
@@ -198,7 +198,7 @@ const PROBE = `(() => {
 })()`;
 
 async function run(mode, outArg, onlyPrototype) {
-  const prototypes = onlyPrototype ? [onlyPrototype] : ['prototype-main', 'prototype-tabs'];
+  const prototypes = onlyPrototype ? [onlyPrototype] : ['prototype-simple', 'prototype-tabs'];
   const { proc, cdp } = await launchBrowser();
   const results = {};
   try {
@@ -261,9 +261,9 @@ async function evalOnce(expression, prototype, vpName, scName) {
 
 const [mode, out, only] = process.argv.slice(2);
 if (mode === 'eval') {
-  evalOnce(out, process.argv[4] || 'prototype-main', process.argv[5] || 'phone-14', process.argv[6] || 'map').catch(e => { console.error(e); process.exit(1); });
+  evalOnce(out, process.argv[4] || 'prototype-simple', process.argv[5] || 'phone-14', process.argv[6] || 'map').catch(e => { console.error(e); process.exit(1); });
 } else if (!mode || !out) {
-  console.error('usage: node visual.js shots|probe|both <out> [prototype-main|prototype-tabs]');
+  console.error('usage: node visual.js shots|probe|both <out> [prototype-simple|prototype-tabs]');
   process.exit(2);
 }
 if (mode !== 'eval') run(mode, out, only).catch(e => { console.error(e); process.exit(1); });
