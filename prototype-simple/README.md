@@ -127,6 +127,7 @@ prototype-simple/
     ├── DATAMODEL.md      # Attribute reference
     ├── DESIGNGUIDE.md    # Design system (identical with ../prototype-tabs)
     ├── DESIGN-REVIEW.md  # Design review (2026-09-15): alignment of both prototypes
+    ├── DESIGN-REVIEW-2.md # Polish review: tokens, icon button, state styles (identical with ../prototype-tabs)
     ├── CODE-REVIEW.md    # Review 1 (2026-09-11): bugs, performance
     ├── CODE-REVIEW-2.md  # Review 2 (2026-09-15): dead code, duplication, alignment with prototype-tabs
     ├── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
@@ -136,5 +137,5 @@ prototype-simple/
 
 ## See also
 
-- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Code review 1](docs/CODE-REVIEW.md) · [Code review 2](docs/CODE-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Sibling prototypes: [`../prototype-tabs`](../prototype-tabs) · [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

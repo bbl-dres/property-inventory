@@ -383,7 +383,7 @@ export function showLayerInfo(layerId) {
   const content = layerInfoContent();
   if (!modal || !content || !layerId) return;
 
-  content.innerHTML = '<div class="layer-info-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('swisstopo.loadingInfo') + '</span></div>';
+  content.innerHTML = '<div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('swisstopo.loadingInfo') + '</span></div>';
   modal.classList.add('show');
 
   fetch('https://api3.geo.admin.ch/rest/services/api/MapServer/' + encodeURIComponent(layerId) + '/legend?lang=' + encodeURIComponent(getLang()))
@@ -405,7 +405,7 @@ export function showLayerInfo(layerId) {
     })
     .catch(function(error) {
       console.error('[swisstopo] layer info failed:', error);
-      content.innerHTML = '<div class="layer-info-loading">' + t('swisstopo.loadInfoFailed') + '</div>';
+      content.innerHTML = '<div class="loading-row">' + t('swisstopo.loadInfoFailed') + '</div>';
     });
 }
 
@@ -472,7 +472,7 @@ export function loadGeokatalog() {
   geokatalogLoading = true;
   const requestId = ++geokatalogRequestId;
 
-  treeContainer.innerHTML = '<div class="geokatalog-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('loading.catalog') + '</span></div>';
+  treeContainer.innerHTML = '<div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('loading.catalog') + '</span></div>';
 
   // Catalog of the current topic ("Thema wechseln"); "ech" is the complete Geokatalog
   fetch('https://api3.geo.admin.ch/rest/services/' + encodeURIComponent(currentTopic) + '/CatalogServer?lang=' + encodeURIComponent(getLang()))
@@ -633,7 +633,7 @@ export function openTopicModal() {
     renderTopicGrid();
     return;
   }
-  topicGrid.innerHTML = '<div class="layer-info-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('topic.loading') + '</span></div>';
+  topicGrid.innerHTML = '<div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('topic.loading') + '</span></div>';
   fetch('https://api3.geo.admin.ch/rest/services')
     .then(function(response) {
       if (!response.ok) throw new Error('HTTP ' + response.status);

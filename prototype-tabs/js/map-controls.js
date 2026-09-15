@@ -233,14 +233,28 @@ export function bindCoordinateDisplay(map, elementId) {
 export function initMapStatusIndicators(map) {
   const busyEl = document.getElementById('map-busy');
   let busyTimer = null;
+  let watchdog = null;
+  const SHOW_DELAY = 400;   // only when loading takes longer than this (no flicker on fast tile loads)
+  const MAX_SHOWN = 8000;   // a tile that never answers must not leave "loading" on a finished map
 
-  // Show the indicator only if loading takes longer than 400 ms (avoids flicker on fast tile loads)
+  // "Ready" = style loaded and every tile of the view loaded or failed. map.loaded() would also be
+  // false for a dirty style waiting for a frame (hidden tab) — states that never end in an 'idle'.
+  function mapReady() {
+    if (typeof map.isStyleLoaded === 'function' && typeof map.areTilesLoaded === 'function') {
+      return map.isStyleLoaded() && map.areTilesLoaded();
+    }
+    return map.loaded();
+  }
+
   function showBusy() {
     if (busyTimer || !busyEl) return;
     busyTimer = setTimeout(function() {
       busyTimer = null;
-      if (!map.loaded()) busyEl.classList.add('show');
-    }, 400);
+      if (mapReady()) return;
+      busyEl.classList.add('show');
+      if (watchdog) clearTimeout(watchdog);
+      watchdog = setTimeout(hideBusy, MAX_SHOWN);
+    }, SHOW_DELAY);
   }
 
   function hideBusy() {
@@ -248,11 +262,22 @@ export function initMapStatusIndicators(map) {
       clearTimeout(busyTimer);
       busyTimer = null;
     }
+    if (watchdog) {
+      clearTimeout(watchdog);
+      watchdog = null;
+    }
     if (busyEl) busyEl.classList.remove('show');
+  }
+
+  // Hide as soon as the map is ready again, not only on 'idle' (which needs a further render frame)
+  function hideWhenReady() {
+    if (busyEl && busyEl.classList.contains('show') && mapReady()) hideBusy();
   }
 
   map.on('dataloading', showBusy);
   map.on('idle', hideBusy);
+  map.on('sourcedata', hideWhenReady);
+  map.on('styledata', hideWhenReady);
 
   // Style/source failures are reported to the user (throttled). Single tile errors are
   // expected (e.g. raster tiles outside a source's coverage) and stay silent.

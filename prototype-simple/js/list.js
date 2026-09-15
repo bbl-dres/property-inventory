@@ -341,8 +341,8 @@ export function renderGalleryView() {
         '<div class="gallery-title">' + escapeHtml(props.bbl_bez) + '</div>' +
         '<div class="gallery-subtitle">' + escapeHtml(props.adr_conct) + '</div>' +
         '<div class="gallery-meta">' +
-          '<span class="gallery-tag">' + escapeHtml(props.bbl_port || '—') + '</span>' +
-          '<span class="gallery-tag">' + flaeche + ' m²</span>' +
+          '<span class="badge gallery-tag">' + escapeHtml(props.bbl_port || '—') + '</span>' +
+          '<span class="badge gallery-tag">' + flaeche + ' m²</span>' +
           '<span class="badge status-badge ' + getStatusClassName(props.bbl_stat) + '">' + escapeHtml(props.bbl_stat) + '</span>' +
         '</div>' +
       '</div>' +

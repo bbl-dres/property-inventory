@@ -79,11 +79,12 @@ prototype-tabs/
     ├── DATAMODEL.md          # BuildingMinds-style model with extensionData (differs from the simple app, see CODE-REVIEW.md)
     ├── DESIGNGUIDE.md        # Design system (identical with ../prototype-simple)
     ├── DESIGN-REVIEW.md      # Design review (2026-09-15): alignment of both prototypes
+    ├── DESIGN-REVIEW-2.md    # Polish review: tokens, icon button, state styles (identical with ../prototype-simple)
     └── RESPONSIVE-REVIEW.md  # Responsive / mobile design review
 ```
 
 ## See also
 
-- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
+- [Code review](docs/CODE-REVIEW.md) · [Data model](docs/DATAMODEL.md) · [Design system](docs/DESIGNGUIDE.md) · [Design review](docs/DESIGN-REVIEW.md) · [Polish review](docs/DESIGN-REVIEW-2.md) · [Responsive review](docs/RESPONSIVE-REVIEW.md) · [Third-party components](THIRD-PARTY.md)
 - Parent prototype: [`../prototype-simple`](../prototype-simple) (read-only inventory)
 - Sibling prototypes: [`../prototype-workflows`](../prototype-workflows) · [`../prototype-backend`](../prototype-backend) · [`../osm-height`](../osm-height)

@@ -178,7 +178,7 @@ export function initSearch() {
       html += '<div class="search-item search-history-item" data-term="' + escapeHtml(term) + '">' +
         '<span class="material-symbols-outlined search-history-icon" aria-hidden="true">history</span>' +
         '<div class="search-item-title">' + escapeHtml(term) + '</div>' +
-        '<button type="button" class="search-history-remove" data-term="' + escapeHtml(term) + '" title="' + escapeHtml(t('search.history.remove')) + '">' +
+        '<button type="button" class="icon-btn icon-btn--xs search-history-remove" data-term="' + escapeHtml(term) + '" title="' + escapeHtml(t('search.history.remove')) + '">' +
         '<span class="material-symbols-outlined" aria-hidden="true">close</span>' +
         '</button>' +
         '</div>';
@@ -426,7 +426,7 @@ export function initSearch() {
           icon('map') +
           '<span class="search-item-main"><span class="search-item-title">' + highlightMatch(stripHtml(r.attrs.label), term) + '</span></span>' +
           '<span class="search-item-action">' + t('search.addLayer') + '</span>' +
-          '<button type="button" class="search-item-info" data-action="showLayerInfo" data-layer-id="' + escapeHtml(layerId) + '" title="' + infoTitle + '" aria-label="' + infoTitle + '">' +
+          '<button type="button" class="icon-btn icon-btn--xs search-item-info" data-action="showLayerInfo" data-layer-id="' + escapeHtml(layerId) + '" title="' + infoTitle + '" aria-label="' + infoTitle + '">' +
             '<span class="material-symbols-outlined" aria-hidden="true">info</span>' +
           '</button>' +
           '</div>';

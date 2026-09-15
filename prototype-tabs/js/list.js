@@ -281,8 +281,8 @@ export function renderGalleryView() {
         '<div class="gallery-title">' + escapeHtml(props.name) + '</div>' +
         '<div class="gallery-subtitle">' + escapeHtml(props.streetName) + '</div>' +
         '<div class="gallery-meta">' +
-          '<span class="gallery-tag">' + escapeHtml(ext(props).portfolio || '—') + '</span>' +
-          '<span class="gallery-tag">' + flaeche + ' m²</span>' +
+          '<span class="badge gallery-tag">' + escapeHtml(ext(props).portfolio || '—') + '</span>' +
+          '<span class="badge gallery-tag">' + flaeche + ' m²</span>' +
           '<span class="badge status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>' +
         '</div>' +
       '</div>' +

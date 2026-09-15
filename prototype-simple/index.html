@@ -51,19 +51,19 @@
             <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
             <span class="lightbox-filename" id="lightbox-filename"></span>
             <div class="lightbox-actions">
-                <button class="lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
+                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
                     <span class="material-symbols-outlined">download</span>
                 </button>
-                <button class="lightbox-action-btn" id="lightbox-close" title="Schliessen">
+                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-close" title="Schliessen">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
         </div>
         <img class="lightbox-image" id="lightbox-image" alt="" draggable="false">
-        <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
+        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
             <span class="material-symbols-outlined">chevron_left</span>
         </button>
-        <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
+        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
             <span class="material-symbols-outlined">chevron_right</span>
         </button>
     </div>
@@ -77,11 +77,11 @@
     <!-- Layer info modal -->
     <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
         <div class="layer-info-modal-content">
-            <button class="layer-info-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
+            <button class="icon-btn icon-btn--round layer-info-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div id="layer-info-content" class="layer-info-body">
-                <div class="layer-info-loading" data-i18n="loading.info">Lade Informationen...</div>
+                <div class="loading-row" data-i18n="loading.info">Lade Informationen...</div>
             </div>
         </div>
     </div>
@@ -91,12 +91,12 @@
         <div class="layer-info-modal-content topic-modal-content">
             <div class="topic-modal-header">
                 <h2 id="topic-modal-title" data-i18n="accordion.catalog.theme">Thema wechseln</h2>
-                <button type="button" class="layer-info-modal-close topic-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
+                <button type="button" class="icon-btn icon-btn--round layer-info-modal-close topic-modal-close" data-i18n-aria-label="modal.close" aria-label="Schliessen">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             <div id="topic-grid" class="topic-grid">
-                <div class="layer-info-loading" data-i18n="topic.loading">Lade Themen...</div>
+                <div class="loading-row" data-i18n="topic.loading">Lade Themen...</div>
             </div>
         </div>
     </div>
@@ -198,7 +198,7 @@
                     <span data-i18n="tree.title">Standorte</span>
                 </span>
                 <div class="filter-panel-actions">
-                    <button class="filter-panel-btn" id="tree-close-btn" data-i18n-title="modal.close" data-i18n-aria-label="modal.close" title="Schliessen" aria-label="Schliessen">
+                    <button class="icon-btn filter-panel-btn" id="tree-close-btn" data-i18n-title="modal.close" data-i18n-aria-label="modal.close" title="Schliessen" aria-label="Schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -246,7 +246,7 @@
                 <div class="measure-distance-header">
                     <span class="material-symbols-outlined">straighten</span>
                     <span data-i18n="measure.title">Distanz messen</span>
-                    <button id="measure-distance-close" class="measure-distance-close" data-i18n-title="modal.close" title="Schliessen">
+                    <button id="measure-distance-close" class="icon-btn measure-distance-close" data-i18n-title="modal.close" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -277,7 +277,7 @@
             <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
                 <div class="mobile-menu-header">
                     <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
-                    <button id="mobile-menu-close" class="mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
+                    <button id="mobile-menu-close" class="icon-btn mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -355,7 +355,7 @@
                     </button>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
-                            <div class="geokatalog-loading" data-i18n="loading.catalog">Lade Katalog...</div>
+                            <div class="loading-row" data-i18n="loading.catalog">Lade Katalog...</div>
                         </div>
                     </div>
                 </div>
@@ -372,21 +372,21 @@
                                 <div class="active-layer-item" data-internal-layer="buildings">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
-                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="landcovers">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" title="Bodenabdeckung ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
-                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="landcovers" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="landcovers" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
                                     <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
-                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
+                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" data-i18n-title="accordion.layers.info" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
@@ -438,9 +438,9 @@
                 <div id="info-header">
                     <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
                     <div id="info-header-actions">
-                        <button id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
-                        <button id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
-                        <button id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                        <button class="icon-btn" id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                        <button class="icon-btn" id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                        <button class="icon-btn" id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                     </div>
                 </div>
                 <div id="info-preview-image" role="img" data-i18n-aria-label="info.preview" aria-label="Vorschaubild des Objekts"></div>
@@ -482,7 +482,7 @@
                         <div class="toolbar-search list-toolbar-search">
                             <span class="material-symbols-outlined">search</span>
                             <input type="text" id="list-search-input" data-i18n-placeholder="table.search" placeholder="Tabelle durchsuchen..." aria-label="Tabelle durchsuchen">
-                            <button class="toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
+                            <button class="icon-btn icon-btn--xs toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
                                 <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>
@@ -522,7 +522,7 @@
                                     <div class="columns-search">
                                         <span class="material-symbols-outlined">search</span>
                                         <input type="text" id="columns-search-input" data-i18n-placeholder="columns.search" placeholder="Spalte suchen..." aria-label="Spalte suchen">
-                                        <button class="toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                        <button class="icon-btn icon-btn--xs toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
                                             <span class="material-symbols-outlined">close</span>
                                         </button>
                                     </div>
@@ -809,7 +809,7 @@
                 </div>
                 <!-- Swagger UI (vendor/swagger-ui) is loaded on first open and renders data/swagger.json here -->
                 <div id="swagger-ui" class="swagger-ui-host">
-                    <div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span data-i18n="api.loading">API-Dokumentation wird geladen…</span></div>
+                    <div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span data-i18n="api.loading">API-Dokumentation wird geladen…</span></div>
                 </div>
             </div>
         </div>
@@ -1028,7 +1028,7 @@
                         <span class="material-symbols-outlined" aria-hidden="true">replay</span>
                         <span data-i18n="filter.reset">Zurücksetzen</span>
                     </button>
-                    <button class="filter-panel-btn" id="drawer-close-btn" data-i18n-title="modal.close" title="Schliessen">
+                    <button class="icon-btn filter-panel-btn" id="drawer-close-btn" data-i18n-title="modal.close" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -1038,7 +1038,7 @@
             <div class="filter-search">
                 <span class="material-symbols-outlined">search</span>
                 <input type="text" id="filter-search-input" data-i18n-placeholder="filter.search" placeholder="Filter suchen..." aria-label="Filter suchen">
-                <button class="toolbar-search-clear" id="filter-search-clear" type="button" aria-label="Suche löschen" hidden>
+                <button class="icon-btn icon-btn--xs toolbar-search-clear" id="filter-search-clear" type="button" aria-label="Suche löschen" hidden>
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>

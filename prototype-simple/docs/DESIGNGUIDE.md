@@ -1,7 +1,7 @@
 # Design Guide
 
 **BBL GIS Immobilienportfolio**
-Version 1.2 | Last Updated: September 2026
+Version 1.3 | Last Updated: September 2026
 
 One design system for both prototypes (`prototype-simple`, `prototype-tabs`). This guide is identical in both `docs/` folders; see `DESIGN-REVIEW.md` for the review that aligned them.
 
@@ -81,7 +81,7 @@ Design tokens are the foundation of our visual language. All values are defined 
 
 | File | Content | Shared |
 |------|---------|--------|
-| `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
+| `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.icon-btn`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
 | `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, location tree, info panel, filter drawer, toolbars, tables, table panel, pagination, gallery, view nav, detail page frame, API documentation, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
 | `css/app.css` | What only one prototype has (simple: filter search, single-column detail cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
 
@@ -101,7 +101,9 @@ wide its container is), never restyle a shared component.
 | Shadow | Elevation and depth | `--shadow-md`, `--shadow-lg` |
 | Motion | Transition timing | `--transition-fast` |
 | Layers | Stacking order | `--z-panel`, `--z-modal` |
-| Layout | Panel and content widths, control height | `--drawer-width`, `--tools-panel-width`, `--control-height` |
+| Layout | Panel and content widths, page gutter, control sizes | `--drawer-width`, `--page-gutter`, `--control-height`, `--control-sm` |
+| Lines | Dividers in three strengths, rings, accent bars | `--border-strong`, `--border-subtle`, `--ring-subtle`, `--accent-bar` |
+| Overlays | Controls and text on dark surfaces, veils, scrims | `--on-dark-rest`, `--on-dark-text`, `--veil-light`, `--scrim` |
 
 ### Usage Rules
 
@@ -267,6 +269,36 @@ Based on a **4px base unit** for consistent rhythm.
 | `--space-12` | 48px | Page sections |
 | `--space-16` | 64px | Major divisions |
 
+### Lines & Dividers
+
+Three divider strengths, always 1px, named by intent — never write `1px solid var(--grey-…)` by hand:
+
+| Token | Colour | Use |
+|-------|--------|-----|
+| `--border-strong` | grey-300 | Container edges: panels, inputs, cards, table heads, the header and footer |
+| `--border-default` | grey-200 | Section dividers inside a container: menu items, filter sections, panel headers |
+| `--border-subtle` | grey-100 | Row dividers: table rows, search results, list rows |
+
+Selection and emphasis use 2px (`.style-option`, tab indicators) and the 3px `--accent-bar` (left rule of the
+active tree node and of toasts). Floating elements over the map carry a ring instead of a border: the MapLibre
+control groups draw their own 2px ring around zoom, compass, home and 3D (the buttons draw nothing of their
+own), legend swatches use `--ring-subtle`.
+
+### Control Sizes
+
+| Token | Size | Use |
+|-------|------|-----|
+| `--control-2xs` | 20px | Count badges, tiny round remove buttons |
+| `--control-xs` | 24px | Inline icon buttons in rows (`.icon-btn--xs`), the tree chevron |
+| `--control-sm` | 32px | Toolbar controls, panel-header icon buttons, dropdown and pagination buttons |
+| `--control-height` | 40px | Header controls, primary / secondary / tertiary buttons, carousel buttons |
+| `--control-lg` | 48px | Lightbox navigation, loading spinner |
+| `--touch-target-min` | 44px | Every control on touch screens (`pointer: coarse`) |
+| `--map-control-size` | 29px | MapLibre's control buttons (external metric) |
+
+Half-step spacing exists for hairlines: `--space-0-5` (2px) and `--space-1-5` (6px, progress bars, the
+table resize handle).
+
 ### Border Radius
 
 | Token | Value | Use Case |
@@ -345,7 +377,7 @@ grid-template-columns: 1fr 1fr;
 gap: var(--space-8);
 ```
 
-**Detail Column (simple prototype):** one 720px column (`.detail-single-col`) of collapsible cards
+**Detail Column (simple prototype):** one column (`.detail-single-col`, `--content-max-width` like the API docs) of collapsible cards
 (`.detail-overline` + `.detail-card` with `.detail-grid-row` label | value | info icon).
 
 ---
@@ -388,7 +420,8 @@ For secondary actions alongside primary.
 
 #### Tertiary Button
 Text button with an icon, e.g. "Zurücksetzen" in the filter drawer header (`.filter-panel-reset`, 32px high
-there) — a labelled button, not an icon, so the reset is obvious.
+there) — a labelled button, not an icon, so the reset is obvious. The tabs entity toolbars use it as
+`btn-tertiary btn-action`. All three button primitives are `--control-height` (40px) high, 44px on touch screens.
 For low-emphasis actions.
 
 ```css
@@ -398,6 +431,22 @@ For low-emphasis actions.
   border: none;
   padding: var(--space-2) var(--space-3);
 }
+```
+
+#### Icon Button
+
+Icon-only button without border: `.icon-btn` (32px, grey-600 icon, hover grey-200 fill and grey-900 icon;
+the `title` and `aria-label` carry the name). Modifiers: `--xs` (24px, grey-500, inline in rows), `--md`
+(40px), `--lg` (48px), `--round`, `--on-dark` (translucent white on dark surfaces: lightbox). 44px on touch
+screens. Used by the panel and drawer close buttons, the info panel actions, the phone-menu and modal close,
+the toast close, the search-result and layer info buttons and the search clear buttons — the component class
+next to it (`filter-panel-btn`, `toast-close` …) only positions the button.
+
+```html
+<button class="icon-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen">
+  <span class="material-symbols-outlined" aria-hidden="true">close</span>
+</button>
+<button class="icon-btn icon-btn--xs search-item-info" title="Info">…</button>
 ```
 
 #### Header Button (pill)
@@ -447,6 +496,19 @@ Same colours as the primary button, 40px high.
 
 Red is reserved for selected and active states (tabs, table headers on hover, the active basemap,
 the active topic card) and for the brand; buttons are grey-900 or white.
+
+### State Styles
+
+One vocabulary for every control, so a hover never has to be designed twice:
+
+| State | Bordered controls (secondary, back, dropdown, pagination) | Dark controls (primary, panel button, table toggle) | Rows and menu items | Icon buttons |
+|-------|------|------|------|------|
+| Rest | white, `--border-strong` | grey-900 | — | transparent, grey-600 |
+| Hover | grey-100 fill, grey-500 border | grey-700 | grey-50 | grey-200 fill, grey-900 icon |
+| Active / pressed | — | grey-900 | red tint (`--primary-red-tint`, hover `-hover`) | — |
+| Selected | red border (thumbnails), red 2px indicator (tabs) | — | `.row-active` red tint, tree node grey-100 + 3px rule | — |
+| Disabled | `--opacity-disabled` (0.5), `cursor: not-allowed` | same | — | same |
+| Focus | 2px `--focus-ring` outline, 2px offset (global `:focus-visible`) | same | same | same |
 
 ### Status Badges
 
@@ -746,9 +808,11 @@ Both prototypes offer the same two views, map and gallery; tables live in the ta
 ### View Nav Pattern
 
 Page views (detail page, API documentation) start with one sticky bar, `.view-nav`: white, 1px grey-300
-bottom border, 12px × 20px padding (12px × 16px from 1024px down), breadcrumb on the left and the actions
+bottom border, 12px × `--page-gutter` padding (40px; 20px from 1366px down, 16px from 1024px, 12px on phones), breadcrumb on the left and the actions
 (`.btn-back`, in tabs also `.btn-edit`) on the right. The inner row is as wide as the content below it
-(`--view-nav-max-width`, default `--content-max-width`; 720px on simple's single-column detail page). In tabs
+(`--view-nav-max-width`, default `--content-max-width`).
+The content below uses the same `--page-gutter` as its side padding, so title, cards and tables start exactly
+under the breadcrumb at every width. In tabs
 the bar is part of the page header above the tab strip (`.header-detail`), in simple it sticks to the top of the
 scrolling view. On phones the back button comes first and spans the width, the breadcrumb wraps below.
 
@@ -1380,6 +1444,7 @@ Decorative icons should be hidden from screen readers:
 
 | Version | Date | Changes |
 |---------|------|---------|
+| 1.3 | Sep 2026 | Polish review (see `DESIGN-REVIEW-2.md`): tokens for overlays, lines and control sizes, the `.icon-btn` primitive, one state vocabulary, `.loading-row`, badge reuse; 0 literal colours or dividers left in the stylesheets |
 | 1.2 | Sep 2026 | Design review (see `DESIGN-REVIEW.md`): one stylesheet set for both prototypes (`tokens.css` + `components.css` identical, `app.css` per app), z-index scale, header button and panel button specs, one table density, 2px tabs, `.badge` primitive, phone menu = tools panel in both apps, inverted table toggle |
 | 1.1 | Sep 2026 | Responsive review: landscape-phone breakpoint, touch-target rules, two-row phone header, hamburger menu, bottom-sheet / filter-footer / sticky-tab patterns, container query for the address table; search suggestions with inline KI answer (see `RESPONSIVE-REVIEW.md`) |
 | 1.0 | Dec 2024 | Initial design guide release |

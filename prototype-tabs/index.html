@@ -51,19 +51,19 @@
             <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
             <span class="lightbox-filename" id="lightbox-filename"></span>
             <div class="lightbox-actions">
-                <button class="lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
+                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
                     <span class="material-symbols-outlined">download</span>
                 </button>
-                <button class="lightbox-action-btn" id="lightbox-close" title="Schliessen">
+                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-close" title="Schliessen">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
         </div>
         <img class="lightbox-image" id="lightbox-image" alt="" draggable="false">
-        <button class="lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
+        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
             <span class="material-symbols-outlined">chevron_left</span>
         </button>
-        <button class="lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
+        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
             <span class="material-symbols-outlined">chevron_right</span>
         </button>
     </div>
@@ -77,11 +77,11 @@
     <!-- Layer info modal -->
     <div id="layer-info-modal" class="layer-info-modal" role="dialog" aria-modal="true" aria-labelledby="layer-info-title">
         <div class="layer-info-modal-content">
-            <button class="layer-info-modal-close" aria-label="Schliessen">
+            <button class="icon-btn icon-btn--round layer-info-modal-close" aria-label="Schliessen">
                 <span class="material-symbols-outlined">close</span>
             </button>
             <div id="layer-info-content" class="layer-info-body">
-                <div class="layer-info-loading">Lade Informationen...</div>
+                <div class="loading-row">Lade Informationen...</div>
             </div>
         </div>
     </div>
@@ -91,12 +91,12 @@
         <div class="layer-info-modal-content topic-modal-content">
             <div class="topic-modal-header">
                 <h2 id="topic-modal-title">Thema wechseln</h2>
-                <button type="button" class="layer-info-modal-close topic-modal-close" aria-label="Schliessen">
+                <button type="button" class="icon-btn icon-btn--round layer-info-modal-close topic-modal-close" aria-label="Schliessen">
                     <span class="material-symbols-outlined">close</span>
                 </button>
             </div>
             <div id="topic-grid" class="topic-grid">
-                <div class="layer-info-loading">Lade Themen...</div>
+                <div class="loading-row">Lade Themen...</div>
             </div>
         </div>
     </div>
@@ -239,7 +239,7 @@
                     <span>Standorte</span>
                 </span>
                 <div class="filter-panel-actions">
-                    <button class="filter-panel-btn" id="tree-close-btn" title="Schliessen" aria-label="Schliessen">
+                    <button class="icon-btn filter-panel-btn" id="tree-close-btn" title="Schliessen" aria-label="Schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -268,7 +268,7 @@
             <aside id="accordion-panel" aria-label="Kartenwerkzeuge">
                 <div class="mobile-menu-header">
                     <span class="mobile-menu-title">Liegenschaften Inventar</span>
-                    <button id="mobile-menu-close" class="mobile-menu-close" aria-label="Menü schliessen">
+                    <button id="mobile-menu-close" class="icon-btn mobile-menu-close" aria-label="Menü schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>
@@ -305,7 +305,7 @@
                                 <span class="share-link-label">Link zum Teilen:</span>
                                 <div class="share-link-row">
                                     <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen">
-                                    <button class="share-copy-btn" data-action="copyShareLink" aria-label="Link in die Zwischenablage kopieren">Link kopieren</button>
+                                    <button class="btn-secondary share-copy-btn" data-action="copyShareLink" aria-label="Link in die Zwischenablage kopieren">Link kopieren</button>
                                 </div>
                             </div>
                         </div>
@@ -469,7 +469,7 @@
                     </button>
                     <div class="accordion-content geokatalog-content">
                         <div id="geokatalog-tree" class="geokatalog-tree">
-                            <div class="geokatalog-loading">Lade Katalog...</div>
+                            <div class="loading-row">Lade Katalog...</div>
                         </div>
                     </div>
                 </div>
@@ -486,14 +486,14 @@
                                 <div class="active-layer-item" data-internal-layer="buildings">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" title="Gebäude ein-/ausblenden">
                                     <span class="active-layer-title">Gebäude</span>
-                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" title="Layer-Informationen">
+                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden">
                                     <span class="active-layer-title">Grundstücke</span>
-                                    <button class="active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" title="Layer-Informationen">
+                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" title="Layer-Informationen">
                                         <span class="material-symbols-outlined">info</span>
                                     </button>
                                 </div>
@@ -541,9 +541,9 @@
                 <div id="info-header">
                     <span id="info-header-title">Objekt-Information</span>
                     <div id="info-header-actions">
-                        <button id="info-zoom-to" title="Hinzoomen" aria-label="Zum Objekt zoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
-                        <button id="info-share" title="Teilen" aria-label="Objekt teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
-                        <button id="info-close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                        <button class="icon-btn" id="info-zoom-to" title="Hinzoomen" aria-label="Zum Objekt zoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                        <button class="icon-btn" id="info-share" title="Teilen" aria-label="Objekt teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                        <button class="icon-btn" id="info-close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
                     </div>
                 </div>
                 <div id="info-preview-image" role="img" aria-label="Vorschaubild des Objekts"></div>
@@ -601,7 +601,7 @@
                 <div class="measure-distance-header">
                     <span class="material-symbols-outlined">straighten</span>
                     <span>Distanz messen</span>
-                    <button id="measure-distance-close" class="measure-distance-close" title="Schliessen">
+                    <button id="measure-distance-close" class="icon-btn measure-distance-close" title="Schliessen">
                         <span class="material-symbols-outlined">close</span>
                     </button>
                 </div>
@@ -632,7 +632,7 @@
                         <div class="toolbar-search list-toolbar-search">
                             <span class="material-symbols-outlined">search</span>
                             <input type="text" id="list-search-input" placeholder="Gebäude durchsuchen..." aria-label="Tabelle durchsuchen">
-                            <button class="toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
+                            <button class="icon-btn icon-btn--xs toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden>
                                 <span class="material-symbols-outlined">close</span>
                             </button>
                         </div>
@@ -672,7 +672,7 @@
                                     <div class="columns-search">
                                         <span class="material-symbols-outlined">search</span>
                                         <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen">
-                                        <button class="toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
+                                        <button class="icon-btn icon-btn--xs toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden>
                                             <span class="material-symbols-outlined">close</span>
                                         </button>
                                     </div>
@@ -815,7 +815,7 @@
                 </div>
                 <!-- Swagger UI (vendor/swagger-ui) is loaded on first open and renders data/swagger.json here -->
                 <div id="swagger-ui" class="swagger-ui-host">
-                    <div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>API-Dokumentation wird geladen…</span></div>
+                    <div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>API-Dokumentation wird geladen…</span></div>
                 </div>
             </div>
         </div>
@@ -1018,15 +1018,15 @@
                                     <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action measurements-action" disabled>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action measurements-action" disabled>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action measurements-action" disabled>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled>
                                         <span class="material-symbols-outlined">open_in_new</span>
                                         Anzeigen
                                     </button>
@@ -1110,15 +1110,15 @@
                                     <input type="text" id="costs-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action costs-action" disabled>
+                                    <button class="btn-tertiary btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action costs-action" disabled>
+                                    <button class="btn-tertiary btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action costs-action" disabled>
+                                    <button class="btn-tertiary btn-action costs-action" disabled>
                                         <span class="material-symbols-outlined">description</span>
                                         Details
                                     </button>
@@ -1200,15 +1200,15 @@
                                     <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action contracts-action" disabled>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action contracts-action" disabled>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action contracts-action" disabled>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled>
                                         <span class="material-symbols-outlined">description</span>
                                         Details
                                     </button>
@@ -1294,15 +1294,15 @@
                                     <input type="text" id="assets-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action assets-action" disabled>
+                                    <button class="btn-tertiary btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action assets-action" disabled>
+                                    <button class="btn-tertiary btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action assets-action" disabled>
+                                    <button class="btn-tertiary btn-action assets-action" disabled>
                                         <span class="material-symbols-outlined">info</span>
                                         Details
                                     </button>
@@ -1384,15 +1384,15 @@
                                     <input type="text" id="documents-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action documents-action" disabled>
+                                    <button class="btn-tertiary btn-action documents-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action documents-action" disabled>
+                                    <button class="btn-tertiary btn-action documents-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action documents-action" disabled>
+                                    <button class="btn-tertiary btn-action documents-action" disabled>
                                         <span class="material-symbols-outlined">download</span>
                                         Herunterladen
                                     </button>
@@ -1468,15 +1468,15 @@
                                     <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-action contacts-action" disabled>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">edit</span>
                                         Bearbeiten
                                     </button>
-                                    <button class="btn-action contacts-action" disabled>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
                                     </button>
-                                    <button class="btn-action contacts-action" disabled>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled>
                                         <span class="material-symbols-outlined">mail</span>
                                         Kontaktieren
                                     </button>
@@ -1557,7 +1557,7 @@
                         <span class="material-symbols-outlined" aria-hidden="true">replay</span>
                         <span>Zurücksetzen</span>
                     </button>
-                    <button class="filter-panel-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen">
+                    <button class="icon-btn filter-panel-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen">
                         <span class="material-symbols-outlined" aria-hidden="true">close</span>
                     </button>
                 </div>

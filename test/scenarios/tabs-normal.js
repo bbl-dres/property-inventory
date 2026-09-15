@@ -303,6 +303,20 @@ module.exports = {
     document.getElementById('tbl-toggle').click();
     await settle(400);
 
+    // Map busy pill: not shown when every tile is loaded; shown for a slow load and hidden again as soon as
+    // the map is ready (sourcedata) or after the watchdog, not only on 'idle'
+    const busy = document.getElementById('map-busy');
+    map.fire('dataloading');
+    await settle(500);
+    check('no "loading" pill when the tiles are loaded', !busy.classList.contains('show'));
+    map._tilesLoaded = false;
+    map.fire('dataloading');
+    await settle(500);
+    check('pill shown while tiles load', busy.classList.contains('show'));
+    map._tilesLoaded = true;
+    map.fire('sourcedata', { dataType: 'source' });
+    check('pill hidden as soon as the map is ready', !busy.classList.contains('show'));
+
     // Logo = home: landing state (map view, no filters, no selection, drawer closed) — not the previous view
     document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
     document.getElementById('filter-panel-btn').click();

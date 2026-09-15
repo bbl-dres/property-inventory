@@ -56,6 +56,8 @@ class FakeMap extends Evented {
     this.fire('idle');
   }
   loaded() { return this._loaded; }
+  isStyleLoaded() { return this._loaded; }
+  areTilesLoaded() { return this._tilesLoaded !== false; }
 
   addControl(control) {
     if (control && control.onAdd) {

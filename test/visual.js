@@ -5,7 +5,7 @@
 //   node visual.js probe  <outJson> [prototype]    computed metrics (JSON) per viewport x scenario
 //   node visual.js both   <outDir> [prototype]     screenshots plus probe.json in one pass
 //   node visual.js eval   <expression> <prototype> <viewport> <scenario>   evaluate an expression in one page
-// CDP_PORT=<port> selects the DevTools port (default 9333) so two probes can run side by side.
+// VIEWPORTS=desktop,phone-14 limits the viewports; CDP_PORT=<port> selects the DevTools port (default 9333) so two probes can run side by side.
 //
 // Needs a static server on http://127.0.0.1:8123/ serving the repository root
 // (python -m http.server 8123). No npm dependency: uses Node's built-in WebSocket and fetch.
@@ -204,7 +204,7 @@ async function run(mode, outArg, onlyPrototype) {
   try {
     for (const prototype of prototypes) {
       results[prototype] = {};
-      for (const [vpName, viewport] of Object.entries(VIEWPORTS)) {
+      for (const [vpName, viewport] of Object.entries(VIEWPORTS).filter(v => !process.env.VIEWPORTS || process.env.VIEWPORTS.split(",").includes(Array.isArray(v) ? v[0] : v))) {
         results[prototype][vpName] = {};
         for (const [scName, sc] of Object.entries(SCENARIOS)) {
           if (sc.only && sc.only !== prototype) continue;

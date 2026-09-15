@@ -252,7 +252,7 @@ export function initApiDocs() {
   if (!host) return;
 
   if (!swaggerAssetsPromise) {
-    host.innerHTML = '<div class="api-docs-loading"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('api.loading') + '</span></div>';
+    host.innerHTML = '<div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>' + t('api.loading') + '</span></div>';
     loadStylesheet('vendor/swagger-ui/swagger-ui.css');
     swaggerAssetsPromise = window.SwaggerUIBundle ? Promise.resolve() : loadScriptOnce('vendor/swagger-ui/swagger-ui-bundle.js');
   }
@@ -279,7 +279,7 @@ export function initApiDocs() {
       console.error('[api] Swagger UI failed:', err);
       swaggerAssetsPromise = null;
       swaggerInitialized = false;
-      host.innerHTML = '<div class="api-docs-error"><span>' + t('api.error') + '</span>' +
+      host.innerHTML = '<div class="loading-row loading-row--error"><span>' + t('api.error') + '</span>' +
         '<button type="button" class="geokatalog-retry" data-action="retryApiDocs">' + t('error.retry') + '</button></div>';
     });
 }

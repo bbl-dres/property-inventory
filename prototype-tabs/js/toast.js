@@ -36,7 +36,7 @@ export function showToast(options) {
     html += '</div>';
   }
   html += '</div>';
-  html += '<button class="toast-close" aria-label="' + escapeHtml(t('modal.close')) + '"><span class="material-symbols-outlined">close</span></button>';
+  html += '<button class="icon-btn toast-close" aria-label="' + escapeHtml(t('modal.close')) + '"><span class="material-symbols-outlined">close</span></button>';
 
   toast.innerHTML = html;
   container.appendChild(toast);
