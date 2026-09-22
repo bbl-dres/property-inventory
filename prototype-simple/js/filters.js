@@ -16,7 +16,8 @@ export function getFiltersFromURL() {
   const params = new URLSearchParams(window.location.search);
   const filters = {};
   Object.keys(filterConfig).forEach(function(key) {
-    const value = params.get('filter_' + key);
+    let value = params.get('filter_' + key);
+    if (key === 'status' && value === 'Aktiv') value = 'In Betrieb'; // Existing shared links use the previous demo label.
     filters[key] = value ? value.split(',').map(function(v) { return decodeURIComponent(v); }) : [];
   });
   return filters;

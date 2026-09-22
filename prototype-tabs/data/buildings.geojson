@@ -10,9 +10,9 @@
         "buildingId": "1080/4840/AF",
         "siteId": "1080/4840",
         "name": "Bundeshaus West",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Verwaltung",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude Repräsentation Inland",
+        "secondaryTypeOfBuilding": "Gebäude Repräsentation Inland",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "1857-01-01T00:00:00Z",
@@ -32,9 +32,20 @@
         "extensionData": {
           "numberOfFloors": 6,
           "responsiblePerson": "Mira Waldner (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "008",
+            "building.type1": "19",
+            "building.type2": "19.00",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": "1004"
+          },
+          "gwrStatus": "Bestehend",
+          "rentalModel": null,
           "egid": "1230654",
           "egrid": "CH127620463518",
-          "portfolio": "Verwaltungsgebäude",
+          "portfolio": "Repräsentation Inland",
           "portfolioGroup": "Bundesverwaltung",
           "heatingGenerator": "Fernwärmeübergabe",
           "heatingSource": "Fernwärme (Demo)",
@@ -360,7 +371,15 @@
               "buildingPermitDate",
               "heritageRegisterNumber"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": {
+                "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1230654_0?sr=4326&geometryFormat=geojson",
+                "dataStatus": "public-source"
+              }
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -380,9 +399,9 @@
         "buildingId": "1080/5210/AA",
         "siteId": "1080/5210",
         "name": "Schweizer Botschaft Berlin",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "1871-01-01T00:00:00Z",
@@ -402,9 +421,20 @@
         "extensionData": {
           "numberOfFloors": 5,
           "responsiblePerson": "Levin Feldmann (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -499,7 +529,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -519,9 +554,9 @@
         "buildingId": "9900/9002/AA",
         "siteId": "9900/9002",
         "name": "BBL – Fellerstrasse 21",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Verwaltung / Logistik",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Handel und Verwaltung",
+        "secondaryTypeOfBuilding": "Bürobauten, Verwaltungsgebäude",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "1966-01-01T00:00:00Z",
@@ -541,9 +576,20 @@
         "extensionData": {
           "numberOfFloors": 7,
           "responsiblePerson": "Nora Birchler (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "001",
+            "building.type1": "06",
+            "building.type2": "06.01",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": "1004"
+          },
+          "gwrStatus": "Bestehend",
+          "rentalModel": null,
           "egid": "1243999",
           "egrid": "CH373589574684",
-          "portfolio": "Verwaltungsgebäude",
+          "portfolio": "Allgemeine Bundesverwaltung",
           "portfolioGroup": "Bundesverwaltung",
           "heatingGenerator": "Fernwärmeübergabe",
           "heatingSource": "Fernwärme (Demo)",
@@ -884,7 +930,15 @@
               "buildingPermitDate",
               "heritageRegisterNumber"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": {
+                "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1243999_0?sr=4326&geometryFormat=geojson",
+                "dataStatus": "public-source"
+              }
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -904,9 +958,9 @@
         "buildingId": "9900/9003/AA",
         "siteId": "9900/9003",
         "name": "Verwaltungsgebäude Liebefeld",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Verwaltung",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Handel und Verwaltung",
+        "secondaryTypeOfBuilding": "Bürobauten, Verwaltungsgebäude",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2015-01-01T00:00:00Z",
@@ -926,9 +980,20 @@
         "extensionData": {
           "numberOfFloors": 7,
           "responsiblePerson": "Elio Sommer (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "001",
+            "building.type1": "06",
+            "building.type2": "06.01",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": "1004"
+          },
+          "gwrStatus": "Bestehend",
+          "rentalModel": null,
           "egid": "191458950",
           "egrid": "CH208035154682",
-          "portfolio": "Verwaltungsgebäude",
+          "portfolio": "Allgemeine Bundesverwaltung",
           "portfolioGroup": "Bundesverwaltung",
           "heatingGenerator": "Fernwärmeübergabe",
           "heatingSource": "Fernwärme (Demo)",
@@ -1729,7 +1794,15 @@
               "buildingPermitDate",
               "heritageRegisterNumber"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": {
+                "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191458950_0?sr=4326&geometryFormat=geojson",
+                "dataStatus": "public-source"
+              }
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -1749,9 +1822,9 @@
         "buildingId": "9900/9004/AA",
         "siteId": "9900/9004",
         "name": "Verwaltungsgebäude Eichenweg 3",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Verwaltung",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Handel und Verwaltung",
+        "secondaryTypeOfBuilding": "Bürobauten, Verwaltungsgebäude",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2021-01-01T00:00:00Z",
@@ -1771,9 +1844,20 @@
         "extensionData": {
           "numberOfFloors": 9,
           "responsiblePerson": "Jana Linden (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "001",
+            "building.type1": "06",
+            "building.type2": "06.01",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": "1004"
+          },
+          "gwrStatus": "Bestehend",
+          "rentalModel": null,
           "egid": "191688442",
           "egrid": "CH794682373511",
-          "portfolio": "Verwaltungsgebäude",
+          "portfolio": "Allgemeine Bundesverwaltung",
           "portfolioGroup": "Bundesverwaltung",
           "heatingGenerator": "Fernwärmeübergabe",
           "heatingSource": "Fernwärme (Demo)",
@@ -2153,7 +2237,15 @@
               "buildingPermitDate",
               "heritageRegisterNumber"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": {
+                "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191688442_0?sr=4326&geometryFormat=geojson",
+                "dataStatus": "public-source"
+              }
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -2173,9 +2265,9 @@
         "buildingId": "9900/9005/AA",
         "siteId": "9900/9005",
         "name": "Landesmuseum Zürich – Erweiterungsbau",
-        "primaryTypeOfBuilding": "Museumsgebäude",
-        "secondaryTypeOfBuilding": "Museumserweiterung",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Kultur und Geselligkeit",
+        "secondaryTypeOfBuilding": "Museen, Ausstellungsbauten",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2016-01-01T00:00:00Z",
@@ -2195,9 +2287,20 @@
         "extensionData": {
           "numberOfFloors": 4,
           "responsiblePerson": "Silvan Tanner (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "006",
+            "building.type1": "10",
+            "building.type2": "10.01",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": "1004"
+          },
+          "gwrStatus": "Bestehend",
+          "rentalModel": null,
           "egid": "302030043",
           "egrid": "CH385599917023",
-          "portfolio": "Kultur und Museen",
+          "portfolio": "Kunst und Kultur",
           "portfolioGroup": "Kultur und Denkmäler",
           "heatingGenerator": "Fernwärmeübergabe",
           "heatingSource": "Fernwärme (Demo)",
@@ -3197,7 +3300,15 @@
               "buildingPermitDate",
               "heritageRegisterNumber"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": {
+                "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/302030043_0?sr=4326&geometryFormat=geojson",
+                "dataStatus": "public-source"
+              }
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3217,9 +3328,9 @@
         "buildingId": "9900/9006/AA",
         "siteId": "9900/9006",
         "name": "Schweizer Botschaft Canberra",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": null,
@@ -3239,9 +3350,20 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Lina Moser (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -3334,7 +3456,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3354,9 +3481,9 @@
         "buildingId": "9900/9007/AA",
         "siteId": "9900/9007",
         "name": "Schweizer Botschaft Brasília",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": null,
@@ -3376,9 +3503,20 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Noé Auer (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Kälteanlage / reversible Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -3471,7 +3609,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3491,9 +3634,9 @@
         "buildingId": "9900/9008/AA",
         "siteId": "9900/9008",
         "name": "Schweizer Botschaft Seoul",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2019-01-01T00:00:00Z",
@@ -3513,9 +3656,20 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Alina Keller (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -3616,7 +3770,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3636,9 +3795,9 @@
         "buildingId": "9900/9009/AA",
         "siteId": "9900/9009",
         "name": "Schweizer Botschaft Nairobi",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2016-01-01T00:00:00Z",
@@ -3658,9 +3817,20 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Milo Bachmann (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -3761,7 +3931,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3781,9 +3956,9 @@
         "buildingId": "9900/9010/AA",
         "siteId": "9900/9010",
         "name": "Schweizer Botschaft Washington – Kanzlei",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "1959-01-01T00:00:00Z",
@@ -3803,9 +3978,20 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Lea Vogt (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -3907,7 +4093,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -3927,9 +4118,9 @@
         "buildingId": "9900/9011/AA",
         "siteId": "9900/9011",
         "name": "Schweizer Botschaft Singapur",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "1984-01-01T00:00:00Z",
@@ -3949,9 +4140,20 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Jonas Steiner (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Kälteanlage / reversible Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -4053,7 +4255,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -4073,9 +4280,9 @@
         "buildingId": "9900/9012/AA",
         "siteId": "9900/9012",
         "name": "Schweizer Botschaft Abidjan",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Botschaftsgebäude",
-        "typeOfOwnership": "Eigentümer",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Kanzleien",
+        "typeOfOwnership": "Eigentum",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": "2015-01-01T00:00:00Z",
@@ -4095,9 +4302,20 @@
         "extensionData": {
           "numberOfFloors": 1,
           "responsiblePerson": "Sina Berger (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Eigentum",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.03",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Kälteanlage / reversible Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -4198,7 +4416,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },
@@ -4218,9 +4441,9 @@
         "buildingId": "9900/9013/AA",
         "siteId": "9900/9013",
         "name": "Generalkonsulat und Swissnex San Francisco",
-        "primaryTypeOfBuilding": "Bürogebäude",
-        "secondaryTypeOfBuilding": "Generalkonsulat / Swissnex",
-        "typeOfOwnership": "Mieter",
+        "primaryTypeOfBuilding": "Gebäude im Ausland",
+        "secondaryTypeOfBuilding": "Ausland: Wissenschaft und Technologie",
+        "typeOfOwnership": "Anmiete",
         "validFrom": null,
         "validUntil": null,
         "constructionYear": null,
@@ -4240,9 +4463,20 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Flurin Frei (Demo)",
+          "referenceCodes": {
+            "building.ownership": "Anmiete",
+            "building.portfolio": "002",
+            "building.type1": "16",
+            "building.type2": "16.07",
+            "building.rentalModel": null,
+            "building.operatingStatus": "ACTIVE",
+            "building.physicalStatus": null
+          },
+          "gwrStatus": null,
+          "rentalModel": null,
           "egid": null,
           "egrid": null,
-          "portfolio": "Diplomatische Vertretung",
+          "portfolio": "Ausland",
           "portfolioGroup": "EDA Auslandsvertretungen",
           "heatingGenerator": "Luft-Wasser-Wärmepumpe",
           "heatingSource": "Elektrizität (Demo)",
@@ -4343,7 +4577,12 @@
               "EGID",
               "EGRID"
             ],
-            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch."
+            "notice": "Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. Grundstück schematisch.",
+            "referenceData": {
+              "catalogVersion": "55",
+              "classificationAssignments": "Demo assignments to catalogue codes; not confirmed SAP master data.",
+              "physicalStatus": null
+            }
           },
           "yearPrecision": "year; January 1 is not a known completion date"
         },

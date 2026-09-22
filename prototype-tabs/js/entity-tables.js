@@ -4,13 +4,22 @@ import { escapeHtml, formatNum, formatCurrency, formatCurrencyWithUnit, formatDa
 import { t } from './i18n.js';
 import { showToast } from './toast.js';
 import { createDataTable } from './data-table.js';
+import { openDocumentPreview, documentTitleLink } from './document-preview.js';
 
 function createEntityTable(config) {
   let records = [];
+  let currentBuilding = null;
   const name = config.tableId.replace('-table', '');
   const table = createDataTable({
     tbodyId: config.tbodyId, columns: config.columns, defaultSort: config.defaultSort,
     getRows: function() { return records; }, getRowId: function(row) { return row.id; },
+    onRowSelect: config.preview ? function(id) {
+      const rows = table.getRows();
+      const row = rows.find(record => record.id === id);
+      if (!row) return;
+      Array.from(document.getElementById(config.tbodyId).rows).find(el => el.dataset.id === id)?.focus();
+      config.preview(row, rows, currentBuilding);
+    } : undefined,
     searchText: function(row) { return config.searchFields.map(function(key) { return row[key] ?? ''; }).join(' '); },
     filterId: config.filterId,
     selection: { checkboxClass: config.checkboxClass, selectAllId: config.selectAllId, actionClass: config.actionClass },
@@ -19,12 +28,27 @@ function createEntityTable(config) {
   return {
     render: table.render,
     load: function(building) {
+      currentBuilding = building;
       const id = building && building.properties.buildingId;
       records = id ? config.dataSource().filter(function(row) { return row.buildingIds && row.buildingIds.includes(id); }).map(config.transform) : [];
       table.reset();
     },
     init: function() {
       table.init();
+      if (config.preview) {
+        document.getElementById(config.tbodyId).addEventListener('click', function(event) {
+          const trigger = event.target.closest('[data-preview-document]');
+          if (!trigger || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+          event.preventDefault();
+          const rows = table.getRows();
+          const row = rows.find(function(record) { return record.id === trigger.dataset.previewDocument; });
+          if (row) config.preview(row, rows, currentBuilding);
+        });
+        document.getElementById(config.previewBtnId).addEventListener('click', function() {
+          const selected = table.getSelectedRows();
+          if (selected.length) config.preview(selected[0], table.getRows(), currentBuilding);
+        });
+      }
       const add = document.getElementById(config.addBtnId);
       if (add) add.addEventListener('click', function() { showToast({ type: 'info', message: t('detail.coming_soon'), duration: 4000 }); });
     }
@@ -56,7 +80,7 @@ export const entityTables = {
         unit: m.unit,
         source: (m.extensionData && m.extensionData.source) || 'Manuell',
         accuracy: m.accuracy,
-        standard: m.standard,
+        standard: [m.standard, m.extensionData?.standardDetail].filter(Boolean).join(' · '),
         validFrom: m.validFrom,
         validUntil: m.validUntil || '—'
       };
@@ -64,7 +88,7 @@ export const entityTables = {
     columns: [
       { key: 'areaType', className: 'col-type', label: "Bemessungsart", width: 'name' },
       { key: 'value', className: 'col-area', label: "Wert", width: 'number', render: function(m) { return formatNum(m.value, 0) + ' ' + escapeHtml(m.unit); } },
-      { key: 'source', className: 'col-source', label: "Herkunft", width: 'text' },
+      { key: 'source', className: 'col-source', label: "Quelle", width: 'text' },
       { key: 'accuracy', className: 'col-accuracy', label: "Genauigkeit", width: 'text' },
       { key: 'standard', className: 'col-standard', label: "Standard", width: 'text' },
       { key: 'validFrom', className: 'col-from', label: "Gültig von", width: 'date' },
@@ -81,11 +105,21 @@ export const entityTables = {
     actionClass: 'documents-action',
     filterId: 'documents-filter',
     addBtnId: 'btn-add-document',
+    previewBtnId: 'btn-preview-document',
+    preview: function(row, rows, building) {
+      const p = building.properties;
+      openDocumentPreview(row.document, rows.map(function(r) { return r.document; }), {
+        buildingName: p.name, address: p.streetName,
+        measurements: state.allAreaMeasurements.filter(function(m) { return m.buildingIds.includes(p.buildingId); }),
+        costs: state.allCosts.filter(function(c) { return c.buildingIds.includes(p.buildingId); })
+      });
+    },
     defaultSort: 'titel',
     dataSource: function() { return state.allDocuments; },
     transform: function(d) {
       return {
         id: d.documentId,
+        document: d,
         titel: d.name,
         dokumentTyp: (d.documentTypeCode ? d.documentTypeCode + ' · ' : '') + d.type,
         dateiformat: d.fileFormat,
@@ -97,9 +131,7 @@ export const entityTables = {
     },
     columns: [
       { key: 'titel', className: 'col-title', label: "Titel", width: 'title', render: function(d) {
-        return d.url && /^https:\/\//.test(d.url)
-          ? '<a href="' + escapeHtml(d.url) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(d.titel) + '</a>'
-          : escapeHtml(d.titel);
+        return documentTitleLink(d.document);
       } },
       { key: 'dokumentTyp', className: 'col-type', label: "Typ", width: 'text' },
       { key: 'dateiformat', className: 'col-format', label: "Format", width: 'code' },

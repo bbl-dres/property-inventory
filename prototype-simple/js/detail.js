@@ -4,6 +4,7 @@ import { placeholderImages, getStatusClassName } from './config.js';
 import { escapeHtml, setText, formatNum, formatArea, formatVolume, formatCHF, formatDate } from './utils.js';
 import { showCarousel } from './carousel.js';
 import { showMiniMap } from './mini-map.js';
+import { showDocumentList } from './document-list.js';
 
 // ===== POPULATE =====
 
@@ -27,6 +28,9 @@ function setLink(id, href) {
 export function populateDetailView(building) {
   const props = building.properties;
   const coords = building.geometry.coordinates;
+  const related = props.demoRelatedRecords || {};
+  showDocumentList(related.documents, { buildingName: props.bbl_bez, address: props.adr_conct,
+    measurements: related.areaMeasurements, costs: related.costs });
 
   // Breadcrumb: adr_land > adr_ort > bbl_we > bbl_obj
   setText('breadcrumb-country', props.adr_land);
@@ -89,6 +93,7 @@ export function populateDetailView(building) {
 
   // Official survey
   setText('detail-egid', props.av_egid);
+  setText('detail-gwr-status', props.gwr_stat);
   setText('detail-egrid', props.av_egrid);
   setText('detail-bfs-gem', props.bfs_gem);
   setText('detail-bfs-gemnr', props.bfs_gemnr);

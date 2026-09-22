@@ -13,6 +13,7 @@ import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
 import { renderFilteredTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
 import { populateDetailView } from './detail.js';
+import { closeDocumentPreview } from './document-preview.js';
 import { renderEntityTable } from './entity-tables.js';
 import { zoomToFilteredPoints, resetFilters, toggleSmartDrawer } from './filters.js';
 import { getShareUrl, updateShareLink, updateExportCount } from './export.js';
@@ -82,6 +83,7 @@ function rememberPreviousView() {
 }
 
 export function switchView(view) {
+  closeDocumentPreview(false);
   if (view === 'detail' || VIEWS.indexOf(view) === -1) view = 'map';
   rememberPreviousView();
   state.currentView = view;
@@ -116,6 +118,7 @@ export function switchView(view) {
 }
 
 export function showDetailView(buildingId, tab) {
+  closeDocumentPreview(false);
   if (!state.buildingsData) return;
   const building = state.buildingIndex.get(buildingId);
   if (!building) {

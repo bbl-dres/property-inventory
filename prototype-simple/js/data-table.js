@@ -293,6 +293,8 @@ export function createDataTable(config) {
     init: init, render: render, renderHeaders: renderHeaders, layout: layout,
     sortBy: sortBy, updateSortIndicator: updateSortIndicator, syncTo: syncTo,
     setSearchTerm: setSearchTerm, getState: function() { return st; },
+    getRows: rows,
+    getSelectedRows: function() { return rows().filter(function(row) { return selected.has(rowKey(row)); }); },
     resetPage: function() { st.page = 1; },
     reset: function() { st.page = 1; st.searchTerm = ''; selected.clear(); activeKey = null; const filter = document.getElementById(config.filterId); if (filter) filter.value = ''; updateSelection(); }
   };

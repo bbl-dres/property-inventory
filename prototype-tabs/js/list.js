@@ -41,7 +41,7 @@ const columnLabels = {
     "label": "Fläche NGF"
   },
   "col-status": {
-    "label": "Status"
+    "label": "Bewirtschaftungsstatus"
   },
   "col-parcel-plot": {
     "label": "Grundstück-Nr."

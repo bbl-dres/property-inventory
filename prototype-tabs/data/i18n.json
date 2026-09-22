@@ -658,10 +658,10 @@
     "it": "Responsabile"
   },
   "info.label.status": {
-    "de": "Status",
-    "en": "Status",
-    "fr": "Statut",
-    "it": "Stato"
+    "de": "Bewirtschaftungsstatus",
+    "en": "Operational status",
+    "fr": "Statut d’exploitation",
+    "it": "Stato operativo"
   },
   "info.label.plot": {
     "de": "Parzellen-Nr.",
@@ -880,10 +880,10 @@
     "it": "Designazione"
   },
   "col.bbl_stat": {
-    "de": "Status",
-    "en": "Status",
-    "fr": "Statut",
-    "it": "Stato"
+    "de": "Bewirtschaftungsstatus",
+    "en": "Operational status",
+    "fr": "Statut d’exploitation",
+    "it": "Stato operativo"
   },
   "col.bbl_buch": {
     "de": "Buchungskreis",

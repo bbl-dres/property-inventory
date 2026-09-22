@@ -79,6 +79,7 @@ def main():
     for simple,tab,src,parcel,tabparcel in zip(a,b,source,ap,bp):
         p,q= simple['properties'],tab['properties']
         bid=p['bbl_id']
+        assert p['demoRelatedRecords']['costs']==[c for c in entities['costs'] if bid in c['buildingIds']]
         assert q['buildingId']==bid and p['bbl_bez']==q['name']==src['name']
         assert simple['geometry']==tab['geometry']
         assert simple['geometry']['coordinates']==src['coordinates']
@@ -106,7 +107,7 @@ def main():
                 assert code in ['GF','GV'] and src['publishedMeasurements'][code]==row['value']
                 assert row['extensionData']['sourceUrl']==src['publishedMeasurements']['sourceUrl']
             else:
-                assert row['accuracy']=='Demo-Schätzung'
+                assert row['accuracy']=='Geschätzt' and row['accuracyCode']=='GESCHAETZT'
         if src.get('cadastre'):
             cadastre=src['cadastre']
             record=swiss[src['slug']]

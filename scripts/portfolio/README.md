@@ -146,17 +146,20 @@ are used; exact codes and labels are in [document-types.json](sources/document-t
 | B14103 | Energiestatistik |
 
 Each building has one linked real BBL publication (12 PDFs, two media-page links)
-and five clearly fictional document-register entries. The latter are metadata only,
-with no invented downloads or file sizes. No actual maintenance manuals, contracts,
-personal details or operational records have been copied.
+and five clearly fictional document-register entries, with no invented downloads
+or file sizes. Both prototypes render local HTML mock pages for browser previews;
+these do not reproduce original PDFs. See [document preview](../../docs/DOCUMENT-PREVIEW.md).
+No actual maintenance manuals, contracts, personal details or operational records
+have been copied.
 
 ## Data models, photographs and licences
 
 The canonical reviewed input is `sources/properties.json`. The generator adapts it
 to the simple app's `bbl_*`, `barea_*`, `larea_*`, `adr_*` fields and the tabs app's
 camelCase properties, `extensionData` and separate related-entity JSON files.
-The simple model embeds the same measurements/documents/contacts under
-`demoRelatedRecords`; its existing UI presents only its supported detail fields.
+The simple model embeds the same measurements/documents/contacts/costs under
+`demoRelatedRecords`; its overview includes a compact document list. Preview pages
+use the same building measurements and costs as the Tabs registers.
 Stable UUIDv5 identifiers preserve relationships across rebuilds. Existing first
 building IDs are retained for deep links; inventory IDs are not official BBL IDs.
 

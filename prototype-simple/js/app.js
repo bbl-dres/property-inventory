@@ -1,6 +1,7 @@
 // Entry point: boot sequence, data loading, table panel and the global action delegation.
 
 import { state } from './state.js';
+import { initReferenceData } from './reference-data.js';
 import { internalLayers, statusLegendItems } from './config.js';
 import { fetchWithErrorHandling } from './utils.js';
 import { initI18n, translationsLoaded, t, tf } from './i18n.js';
@@ -130,9 +131,11 @@ function loadAllData() {
   Promise.all([
     fetchWithErrorHandling('data/buildings.geojson'),
     optional('data/parcels.geojson'),
-    optional('data/landcovers.geojson')
+    optional('data/landcovers.geojson'),
+    fetchWithErrorHandling('data/meta.json')
   ])
     .then(function(results) {
+      initReferenceData(results[3]);
       applyLoadedData(results[0], results[1], results[2]);
       hideLoadingOverlay();
       markBooted();

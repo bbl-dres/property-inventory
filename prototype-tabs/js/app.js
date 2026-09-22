@@ -1,6 +1,7 @@
 // Entry point: boot sequence, data loading and the global action delegation.
 
 import { state } from './state.js';
+import { initReferenceData } from './reference-data.js';
 import { internalLayers, statusLegendItems, entityDataFiles } from './config.js';
 import { fetchWithErrorHandling } from './utils.js';
 import { initI18n, translationsLoaded, t, tf } from './i18n.js';
@@ -133,8 +134,9 @@ function loadAllData() {
   Promise.all([
     fetchWithErrorHandling('data/buildings.geojson'),
     optional('data/parcels.geojson')
-  ].concat(entityKeys.map(function(key) { return optional(entityDataFiles[key].url); })))
+  ].concat(entityKeys.map(function(key) { return optional(entityDataFiles[key].url); }), [fetchWithErrorHandling('data/meta.json')]))
     .then(function(results) {
+      initReferenceData(results[2 + entityKeys.length]);
       const entities = {};
       entityKeys.forEach(function(key, i) { entities[key] = results[2 + i]; });
       applyLoadedData(results[0], results[1], entities);

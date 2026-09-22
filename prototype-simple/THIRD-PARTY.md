@@ -15,6 +15,11 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 
 ## Bundled assets (`assets/`)
 
+The document preview adapts the MIT-licensed service-portal viewer and styles,
+copyright © 2026 Digital Real Estate and Support. Its licence is retained in
+[`vendor/service-portal/LICENSE`](vendor/service-portal/LICENSE). See the
+[implementation notes](../docs/DOCUMENT-PREVIEW.md).
+
 | Asset | Source | Licence | Files | Used for |
 |---|---|---|---|---|
 | Material Symbols Outlined | [Google Fonts](https://fonts.google.com/icons); static build (opsz 24, wght 400, FILL 0, GRAD 0) of the complete icon set, v372 | Apache-2.0 | `assets/icons/` (`material-symbols-outlined.woff2`, `material-symbols-outlined.css`, `LICENSE`) | All UI icons (`.material-symbols-outlined`) |

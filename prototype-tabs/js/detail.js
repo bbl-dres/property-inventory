@@ -80,6 +80,7 @@ export function populateDetailView(building) {
   setText('detail-grundstueck-name', ext.plotName);
   setText('detail-grundstueck-id', ext.plotId);
   setText('detail-egid', ext.egid);
+  setText('detail-gwr-status', ext.gwrStatus);
   setText('detail-egrid', ext.egrid);
   setText('detail-gueltig-von', formatDate(props.validFrom));
   setText('detail-gueltig-bis', formatDate(props.validUntil) || 'Keine Angabe');

@@ -3,7 +3,7 @@
 // data-action="carouselPrev|carouselNext"; optionally #lightbox with its controls.
 
 import { cssUrl } from './utils.js';
-import { onEscape } from './keys.js';
+import { openImagePreview } from './media-preview.js';
 import { initSwipe } from './gestures.js';
 
 let images = [];
@@ -17,7 +17,7 @@ function updateCarouselImage() {
   if (images.length === 0) { imageEl.style.backgroundImage = ''; return; }
   imageEl.style.backgroundImage = cssUrl(images[currentIndex]);
   const photo = photoDetails[currentIndex] || {};
-  imageEl.setAttribute('role', 'img');
+  imageEl.setAttribute('role', 'button'); imageEl.tabIndex = 0; imageEl.setAttribute('aria-haspopup', 'dialog');
   imageEl.setAttribute('aria-label', photo.alt || 'Gebäudebild');
   document.querySelectorAll('.carousel-dot').forEach(function(dot, index) {
     dot.classList.toggle('active', index === currentIndex);
@@ -69,111 +69,15 @@ export function showCarousel(imageUrls, details) {
   if (!carouselInitialized) {
     carouselInitialized = true;
     const imageEl = document.getElementById('carousel-image');
-    if (imageEl && document.getElementById('lightbox')) {
+    if (imageEl) {
       imageEl.addEventListener('click', function() { openLightbox(currentIndex); });
+      imageEl.addEventListener('keydown', function(e) { if (['Enter', ' '].includes(e.key)) { e.preventDefault(); openLightbox(currentIndex); } });
     }
     initSwipe(document.getElementById('detail-carousel'), carouselNext, carouselPrev);
-    initLightbox();
   }
 }
 
-// ===== FULLSCREEN LIGHTBOX =====
-
-let lightboxIndex = 0;
-
-function getFilenameFromUrl(url) {
-  try {
-    const parts = String(url).split('/');
-    const last = parts[parts.length - 1].split('?')[0];
-    return last || 'image';
-  } catch (e) {
-    return 'image';
-  }
-}
-
-function updateLightbox() {
-  const url = images[lightboxIndex];
-  const img = document.getElementById('lightbox-image');
-  const counter = document.getElementById('lightbox-counter');
-  const filename = document.getElementById('lightbox-filename');
-  const photo = photoDetails[lightboxIndex] || {};
-  if (img) { img.src = url; img.alt = photo.alt || 'Gebäudebild'; }
-  if (counter) counter.textContent = (lightboxIndex + 1) + ' / ' + images.length;
-  if (filename) filename.textContent = photo.credit ? photo.credit + ' · ' + photo.alt : getFilenameFromUrl(url);
-  // Keep the carousel in sync
-  currentIndex = lightboxIndex;
-  updateCarouselImage();
-}
-
+// Fullscreen images share the document viewer shell.
 function openLightbox(index) {
-  if (images.length === 0) return;
-  const lightbox = document.getElementById('lightbox');
-  if (!lightbox) return;
-  lightboxIndex = index;
-  lightbox.classList.add('active');
-  updateLightbox();
-  document.body.style.overflow = 'hidden';
-}
-
-function closeLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  if (lightbox) lightbox.classList.remove('active');
-  document.body.style.overflow = '';
-}
-
-function isLightboxOpen() {
-  const lightbox = document.getElementById('lightbox');
-  return !!lightbox && lightbox.classList.contains('active');
-}
-
-function lightboxPrev() {
-  lightboxIndex = (lightboxIndex - 1 + images.length) % images.length;
-  updateLightbox();
-}
-
-function lightboxNext() {
-  lightboxIndex = (lightboxIndex + 1) % images.length;
-  updateLightbox();
-}
-
-function initLightbox() {
-  const lightbox = document.getElementById('lightbox');
-  if (!lightbox) return;
-
-  const closeBtn = document.getElementById('lightbox-close');
-  const backdrop = lightbox.querySelector('.lightbox-backdrop');
-  const prevBtn = document.getElementById('lightbox-prev');
-  const nextBtn = document.getElementById('lightbox-next');
-  const downloadBtn = document.getElementById('lightbox-download');
-
-  if (closeBtn) closeBtn.addEventListener('click', closeLightbox);
-  if (backdrop) backdrop.addEventListener('click', closeLightbox);
-  if (prevBtn) prevBtn.addEventListener('click', function(e) { e.stopPropagation(); lightboxPrev(); });
-  if (nextBtn) nextBtn.addEventListener('click', function(e) { e.stopPropagation(); lightboxNext(); });
-  if (downloadBtn) {
-    downloadBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      const url = images[lightboxIndex];
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = getFilenameFromUrl(url);
-      a.target = '_blank';
-      a.rel = 'noopener';
-      a.click();
-    });
-  }
-
-  onEscape(function() {
-    if (!isLightboxOpen()) return false;
-    closeLightbox();
-    return true;
-  }, 100);
-
-  document.addEventListener('keydown', function(e) {
-    if (!isLightboxOpen()) return;
-    if (e.key === 'ArrowLeft') lightboxPrev();
-    else if (e.key === 'ArrowRight') lightboxNext();
-  });
-
-  initSwipe(lightbox, lightboxNext, lightboxPrev);
+  openImagePreview(images, photoDetails, index, function(nextIndex) { currentIndex = nextIndex; updateCarouselImage(); });
 }

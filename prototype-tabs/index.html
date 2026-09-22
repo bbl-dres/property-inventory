@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="assets/icons/material-symbols-outlined.css">
     <link rel="stylesheet" href="css/tokens.css">
     <link rel="stylesheet" href="css/components.css">
+    <link rel="stylesheet" href="css/media-preview.css">
     <link rel="stylesheet" href="css/app.css">
 
     <script defer src="vendor/maplibre-gl/maplibre-gl.js"></script>
@@ -42,30 +43,6 @@
     <!-- Prototype warning banner (always visible) -->
     <div id="prototype-banner" class="prototype-banner" role="note">
         <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp,</strong> <span class="prototype-banner-text-long" data-i18n="banner.prototype.text">fiktive oder öffentlich verfügbare Inhalte — nur zur Demonstration</span><span class="prototype-banner-text-short" data-i18n="banner.prototype.short">nur zur Demonstration</span></span>
-    </div>
-
-    <!-- Fullscreen image lightbox (carousel of the detail view) -->
-    <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-label="Bildansicht">
-        <div class="lightbox-backdrop"></div>
-        <div class="lightbox-toolbar">
-            <span class="lightbox-counter" id="lightbox-counter">1 / 4</span>
-            <span class="lightbox-filename" id="lightbox-filename"></span>
-            <div class="lightbox-actions">
-                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-download" title="Bild herunterladen">
-                    <span class="material-symbols-outlined">download</span>
-                </button>
-                <button class="icon-btn icon-btn--md icon-btn--on-dark lightbox-action-btn" id="lightbox-close" title="Schliessen">
-                    <span class="material-symbols-outlined">close</span>
-                </button>
-            </div>
-        </div>
-        <img class="lightbox-image" id="lightbox-image" alt="" draggable="false">
-        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-prev" id="lightbox-prev" aria-label="Vorheriges Bild">
-            <span class="material-symbols-outlined">chevron_left</span>
-        </button>
-        <button class="icon-btn icon-btn--lg icon-btn--round icon-btn--on-dark lightbox-nav lightbox-next" id="lightbox-next" aria-label="Nächstes Bild">
-            <span class="material-symbols-outlined">chevron_right</span>
-        </button>
     </div>
 
     <!-- Loading overlay (shown during initial data fetch) -->
@@ -907,6 +884,10 @@
                                         <span class="data-value" id="detail-egid">—</span>
                                     </div>
                                     <div class="data-item">
+                                        <span class="data-label">Gebäudestatus (GWR)</span>
+                                        <span class="data-value" id="detail-gwr-status">—</span>
+                                    </div>
+                                    <div class="data-item">
                                         <span class="data-label">EGRID Grundstück (nur Schweiz)</span>
                                         <span class="data-value" id="detail-egrid">—</span>
                                     </div>
@@ -1245,6 +1226,10 @@
                                     <button class="btn-tertiary btn-action documents-action" disabled>
                                         <span class="material-symbols-outlined">delete</span>
                                         Löschen
+                                    </button>
+                                    <button class="btn-tertiary btn-action documents-action" id="btn-preview-document" disabled>
+                                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                                        Vorschau
                                     </button>
                                     <button class="btn-tertiary btn-action documents-action" disabled>
                                         <span class="material-symbols-outlined">download</span>

@@ -149,6 +149,10 @@ def main():
     buildings = json.loads((SOURCE / 'properties.json').read_text(encoding='utf-8'))
     catalogue = json.loads((SOURCE / 'document-types.json').read_text(encoding='utf-8'))
     cost_classification = json.loads((SOURCE / 'cost-classification.json').read_text(encoding='utf-8'))
+    meta = json.loads((ROOT / 'prototype-tabs/data/meta.json').read_text(encoding='utf-8'))
+    swiss_register = json.loads((SOURCE / 'swiss-cadastre.json').read_text(encoding='utf-8'))
+    def label(list_name, code):
+        return next(v['labels']['de'] for v in meta['valueLists'][list_name]['values'] if v['code'] == code)
     simple, tabs, simple_parcels, tabs_parcels, landcovers = [], [], [], [], []
     entities = {k: [] for k in ['areaMeasurements','documents','contacts','costs','contracts','assets']}
     first = ['Mira','Levin','Nora','Elio','Jana','Silvan','Lina','Noé','Alina','Milo','Lea','Jonas','Sina','Flurin']
@@ -169,11 +173,19 @@ def main():
         museum = b['slug'] == 'landesmuseum'
         diplomatic = b['country'] != 'CH'
         leased = b['slug'] == 'san-francisco'
-        portfolio = 'Kultur und Museen' if museum else ('Diplomatische Vertretung' if diplomatic else 'Verwaltungsgebäude')
+        representation = b['slug'] == 'bundeshaus-west'
+        portfolio_code = '006' if museum else '002' if diplomatic else '008' if representation else '001'
+        type1_code = '10' if museum else '16' if diplomatic else '19' if representation else '06'
+        type2_code = '10.01' if museum else '16.07' if leased else '16.03' if diplomatic else '19.00' if representation else '06.01'
+        portfolio = label('r-bbl-teilportfolio', portfolio_code)
         portfolio_group = 'Kultur und Denkmäler' if museum else ('EDA Auslandsvertretungen' if diplomatic else 'Bundesverwaltung')
-        primary_type = 'Museumsgebäude' if museum else 'Bürogebäude'
-        secondary_type = ('Museumserweiterung' if museum else 'Generalkonsulat / Swissnex' if leased else
-                          'Botschaftsgebäude' if diplomatic else 'Verwaltung / Logistik' if b['slug']=='bbl-fellerstrasse' else 'Verwaltung')
+        primary_type = label('r-bbl-gebaeudeart-1', type1_code)
+        secondary_type = label('r-bbl-gebaeudeart-2', type2_code)
+        ownership_code = 'Anmiete' if leased else 'Eigentum'
+        physical_status = str(swiss_register[b['slug']]['gwr']['feature']['properties']['gstat']) if cadastre else None
+        reference_codes = {'building.ownership': ownership_code, 'building.portfolio': portfolio_code,
+            'building.type1': type1_code, 'building.type2': type2_code, 'building.rentalModel': None,
+            'building.operatingStatus': 'ACTIVE', 'building.physicalStatus': physical_status}
         number_first = b['country'] in ['AU','US','KR','SG']
         street_parts = [b['houseNumber'],b['street']] if number_first else [b['street'],b['houseNumber']]
         locality_parts = [b['city'],b['postalCode']] if number_first else [b['postalCode'],b['city']]
@@ -193,6 +205,9 @@ def main():
             'notice': 'Standort öffentlich belegt. Publizierte GF/GV separat belegt; übrige Gebäudebemessungen und Betriebsdaten sind Demowerte. ' + ('EGID, EGRID und Parzelle aus GWR/AV; Grundstücksfläche aus Polygon berechnet.' if cadastre else 'Grundstück schematisch.'),
         }
         if not cadastre: provenance['syntheticFields'].append('parcelGeometry')
+        provenance['referenceData'] = {'catalogVersion': meta['source']['catalogVersion'],
+            'classificationAssignments': 'Demo assignments to catalogue codes; not confirmed SAP master data.',
+            'physicalStatus': {'sourceUrl': cadastre['gwrSourceUrl'], 'dataStatus': 'public-source'} if cadastre else None}
         common = {'buildingIds':[bid], 'validFrom':STAMP, 'validUntil':None}
         building_contacts = []
         for j, role in enumerate(['Objektverantwortung','Portfoliomanagement','Facility Management']):
@@ -208,13 +223,17 @@ def main():
         for code,name in measurement_names.items():
             real = code in ['GF','GV'] and code in published
             derived = code == 'GSF' and bool(cadastre)
+            accuracy_code = 'UNBEKANNT' if real else 'GEMESSEN' if derived else 'GESCHAETZT'
+            standard_code = 'ANDERE_REGEL' if derived or code in ['GEA','GIA','NIA'] else 'SIA_416'
+            standard_detail = cadastre['areaMethod'] if derived else RICS if code in ['GEA','GIA','NIA'] else SIA
             measurement = dict(common, areaMeasurementId=uid(bid,'measurement',code), type=name,
                 value=m[code], unit='m³' if code.startswith('GV') else 'm²',
                 validFrom=date(published['referenceYear']) if real else STAMP,
-                bmEstimation=not (real or derived), accuracy='Publiziert' if real else 'Aus AV-Polygon berechnet' if derived else 'Demo-Schätzung',
-                standard=RICS if code in ['GEA','GIA','NIA'] else SIA,
+                bmEstimation=None if real else not derived, accuracy=label('profile-bemessungsgenauigkeit', accuracy_code),
+                accuracyCode=accuracy_code, standard=label('profile-bemessungsstandard', standard_code), standardCode=standard_code,
                 legacyId=f'DEMO-{site}-{code}', extensionData={
-                    'code':code, 'dataStatus':'published-source' if real else 'derived-public-geometry' if derived else SYNTHETIC,
+                    'code':code, 'standardDetail': standard_detail,
+                    'dataStatus':'published-source' if real else 'derived-public-geometry' if derived else SYNTHETIC,
                     'source':f"BBL Bautendokumentation {published['referenceYear']}, S. 1" if real else 'swisstopo CadastralWebMap · Polygonfläche' if derived else 'Plausibles Demo-Szenario',
                     'sourceUrl':published.get('sourceUrl') if real else cadastre['parcelSourceUrl'] if derived else None,
                     'scope':b['scope'], 'originalUnit':'m³' if code.startswith('GV') else 'm²',
@@ -225,7 +244,8 @@ def main():
         for j,code in enumerate(['O12001','B14005','O07003','O03001','B14102','B14103']):
             public = code == 'O12001'
             pub = b.get('publication')
-            title = catalogue['types'][code]
+            title = label('r-kbob-dokumenttyp', code)
+            assert title == catalogue['types'][code], 'KBOB source mismatch: ' + code
             doc = dict(common, documentId=uid(bid,'document',code),
                 name=(f"BBL Bautendokumentation – {b['name']}" if pub else f"BBL Bildpublikation – {b['name']}") if public else f'{title} 2026 – {b["name"]} (Demo)',
                 type=title, documentTypeCode=code, fileFormat=('PDF' if pub else 'HTML') if public else 'PDF',
@@ -277,12 +297,13 @@ def main():
         coords = {'type':'Point','coordinates':b['coordinates']}
         lv = Transformer.from_crs(4326,2056,always_xy=True).transform(*b['coordinates']) if b['country']=='CH' else (None,None)
         plotname = f"Parzelle {cadastre['parcelNumber']} – {b['name']}" if cadastre else f'Demo-Perimeter – {b["name"]}'
-        ownership = 'Miete' if leased else 'Eigentum Bund'
+        ownership = label('profile-eigentumsart', ownership_code)
         value = round(m['GF'] * (8500 if museum else 5200) * country_factor / 100000)*100000
-        simple_props = dict(bbl_stat='Aktiv',bbl_id=bid,bbl_buch=book,bbl_we=site,bbl_obj=obj,bbl_bez=b['name'],
+        simple_props = dict(bbl_stat=label('local-operating-status','ACTIVE'),bbl_id=bid,bbl_buch=book,bbl_we=site,bbl_obj=obj,bbl_bez=b['name'],
+            referenceCodes=reference_codes,gwr_stat=label('r-gwr-status', physical_status) if physical_status else None,
             adr_land=b['country'],adr_reg=b['region'],adr_ort=b['city'],adr_plz=b['postalCode'],adr_str=b['street'],adr_hsnr=b['houseNumber'],adr_conct=address,
             wgs84_lon=b['coordinates'][0],wgs84_lat=b['coordinates'][1],lv95_e=round(lv[0],2) if lv[0] else None,lv95_n=round(lv[1],2) if lv[1] else None,egm_elev=None,
-            bbl_eigen=ownership,bbl_ostr='Erhalten',bbl_mietm='Marktmiete' if leased else 'Vollkostenmiete',
+            bbl_eigen=ownership,bbl_ostr='Erhalten',bbl_mietm=None,
             bbl_bjahr=s['constructionYear'],bbl_vjahr=None,bbl_port=portfolio,bbl_port2=portfolio_group,bbl_awrt=value,bbl_bwrt=round(value*.64/100000)*100000,
             bbl_gbda1=primary_type,bbl_gbda2=secondary_type,bbl_ovtw=building_contacts[0]['name'],bbl_pvtw=building_contacts[1]['name'],
             av_egid=b['egid'],av_egrid=b.get('egrid'),bfs_gem=('Köniz' if b['slug']=='liebefeld' else b['city']) if b['country']=='CH' else None,
@@ -296,16 +317,18 @@ def main():
             rics_gea=m['GEA'],rics_gia=m['GIA'],rics_nia=m['NIA'],rics_standard=RICS,
             objectid=index+1,etl_ts=STAMP,img_url=image_urls,photos=photos,provenance=provenance,
             # Simple has no entity tables; preserve rich records without changing its flat GIS keys.
-            demoRelatedRecords={'areaMeasurements':measurements,'documents':building_documents,'contacts':building_contacts})
+            demoRelatedRecords={'areaMeasurements':measurements,'documents':building_documents,'contacts':building_contacts,
+                                'costs':[c for c in entities['costs'] if bid in c['buildingIds']]})
         simple.append(feature(simple_props,coords))
         ext = dict(numberOfFloors=s['aboveGroundFloors']+s['belowGroundFloors'],responsiblePerson=building_contacts[0]['name'],
+            referenceCodes=reference_codes,gwrStatus=simple_props['gwr_stat'],rentalModel=None,
             egid=b['egid'],egrid=b.get('egrid'),portfolio=portfolio,portfolioGroup=portfolio_group,heatingGenerator=heating,
             heatingSource='Elektrizität (Demo)' if diplomatic else 'Fernwärme (Demo)',hotWater='Zentrale Versorgung (Demo)',
             plotName=plotname,plotId=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',netFloorArea=m['NGF'],grossFloorArea=m['GF'],photos=photos,provenance=provenance,
             # Exact public year only; date-shaped legacy fields below use Jan 1 as a transport convention.
             yearPrecision='year; January 1 is not a known completion date')
         tabs.append(feature(dict(buildingId=bid,siteId=siteid,name=b['name'],primaryTypeOfBuilding=primary_type,
-            secondaryTypeOfBuilding=secondary_type,typeOfOwnership='Mieter' if leased else 'Eigentümer',validFrom=None,validUntil=None,
+            secondaryTypeOfBuilding=secondary_type,typeOfOwnership=ownership,validFrom=None,validUntil=None,
             constructionYear=date(s['constructionYear']),buildingPermitDate=None,yearOfLastRefurbishment=date(s['lastRefurbishmentYear']),
             parkingSpaces=round(m['HNF']/180),electricVehicleChargingStations=max(0,round(m['HNF']/1800)),monumentProtection=None,
             status='In Betrieb',energyEfficiencyClass=None,streetName=address,houseNumber=b['houseNumber'],postalCode=b['postalCode'],
@@ -317,7 +340,7 @@ def main():
                    'retrievedAt':cadastre['retrievedAt'],'areaMethod':cadastre['areaMethod']}
                   if cadastre else {'dataStatus':SYNTHETIC,'geometryMethod':'metric rectangles in local azimuthal equidistant CRS',
                    'notice':'Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.', 'buildingId':bid})
-        simple_parcels.append(feature(dict(bbl_stat='Aktiv',bbl_id=pid,bbl_buch=book,bbl_we=site,bbl_obj='01',bbl_bez=plotname,
+        simple_parcels.append(feature(dict(bbl_stat=label('local-operating-status','ACTIVE'),bbl_id=pid,bbl_buch=book,bbl_we=site,bbl_obj='01',bbl_bez=plotname,
             bbl_port=portfolio,bbl_mietm=simple_props['bbl_mietm'],bbl_eigen=ownership,bbl_awrt=None,bbl_bwrt=None,bbl_hgart=False,
             **{k:v for k,v in simple_props.items() if k.startswith('adr_') or k in ['wgs84_lat','wgs84_lon','lv95_e','lv95_n','bfs_gem','bfs_gemnr']},
             egm_elev=None,av_stat='AV / GWR' if cadastre else 'Demo',av_egrid=b.get('egrid'),av_nr=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',larea_ggf=m['GGF'],larea_gsf=m['GSF'],larea_uf=m['UF'],
@@ -327,7 +350,7 @@ def main():
             fid=None,fid_src=None,objectid=index+1,etl_ts=STAMP,provenance=geom_prov),polygon))
         tabs_parcels.append(feature(dict(parcelId=pid,buildingId=bid,plotNumber=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',egrid=b.get('egrid'),name=plotname,
             municipality=cadastre['municipality'] if cadastre else b['city'],canton=b['region'] if b['country']=='CH' else None,area=m['GSF'],landUseZone=None,
-            ownershipType='Miete (Demo)' if leased else 'Eigentum (Demo)',provenance=geom_prov),polygon))
+            ownershipType=ownership,provenance=geom_prov),polygon))
         for j,(kind,area,g) in enumerate(covers):
             landcovers.append(feature(dict(bbl_id=pid,geb_id=bid if kind=='Gebaeude' else None,av_stat='Demo',av_egid=None,av_egrid=None,
                 av_type=kind,lc_area=round(area,2),wgs84_lat=b['coordinates'][1],wgs84_lon=b['coordinates'][0],

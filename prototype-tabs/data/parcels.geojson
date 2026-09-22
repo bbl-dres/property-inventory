@@ -16,7 +16,7 @@
         "canton": "BE",
         "area": 9893.02,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "public-source",
           "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
@@ -249,7 +249,7 @@
         "canton": null,
         "area": 2100,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -297,7 +297,7 @@
         "canton": "BE",
         "area": 7551.05,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "public-source",
           "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
@@ -546,7 +546,7 @@
         "canton": "BE",
         "area": 55420.96,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "public-source",
           "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
@@ -1255,7 +1255,7 @@
         "canton": "BE",
         "area": 13051.83,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "public-source",
           "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
@@ -1544,7 +1544,7 @@
         "canton": "ZH",
         "area": 18938.89,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "public-source",
           "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
@@ -2453,7 +2453,7 @@
         "canton": null,
         "area": 6100,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2501,7 +2501,7 @@
         "canton": null,
         "area": 28500,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2549,7 +2549,7 @@
         "canton": null,
         "area": 4600,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2597,7 +2597,7 @@
         "canton": null,
         "area": 10000,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2645,7 +2645,7 @@
         "canton": null,
         "area": 6300,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2693,7 +2693,7 @@
         "canton": null,
         "area": 8000,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2741,7 +2741,7 @@
         "canton": null,
         "area": 3200,
         "landUseZone": null,
-        "ownershipType": "Eigentum (Demo)",
+        "ownershipType": "Eigentum",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
@@ -2789,7 +2789,7 @@
         "canton": null,
         "area": 1800,
         "landUseZone": null,
-        "ownershipType": "Miete (Demo)",
+        "ownershipType": "Anmiete",
         "provenance": {
           "dataStatus": "synthetic-demo",
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",

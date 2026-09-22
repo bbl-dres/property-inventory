@@ -3365,81 +3365,6 @@ body.detail-active #detail-view {
   background: var(--white);
 }
 
-/* ===== FULLSCREEN LIGHTBOX ===== */
-.lightbox {
-  display: none;
-  position: fixed;
-  inset: 0;
-  z-index: var(--z-overlay);
-  align-items: center;
-  justify-content: center;
-}
-
-.lightbox.active {
-  display: flex;
-}
-
-.lightbox-backdrop {
-  position: absolute;
-  inset: 0;
-  background: var(--scrim-strong);
-}
-
-.lightbox-toolbar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  display: flex;
-  align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-3) var(--space-5);
-  z-index: 2;
-  background: linear-gradient(to bottom, var(--scrim), transparent);
-}
-
-.lightbox-counter {
-  font-size: var(--text-sm);
-  font-weight: var(--font-semibold);
-  color: var(--on-dark-text);
-  min-width: 48px;
-}
-
-.lightbox-filename {
-  font-size: var(--text-xs);
-  color: var(--on-dark-muted);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  flex: 1;
-}
-
-.lightbox-actions {
-  display: flex;
-  gap: var(--space-2);
-  margin-left: auto;
-}
-
-.lightbox-image {
-  position: relative;
-  z-index: 1;
-  max-width: 90vw;
-  max-height: 85vh;
-  object-fit: contain;
-  border-radius: var(--radius-sm);
-  user-select: none;
-}
-
-.lightbox-nav {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-}
-
-.lightbox-prev { left: var(--space-5); }
-.lightbox-next { right: var(--space-5); }
-
 /* ===== MINI MAP ===== */
 .mini-map-wrapper {
   border-radius: var(--radius-sm);
@@ -4917,26 +4842,10 @@ body.detail-active #detail-view {
   }
 
   /* Lightbox */
-  .lightbox-nav {
-    width: 36px;
-    height: 36px;
-  }
 
-  .lightbox-prev { left: var(--space-2); }
-  .lightbox-next { right: var(--space-2); }
 
-  .lightbox-nav .material-symbols-outlined {
-    font-size: var(--icon-xl);
-  }
 
-  .lightbox-toolbar {
-    padding: var(--space-2) var(--space-3);
-  }
 
-  .lightbox-image {
-    max-width: 95vw;
-    max-height: 80dvh;
-  }
 
   /* Overlays: dynamic viewport units and safe area */
   .layer-info-modal {

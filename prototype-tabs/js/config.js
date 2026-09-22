@@ -5,36 +5,14 @@ import { t } from './i18n.js';
 
 // ===== STATUS =====
 
-export const statusColors = {
-  'In Betrieb': '#2e7d32',      // --status-active
-  'In Renovation': '#ef6c00',   // --status-renovation
-  'In Planung': '#1976d2',      // --status-planning
-  'Ausser Betrieb': '#6C757D'   // --status-inactive
-};
-
-const statusClassNames = {
-  'In Betrieb': 'status-active',
-  'In Renovation': 'status-renovation',
-  'In Planung': 'status-planning',
-  'Ausser Betrieb': 'status-inactive'
-};
-
-export function getStatusClassName(status) {
-  return statusClassNames[status] || 'status-inactive';
-}
-
-// Legend of the buildings layer (map info modal and PDF)
-export function statusLegendItems() {
-  return Object.keys(statusColors).map(function(status) {
-    return { color: statusColors[status], label: status };
-  });
-}
+import { statusLegendItems } from './reference-data.js';
+export { statusColors, getStatusClassName, statusLegendItems } from './reference-data.js';
 
 // ===== FILTERS =====
 
 // Filter categories: key -> feature property (dot paths reach into extensionData)
 export const filterConfig = {
-  status: { property: 'status', label: 'Status' },
+  status: { property: 'status', label: 'Bewirtschaftungsstatus' },
   eigentum: { property: 'typeOfOwnership', label: 'Art Eigentum' },
   teilportfolio: { property: 'extensionData.portfolio', label: 'Teilportfolio' },
   gebaeudeart: { property: 'primaryTypeOfBuilding', label: 'Gebäudeart' },

@@ -5,33 +5,8 @@ import { t } from './i18n.js';
 
 // ===== STATUS =====
 
-export const statusColors = {
-  'Aktiv': '#2e7d32',
-  'In Renovation': '#ef6c00',
-  'In Planung': '#1976d2',
-  'Verkauft': '#6C757D'
-};
-
-const statusClassNames = {
-  'Aktiv': 'status-active',
-  'In Renovation': 'status-renovation',
-  'In Planung': 'status-planning',
-  'Verkauft': 'status-inactive'
-};
-
-export function getStatusClassName(status) {
-  return statusClassNames[status] || 'status-inactive';
-}
-
-// Legend of the buildings layer (map info modal and PDF)
-export function statusLegendItems() {
-  return [
-    { color: statusColors['Aktiv'], label: t('print.legend.active') },
-    { color: statusColors['In Renovation'], label: t('print.legend.renovation') },
-    { color: statusColors['In Planung'], label: t('print.legend.planning') },
-    { color: statusColors['Verkauft'], label: t('print.legend.inactive') }
-  ];
-}
+import { statusLegendItems } from './reference-data.js';
+export { statusColors, getStatusClassName, statusLegendItems } from './reference-data.js';
 
 // ===== FILTERS =====
 

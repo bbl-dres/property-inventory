@@ -15,7 +15,7 @@ module.exports = {
     check('table open from URL', state.tableOpen === true && !document.getElementById('table-panel').classList.contains('collapsed'));
     check('selection switches the table to buildings tab', state.activeTableTab === 'buildings');
     check('filter restored from URL', state.activeFilters.status.length === 1 && state.filteredData.features.length === 5);
-    check('filter checkbox checked', !!document.querySelector('#filter-status-options input[data-value="Aktiv"]:checked'));
+    check('legacy status filter resolves to the shared label', !!document.querySelector('#filter-status-options input[data-value="In Betrieb"]:checked'));
     check('filter badge on header button', !!document.querySelector('#filter-panel-btn .filter-count'));
     check('aerial basemap from URL', modules.basemaps.getCurrentMapStyle() === 'swissimage' && document.querySelector('.style-option[data-style="swissimage"]').classList.contains('active'));
     check('topic from URL', modules.swisstopo.getCurrentTopic() === 'swisstopo' && document.getElementById('geokatalog-title').textContent === 'swisstopo');
