@@ -8,10 +8,6 @@
     --tree-panel-effective-width: min(var(--tree-panel-width), calc(100vw - 400px));
     --drawer-effective-width: min(var(--drawer-width), calc(100vw - 400px));
   }
-  body:has(#tree-panel.open):has(#filter-panel.open) {
-    --tree-panel-effective-width: min(var(--tree-panel-width), 25vw);
-    --drawer-effective-width: min(var(--drawer-width), 30vw);
-  }
   #tree-panel.open {
     width: var(--tree-panel-effective-width);
     min-width: var(--tree-panel-effective-width);

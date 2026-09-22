@@ -1,4 +1,5 @@
 /* BBL GIS Immobilienportfolio - prototype-simple specific styles */
+
 /* Requires tokens.css and components.css (identical in both prototypes). This file holds what only
    the simple prototype has: the filter search box, the single-column detail page and the share entry of the
    phone menu. */
@@ -40,6 +41,10 @@
   overflow: hidden;
   margin-bottom: var(--space-4);
 }
+
+/* Measurements take priority over the overview's full-height photo. The compact
+   strip still opens the gallery and preserves its controls and current image. */
+#detail-view:has([data-content="measurements"].active) #detail-carousel { height: 112px; }
 
 /* Tab strip inside the content column */
 .detail-tabs.detail-tabs--inline {

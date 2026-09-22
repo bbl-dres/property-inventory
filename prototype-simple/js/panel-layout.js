@@ -1,5 +1,6 @@
 // Actual header geometry and phone-sheet focus, shared by both prototypes.
 import { isMobileLayout } from './utils.js';
+import { collapseToolsPanelIfColliding } from './tools-panel.js';
 
 let initialized = false;
 let frame;
@@ -7,6 +8,15 @@ let sheet = null;
 let oldOverflow = '';
 let inertElements = [];
 let lastOpened = 'tree-panel';
+
+// Measure the actual CSS drawer widths (including user resizing) before docking both.
+// A panel is temporarily closed, but its width remains available via its resize preference.
+function canDockBothPanels() {
+  const root = getComputedStyle(document.documentElement);
+  const width = document.getElementById('main').clientWidth;
+  const panelWidth = name => Math.min(parseFloat(root.getPropertyValue(name)), width - 400);
+  return width - panelWidth('--tree-panel-width') - panelWidth('--drawer-width') >= 760;
+}
 
 export function restorePanelFocus(panel) {
   const hadFocus = panel.contains(document.activeElement);
@@ -20,7 +30,7 @@ export function restorePanelFocus(panel) {
 export function preparePanelOpen(panelId) {
   lastOpened = panelId;
   // Two drawers on a small screen leave no usable content area.
-  if (!isMobileLayout() && window.innerWidth < 1280) {
+  if (!isMobileLayout() && !canDockBothPanels()) {
     const other = panelId === 'tree-panel' ? 'filter-panel' : 'tree-panel';
     if (document.getElementById(other)?.classList.contains('open'))
       document.getElementById(other === 'tree-panel' ? 'tree-close-btn' : 'drawer-close-btn')?.click();
@@ -39,7 +49,7 @@ function clearSheet() {
 
 function update() {
   frame = null;
-  if (!isMobileLayout() && window.innerWidth < 1280 && document.querySelector('#tree-panel.open') && document.querySelector('#filter-panel.open')) {
+  if (!isMobileLayout() && document.querySelector('#tree-panel.open') && document.querySelector('#filter-panel.open') && !canDockBothPanels()) {
     document.getElementById(lastOpened === 'tree-panel' ? 'drawer-close-btn' : 'tree-close-btn')?.click();
   }
   const header = document.getElementById('header');
@@ -78,10 +88,16 @@ export function initPanelLayout() {
   initialized = true;
   window.addEventListener('scroll', updatePanelLayout, { passive: true });
   window.addEventListener('resize', updatePanelLayout);
-  if (window.ResizeObserver) new ResizeObserver(updatePanelLayout).observe(document.getElementById('header'));
+  if (window.ResizeObserver) {
+    const observer = new ResizeObserver(updatePanelLayout);
+    ['header', 'tree-panel', 'filter-panel'].forEach(id => observer.observe(document.getElementById(id)));
+    // Content resizing can bring the floating menu into the object card or table.
+    new ResizeObserver(checkMapOverlays).observe(document.getElementById('map'));
+  }
   if (window.MutationObserver) {
     const observer = new MutationObserver(updatePanelLayout);
     ['tree-panel','filter-panel'].forEach(id => observer.observe(document.getElementById(id), { attributes: true, attributeFilter: ['class'] }));
+    new MutationObserver(checkMapOverlays).observe(document.getElementById('info-panel'), { attributes: true, attributeFilter: ['class'] });
   }
   document.addEventListener('keydown', event => {
     if (!sheet || event.key !== 'Tab' || document.querySelector('.media-preview')) return;
@@ -92,4 +108,13 @@ export function initPanelLayout() {
     else if (!event.shiftKey && (document.activeElement === last || !sheet.contains(document.activeElement))) { event.preventDefault(); first.focus(); }
   });
   updatePanelLayout();
+}
+
+function checkMapOverlays() {
+  const map = document.getElementById('map');
+  const info = document.getElementById('info-panel');
+  // The card is a sibling of the map, so 100% alone would include the table's height.
+  if (map.clientHeight) info.style.setProperty('--available-map-height', map.clientHeight + 'px');
+  collapseToolsPanelIfColliding(info.classList.contains('show') ? info : null);
+  collapseToolsPanelIfColliding(document.querySelector('#table-panel:not(.collapsed)'));
 }

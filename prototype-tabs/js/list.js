@@ -444,7 +444,8 @@ export function initTablePanel() {
     // The panel height follows every pointer event; the map (a full re-layout and render on
     // resize) and the collision check are updated once per animation frame
     function onMove(ev) {
-      const maxH = window.innerHeight * MAX_FRAC;
+      const workspaceHeight = panel.parentElement.clientHeight;
+      const maxH = Math.max(0, Math.min(workspaceHeight * MAX_FRAC, workspaceHeight - 160));
       panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
       if (resizeFrame) return;
       resizeFrame = requestAnimationFrame(function() {

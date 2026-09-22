@@ -171,7 +171,7 @@ function showInfoPanel(titleKey, bodyHtml, previewImageUrl) {
   document.getElementById('info-header-title').dataset.i18n = titleKey;
   const panel = document.getElementById('info-panel');
   const preview = document.getElementById('info-preview-image');
-  // A class (not an inline display) so the stylesheet can still hide the image on short viewports
+  // Let the responsive stylesheet size the photo and hide it in phone sheets.
   panel.classList.toggle('has-preview', !!previewImageUrl);
   if (preview && previewImageUrl) preview.style.backgroundImage = cssUrl(previewImageUrl);
   document.getElementById('info-body').innerHTML = bodyHtml;

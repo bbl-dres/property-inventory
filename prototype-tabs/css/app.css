@@ -65,6 +65,9 @@ body.detail-active .header-detail {
   min-width: 0;
 }
 
+/* Keep identity and master data near the top when the overview becomes one column. */
+.detail-grid--stacked .carousel { height: 220px; }
+
 /* Sections are size containers: their content adapts to the column width, not to the viewport */
 .detail-section {
   background: var(--white);

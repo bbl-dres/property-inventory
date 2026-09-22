@@ -671,7 +671,7 @@
     top: 64px;
   }
   #map-view:has(#map-reset-filters:not([hidden])) #info-panel {
-    top: calc(64px + var(--space-3));
+    --info-panel-top: calc(64px + var(--space-3));
   }
 }
 
@@ -1631,8 +1631,9 @@
 
 /* ===== INFO PANEL ===== */
 #info-panel {
+  --info-panel-top: var(--space-3);
   position: absolute;
-  top: var(--space-3);
+  top: var(--info-panel-top);
   right: 60px; /* clear of the map controls */
   width: 320px;
   background: var(--white);
@@ -1640,16 +1641,20 @@
   box-shadow: var(--shadow-md);
   z-index: var(--z-panel);
   display: none;
+  max-height: calc(var(--available-map-height, 100%) - var(--info-panel-top) - var(--space-3));
+  flex-direction: column;
+  overflow: hidden;
 }
 
 #info-panel.show {
-  display: block;
+  display: flex;
 }
 
 /* Preview image: buildings only (#info-panel.has-preview, set by the selection code) */
 #info-preview-image {
   display: none;
   height: 140px;
+  flex-shrink: 0;
   background-size: cover;
   background-position: center;
   background-color: var(--grey-100);
@@ -1660,6 +1665,7 @@
 }
 
 #info-header {
+  flex-shrink: 0;
   background: var(--grey-100);
   padding: var(--space-3) var(--space-4);
   display: flex;
@@ -1680,6 +1686,9 @@
 
 #info-body {
   padding: var(--space-4);
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .info-row {
@@ -1711,6 +1720,11 @@
   margin-top: var(--space-4);
   padding-top: var(--space-4);
   border-top: var(--border-subtle);
+  position: sticky;
+  bottom: calc(-1 * var(--space-4));
+  background: var(--white);
+  padding-bottom: var(--space-4);
+  margin-bottom: calc(-1 * var(--space-4));
 }
 
 .info-detail-link {
@@ -1739,15 +1753,11 @@
   font-size: var(--icon-md);
 }
 
-/* Short viewports: no preview image and no secondary rows, so the "Details anzeigen" button stays visible */
+/* Short screens retain all fields in the scrollable card; only the photo shrinks. */
 @media (max-height: 800px) {
-  #info-panel.has-preview #info-preview-image {
-    display: none;
-  }
-
-  .info-row-secondary {
-    display: none;
-  }
+  #info-preview-image { height: 80px; }
+  /* With the table open, reserve the remaining card height for fields and its action. */
+  #map-view:has(#table-panel:not(.collapsed)) #info-panel.has-preview #info-preview-image { display: none; }
 }
 
 /* Grab handle of bottom sheets (36 × 4 px pill, phones only) */
@@ -2875,7 +2885,8 @@
 
 /* ===== TABLE PANEL (below the map, toggle inside #map) ===== */
 .table-panel {
-  height: 40vh;
+  height: clamp(280px, 40vh, 360px);
+  max-height: min(75%, max(0px, calc(100% - 160px)));
   flex-shrink: 0;
   overflow: hidden;
   display: flex;
@@ -4054,16 +4065,16 @@ body.detail-active #detail-view {
 
 /* ===== RESPONSIVE DESIGN ===== */
 /* Breakpoints (docs/DESIGNGUIDE.md → Responsive Design):
-     Compact header  max-width: 1720px   icon-only header actions and view toggle (the labels need ~1700px)
-     Laptop   max-width: 1366px   search flexes between logo and actions
+     Laptop   max-width: 1599px   72px header, labelled actions, fluid search
+     Narrow desktop max-width: 1199px   icon-only header actions and view toggle
      Tablet   max-width: 1024px   one-line logo, icon-only header buttons, tools panel starts collapsed
      Mobile   max-width: 767px  OR  (max-height: 500px and pointer: coarse)   ← phones in landscape
      Small    max-width: 479px
      Touch    (pointer: coarse), independent of width: 44px targets, 20px checkboxes
    js/utils.js mirrors the mobile and landscape queries (isMobileLayout(), isLandscapePhone()). Change both places together. */
 
-/* --- Compact header: the labels of the actions and the view toggle need about 1700px next to the centred search --- */
-@media screen and (max-width: 1720px) {
+/* --- Narrow desktop: progressively simplify controls below the laptop tier --- */
+@media screen and (max-width: 1199px) {
   .header-btn-label {
     display: none;
   }
@@ -4097,13 +4108,15 @@ body.detail-active #detail-view {
 }
 
 /* --- Laptop --- */
-@media screen and (max-width: 1366px) {
+@media screen and (max-width: 1599px) {
   :root {
     --page-gutter: var(--space-5);
+    --header-main-height: 72px;
   }
 
   .header-main {
     gap: var(--space-3);
+    padding-inline: var(--space-4);
   }
 
   /* The centre column takes what is left between the logo and the actions */
@@ -4114,34 +4127,22 @@ body.detail-active #detail-view {
 
   #search-area {
     flex: 1;
+    gap: var(--space-2);
   }
 
   #search-wrapper {
-    max-width: 500px;
+    max-width: 550px;
     min-width: 200px;
   }
+
+  #header-right { gap: var(--space-2); }
+  .header-btn { padding-inline: var(--space-3); }
 }
 
 /* --- Short viewports --- */
-@media screen and (max-height: 900px) {
-  .table-panel {
-    height: 30vh;
-  }
-}
-
 @media screen and (max-height: 700px) {
-  .table-panel {
-    height: 25vh;
-  }
-
   .carousel {
     height: 240px;
-  }
-}
-
-@media screen and (max-height: 600px) {
-  .table-panel {
-    height: 20vh;
   }
 }
 

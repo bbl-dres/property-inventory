@@ -1,13 +1,43 @@
 // Detail view: fields of the overview tab, carousel, mini map and the entity tables.
 
 import { placeholderImages } from './config.js';
-import { setText, formatDate, extractYear } from './utils.js';
+import { setText, formatDate, extractYear, isMobileLayout } from './utils.js';
 import { t, onLangChange } from './i18n.js';
 import { showCarousel } from './carousel.js';
 import { showMiniMap } from './mini-map.js';
 import { loadEntityTablesForBuilding } from './entity-tables.js';
 
 let currentBuilding = null;
+let overviewLayoutInitialized = false;
+
+function initOverviewLayout() {
+  if (overviewLayoutInitialized) return;
+  const grid = document.querySelector('.detail-grid');
+  const content = document.querySelector('.detail-content');
+  if (!grid || !content) return;
+  overviewLayoutInitialized = true;
+  const secondarySections = [...grid.querySelectorAll('.detail-section--additional, .detail-section--energy')];
+  const left = grid.querySelector('.detail-left');
+  const right = grid.querySelector('.detail-right');
+  function update() {
+    if (!content.getClientRects().length) return;
+    const style = getComputedStyle(content);
+    const width = content.clientWidth - parseFloat(style.paddingLeft) - parseFloat(style.paddingRight);
+    // Match the 850px content breakpoint in panel-layout.css. Move existing nodes so
+    // keyboard/screen-reader order also puts master data and address before secondary data.
+    const stacked = isMobileLayout() || width <= 850;
+    const destination = stacked ? right : left;
+    const focused = document.activeElement;
+    secondarySections.forEach(section => {
+      if (section.parentElement !== destination) destination.appendChild(section);
+    });
+    grid.classList.toggle('detail-grid--stacked', stacked);
+    if (focused !== document.activeElement && grid.contains(focused)) focused.focus({ preventScroll: true });
+  }
+  if (window.ResizeObserver) new ResizeObserver(update).observe(content);
+  window.addEventListener('resize', update);
+  update();
+}
 
 // Refresh UI-derived values only: keep the photo, mini-map and table state intact.
 function translateDetailFields() {
@@ -57,6 +87,7 @@ function numberOrDash(value) {
 }
 
 export function populateDetailView(building) {
+  initOverviewLayout();
   currentBuilding = building;
   const props = building.properties;
   const ext = props.extensionData || {};

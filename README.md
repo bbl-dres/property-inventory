@@ -55,6 +55,7 @@ with consistent column-width presets, compact dates, and internal row IDs.
 
 See the [code and performance review](docs/CODE-REVIEW-2026-09-22.md),
 [responsive design review](docs/DESIGN-REVIEW-2026-09-22.md),
+[laptop and display-scaling improvements](docs/LAPTOP-RESPONSIVE-REVIEW-2026-09-22.md),
 [shared image/document preview](docs/DOCUMENT-PREVIEW.md),
 [reference-data findings](docs/REFERENCE-DATA.md), and
 [parcel label positioning](docs/PARCEL-LABELS.md) for the latest implementation notes.

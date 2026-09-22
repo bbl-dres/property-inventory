@@ -451,7 +451,7 @@ next to it (`filter-panel-btn`, `toast-close` …) only positions the button.
 
 #### Header Button (pill)
 Standorte, Filter, language and menu buttons in the header. 40px pills with icon and label on wide screens;
-from 1720px down the labels collapse and the buttons are 40px circles (the `title` and `aria-label` carry the
+below 1200px the labels collapse and the buttons are 40px circles (the `title` and `aria-label` carry the
 name), from the tablet breakpoint down 44px circles and the language code is hidden too.
 
 ```css
@@ -808,7 +808,7 @@ Both prototypes offer the same two views, map and gallery; tables live in the ta
 ### View Nav Pattern
 
 Page views (detail page, API documentation) start with one sticky bar, `.view-nav`: white, 1px grey-300
-bottom border, 12px × `--page-gutter` padding (40px; 20px from 1366px down, 16px from 1024px, 12px on phones), breadcrumb on the left and the actions
+bottom border, 12px × `--page-gutter` padding (40px; 20px below 1600px, 16px from 1024px, 12px on phones), breadcrumb on the left and the actions
 (`.btn-back`, in tabs also `.btn-edit`) on the right. The inner row is as wide as the content below it
 (`--view-nav-max-width`, default `--content-max-width`).
 The content below uses the same `--page-gutter` as its side padding, so title, cards and tables start exactly
@@ -1100,9 +1100,9 @@ it starts collapsed, on phones the same panel is the hamburger menu (see Respons
 
 | Name | Media query | Target |
 |------|-------------|--------|
-| Desktop | `> 1720px` | Large screens, default: the search box is centred in the header, header buttons with labels |
-| Compact header | `max-width: 1720px` | Icon-only header buttons and view toggle (the labels need about 1700px next to the centred search) |
-| Laptop | `max-width: 1366px` | The search box flexes between logo and actions |
+| Desktop | `min-width: 1600px` | Spacious header with labelled actions and centred search |
+| Laptop | `max-width: 1599px` | 72px header; search flexes between full organisation title and labelled actions. Primary target: 1280 × 700 CSS pixels (1920 × 1200 at 150% Windows scaling, allowing for browser chrome). |
+| Narrow desktop | `max-width: 1199px` | Icon-only header actions and view toggle; retain desktop navigation |
 | Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, 44px header buttons without the language code, tools panel starts collapsed. |
 | Mobile | `max-width: 767px`, **or** `max-height: 500px and (pointer: coarse)` | Phones in portrait **and** landscape. Two-row header (title + actions / search + view toggle), hamburger menu for the map tools, full-screen filter sheet, bottom-sheet info panel, sticky tab strip on the detail page. |
 | Small Mobile | `max-width: 479px` | Small phones |
@@ -1116,6 +1116,24 @@ layout (menu state, sheet gestures, focus management, map offsets). Change both 
 Landscape phones additionally dock the info panel to the right (`max-height: 500px and (pointer: coarse) and (min-width: 600px)`).
 
 ### Responsive Patterns
+
+**Docked panels:** preserve at least 760px of content when opening both side panels.
+`panel-layout.js` reads the current CSS widths, including dragged sizes, and closes
+the older panel when there is insufficient room. The floating tools menu folds if
+selection or map resizing would make it overlap the object card or table; the user
+can explicitly reopen it.
+
+**Short screens:** the map table defaults to `clamp(280px, 40vh, 360px)`, capped at
+75% of its workspace while reserving at least 160px for the map and resize handle. Drag resizing uses
+the same workspace boundary. Object cards
+scroll within the available map height, retain every field, and keep the detail
+action sticky; below 800px height the photo shrinks (or hides while the table is open). Phone cards retain their
+sheet layout.
+
+**Detail reading order:** below 850px of available content (or in the phone layout),
+Tabs moves the existing additional/energy sections after master data and address.
+This changes DOM reading order as well as the visual order, preserving map and
+gallery instances. Simple uses a compact 112px photo strip on the measurements tab.
 
 **Header Transformation (Mobile):** two 44 px rows — title, filter and menu button; search and view toggle.
 Landscape phones fold both rows back into one.
