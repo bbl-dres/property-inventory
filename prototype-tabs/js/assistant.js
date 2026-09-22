@@ -4,6 +4,7 @@
 
 import { state } from './state.js';
 import { escapeHtml, highlightMatch, formatNum, extractYear } from './utils.js';
+import { t } from './i18n.js';
 
 function formatSquareMetres(value) {
   return formatNum(value || 0, 0) + ' m²';
@@ -24,16 +25,16 @@ function buildingChips(features) {
 }
 
 function joinNames(features) {
-  return features.map(function(f) { return '«' + escapeHtml(f.properties.name) + '»'; }).join(', ');
+  return features.map(function(f) { return '«' + f.properties.name + '»'; }).join(', ');
 }
 
 function buildingAnswer(f) {
   const p = f.properties;
   return {
-    questionHtml: highlightMatch('Wie gross ist die Nettogeschossfläche von «' + p.name + '»?', p.name),
-    answerHtml: '«' + escapeHtml(p.name) + '» (' + escapeHtml((p.city || '') + ', ' + (p.country || '')) +
-      ') hat eine Nettogeschossfläche von <b>' + formatSquareMetres(buildingArea(f)) + '</b>. Baujahr ' +
-      (extractYear(p.constructionYear) || '—') + ', Status «' + escapeHtml(p.status || '—') + '».' + buildingChips([f])
+    questionHtml: highlightMatch(t('assistant.building.question', { name: p.name }), p.name),
+    answerHtml: escapeHtml(t('assistant.building.answer', { name: p.name,
+      place: (p.city || '') + ', ' + (p.country || ''), area: formatSquareMetres(buildingArea(f)),
+      year: extractYear(p.constructionYear) || '—', status: p.status || '—' })) + buildingChips([f])
   };
 }
 
@@ -41,51 +42,50 @@ function buildingAnswer(f) {
 export function suggestAiQuestion(term, localMatches) {
   if (!state.buildingsData || !state.buildingsData.features.length) return null;
   const features = state.buildingsData.features;
-  const t = term.toLowerCase().trim();
+  const query = term.toLowerCase().trim();
   const question = function(text) { return highlightMatch(text, term); };
-  const isQuestion = /\?$/.test(t) || /^(wie|welche|welches|was|wo|gibt)\b/.test(t);
+  const isQuestion = /\?$/.test(query) || /^(wie|welche|welches|was|wo|gibt|how|what|which|where|quelle|quel|combien|où|qual|quale|quanti|dove)\b/.test(query);
 
   function byStatus(status, label) {
     const hits = features.filter(function(f) { return f.properties.status === status; });
     return {
-      questionHtml: question('Welche Objekte sind ' + label + '?'),
+      questionHtml: question(t('assistant.status.question', { status: label })),
       answerHtml: hits.length
-        ? '<b>' + hits.length + (hits.length === 1 ? ' Objekt ist' : ' Objekte sind') + '</b> ' + label + ': ' + joinNames(hits) + '.' + buildingChips(hits)
-        : 'Zurzeit ist kein Objekt ' + label + '.'
+        ? escapeHtml(t('assistant.status.answer', { status: label, count: hits.length, names: joinNames(hits) })) + buildingChips(hits)
+        : escapeHtml(t('assistant.status.none', { status: label }))
     };
   }
 
   // Keyword intents first
-  if (/renov|sanier/.test(t)) return byStatus('In Renovation', 'in Renovation');
-  if (/planung|geplant/.test(t)) return byStatus('In Planung', 'in Planung');
-  if (/ausser betrieb|stillgelegt/.test(t)) return byStatus('Ausser Betrieb', 'ausser Betrieb');
+  if (/renov|rénov|sanier|ristruttur/.test(query)) return byStatus('In Renovation', t('assistant.status.renovation'));
+  if (/planung|geplant|planning|planific|progett/.test(query)) return byStatus('In Planung', t('assistant.status.planning'));
+  if (/ausser betrieb|stillgelegt|out of operation|hors service|fuori servizio/.test(query)) return byStatus('Ausser Betrieb', t('assistant.status.inactive'));
 
-  if (/gesamt|total|summe|portfolio|alle objekte|geschossfl|fläche|flaeche/.test(t) && !localMatches.length) {
+  if (/gesamt|total|summe|portfolio|portefeuille|portafoglio|alle objekte|geschossfl|fläche|flaeche|area|surface|superficie/.test(query) && !localMatches.length) {
     const total = features.reduce(function(sum, f) { return sum + buildingArea(f); }, 0);
     const largest = features.slice().sort(function(a, b) { return buildingArea(b) - buildingArea(a); })[0];
     return {
-      questionHtml: question('Wie gross ist die gesamte Nettogeschossfläche des Portfolios?'),
-      answerHtml: 'Das Portfolio umfasst <b>' + features.length + ' Objekte</b> mit total <b>' + formatSquareMetres(total) +
-        '</b> Nettogeschossfläche. Das grösste Objekt ist «' + escapeHtml(largest.properties.name) + '» mit ' +
-        formatSquareMetres(buildingArea(largest)) + '.' + buildingChips([largest])
+      questionHtml: question(t('assistant.total.question')),
+      answerHtml: escapeHtml(t('assistant.total.answer', { count: features.length, area: formatSquareMetres(total),
+        name: largest.properties.name, largestArea: formatSquareMetres(buildingArea(largest)) })) + buildingChips([largest])
     };
   }
 
-  if (/ältest|baujahr/.test(t)) {
+  if (/ältest|baujahr|oldest|year built|ancien|antico/.test(query)) {
     const dated = features.filter(function(f) { return extractYear(f.properties.constructionYear); })
       .sort(function(a, b) { return extractYear(a.properties.constructionYear) - extractYear(b.properties.constructionYear); });
     if (dated.length) {
       const oldest = dated[0].properties;
       return {
-        questionHtml: question('Welches ist das älteste Objekt im Portfolio?'),
-        answerHtml: 'Das älteste Objekt ist «' + escapeHtml(oldest.name) + '» in ' + escapeHtml(oldest.city) +
-          ' mit Baujahr <b>' + extractYear(oldest.constructionYear) + '</b>.' + buildingChips([dated[0]])
+        questionHtml: question(t('assistant.oldest.question')),
+        answerHtml: escapeHtml(t('assistant.oldest.answer', { name: oldest.name, place: oldest.city,
+          year: extractYear(oldest.constructionYear) })) + buildingChips([dated[0]])
       };
     }
   }
 
   // The term is part of a building name: its floor area
-  const nameMatches = localMatches.filter(function(f) { return (f.properties.name || '').toLowerCase().indexOf(t) !== -1; });
+  const nameMatches = localMatches.filter(function(f) { return (f.properties.name || '').toLowerCase().indexOf(query) !== -1; });
   if (nameMatches.length) return buildingAnswer(nameMatches[0]);
 
   // A place (city, region or country) matches: objects there
@@ -93,7 +93,7 @@ export function suggestAiQuestion(term, localMatches) {
   features.some(function(f) {
     const p = f.properties;
     place = [p.city, p.stateProvincePrefecture, p.country].find(function(v) {
-      return v && String(v).toLowerCase().indexOf(t) !== -1;
+      return v && String(v).toLowerCase().indexOf(query) !== -1;
     }) || null;
     return !!place;
   });
@@ -104,9 +104,9 @@ export function suggestAiQuestion(term, localMatches) {
     });
     const area = inPlace.reduce(function(sum, f) { return sum + buildingArea(f); }, 0);
     return {
-      questionHtml: question('Wie viele Objekte gibt es in ' + place + '?'),
-      answerHtml: 'In ' + escapeHtml(place) + ' gibt es <b>' + inPlace.length + (inPlace.length === 1 ? ' Objekt' : ' Objekte') +
-        '</b> mit total ' + formatSquareMetres(area) + ' Nettogeschossfläche: ' + joinNames(inPlace) + '.' + buildingChips(inPlace)
+      questionHtml: question(t('assistant.place.question', { place })),
+      answerHtml: escapeHtml(t('assistant.place.answer', { place, count: inPlace.length,
+        area: formatSquareMetres(area), names: joinNames(inPlace) })) + buildingChips(inPlace)
     };
   }
 
@@ -117,8 +117,7 @@ export function suggestAiQuestion(term, localMatches) {
   if (isQuestion) {
     return {
       questionHtml: escapeHtml(term),
-      answerHtml: 'Diese Frage kann der Prototyp noch nicht beantworten. Beispiele, die funktionieren: ' +
-        '«Wie viele Objekte gibt es in Bern?», «Welche Objekte sind in Renovation?», «Wie gross ist die gesamte Nettogeschossfläche?».'
+      answerHtml: escapeHtml(t('assistant.unsupported'))
     };
   }
   return null;
@@ -127,11 +126,11 @@ export function suggestAiQuestion(term, localMatches) {
 // Markup of the "Frage stellen" section (question row + hidden answer)
 export function renderAiSection(suggestion) {
   if (!suggestion) return '';
-  return '<div class="search-section-header"><span>Frage stellen</span><span class="search-section-source">KI</span></div>' +
+  return '<div class="search-section-header"><span>' + escapeHtml(t('assistant.ask')) + '</span><span class="search-section-source">' + t('assistant.ai') + '</span></div>' +
     '<div class="search-item search-item--ask" id="search-ai-item" role="option" tabindex="0" aria-expanded="false">' +
       '<span class="material-symbols-outlined search-item-icon" aria-hidden="true">auto_awesome</span>' +
       '<span class="search-item-main"><span class="search-item-title">' + suggestion.questionHtml + '</span></span>' +
-      '<span class="search-item-meta"><span class="material-symbols-outlined" aria-hidden="true">keyboard_return</span>Antwort</span>' +
+      '<span class="search-item-meta"><span class="material-symbols-outlined" aria-hidden="true">keyboard_return</span>' + escapeHtml(t('assistant.answer')) + '</span>' +
     '</div>' +
     '<div class="search-answer" id="search-ai-answer" hidden aria-live="polite"></div>';
 }
@@ -142,7 +141,7 @@ export function showAiAnswer(suggestion, onSelectBuilding) {
   const item = document.getElementById('search-ai-item');
   if (!answerEl || !suggestion) return;
   answerEl.innerHTML = suggestion.answerHtml +
-    '<span class="search-answer-note">Prototyp: Antwort aus den geladenen Daten, kein Sprachmodell.</span>';
+    '<span class="search-answer-note">' + escapeHtml(t('assistant.note')) + '</span>';
   answerEl.hidden = false;
   if (item) item.setAttribute('aria-expanded', 'true');
   answerEl.querySelectorAll('[data-building]').forEach(function(link) {

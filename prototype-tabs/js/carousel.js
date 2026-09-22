@@ -5,6 +5,7 @@
 import { cssUrl } from './utils.js';
 import { openImagePreview } from './media-preview.js';
 import { initSwipe } from './gestures.js';
+import { t, onLangChange } from './i18n.js';
 
 let images = [];
 let photoDetails = [];
@@ -12,17 +13,21 @@ let currentIndex = 0;
 let carouselInitialized = false;
 
 function updateCarouselImage() {
+  const carousel = document.getElementById('detail-carousel');
+  if (carousel) carousel.setAttribute('aria-roledescription', t('image.carousel'));
   const imageEl = document.getElementById('carousel-image');
   if (!imageEl) return;
   if (images.length === 0) { imageEl.style.backgroundImage = ''; return; }
   imageEl.style.backgroundImage = cssUrl(images[currentIndex]);
   const photo = photoDetails[currentIndex] || {};
   imageEl.setAttribute('role', 'button'); imageEl.tabIndex = 0; imageEl.setAttribute('aria-haspopup', 'dialog');
-  imageEl.setAttribute('aria-label', photo.alt || 'Gebäudebild');
+  imageEl.setAttribute('aria-label', photo.alt || t('preview.image'));
   document.querySelectorAll('.carousel-dot').forEach(function(dot, index) {
     dot.classList.toggle('active', index === currentIndex);
+    dot.setAttribute('aria-label', t('image.number', { current: index + 1, total: images.length }));
   });
 }
+onLangChange(updateCarouselImage);
 
 export function carouselPrev() {
   if (images.length === 0) return;

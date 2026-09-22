@@ -3,7 +3,7 @@
 
 import { state } from './state.js';
 import { escapeXml, downloadBlob, extractYear, formatNum } from './utils.js';
-import { t } from './i18n.js';
+import { t, onLangChange } from './i18n.js';
 import { showToast } from './toast.js';
 import { getCurrentBasemapUrlValue } from './basemaps.js';
 import { closeAllDropdowns } from './table.js';
@@ -203,7 +203,7 @@ function exportKML(features, options) {
 
 // Shapefile needs a converter (QGIS, ogr2ogr): a GeoJSON with shapefile-compatible field names is produced
 function exportShapefile(features, options) {
-  showToast({ type: 'info', title: 'Shapefile-Export', message: 'GeoJSON wird erstellt. Konvertieren Sie mit QGIS oder ogr2ogr zu Shapefile.' });
+  showToast({ type: 'info', title: t('export.shapefile.title'), message: t('export.shapefile.message') });
   const exported = features.map(function(feature) {
     const props = feature.properties || {};
     const ext = props.extensionData || {};
@@ -265,7 +265,7 @@ export function updateExportCount() {
   const countEl = document.getElementById('export-count');
   if (!countEl) return;
   const count = getExportData().length;
-  countEl.textContent = t('export.count', { count: count, plural: count !== 1 ? 'e' : '' });
+  countEl.textContent = t(count === 1 ? 'export.count.one' : 'export.count.other', { count: count });
 }
 
 export function performExport() {
@@ -353,4 +353,5 @@ export function initQuickExportMenu() {
     });
   });
   updateFilteredExportHeader();
+  onLangChange(updateFilteredExportHeader);
 }

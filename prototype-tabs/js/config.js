@@ -12,17 +12,17 @@ export { statusColors, getStatusClassName, statusLegendItems } from './reference
 
 // Filter categories: key -> feature property (dot paths reach into extensionData)
 export const filterConfig = {
-  status: { property: 'status', label: 'Bewirtschaftungsstatus' },
-  eigentum: { property: 'typeOfOwnership', label: 'Art Eigentum' },
-  teilportfolio: { property: 'extensionData.portfolio', label: 'Teilportfolio' },
-  gebaeudeart: { property: 'primaryTypeOfBuilding', label: 'Gebäudeart' },
-  land: { property: 'country', label: 'Land' },
-  region: { property: 'stateProvincePrefecture', label: 'Region' },
-  ort: { property: 'city', label: 'Ort' }
+  status: { property: 'status', labelKey: 'col.bbl_stat' },
+  eigentum: { property: 'typeOfOwnership', labelKey: 'col.bbl_eigen' },
+  teilportfolio: { property: 'extensionData.portfolio', labelKey: 'col.bbl_port' },
+  gebaeudeart: { property: 'primaryTypeOfBuilding', labelKey: 'field.buildingType' },
+  land: { property: 'country', labelKey: 'col.adr_land' },
+  region: { property: 'stateProvincePrefecture', labelKey: 'col.adr_reg' },
+  ort: { property: 'city', labelKey: 'col.adr_ort' }
 };
 
 export function filterLabel(filterKey) {
-  return filterConfig[filterKey] ? filterConfig[filterKey].label : filterKey;
+  return filterConfig[filterKey] ? t(filterConfig[filterKey].labelKey) : filterKey;
 }
 
 // ===== IMAGES =====
@@ -75,9 +75,9 @@ function rgba(hex, alpha) {
 // Metadata of the internal datasets for the layer info modal ("Interne Karten")
 export const internalLayers = {
   buildings: {
-    title: 'Gebäude (Bundesamt für Bauten und Logistik BBL)',
-    description: 'Interner Datensatz des BBL-Immobilienportfolios. Enthält sämtliche Gebäude mit Standort, Nutzungstyp, Eigentumsverhältnissen, Baujahr und weiteren Attributen.',
-    source: 'BBL Immobilienportfolio',
+    get title() { return t('layer.buildings.title'); },
+    get description() { return t('layer.buildings.description'); },
+    get source() { return t('layer.buildings.source'); },
     geometryType: 'Point',
     format: 'GeoJSON',
     legendHtml: function() {
@@ -85,9 +85,9 @@ export const internalLayers = {
     }
   },
   parcels: {
-    title: 'Grundstücke (Bundesamt für Bauten und Logistik BBL)',
-    description: 'Interner Datensatz der BBL-Parzellen. Enthält Grundstücksinformationen mit Flächenangaben, Nutzungszonen und Eigentumsverhältnissen.',
-    source: 'BBL Parzellen',
+    get title() { return t('layer.parcels.title'); },
+    get description() { return t('layer.parcels.description'); },
+    get source() { return t('layer.parcels.source'); },
     geometryType: 'Polygon',
     format: 'GeoJSON',
     legendHtml: function() {

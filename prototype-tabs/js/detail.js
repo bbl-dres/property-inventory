@@ -1,10 +1,30 @@
 // Detail view: fields of the overview tab, carousel, mini map and the entity tables.
 
 import { placeholderImages } from './config.js';
-import { setText, formatDate, extractYear, formatBoolean } from './utils.js';
+import { setText, formatDate, extractYear } from './utils.js';
+import { t, onLangChange } from './i18n.js';
 import { showCarousel } from './carousel.js';
 import { showMiniMap } from './mini-map.js';
 import { loadEntityTablesForBuilding } from './entity-tables.js';
+
+let currentBuilding = null;
+
+// Refresh UI-derived values only: keep the photo, mini-map and table state intact.
+function translateDetailFields() {
+  if (!currentBuilding) return;
+  const props = currentBuilding.properties;
+  const protectedBuilding = props.monumentProtection;
+  setText('detail-denkmalschutz', typeof protectedBuilding === 'boolean' ? t(protectedBuilding ? 'common.yes' : 'common.no') : null);
+  setText('detail-gueltig-bis', formatDate(props.validUntil) || t('field.unspecified'));
+  const table = document.querySelector('.address-table');
+  if (table) {
+    const headers = table.querySelectorAll('thead th');
+    table.querySelectorAll('tbody td').forEach(function(cell, index) {
+      if (cell.hasAttribute('data-label')) cell.dataset.label = headers[index]?.textContent.trim() || '';
+    });
+  }
+}
+onLangChange(translateDetailFields);
 
 // Street and house number from "Strasse Nr, PLZ Ort" or "Nr Street, City, State PLZ"
 function parseAddress(address) {
@@ -37,6 +57,7 @@ function numberOrDash(value) {
 }
 
 export function populateDetailView(building) {
+  currentBuilding = building;
   const props = building.properties;
   const ext = props.extensionData || {};
   const coords = building.geometry.coordinates;
@@ -65,7 +86,6 @@ export function populateDetailView(building) {
   // Building data
   setText('detail-sanierung', extractYear(props.yearOfLastRefurbishment));
   setText('detail-ladestationen', numberOrDash(props.electricVehicleChargingStations));
-  setText('detail-denkmalschutz', formatBoolean(props.monumentProtection));
   setText('detail-parkplaetze', numberOrDash(props.parkingSpaces));
   setText('detail-geschosse', numberOrDash(ext.numberOfFloors));
   setText('detail-baubewilligung', formatDate(props.buildingPermitDate));
@@ -83,7 +103,6 @@ export function populateDetailView(building) {
   setText('detail-gwr-status', ext.gwrStatus);
   setText('detail-egrid', ext.egrid);
   setText('detail-gueltig-von', formatDate(props.validFrom));
-  setText('detail-gueltig-bis', formatDate(props.validUntil) || 'Keine Angabe');
 
   // Classification
   setText('detail-objektart1', props.primaryTypeOfBuilding);
@@ -91,6 +110,7 @@ export function populateDetailView(building) {
   setText('detail-objektart2', props.secondaryTypeOfBuilding);
   setText('detail-eigentum', props.typeOfOwnership);
 
+  translateDetailFields();
   loadEntityTablesForBuilding(building);
   showCarousel(ext.photos && ext.photos.length ? ext.photos.map(function(p) { return p.url; }) : placeholderImages, ext.photos);
   showMiniMap(coords);

@@ -156,7 +156,7 @@ export function createDataTable(config) {
     if (!head) head = table.createTHead();
     let row = head.rows[0];
     if (!row) row = head.insertRow();
-    row.innerHTML = (selection ? '<th scope="col" class="col-checkbox"><input type="checkbox" id="' + selection.selectAllId + '" aria-label="Alle Zeilen dieser Seite auswählen"></th>' : '') + columns.map(function(col) {
+    row.innerHTML = (selection ? '<th scope="col" class="col-checkbox"><input type="checkbox" id="' + selection.selectAllId + '" aria-label="' + escapeHtml(t('table.selectAll')) + '"></th>' : '') + columns.map(function(col) {
       return '<th scope="col" class="' + col.className + ' sortable" data-sort="' + escapeHtml(col.key) + '" data-width="' + (col.width || 'text') + '">' +
         '<button type="button" class="table-sort-button" title="' + escapeHtml(label(col)) + '"><span class="table-column-label">' + escapeHtml(label(col)) + '</span><span class="material-symbols-outlined sort-icon" aria-hidden="true">unfold_more</span></button></th>';
     }).join('') + '<th class="table-spacer" aria-hidden="true" role="presentation"></th>';
@@ -217,7 +217,7 @@ export function createDataTable(config) {
       tbody.innerHTML = data.slice((st.page - 1) * st.rowsPerPage, st.page * st.rowsPerPage).map(function(row) {
         const key = rowKey(row);
         let html = '<tr ' + (config.rowIdAttr || 'data-id') + '="' + escapeHtml(key) + '"' + (config.onRowSelect ? ' tabindex="0"' : '') + (key === activeKey ? ' class="row-active"' : '') + '>';
-        if (selection) html += '<td class="col-checkbox"><input type="checkbox" class="' + selection.checkboxClass + '" aria-label="Zeile auswählen"></td>';
+        if (selection) html += '<td class="col-checkbox"><input type="checkbox" class="' + selection.checkboxClass + '" aria-label="' + escapeHtml(t('table.selectRow')) + '"></td>';
         columns.forEach(function(col) {
           const raw = value(row, col);
           const plain = col.width === 'date' ? formatDate(raw) || '—' : isEmpty(raw) ? '—' : String(raw);

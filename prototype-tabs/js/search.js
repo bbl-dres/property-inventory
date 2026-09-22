@@ -303,7 +303,10 @@ export function initSearch() {
       searchScopeBtn.focus();
       return true;
     }, 60);
-    onLangChange(updateSearchScope); // the "Alle" / "N Bereiche" label is rendered from JS
+    onLangChange(function() {
+      dismissSearchResults(); // cancel pending requests in the previous language
+      updateSearchScope();
+    });
     updateSearchScope();
   }
 

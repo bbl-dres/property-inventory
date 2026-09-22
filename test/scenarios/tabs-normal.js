@@ -13,7 +13,7 @@ module.exports = {
     check('buildings loaded (14)', state.buildingsData && state.buildingsData.features.length === 14);
     check('parcels loaded (14)', state.parcelData && state.parcelData.features.length === 14);
     check('entity data loaded', state.allAreaMeasurements.length > 0 && state.allContracts.length > 0 && state.allCosts.length > 0);
-    check('no lang parameter added to the URL', window.location.search.indexOf('lang=') === -1);
+    check('default language persisted in URL', new URL(window.location.href).searchParams.get('lang') === 'de');
     check('basemap normalised in URL', window.location.search.indexOf('basemap=light') !== -1);
     check('list rows rendered', document.querySelectorAll('#list-body tr[data-id]').length === 14);
     check('parcel rows rendered', document.querySelectorAll('#parcels-body tr[data-parcel-id]').length === 14);
@@ -272,11 +272,12 @@ module.exports = {
     check('export panel downloads a file', downloads === 1);
     check('export success toast', !!document.querySelector('#toast-container .toast-success'));
 
-    // Language selector: same control as main, but this prototype only warns
+    // Language selector: switch in place and retain the current view.
     document.getElementById('lang-btn').click();
     check('language dropdown opens', document.getElementById('lang-dropdown').classList.contains('open'));
     document.querySelector('.lang-option[data-lang="en"]').click();
-    check('language choice warns instead of switching', !document.getElementById('lang-dropdown').classList.contains('open') && !!document.querySelector('#toast-container .toast-warning') && document.documentElement.lang === 'de');
+    check('language choice switches and closes dropdown', !document.getElementById('lang-dropdown').classList.contains('open') && document.documentElement.lang === 'en');
+    document.querySelector('.lang-option[data-lang="de"]').click();
 
     // Measure accordion button starts the tool
     document.querySelector('[data-action="toggleMeasure"]').click();

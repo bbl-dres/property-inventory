@@ -56,12 +56,13 @@ const inspect = `(() => {
           results.push({label,...result});
           if(name==='detail-tree'&&result.mobile) {
             const focusCheck = await run(`(() => {
-              const tree=document.getElementById('tree-panel');
-              const good=tree.contains(document.activeElement)&&tree.getAttribute('aria-modal')==='true'&&document.getElementById('header').inert&&document.body.style.overflow==='hidden';
-              document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));
-              return good&&tree.contains(document.activeElement);
+              const content=document.getElementById('mobile-tree-content');
+              return content.contains(document.getElementById('tree-panel-content'))&&content.classList.contains('show')&&
+                document.getElementById('mobile-tree-btn').getAttribute('aria-expanded')==='true'&&
+                !document.getElementById('accordion-panel').classList.contains('collapsed')&&
+                document.getElementById('tree-panel').getAttribute('aria-modal')!=='true';
             })()`);
-            if(!focusCheck) throw new Error(label+' phone sheet focus/semantics');
+            if(!focusCheck) throw new Error(label+' phone location accordion');
           }
           if(['detail-tree','detail-both','tree-wide','documents','search','api-docs'].includes(name)) {
             const {data}=await cdp.send('Page.captureScreenshot',{format:'jpeg',quality:75},page.sessionId);

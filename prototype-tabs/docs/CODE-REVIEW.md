@@ -1,6 +1,9 @@
 # Code Review — prototype-tabs (with the alignment to prototype-simple)
 
 **Date:** 2026-09-15
+
+**Update 2026-09-22:** The German-only limitation and recommendation R2 below have
+been addressed. See [I18N.md](I18N.md) for the DE/FR/IT/EN implementation.
 **Scope:** all files under `prototype-tabs/` (`js/app.js`, `index.html`, `css/main.css`, `data/`), reviewed together with `prototype-simple/` because both prototypes are variants of the same application
 **Focus:** bugs, dead and redundant code, security of the rendered HTML, duplication with prototype-simple, architecture alignment
 **Reviewer:** Claude (senior-developer review requested by the maintainer)

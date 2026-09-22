@@ -49,6 +49,16 @@ python -m http.server 8000
 
 Then open <http://localhost:8000/prototype-tabs/>.
 
+### Languages
+
+Use the language selector (or the language buttons in the phone menu) for German,
+French, Italian and English. Deep links accept `?lang=de|fr|it|en`; German is the
+default. Switching updates the interface in place and preserves the current view,
+filters, selections, table sorting and map position.
+
+Translations are maintained in this prototype's own [`data/i18n.json`](data/i18n.json).
+See [docs/I18N.md](docs/I18N.md) for the translation conventions and verification.
+
 ## Tests
 
 A jsdom harness with a fake MapLibre lives in [`../test/`](../test/). It is development tooling only: nothing is shared between the prototypes at runtime.
@@ -69,7 +79,7 @@ npm run visual      # headless-Edge screenshots and computed metrics of both pro
 | MapLibre GL JS 5.19 (vendored in `vendor/`) | Map, mini map, markers, popups — same build and basemaps (CARTO Positron/Voyager/Dark Matter, swisstopo SWISSIMAGE) as the simple app; no API key |
 | jsPDF 2.5.1 (vendored in `vendor/jspdf/`) | PDF export of the print panel, same renderer as the simple app |
 | Swagger UI 5 (vendored in `vendor/swagger-ui/`) | API documentation from `data/swagger.json` (footer link "API" or `?view=api-docs`), loaded only when the API page opens. Spec and viewer are identical copies of the simple app's; the spec is generated there (`prototype-simple/docs/generate_swagger.py`) and documents the target API, not this prototype's mock property names |
-| `data/i18n.json` | Identical copy of the simple app's translation file; the UI stays German (the language selector only warns), the JS-rendered texts come from this file |
+| `data/i18n.json` | Local DE/FR/IT/EN dictionary for static labels and generated interface text; same key-based format and runtime as the simple app, with no cross-prototype imports |
 | Material Symbols Outlined (self-hosted in `assets/icons/`) | Icons: static font of the complete icon set (322 KB), no request to Google Fonts |
 
 ## Layout

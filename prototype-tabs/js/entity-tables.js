@@ -78,7 +78,7 @@ export const entityTables = {
         areaType: m.type,
         value: m.value,
         unit: m.unit,
-        source: (m.extensionData && m.extensionData.source) || 'Manuell',
+        source: (m.extensionData && m.extensionData.source) || '',
         accuracy: m.accuracy,
         standard: [m.standard, m.extensionData?.standardDetail].filter(Boolean).join(' · '),
         validFrom: m.validFrom,
@@ -86,13 +86,13 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'areaType', className: 'col-type', label: "Bemessungsart", width: 'name' },
-      { key: 'value', className: 'col-area', label: "Wert", width: 'number', render: function(m) { return formatNum(m.value, 0) + ' ' + escapeHtml(m.unit); } },
-      { key: 'source', className: 'col-source', label: "Quelle", width: 'text' },
-      { key: 'accuracy', className: 'col-accuracy', label: "Genauigkeit", width: 'text' },
-      { key: 'standard', className: 'col-standard', label: "Standard", width: 'text' },
-      { key: 'validFrom', className: 'col-from', label: "Gültig von", width: 'date' },
-      { key: 'validUntil', className: 'col-until', label: "Gültig bis", width: 'date' }
+      { key: 'areaType', className: 'col-type', labelKey: 'field.measurementType', width: 'name' },
+      { key: 'value', className: 'col-area', labelKey: 'field.value', width: 'number', render: function(m) { return formatNum(m.value, 0) + ' ' + escapeHtml(m.unit); } },
+      { key: 'source', className: 'col-source', labelKey: 'field.source', width: 'text', render: function(m) { return escapeHtml(m.source || t('field.manual')); } },
+      { key: 'accuracy', className: 'col-accuracy', labelKey: 'detail.label.accuracy', width: 'text' },
+      { key: 'standard', className: 'col-standard', labelKey: 'field.standard', width: 'text' },
+      { key: 'validFrom', className: 'col-from', labelKey: 'field.validFrom', width: 'date' },
+      { key: 'validUntil', className: 'col-until', labelKey: 'field.validUntil', width: 'date' }
     ],
     searchFields: ['id', 'areaType', 'accuracy', 'standard', 'unit', 'value']
   }),
@@ -130,13 +130,13 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'titel', className: 'col-title', label: "Titel", width: 'title', render: function(d) {
+      { key: 'titel', className: 'col-title', labelKey: 'field.title', width: 'title', render: function(d) {
         return documentTitleLink(d.document);
       } },
-      { key: 'dokumentTyp', className: 'col-type', label: "Typ", width: 'text' },
-      { key: 'dateiformat', className: 'col-format', label: "Format", width: 'code' },
-      { key: 'datum', className: 'col-date', label: "Datum", width: 'date' },
-      { key: 'dateigroesse', className: 'col-size', label: "Grösse", width: 'number' }
+      { key: 'dokumentTyp', className: 'col-type', labelKey: 'col.lc.av_type', width: 'text' },
+      { key: 'dateiformat', className: 'col-format', labelKey: 'field.format', width: 'code' },
+      { key: 'datum', className: 'col-date', labelKey: 'field.date', width: 'date' },
+      { key: 'dateigroesse', className: 'col-size', labelKey: 'field.size', width: 'number' }
     ],
     searchFields: ['id', 'titel', 'dokumentTyp', 'dateiformat', 'datum', 'dateigroesse']
   }),
@@ -162,13 +162,13 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'name', className: 'col-contact-name', label: "Name", width: 'name' },
-      { key: 'rolle', className: 'col-contact-role', label: "Rolle", width: 'text' },
-      { key: 'organisation', className: 'col-contact-org', label: "Organisation", width: 'name' },
-      { key: 'telefon', className: 'col-contact-phone', label: "Telefon", width: 'phone', render: function(c) {
+      { key: 'name', className: 'col-contact-name', labelKey: 'info.label.name', width: 'name' },
+      { key: 'rolle', className: 'col-contact-role', labelKey: 'field.role', width: 'text' },
+      { key: 'organisation', className: 'col-contact-org', labelKey: 'field.organisation', width: 'name' },
+      { key: 'telefon', className: 'col-contact-phone', labelKey: 'field.phone', width: 'phone', render: function(c) {
         return c.telefon ? '<a href="tel:' + escapeHtml(c.telefon) + '">' + escapeHtml(c.telefon) + '</a>' : '—';
       } },
-      { key: 'email', className: 'col-contact-email', label: "E-Mail", width: 'email', render: function(c) {
+      { key: 'email', className: 'col-contact-email', labelKey: 'field.email', width: 'email', render: function(c) {
         return c.email ? '<a href="mailto:' + escapeHtml(c.email) + '">' + escapeHtml(c.email) + '</a>' : '—';
       } }
     ],
@@ -196,11 +196,11 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'kostengruppe', className: 'col-cost-group', label: "Kostengruppe", width: 'code' },
-      { key: 'kostenart', className: 'col-cost-type', label: "Kostenart", width: 'name' },
-      { key: 'betrag', className: 'col-cost-amount', label: "Betrag", width: 'amount', render: function(c) { return formatCurrencyWithUnit(c.betrag, c.einheit); } },
-      { key: 'einheit', className: 'col-cost-unit', label: "Einheit", width: 'code' },
-      { key: 'stichtag', className: 'col-cost-date', label: "Stichtag", width: 'date' }
+      { key: 'kostengruppe', className: 'col-cost-group', labelKey: 'field.costGroup', width: 'code' },
+      { key: 'kostenart', className: 'col-cost-type', labelKey: 'field.costType', width: 'name' },
+      { key: 'betrag', className: 'col-cost-amount', labelKey: 'field.amount', width: 'amount', render: function(c) { return formatCurrencyWithUnit(c.betrag, c.einheit); } },
+      { key: 'einheit', className: 'col-cost-unit', labelKey: 'field.unit', width: 'code' },
+      { key: 'stichtag', className: 'col-cost-date', labelKey: 'field.referenceDate', width: 'date' }
     ],
     searchFields: ['id', 'kostengruppe', 'kostenart', 'betrag', 'einheit', 'stichtag']
   }),
@@ -227,12 +227,12 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'vertragsart', className: 'col-contract-type', label: "Vertragsart", width: 'name' },
-      { key: 'vertragspartner', className: 'col-contract-partner', label: "Vertragspartner", width: 'description' },
-      { key: 'vertragsbeginn', className: 'col-contract-start', label: "Beginn", width: 'date' },
-      { key: 'vertragsende', className: 'col-contract-end', label: "Ende", width: 'date', render: function(c) { return escapeHtml(formatDate(c.vertragsende) || 'unbefristet'); } },
-      { key: 'betrag', className: 'col-contract-amount', label: "Betrag/Jahr", width: 'amount', render: function(c) { return formatCurrency(c.betrag); } },
-      { key: 'status', className: 'col-contract-status', label: "Status", width: 'status', render: function(c) { return badge(getContractStatusClassName(c.status), c.status); } }
+      { key: 'vertragsart', className: 'col-contract-type', labelKey: 'field.contractType', width: 'name' },
+      { key: 'vertragspartner', className: 'col-contract-partner', labelKey: 'field.contractPartner', width: 'description' },
+      { key: 'vertragsbeginn', className: 'col-contract-start', labelKey: 'field.start', width: 'date' },
+      { key: 'vertragsende', className: 'col-contract-end', labelKey: 'field.end', width: 'date', render: function(c) { return escapeHtml(formatDate(c.vertragsende) || t('field.indefinite')); } },
+      { key: 'betrag', className: 'col-contract-amount', labelKey: 'field.annualAmount', width: 'amount', render: function(c) { return formatCurrency(c.betrag); } },
+      { key: 'status', className: 'col-contract-status', labelKey: 'field.status', width: 'status', render: function(c) { return badge(getContractStatusClassName(c.status), c.status); } }
     ],
     searchFields: ['id', 'vertragsart', 'vertragspartner', 'vertragsbeginn', 'vertragsende', 'betrag', 'status']
   }),
@@ -258,11 +258,11 @@ export const entityTables = {
       };
     },
     columns: [
-      { key: 'bezeichnung', className: 'col-asset-name', label: "Bezeichnung", width: 'description' },
-      { key: 'kategorie', className: 'col-asset-category', label: "Kategorie", width: 'code', render: function(a) { return '<span class="badge kategorie-badge">' + escapeHtml(a.kategorie || '—') + '</span>'; } },
-      { key: 'hersteller', className: 'col-asset-manufacturer', label: "Hersteller", width: 'name' },
-      { key: 'baujahr', className: 'col-asset-year', label: "Baujahr", width: 'year' },
-      { key: 'standort', className: 'col-asset-location', label: "Standort", width: 'text' }
+      { key: 'bezeichnung', className: 'col-asset-name', labelKey: 'col.parcel.name', width: 'description' },
+      { key: 'kategorie', className: 'col-asset-category', labelKey: 'field.category', width: 'code', render: function(a) { return '<span class="badge kategorie-badge">' + escapeHtml(a.kategorie || '—') + '</span>'; } },
+      { key: 'hersteller', className: 'col-asset-manufacturer', labelKey: 'field.manufacturer', width: 'name' },
+      { key: 'baujahr', className: 'col-asset-year', labelKey: 'col.bbl_bjahr', width: 'year' },
+      { key: 'standort', className: 'col-asset-location', labelKey: 'detail.section.location', width: 'text' }
     ],
     searchFields: ['id', 'bezeichnung', 'kategorie', 'hersteller', 'baujahr', 'standort']
   })

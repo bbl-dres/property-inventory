@@ -1,13 +1,21 @@
 // Mini map of the detail view (shared): a small 3D map centred on the building, created once
 // and reused (re-creating a MapLibre instance re-downloads the style and tiles every time).
 
-import { t } from './i18n.js';
+import { t, onLangChange } from './i18n.js';
 import { getMapStyleUrl } from './basemaps.js';
 import { findVectorSourceId } from './map-controls.js';
 
 let miniMap = null;
 let miniMapMarker = null;
 let pendingCoords = null;
+
+function translateAddressLink() {
+  const address = document.getElementById('mini-map-address');
+  if (!address?.hasAttribute('href')) return;
+  address.title = t('miniMap.openGoogle');
+  address.setAttribute('aria-label', address.textContent + ' – ' + address.title);
+}
+onLangChange(translateAddressLink);
 
 // Building footprints of the CARTO basemap as extrusions, fading in around zoom 15
 const MINI_MAP_3D_LAYER = {
@@ -49,8 +57,7 @@ export function showMiniMap(coords) {
     address.removeAttribute('href');
     if (Array.isArray(coords) && coords.length >= 2 && coords.every(Number.isFinite)) {
       address.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(coords[1] + ',' + coords[0]);
-      address.title = 'In Google Maps öffnen (neuer Tab)';
-      address.setAttribute('aria-label', address.textContent + ' – ' + address.title);
+      translateAddressLink();
     }
   }
   pendingCoords = coords;

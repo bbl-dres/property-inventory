@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { collapseToolsPanelIfColliding } from './tools-panel.js';
 import { placeholderImages, getStatusClassName } from './config.js';
 import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
-import { t } from './i18n.js';
+import { t, onLangChange } from './i18n.js';
 import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumnsSearch, initDropdowns, initTableSearch } from './table.js';
 import { selectBuilding, selectParcel } from './map.js';
 import { showDetailView } from './ui.js';
@@ -23,46 +23,46 @@ function statusBadge(v) {
 
 const columnLabels = {
   "col-name": {
-    "label": "Bezeichnung"
+    "labelKey": 'col.bbl_bez'
   },
   "col-land": {
-    "label": "Land"
+    "labelKey": 'col.adr_land'
   },
   "col-ort": {
-    "label": "Ort"
+    "labelKey": 'col.adr_ort'
   },
   "col-adresse": {
-    "label": "Adresse"
+    "labelKey": 'col.adr_conct'
   },
   "col-portfolio": {
-    "label": "Teilportfolio"
+    "labelKey": 'col.bbl_port'
   },
   "col-flaeche": {
-    "label": "Fläche NGF"
+    "labelKey": 'info.label.area_ngf'
   },
   "col-status": {
-    "label": "Bewirtschaftungsstatus"
+    "labelKey": 'col.bbl_stat'
   },
   "col-parcel-plot": {
-    "label": "Grundstück-Nr."
+    "labelKey": 'col.parcel.plot'
   },
   "col-parcel-name": {
-    "label": "Bezeichnung"
+    "labelKey": 'col.parcel.name'
   },
   "col-parcel-municipality": {
-    "label": "Gemeinde"
+    "labelKey": 'col.parcel.municipality'
   },
   "col-parcel-canton": {
-    "label": "Kanton"
+    "labelKey": 'col.parcel.canton'
   },
   "col-parcel-area": {
-    "label": "Fläche"
+    "labelKey": 'col.parcel.area'
   },
   "col-parcel-zone": {
-    "label": "Nutzungszone"
+    "labelKey": 'col.parcel.zone'
   },
   "col-parcel-ownership": {
-    "label": "Eigentum"
+    "labelKey": 'col.parcel.ownership'
   }
 };
 
@@ -375,6 +375,12 @@ export function renderGalleryView() {
 
   galleryGrid.innerHTML = html;
 }
+
+onLangChange(function() {
+  if (state.currentView === 'gallery') renderGalleryView();
+  const input = document.getElementById('list-search-input');
+  if (input) input.placeholder = t('table.search.' + state.activeTableTab);
+});
 
 // ===== TABLE PANEL (below the map): toggle, URL state, drag resize =====
 

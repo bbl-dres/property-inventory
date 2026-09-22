@@ -24,6 +24,7 @@ import { escapeHtml, isMobileLayout, storageGet, storageSet } from './utils.js';
 import { t } from './i18n.js';
 import { onEscape } from './keys.js';
 import { closePhoneMenu } from './tools-panel.js';
+import { openAccordion } from './accordion.js';
 
 const LEVELS = ['country', 'region', 'city', 'we'];
 const FILTER_LEVELS = ['country', 'region', 'city']; // levels backed by a drawer filter; 'we' is a folder
@@ -305,6 +306,7 @@ function roving(host) {
 }
 
 function isTreePanelOpen() {
+  if (isMobileLayout()) return document.getElementById('mobile-tree-btn')?.getAttribute('aria-expanded') === 'true';
   const panel = document.getElementById('tree-panel');
   return !!panel && panel.classList.contains('open');
 }
@@ -336,6 +338,14 @@ export function renderLocationTree() {
 
 // The header button is a plain toggle: .panel-open while the panel shows, default otherwise
 export function toggleTreePanel(open) {
+  if (isMobileLayout()) {
+    const header = document.getElementById('mobile-tree-btn');
+    if (!header) return;
+    if (open === undefined) open = !isTreePanelOpen();
+    if (open) openAccordion('locations');
+    else if (isTreePanelOpen()) header.click();
+    return;
+  }
   const panel = document.getElementById('tree-panel');
   const btn = document.getElementById('tree-panel-btn');
   if (!panel) return;
@@ -350,10 +360,6 @@ export function toggleTreePanel(open) {
   if (open && !wasOpen) {
     if (treeStale) renderLocationTree();
     prefetchTreeCountries();
-    if (isMobileLayout()) {
-      const closeBtn = document.getElementById('tree-close-btn');
-      if (closeBtn) closeBtn.focus();
-    }
   } else if (!open && wasOpen) {
     restorePanelFocus(panel);
   }
@@ -427,8 +433,12 @@ function onTreeClick(e) {
   const node = nodeIndex.get(row.dataset.node);
   if (!node) return;
   if (node.leaf) {
+    const hadFocus = document.getElementById('tree-panel-content').contains(document.activeElement);
     adapter.onSelectObject(node.kind, node.id);
-    if (isMobileLayout()) toggleTreePanel(false);
+    if (isMobileLayout()) {
+      closePhoneMenu();
+      if (hadFocus) document.getElementById('hamburger-btn')?.focus();
+    }
     return;
   }
   if (!node.sel) {
@@ -509,15 +519,38 @@ export function initLocationTree(a) {
   const closeBtn = document.getElementById('tree-close-btn');
   if (closeBtn) closeBtn.addEventListener('click', function() { toggleTreePanel(false); });
   const menuBtn = document.getElementById('mobile-tree-btn');
-  if (menuBtn) menuBtn.addEventListener('click', function() { closePhoneMenu(); toggleTreePanel(true); });
+  const menuContent = document.getElementById('mobile-tree-content');
+  // Move the same tree between its desktop dock and phone accordion. Node expansion,
+  // filters and delegated listeners survive resizing; no duplicate tree or IDs.
+  function placeTree() {
+    const mobile = isMobileLayout();
+    const target = mobile ? menuContent : panel;
+    if (!target || host.parentElement === target) return;
+    const hadFocus = host.contains(document.activeElement);
+    target.appendChild(host);
+    host.setAttribute('aria-labelledby', mobile ? 'mobile-tree-btn' : 'tree-panel-title');
+    renderLocationTree();
+    if (hadFocus) {
+      if (isTreePanelOpen()) host.querySelector('[tabindex="0"]')?.focus();
+      else document.getElementById(mobile ? 'hamburger-btn' : 'tree-panel-btn')?.focus();
+    }
+  }
+  if (menuBtn) menuBtn.addEventListener('click', function() {
+    // initAccordion binds first and owns expansion/ARIA state and closing other items.
+    if (!isMobileLayout() || !isTreePanelOpen()) return;
+    if (treeStale) renderLocationTree();
+    prefetchTreeCountries();
+  });
+  window.addEventListener('resize', placeTree);
 
   onEscape(function() {
-    if (!panel.classList.contains('open')) return false;
+    if (isMobileLayout() || !panel.classList.contains('open')) return false;
     toggleTreePanel(false);
     return true;
   }, 30);
 
   if (currentSelection().country) loadCountryIndex(); // a country or canton from the URL is outlined at once
   openPath(currentSelection()); // location filters restored from the URL show their branch
+  placeTree();
   renderLocationTree();
 }

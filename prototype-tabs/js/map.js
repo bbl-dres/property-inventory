@@ -163,11 +163,12 @@ function restoreSelectionFromUrl() {
 // ===== SELECTION =====
 
 function infoRow(labelKey, valueHtml, secondary) {
-  return '<div class="info-row' + (secondary ? ' info-row-secondary' : '') + '"><span class="info-label" title="' + escapeHtml(t(labelKey)) + '">' + escapeHtml(t(labelKey)) + '</span><span class="info-value">' + valueHtml + '</span></div>';
+  return '<div class="info-row' + (secondary ? ' info-row-secondary' : '') + '"><span class="info-label" data-i18n="' + labelKey + '" data-i18n-title="' + labelKey + '" title="' + escapeHtml(t(labelKey)) + '">' + escapeHtml(t(labelKey)) + '</span><span class="info-value">' + valueHtml + '</span></div>';
 }
 
 function showInfoPanel(titleKey, bodyHtml, previewImageUrl) {
   document.getElementById('info-header-title').textContent = t(titleKey);
+  document.getElementById('info-header-title').dataset.i18n = titleKey;
   const panel = document.getElementById('info-panel');
   const preview = document.getElementById('info-preview-image');
   // A class (not an inline display) so the stylesheet can still hide the image on short viewports
@@ -218,7 +219,7 @@ export function selectBuilding(buildingId, flyToBuilding) {
     infoRow('info.label.status', '<span class="badge status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>') +
     '<div class="info-footer">' +
       '<button type="button" class="info-detail-link" data-action="showDetailView" data-id="' + escapeHtml(props.buildingId) + '">' +
-        '<span class="material-symbols-outlined">open_in_new</span>' + t('info.details') +
+        '<span class="material-symbols-outlined">open_in_new</span><span data-i18n="info.details">' + t('info.details') + '</span>' +
       '</button>' +
     '</div>';
   showInfoPanel('info.title.building', html, imageUrl);

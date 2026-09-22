@@ -992,6 +992,7 @@
 /* Phone menu chrome inside the panel (header with title and close button, footer links); hidden on desktop */
 .mobile-menu-header,
 .mobile-menu-extras,
+.mobile-tree-accordion,
 .mobile-menu-backdrop {
   display: none;
 }
@@ -4535,26 +4536,23 @@ body.detail-active #detail-view {
     display: none;
   }
 
-  /* Location tree: the header button moves into the phone menu; the panel is a full-screen sheet */
-  #tree-panel-btn {
-    display: none;
-  }
-
+  /* Location tree expands inside the phone menu; its desktop dock stays dormant. */
+  #tree-panel-btn,
   #tree-panel {
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    height: auto;
-    width: 100% !important;
-    min-width: 100% !important;
-    z-index: var(--z-drawer);
-    border-right: none;
+    display: none;
   }
 
-  #tree-panel:not(.open) {
-    display: none;
+  .mobile-tree-accordion {
+    display: block;
+  }
+
+  #mobile-tree-content {
+    padding: 0;
+  }
+
+  #mobile-tree-content .tree-panel-content {
+    overflow: visible; /* One scroll surface: the menu, including deep branches. */
+    padding: var(--space-2) var(--space-1);
   }
 
   .panel-resize-handle {
@@ -4983,5 +4981,5 @@ body.detail-active #detail-view {
 /* Disabled portfolio filters stay visible in detail mode. */
 .header-btn:disabled { opacity: var(--opacity-disabled); cursor: default; background: var(--white); }
 .mini-map-header { text-decoration: none; overflow-wrap: anywhere; }
-.mini-map-header[href]:hover { color: var(--interactive-blue); text-decoration: underline; }
-.mini-map-header:focus-visible { outline: 2px solid var(--interactive-blue); outline-offset: -2px; }
+.mini-map-header a[href] { color: var(--interactive-blue); text-decoration: underline; text-underline-offset: 2px; }
+.mini-map-header a:focus-visible { outline: 2px solid var(--interactive-blue); outline-offset: 2px; }

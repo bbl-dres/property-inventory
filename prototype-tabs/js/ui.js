@@ -4,12 +4,12 @@ import { initPanelLayout, updatePanelLayout } from './panel-layout.js';
 
 import { state } from './state.js';
 import { isMobileLayout, isLandscapePhone } from './utils.js';
-import { t, onLangChange } from './i18n.js';
+import { t, onLangChange, getLang, setLang } from './i18n.js';
 import { showToast } from './toast.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
 import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
-import { toggleTreePanel } from './location-tree.js';
+import { toggleTreePanel, renderLocationTree } from './location-tree.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
 import { renderFilteredTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
@@ -416,7 +416,16 @@ function initFooterApiLink() {
   });
 }
 
-// ===== LANGUAGE SELECTOR (same control as the simple prototype; languages are not implemented here) =====
+// ===== LANGUAGE SELECTOR =====
+
+function setActiveLanguageUi(lang) {
+  document.getElementById('lang-current').textContent = lang.toUpperCase();
+  document.querySelectorAll('.lang-option, .mobile-lang-pill').forEach(function(option) {
+    const active = option.dataset.lang === lang;
+    option.classList.toggle('active', active);
+    option.setAttribute(option.classList.contains('lang-option') ? 'aria-checked' : 'aria-pressed', String(active));
+  });
+}
 
 function initLanguageSelector() {
   const langBtn = document.getElementById('lang-btn');
@@ -435,14 +444,21 @@ function initLanguageSelector() {
     langBtn.setAttribute('aria-expanded', String(!isOpen));
   });
 
-  // This prototype has no translations: the interface stays German, the choice only warns
-  function notImplemented() {
-    close();
-    showToast({ type: 'warning', message: t('lang.notImplemented'), duration: 6000 });
-  }
+  setActiveLanguageUi(getLang());
+  onLangChange(function(lang) {
+    setActiveLanguageUi(lang);
+    updateShareLink();
+    updateExportCount();
+    renderLocationTree();
+    updateDetailHeaderOffset();
+  });
 
   langDropdown.addEventListener('click', function(e) {
-    if (e.target.closest('.lang-option')) notImplemented();
+    const option = e.target.closest('.lang-option');
+    if (!option) return;
+    close();
+    setLang(option.dataset.lang);
+    langBtn.focus();
   });
 
   document.addEventListener('click', function(e) {
@@ -451,7 +467,7 @@ function initLanguageSelector() {
 
   // Language pills in the phone menu
   document.querySelectorAll('.mobile-lang-pill').forEach(function(pill) {
-    pill.addEventListener('click', notImplemented);
+    pill.addEventListener('click', function() { setLang(pill.dataset.lang); });
   });
 }
 

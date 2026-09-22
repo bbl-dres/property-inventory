@@ -137,15 +137,29 @@
     "fr": "Australie",
     "it": "Australia"
   },
-  "country.KR": { "de": "Südkorea", "en": "South Korea", "fr": "Corée du Sud", "it": "Corea del Sud" },
-  "country.KE": { "de": "Kenia", "en": "Kenya", "fr": "Kenya", "it": "Kenya" },
-  "country.SG": { "de": "Singapur", "en": "Singapore", "fr": "Singapour", "it": "Singapore" },
-  "country.CI": { "de": "Côte d’Ivoire", "en": "Côte d’Ivoire", "fr": "Côte d’Ivoire", "it": "Costa d’Avorio" },
-  "lang.notImplemented": {
-    "de": "Mehrsprachigkeit ist in diesem Prototyp nicht umgesetzt. Die Oberfläche bleibt auf Deutsch.",
-    "en": "Languages are not implemented in this prototype. The interface stays in German.",
-    "fr": "Le multilinguisme n'est pas mis en œuvre dans ce prototype. L'interface reste en allemand.",
-    "it": "Il multilinguismo non è implementato in questo prototipo. L'interfaccia rimane in tedesco."
+  "country.KR": {
+    "de": "Südkorea",
+    "en": "South Korea",
+    "fr": "Corée du Sud",
+    "it": "Corea del Sud"
+  },
+  "country.KE": {
+    "de": "Kenia",
+    "en": "Kenya",
+    "fr": "Kenya",
+    "it": "Kenya"
+  },
+  "country.SG": {
+    "de": "Singapur",
+    "en": "Singapore",
+    "fr": "Singapour",
+    "it": "Singapore"
+  },
+  "country.CI": {
+    "de": "Côte d’Ivoire",
+    "en": "Côte d’Ivoire",
+    "fr": "Côte d’Ivoire",
+    "it": "Costa d’Avorio"
   },
   "header.login": {
     "de": "Anmelden",
@@ -730,10 +744,10 @@
     "it": "Cerca particelle..."
   },
   "table.search": {
-    "de": "Tabelle durchsuchen...",
-    "en": "Search table...",
-    "fr": "Rechercher dans le tableau...",
-    "it": "Cercare nella tabella..."
+    "de": "Tabelle durchsuchen",
+    "en": "Search table",
+    "fr": "Rechercher dans le tableau",
+    "it": "Cercare nella tabella"
   },
   "export.all": {
     "de": "Alle exportieren",
@@ -1792,10 +1806,10 @@
     "it": "Apri menu"
   },
   "tools.label": {
-    "de": "Werkzeuge",
-    "en": "Tools",
-    "fr": "Outils",
-    "it": "Strumenti"
+    "de": "Kartenwerkzeuge",
+    "en": "Map tools",
+    "fr": "Outils cartographiques",
+    "it": "Strumenti cartografici"
   },
   "search.section.objects": {
     "de": "Objekte",
@@ -2044,7 +2058,7 @@
     "it": "A0 Verticale"
   },
   "footer.source": {
-    "de": "Quellencode",
+    "de": "Quellcode",
     "en": "Source code",
     "fr": "Code source",
     "it": "Codice sorgente"
@@ -2666,5 +2680,1019 @@
     "fr": "Image de {name}",
     "it": "Immagine di {name}",
     "en": "Image of {name}"
+  },
+  "app.logo.short": {
+    "de": "BBL",
+    "en": "FOBL",
+    "fr": "OFCL",
+    "it": "UFCL"
+  },
+  "search.input.label": {
+    "de": "Suchbegriff eingeben",
+    "en": "Enter search term",
+    "fr": "Saisir un terme de recherche",
+    "it": "Inserire un termine di ricerca"
+  },
+  "search.scope.questions": {
+    "de": "Fragen",
+    "en": "Questions",
+    "fr": "Questions",
+    "it": "Domande"
+  },
+  "view.choose": {
+    "de": "Ansicht wählen",
+    "en": "Choose view",
+    "fr": "Choisir la vue",
+    "it": "Scegliere la vista"
+  },
+  "action.edit": {
+    "de": "Bearbeiten",
+    "en": "Edit",
+    "fr": "Modifier",
+    "it": "Modificare"
+  },
+  "action.delete": {
+    "de": "Löschen",
+    "en": "Delete",
+    "fr": "Supprimer",
+    "it": "Eliminare"
+  },
+  "action.show": {
+    "de": "Anzeigen",
+    "en": "Show",
+    "fr": "Afficher",
+    "it": "Mostrare"
+  },
+  "action.add": {
+    "de": "Hinzufügen",
+    "en": "Add",
+    "fr": "Ajouter",
+    "it": "Aggiungere"
+  },
+  "action.details": {
+    "de": "Details",
+    "en": "Details",
+    "fr": "Détails",
+    "it": "Dettagli"
+  },
+  "action.preview": {
+    "de": "Vorschau",
+    "en": "Preview",
+    "fr": "Aperçu",
+    "it": "Anteprima"
+  },
+  "action.download": {
+    "de": "Herunterladen",
+    "en": "Download",
+    "fr": "Télécharger",
+    "it": "Scaricare"
+  },
+  "action.contact": {
+    "de": "Kontaktieren",
+    "en": "Contact",
+    "fr": "Contacter",
+    "it": "Contattare"
+  },
+  "detail.tabs.label": {
+    "de": "Objektbereiche",
+    "en": "Property sections",
+    "fr": "Rubriques du bien",
+    "it": "Sezioni dell’immobile"
+  },
+  "detail.tab.costs": {
+    "de": "Kosten",
+    "en": "Costs",
+    "fr": "Coûts",
+    "it": "Costi"
+  },
+  "detail.tab.contracts": {
+    "de": "Verträge",
+    "en": "Contracts",
+    "fr": "Contrats",
+    "it": "Contratti"
+  },
+  "detail.tab.assets": {
+    "de": "Ausstattung",
+    "en": "Equipment",
+    "fr": "Équipements",
+    "it": "Attrezzature"
+  },
+  "detail.tab.documents": {
+    "de": "Dokumente",
+    "en": "Documents",
+    "fr": "Documents",
+    "it": "Documenti"
+  },
+  "share.link.label": {
+    "de": "Link zum Teilen:",
+    "en": "Share link:",
+    "fr": "Lien de partage :",
+    "it": "Link da condividere:"
+  },
+  "share.link": {
+    "de": "Link zum Teilen",
+    "en": "Share link",
+    "fr": "Lien de partage",
+    "it": "Link da condividere"
+  },
+  "share.copy": {
+    "de": "Link in die Zwischenablage kopieren",
+    "en": "Copy link to clipboard",
+    "fr": "Copier le lien dans le presse-papiers",
+    "it": "Copiare il link negli appunti"
+  },
+  "measure.draw.title": {
+    "de": "Zeichnen & Messen auf der Karte",
+    "en": "Draw & measure on the map",
+    "fr": "Dessiner et mesurer sur la carte",
+    "it": "Disegnare e misurare sulla mappa"
+  },
+  "measure.draw.description": {
+    "de": "Messen Sie Distanzen entlang eines Pfads und Flächen von geschlossenen Polygonen direkt auf der Karte. Klicken Sie auf den ersten Punkt, um das Polygon zu schliessen.",
+    "en": "Measure distances along a path and areas of closed polygons directly on the map. Click the first point to close the polygon.",
+    "fr": "Mesurez les distances le long d’un tracé et les surfaces de polygones fermés directement sur la carte. Cliquez sur le premier point pour fermer le polygone.",
+    "it": "Misurate distanze lungo un percorso e superfici di poligoni chiusi direttamente sulla mappa. Fate clic sul primo punto per chiudere il poligono."
+  },
+  "export.title": {
+    "de": "Export",
+    "en": "Export",
+    "fr": "Export",
+    "it": "Esportazione"
+  },
+  "export.selection": {
+    "de": "Datenauswahl",
+    "en": "Data selection",
+    "fr": "Sélection des données",
+    "it": "Selezione dei dati"
+  },
+  "export.current": {
+    "de": "Aktuelle Ansicht",
+    "en": "Current view",
+    "fr": "Vue actuelle",
+    "it": "Vista attuale"
+  },
+  "export.selected": {
+    "de": "Nur ausgewähltes Objekt",
+    "en": "Selected property only",
+    "fr": "Bien sélectionné uniquement",
+    "it": "Solo l’immobile selezionato"
+  },
+  "export.format.choose": {
+    "de": "Format wählen",
+    "en": "Choose format",
+    "fr": "Choisir le format",
+    "it": "Scegliere il formato"
+  },
+  "export.web": {
+    "de": "Web-Anwendungen",
+    "en": "Web applications",
+    "fr": "Applications web",
+    "it": "Applicazioni web"
+  },
+  "export.excel": {
+    "de": "Excel / Tabellen",
+    "en": "Excel / spreadsheets",
+    "fr": "Excel / tableurs",
+    "it": "Excel / fogli di calcolo"
+  },
+  "export.gis": {
+    "de": "GIS-Software",
+    "en": "GIS software",
+    "fr": "Logiciels SIG",
+    "it": "Software GIS"
+  },
+  "export.options": {
+    "de": "Optionen",
+    "en": "Options",
+    "fr": "Options",
+    "it": "Opzioni"
+  },
+  "export.coords": {
+    "de": "Koordinaten einschliessen",
+    "en": "Include coordinates",
+    "fr": "Inclure les coordonnées",
+    "it": "Includere le coordinate"
+  },
+  "export.attributes": {
+    "de": "Alle Attribute exportieren",
+    "en": "Export all attributes",
+    "fr": "Exporter tous les attributs",
+    "it": "Esportare tutti gli attributi"
+  },
+  "export.parcels": {
+    "de": "Parzellen einschliessen",
+    "en": "Include parcels",
+    "fr": "Inclure les parcelles",
+    "it": "Includere le particelle"
+  },
+  "export.submit": {
+    "de": "Exportieren",
+    "en": "Export",
+    "fr": "Exporter",
+    "it": "Esportare"
+  },
+  "info.panel.label": {
+    "de": "Objektinformation",
+    "en": "Property information",
+    "fr": "Informations sur le bien",
+    "it": "Informazioni sull’immobile"
+  },
+  "info.zoom.object": {
+    "de": "Zum Objekt zoomen",
+    "en": "Zoom to property",
+    "fr": "Zoomer sur le bien",
+    "it": "Zoom sull’immobile"
+  },
+  "info.share.object": {
+    "de": "Objekt teilen",
+    "en": "Share property",
+    "fr": "Partager le bien",
+    "it": "Condividere l’immobile"
+  },
+  "map.style.current": {
+    "de": "Aktueller Stil",
+    "en": "Current style",
+    "fr": "Style actuel",
+    "it": "Stile attuale"
+  },
+  "table.columns": {
+    "de": "Spalten",
+    "en": "Columns",
+    "fr": "Colonnes",
+    "it": "Colonne"
+  },
+  "table.column.search": {
+    "de": "Spalte suchen",
+    "en": "Find column",
+    "fr": "Rechercher une colonne",
+    "it": "Cercare una colonna"
+  },
+  "table.filter": {
+    "de": "Alle Spalten filtern",
+    "en": "Filter all columns",
+    "fr": "Filtrer toutes les colonnes",
+    "it": "Filtrare tutte le colonne"
+  },
+  "table.selectAll": {
+    "de": "Alle Zeilen dieser Seite auswählen",
+    "en": "Select all rows on this page",
+    "fr": "Sélectionner toutes les lignes de cette page",
+    "it": "Selezionare tutte le righe di questa pagina"
+  },
+  "table.selectRow": {
+    "de": "Zeile auswählen",
+    "en": "Select row",
+    "fr": "Sélectionner la ligne",
+    "it": "Selezionare la riga"
+  },
+  "field.status": {
+    "de": "Status",
+    "en": "Status",
+    "fr": "Statut",
+    "it": "Stato"
+  },
+  "field.images": {
+    "de": "Bilder",
+    "en": "Images",
+    "fr": "Images",
+    "it": "Immagini"
+  },
+  "image.buildings": {
+    "de": "Gebäudebilder",
+    "en": "Building images",
+    "fr": "Images du bâtiment",
+    "it": "Immagini dell’edificio"
+  },
+  "image.previous": {
+    "de": "Vorheriges Bild",
+    "en": "Previous image",
+    "fr": "Image précédente",
+    "it": "Immagine precedente"
+  },
+  "image.next": {
+    "de": "Nächstes Bild",
+    "en": "Next image",
+    "fr": "Image suivante",
+    "it": "Immagine successiva"
+  },
+  "image.choose": {
+    "de": "Bild auswählen",
+    "en": "Choose image",
+    "fr": "Choisir une image",
+    "it": "Scegliere un’immagine"
+  },
+  "image.number": {
+    "de": "Bild {current} von {total}",
+    "en": "Image {current} of {total}",
+    "fr": "Image {current} sur {total}",
+    "it": "Immagine {current} di {total}"
+  },
+  "detail.section.additional": {
+    "de": "Zusätzliche Informationen",
+    "en": "Additional information",
+    "fr": "Informations complémentaires",
+    "it": "Informazioni aggiuntive"
+  },
+  "field.refurbishment": {
+    "de": "Sanierung",
+    "en": "Refurbishment",
+    "fr": "Rénovation",
+    "it": "Risanamento"
+  },
+  "field.charging": {
+    "de": "Ladestationen für Elektrofahrzeuge",
+    "en": "Electric vehicle charging stations",
+    "fr": "Bornes de recharge pour véhicules électriques",
+    "it": "Stazioni di ricarica per veicoli elettrici"
+  },
+  "field.parking": {
+    "de": "Parkplätze",
+    "en": "Parking spaces",
+    "fr": "Places de stationnement",
+    "it": "Posti auto"
+  },
+  "field.floors": {
+    "de": "Anzahl Geschosse",
+    "en": "Number of floors",
+    "fr": "Nombre d’étages",
+    "it": "Numero di piani"
+  },
+  "field.permit": {
+    "de": "Baubewilligung",
+    "en": "Building permit",
+    "fr": "Permis de construire",
+    "it": "Licenza edilizia"
+  },
+  "detail.section.energy": {
+    "de": "Energiestatistik",
+    "en": "Energy statistics",
+    "fr": "Statistiques énergétiques",
+    "it": "Statistiche energetiche"
+  },
+  "field.energyClass": {
+    "de": "Energieklasse",
+    "en": "Energy class",
+    "fr": "Classe énergétique",
+    "it": "Classe energetica"
+  },
+  "field.heatingGenerator": {
+    "de": "Wärmeerzeuger Heizung",
+    "en": "Heating generator",
+    "fr": "Générateur de chaleur (chauffage)",
+    "it": "Generatore di calore (riscaldamento)"
+  },
+  "field.heatingSource": {
+    "de": "Energie-/Wärmequelle Heizung",
+    "en": "Heating energy source",
+    "fr": "Source d’énergie du chauffage",
+    "it": "Fonte energetica del riscaldamento"
+  },
+  "field.hotWater": {
+    "de": "Wärmeerzeuger Warmwasser",
+    "en": "Hot water generator",
+    "fr": "Générateur de chaleur (eau chaude)",
+    "it": "Generatore di calore (acqua calda)"
+  },
+  "detail.section.master": {
+    "de": "Objekt Stammdaten",
+    "en": "Property master data",
+    "fr": "Données de base du bien",
+    "it": "Dati di base dell’immobile"
+  },
+  "field.buildingName": {
+    "de": "Bezeichnung Objekt",
+    "en": "Property name",
+    "fr": "Désignation du bien",
+    "it": "Denominazione dell’immobile"
+  },
+  "field.parcelName": {
+    "de": "Bezeichnung Grundstück",
+    "en": "Parcel name",
+    "fr": "Désignation de la parcelle",
+    "it": "Denominazione della particella"
+  },
+  "field.buildingId": {
+    "de": "ID Objekt",
+    "en": "Property ID",
+    "fr": "ID du bien",
+    "it": "ID dell’immobile"
+  },
+  "field.parcelId": {
+    "de": "ID Grundstück",
+    "en": "Parcel ID",
+    "fr": "ID de la parcelle",
+    "it": "ID della particella"
+  },
+  "field.egid": {
+    "de": "EGID Objekt (nur Schweiz)",
+    "en": "EGID building (Switzerland only)",
+    "fr": "EGID du bâtiment (Suisse uniquement)",
+    "it": "EGID edificio (solo Svizzera)"
+  },
+  "field.gwrStatus": {
+    "de": "Gebäudestatus (GWR)",
+    "en": "Building status (GWR)",
+    "fr": "Statut du bâtiment (RegBL)",
+    "it": "Stato dell’edificio (REA)"
+  },
+  "field.egrid": {
+    "de": "EGRID Grundstück (nur Schweiz)",
+    "en": "EGRID parcel (Switzerland only)",
+    "fr": "EGRID de la parcelle (Suisse uniquement)",
+    "it": "EGRID particella (solo Svizzera)"
+  },
+  "field.validFrom": {
+    "de": "Gültig von",
+    "en": "Valid from",
+    "fr": "Valable dès le",
+    "it": "Valido dal"
+  },
+  "field.validUntil": {
+    "de": "Gültig bis",
+    "en": "Valid until",
+    "fr": "Valable jusqu’au",
+    "it": "Valido fino al"
+  },
+  "field.unspecified": {
+    "de": "Keine Angabe",
+    "en": "Not specified",
+    "fr": "Non indiqué",
+    "it": "Non indicato"
+  },
+  "field.buildingType1": {
+    "de": "Objektart Bund 1",
+    "en": "Federal property type 1",
+    "fr": "Type de bien de la Confédération 1",
+    "it": "Tipo di immobile della Confederazione 1"
+  },
+  "field.portfolioGroup": {
+    "de": "Teilportfolio Gruppe",
+    "en": "Subportfolio group",
+    "fr": "Groupe de sous-portefeuille",
+    "it": "Gruppo di sottoportafoglio"
+  },
+  "field.buildingType2": {
+    "de": "Objektart Bund 2",
+    "en": "Federal property type 2",
+    "fr": "Type de bien de la Confédération 2",
+    "it": "Tipo di immobile della Confederazione 2"
+  },
+  "field.city": {
+    "de": "Stadt",
+    "en": "City",
+    "fr": "Ville",
+    "it": "Città"
+  },
+  "field.postalCode": {
+    "de": "Postleitzahl",
+    "en": "Postal code",
+    "fr": "Code postal",
+    "it": "Codice postale"
+  },
+  "filter.master": {
+    "de": "Filter Stammdaten",
+    "en": "Master data filters",
+    "fr": "Filtres des données de base",
+    "it": "Filtri dei dati di base"
+  },
+  "field.buildingType": {
+    "de": "Gebäudeart",
+    "en": "Building type",
+    "fr": "Type de bâtiment",
+    "it": "Tipo di edificio"
+  },
+  "field.measurementType": {
+    "de": "Bemessungsart",
+    "en": "Measurement type",
+    "fr": "Type de mesure",
+    "it": "Tipo di misura"
+  },
+  "field.value": {
+    "de": "Wert",
+    "en": "Value",
+    "fr": "Valeur",
+    "it": "Valore"
+  },
+  "field.source": {
+    "de": "Quelle",
+    "en": "Source",
+    "fr": "Source",
+    "it": "Fonte"
+  },
+  "field.standard": {
+    "de": "Standard",
+    "en": "Standard",
+    "fr": "Norme",
+    "it": "Norma"
+  },
+  "field.title": {
+    "de": "Titel",
+    "en": "Title",
+    "fr": "Titre",
+    "it": "Titolo"
+  },
+  "field.format": {
+    "de": "Format",
+    "en": "Format",
+    "fr": "Format",
+    "it": "Formato"
+  },
+  "field.date": {
+    "de": "Datum",
+    "en": "Date",
+    "fr": "Date",
+    "it": "Data"
+  },
+  "field.size": {
+    "de": "Grösse",
+    "en": "Size",
+    "fr": "Taille",
+    "it": "Dimensione"
+  },
+  "field.role": {
+    "de": "Rolle",
+    "en": "Role",
+    "fr": "Rôle",
+    "it": "Ruolo"
+  },
+  "field.organisation": {
+    "de": "Organisation",
+    "en": "Organisation",
+    "fr": "Organisation",
+    "it": "Organizzazione"
+  },
+  "field.phone": {
+    "de": "Telefon",
+    "en": "Phone",
+    "fr": "Téléphone",
+    "it": "Telefono"
+  },
+  "field.email": {
+    "de": "E-Mail",
+    "en": "Email",
+    "fr": "E-mail",
+    "it": "E-mail"
+  },
+  "field.costGroup": {
+    "de": "Kostengruppe",
+    "en": "Cost group",
+    "fr": "Groupe de coûts",
+    "it": "Gruppo di costi"
+  },
+  "field.costType": {
+    "de": "Kostenart",
+    "en": "Cost type",
+    "fr": "Type de coût",
+    "it": "Tipo di costo"
+  },
+  "field.amount": {
+    "de": "Betrag",
+    "en": "Amount",
+    "fr": "Montant",
+    "it": "Importo"
+  },
+  "field.unit": {
+    "de": "Einheit",
+    "en": "Unit",
+    "fr": "Unité",
+    "it": "Unità"
+  },
+  "field.referenceDate": {
+    "de": "Stichtag",
+    "en": "Reference date",
+    "fr": "Date de référence",
+    "it": "Data di riferimento"
+  },
+  "field.contractType": {
+    "de": "Vertragsart",
+    "en": "Contract type",
+    "fr": "Type de contrat",
+    "it": "Tipo di contratto"
+  },
+  "field.contractPartner": {
+    "de": "Vertragspartner",
+    "en": "Contract partner",
+    "fr": "Partenaire contractuel",
+    "it": "Partner contrattuale"
+  },
+  "field.start": {
+    "de": "Beginn",
+    "en": "Start",
+    "fr": "Début",
+    "it": "Inizio"
+  },
+  "field.end": {
+    "de": "Ende",
+    "en": "End",
+    "fr": "Fin",
+    "it": "Fine"
+  },
+  "field.annualAmount": {
+    "de": "Betrag/Jahr",
+    "en": "Amount/year",
+    "fr": "Montant/an",
+    "it": "Importo/anno"
+  },
+  "field.category": {
+    "de": "Kategorie",
+    "en": "Category",
+    "fr": "Catégorie",
+    "it": "Categoria"
+  },
+  "field.manufacturer": {
+    "de": "Hersteller",
+    "en": "Manufacturer",
+    "fr": "Fabricant",
+    "it": "Produttore"
+  },
+  "field.indefinite": {
+    "de": "unbefristet",
+    "en": "Indefinite",
+    "fr": "Durée indéterminée",
+    "it": "A tempo indeterminato"
+  },
+  "field.manual": {
+    "de": "Manuell",
+    "en": "Manual",
+    "fr": "Manuel",
+    "it": "Manuale"
+  },
+  "common.yes": {
+    "de": "Ja",
+    "en": "Yes",
+    "fr": "Oui",
+    "it": "Sì"
+  },
+  "common.no": {
+    "de": "Nein",
+    "en": "No",
+    "fr": "Non",
+    "it": "No"
+  },
+  "miniMap.openGoogle": {
+    "de": "In Google Maps öffnen (neuer Tab)",
+    "en": "Open in Google Maps (new tab)",
+    "fr": "Ouvrir dans Google Maps (nouvel onglet)",
+    "it": "Aprire in Google Maps (nuova scheda)"
+  },
+  "assistant.ask": {
+    "de": "Frage stellen",
+    "en": "Ask a question",
+    "fr": "Poser une question",
+    "it": "Fare una domanda"
+  },
+  "assistant.ai": {
+    "de": "KI",
+    "en": "AI",
+    "fr": "IA",
+    "it": "IA"
+  },
+  "assistant.answer": {
+    "de": "Antwort",
+    "en": "Answer",
+    "fr": "Réponse",
+    "it": "Risposta"
+  },
+  "assistant.note": {
+    "de": "Prototyp: Antwort aus den geladenen Daten, kein Sprachmodell.",
+    "en": "Prototype: answer from loaded data, no language model.",
+    "fr": "Prototype : réponse issue des données chargées, sans modèle de langage.",
+    "it": "Prototipo: risposta dai dati caricati, senza modello linguistico."
+  },
+  "assistant.building.question": {
+    "de": "Wie gross ist die Nettogeschossfläche von «{name}»?",
+    "en": "What is the net floor area of “{name}”?",
+    "fr": "Quelle est la surface de plancher nette de « {name} » ?",
+    "it": "Qual è la superficie netta di piano di «{name}»?"
+  },
+  "assistant.building.answer": {
+    "de": "«{name}» ({place}) hat eine Nettogeschossfläche von {area}. Baujahr {year}, Status «{status}».",
+    "en": "“{name}” ({place}) has a net floor area of {area}. Built in {year}, status “{status}”.",
+    "fr": "« {name} » ({place}) a une surface de plancher nette de {area}. Année de construction : {year}, statut « {status} ».",
+    "it": "«{name}» ({place}) ha una superficie netta di piano di {area}. Anno di costruzione: {year}, stato «{status}»."
+  },
+  "assistant.status.question": {
+    "de": "Welche Objekte sind {status}?",
+    "en": "Which properties are {status}?",
+    "fr": "Quels biens sont {status} ?",
+    "it": "Quali immobili sono {status}?"
+  },
+  "assistant.status.answer": {
+    "de": "Objekte mit Status «{status}»: {count}. {names}.",
+    "en": "Properties with status “{status}”: {count}. {names}.",
+    "fr": "Biens avec le statut « {status} » : {count}. {names}.",
+    "it": "Immobili con stato «{status}»: {count}. {names}."
+  },
+  "assistant.status.none": {
+    "de": "Zurzeit gibt es keine Objekte mit Status «{status}».",
+    "en": "There are currently no properties with status “{status}”.",
+    "fr": "Aucun bien n’a actuellement le statut « {status} ».",
+    "it": "Attualmente non ci sono immobili con stato «{status}»."
+  },
+  "assistant.status.renovation": {
+    "de": "in Renovation",
+    "en": "under renovation",
+    "fr": "en rénovation",
+    "it": "in ristrutturazione"
+  },
+  "assistant.status.planning": {
+    "de": "in Planung",
+    "en": "in planning",
+    "fr": "en planification",
+    "it": "in progettazione"
+  },
+  "assistant.status.inactive": {
+    "de": "ausser Betrieb",
+    "en": "out of operation",
+    "fr": "hors service",
+    "it": "fuori servizio"
+  },
+  "assistant.total.question": {
+    "de": "Wie gross ist die gesamte Nettogeschossfläche des Portfolios?",
+    "en": "What is the total net floor area of the portfolio?",
+    "fr": "Quelle est la surface de plancher nette totale du portefeuille ?",
+    "it": "Qual è la superficie netta di piano totale del portafoglio?"
+  },
+  "assistant.total.answer": {
+    "de": "Das Portfolio umfasst {count} Objekte mit total {area} Nettogeschossfläche. Das grösste Objekt ist «{name}» mit {largestArea}.",
+    "en": "The portfolio contains {count} properties with a total net floor area of {area}. The largest property is “{name}” with {largestArea}.",
+    "fr": "Le portefeuille comprend {count} biens avec une surface de plancher nette totale de {area}. Le plus grand bien est « {name} » avec {largestArea}.",
+    "it": "Il portafoglio comprende {count} immobili con una superficie netta di piano totale di {area}. L’immobile più grande è «{name}» con {largestArea}."
+  },
+  "assistant.oldest.question": {
+    "de": "Welches ist das älteste Objekt im Portfolio?",
+    "en": "Which is the oldest property in the portfolio?",
+    "fr": "Quel est le bien le plus ancien du portefeuille ?",
+    "it": "Qual è l’immobile più antico del portafoglio?"
+  },
+  "assistant.oldest.answer": {
+    "de": "Das älteste Objekt ist «{name}» in {place} mit Baujahr {year}.",
+    "en": "The oldest property is “{name}” in {place}, built in {year}.",
+    "fr": "Le bien le plus ancien est « {name} » à {place}, construit en {year}.",
+    "it": "L’immobile più antico è «{name}» a {place}, costruito nel {year}."
+  },
+  "assistant.place.question": {
+    "de": "Wie viele Objekte gibt es in {place}?",
+    "en": "How many properties are in {place}?",
+    "fr": "Combien de biens se trouvent à {place} ?",
+    "it": "Quanti immobili si trovano a {place}?"
+  },
+  "assistant.place.answer": {
+    "de": "Objekte in {place}: {count}, mit total {area} Nettogeschossfläche. {names}.",
+    "en": "Properties in {place}: {count}, with a total net floor area of {area}. {names}.",
+    "fr": "Biens à {place} : {count}, avec une surface de plancher nette totale de {area}. {names}.",
+    "it": "Immobili a {place}: {count}, con una superficie netta di piano totale di {area}. {names}."
+  },
+  "assistant.unsupported": {
+    "de": "Diese Frage kann der Prototyp noch nicht beantworten. Versuchen Sie einen Ortsnamen, «Portfolio Fläche» oder «ältestes Objekt».",
+    "en": "The prototype cannot answer this question yet. Try a place name, “portfolio area” or “oldest property”.",
+    "fr": "Le prototype ne peut pas encore répondre à cette question. Essayez un nom de lieu, « surface du portefeuille » ou « bien le plus ancien ».",
+    "it": "Il prototipo non può ancora rispondere a questa domanda. Provate un nome di luogo, «superficie portafoglio» o «immobile più antico»."
+  },
+  "layer.buildings.title": {
+    "de": "Gebäude (Bundesamt für Bauten und Logistik BBL)",
+    "en": "Buildings (Federal Office for Buildings and Logistics FOBL)",
+    "fr": "Bâtiments (Office fédéral des constructions et de la logistique OFCL)",
+    "it": "Edifici (Ufficio federale delle costruzioni e della logistica UFCL)"
+  },
+  "layer.buildings.description": {
+    "de": "Interner Datensatz des BBL-Immobilienportfolios. Enthält sämtliche Gebäude mit Standort, Nutzungstyp, Eigentumsverhältnissen, Baujahr und weiteren Attributen.",
+    "en": "Internal FOBL property portfolio dataset. Contains buildings with location, use, ownership, construction year and other attributes.",
+    "fr": "Jeu de données interne du portefeuille immobilier de l’OFCL. Contient les bâtiments avec leur localisation, utilisation, propriété, année de construction et autres attributs.",
+    "it": "Dati interni del portafoglio immobiliare dell’UFCL. Contengono gli edifici con ubicazione, utilizzo, proprietà, anno di costruzione e altri attributi."
+  },
+  "layer.buildings.source": {
+    "de": "BBL Immobilienportfolio",
+    "en": "FOBL property portfolio",
+    "fr": "Portefeuille immobilier de l’OFCL",
+    "it": "Portafoglio immobiliare dell’UFCL"
+  },
+  "layer.parcels.title": {
+    "de": "Grundstücke (Bundesamt für Bauten und Logistik BBL)",
+    "en": "Parcels (Federal Office for Buildings and Logistics FOBL)",
+    "fr": "Parcelles (Office fédéral des constructions et de la logistique OFCL)",
+    "it": "Particelle (Ufficio federale delle costruzioni e della logistica UFCL)"
+  },
+  "layer.parcels.description": {
+    "de": "Interner Datensatz der BBL-Parzellen. Enthält Grundstücksinformationen mit Flächenangaben, Nutzungszonen und Eigentumsverhältnissen.",
+    "en": "Internal FOBL parcel dataset. Contains parcel areas, land use zones and ownership information.",
+    "fr": "Jeu de données interne des parcelles de l’OFCL. Contient les surfaces, zones d’affectation et informations de propriété.",
+    "it": "Dati interni delle particelle dell’UFCL. Contengono superfici, zone di utilizzo e informazioni sulla proprietà."
+  },
+  "layer.parcels.source": {
+    "de": "BBL Parzellen",
+    "en": "FOBL parcels",
+    "fr": "Parcelles de l’OFCL",
+    "it": "Particelle dell’UFCL"
+  },
+  "export.shapefile.title": {
+    "de": "Shapefile-Export",
+    "en": "Shapefile export",
+    "fr": "Export Shapefile",
+    "it": "Esportazione Shapefile"
+  },
+  "export.shapefile.message": {
+    "de": "GeoJSON wird erstellt. Konvertieren Sie mit QGIS oder ogr2ogr zu Shapefile.",
+    "en": "A GeoJSON file will be created. Convert it to Shapefile using QGIS or ogr2ogr.",
+    "fr": "Un fichier GeoJSON sera créé. Convertissez-le en Shapefile avec QGIS ou ogr2ogr.",
+    "it": "Verrà creato un file GeoJSON. Convertitelo in Shapefile con QGIS o ogr2ogr."
+  },
+  "preview.original": {
+    "de": "Original öffnen / herunterladen",
+    "en": "Open / download original",
+    "fr": "Ouvrir / télécharger l’original",
+    "it": "Aprire / scaricare l’originale"
+  },
+  "preview.unavailable": {
+    "de": "Keine Originaldatei verfügbar",
+    "en": "No original file available",
+    "fr": "Aucun fichier original disponible",
+    "it": "Nessun file originale disponibile"
+  },
+  "preview.upload": {
+    "de": "Hochladen – im Demo deaktiviert",
+    "en": "Upload – disabled in demo",
+    "fr": "Importer – désactivé dans la démo",
+    "it": "Caricare – disabilitato nella demo"
+  },
+  "preview.info.show": {
+    "de": "Informationen anzeigen",
+    "en": "Show information",
+    "fr": "Afficher les informations",
+    "it": "Mostrare le informazioni"
+  },
+  "preview.info.hide": {
+    "de": "Informationen ausblenden",
+    "en": "Hide information",
+    "fr": "Masquer les informations",
+    "it": "Nascondere le informazioni"
+  },
+  "preview.close": {
+    "de": "Vorschau schliessen",
+    "en": "Close preview",
+    "fr": "Fermer l’aperçu",
+    "it": "Chiudere l’anteprima"
+  },
+  "preview.switch": {
+    "de": "Vorschau wechseln",
+    "en": "Switch preview",
+    "fr": "Changer d’aperçu",
+    "it": "Cambiare anteprima"
+  },
+  "preview.previous": {
+    "de": "Vorheriges Dokument",
+    "en": "Previous document",
+    "fr": "Document précédent",
+    "it": "Documento precedente"
+  },
+  "preview.next": {
+    "de": "Nächstes Dokument",
+    "en": "Next document",
+    "fr": "Document suivant",
+    "it": "Documento successivo"
+  },
+  "preview.zoom.out": {
+    "de": "Verkleinern",
+    "en": "Zoom out",
+    "fr": "Réduire",
+    "it": "Ridurre"
+  },
+  "preview.zoom.in": {
+    "de": "Vergrössern",
+    "en": "Zoom in",
+    "fr": "Agrandir",
+    "it": "Ingrandire"
+  },
+  "preview.zoom.fit": {
+    "de": "Einpassen",
+    "en": "Fit to view",
+    "fr": "Ajuster à la vue",
+    "it": "Adattare alla vista"
+  },
+  "preview.demo": {
+    "de": "Demovorschau",
+    "en": "Demo preview",
+    "fr": "Aperçu de démonstration",
+    "it": "Anteprima dimostrativa"
+  },
+  "preview.image": {
+    "de": "Gebäudebild",
+    "en": "Building image",
+    "fr": "Image du bâtiment",
+    "it": "Immagine dell’edificio"
+  },
+  "preview.image.download": {
+    "de": "Bild herunterladen",
+    "en": "Download image",
+    "fr": "Télécharger l’image",
+    "it": "Scaricare l’immagine"
+  },
+  "preview.image.count": {
+    "de": "Bild {current} / {total}",
+    "en": "Image {current} / {total}",
+    "fr": "Image {current} / {total}",
+    "it": "Immagine {current} / {total}"
+  },
+  "preview.document.count": {
+    "de": "Dokument {current} / {total}",
+    "en": "Document {current} / {total}",
+    "fr": "Document {current} / {total}",
+    "it": "Documento {current} / {total}"
+  },
+  "preview.page.count": {
+    "de": "Seite {current} / {total}",
+    "en": "Page {current} / {total}",
+    "fr": "Page {current} / {total}",
+    "it": "Pagina {current} / {total}"
+  },
+  "preview.description": {
+    "de": "Beschreibung",
+    "en": "Description",
+    "fr": "Description",
+    "it": "Descrizione"
+  },
+  "preview.view": {
+    "de": "Ansicht",
+    "en": "View",
+    "fr": "Vue",
+    "it": "Vista"
+  },
+  "preview.interior": {
+    "de": "Innenaufnahme",
+    "en": "Interior",
+    "fr": "Vue intérieure",
+    "it": "Vista interna"
+  },
+  "preview.exterior": {
+    "de": "Aussenaufnahme",
+    "en": "Exterior",
+    "fr": "Vue extérieure",
+    "it": "Vista esterna"
+  },
+  "preview.kbob": {
+    "de": "KBOB-Typ",
+    "en": "KBOB type",
+    "fr": "Type KBOB",
+    "it": "Tipo KBOB"
+  },
+  "preview.property": {
+    "de": "Objekt",
+    "en": "Property",
+    "fr": "Bien",
+    "it": "Immobile"
+  },
+  "preview.asOf": {
+    "de": "Stand",
+    "en": "As of",
+    "fr": "État au",
+    "it": "Stato al"
+  },
+  "preview.version": {
+    "de": "Version",
+    "en": "Version",
+    "fr": "Version",
+    "it": "Versione"
+  },
+  "preview.fileSize": {
+    "de": "Dateigrösse",
+    "en": "File size",
+    "fr": "Taille du fichier",
+    "it": "Dimensione del file"
+  },
+  "preview.content": {
+    "de": "Inhalt der Vorschau",
+    "en": "Preview content",
+    "fr": "Contenu de l’aperçu",
+    "it": "Contenuto dell’anteprima"
+  },
+  "preview.generated": {
+    "de": "Generierter Beispielinhalt, keine Originaldatei",
+    "en": "Generated example content, not the original file",
+    "fr": "Contenu d’exemple généré, pas le fichier original",
+    "it": "Contenuto di esempio generato, non il file originale"
+  },
+  "preview.openOriginal": {
+    "de": "Original öffnen",
+    "en": "Open original",
+    "fr": "Ouvrir l’original",
+    "it": "Aprire l’originale"
+  },
+  "export.count.one": {
+    "de": "{count} Objekt wird exportiert",
+    "en": "{count} property will be exported",
+    "fr": "{count} bien sera exporté",
+    "it": "{count} immobile verrà esportato"
+  },
+  "export.count.other": {
+    "de": "{count} Objekte werden exportiert",
+    "en": "{count} properties will be exported",
+    "fr": "{count} biens seront exportés",
+    "it": "{count} immobili verranno esportati"
+  },
+  "image.carousel": {
+    "de": "Bildkarussell",
+    "en": "Image carousel",
+    "fr": "Carrousel d’images",
+    "it": "Carosello di immagini"
   }
 }

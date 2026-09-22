@@ -2,6 +2,7 @@
 // Shared image/document shell: controls, modal lifecycle, metadata, zoom and navigation.
 import { escapeHtml, formatDate } from './utils.js';
 import { documentPages } from './document-pages.js';
+import { t } from './i18n.js';
 import { initSwipe } from './gestures.js';
 
 let activeClose = null;
@@ -11,7 +12,7 @@ export function closeMediaPreview(restoreFocus = true) {
 
 function icon(name) { return '<span class="material-symbols-outlined" aria-hidden="true">' + name + '</span>'; }
 function button(action, label, symbol) {
-  return '<button type="button" class="icon-btn icon-btn--md icon-btn--on-dark media-preview-button" data-doc-action="' + action + '" title="' + label + '" aria-label="' + label + '">' + icon(symbol) + '</button>';
+  return '<button type="button" class="icon-btn icon-btn--md icon-btn--on-dark media-preview-button" data-doc-action="' + action + '" title="' + escapeHtml(label) + '" aria-label="' + escapeHtml(label) + '">' + icon(symbol) + '</button>';
 }
 export function documentSourceUrl(doc) {
   try { const url = new URL(doc.url); return url.protocol === 'https:' ? url.href : null; } catch { return null; }
@@ -56,16 +57,16 @@ function openMediaPreview(doc, siblings, context, isImage) {
   root.setAttribute('aria-labelledby', 'media-preview-title');
   root.innerHTML = '<header class="media-preview-bar"><div class="media-preview-heading"><h2 id="media-preview-title"></h2>' +
     '<p><span id="media-preview-caption"></span><span id="media-preview-counter" aria-live="polite"></span></p></div><div class="media-preview-actions">' +
-    '<a class="icon-btn icon-btn--md icon-btn--on-dark media-preview-button" data-doc-source target="_blank" rel="noopener noreferrer" title="Original öffnen / herunterladen" aria-label="Original öffnen / herunterladen">' + icon('download') + '</a>' +
-    button('download-unavailable', 'Keine Originaldatei verfügbar', 'download') + button('upload', 'Hochladen – im Demo deaktiviert', 'upload') +
-    button('metadata', 'Informationen anzeigen', 'info') + button('close', 'Vorschau schliessen', 'close') + '</div></header>' +
-    '<div class="media-preview-body"><div class="media-preview-canvas"><div class="media-preview-stage" tabindex="0" aria-label="Vorschau"><div class="media-preview-pages"></div></div>' +
-    '<nav class="media-preview-navigation" aria-label="Vorschau wechseln">' + button('previous', 'Vorheriges Dokument', 'chevron_left') +
-    button('next', 'Nächstes Dokument', 'chevron_right') + '</nav></div>' +
-    '<aside class="media-preview-meta" id="media-preview-meta" hidden><h3>Metadaten</h3><dl></dl></aside></div>' +
+    '<a class="icon-btn icon-btn--md icon-btn--on-dark media-preview-button" data-doc-source target="_blank" rel="noopener noreferrer" title="' + escapeHtml(t('preview.original')) + '" aria-label="' + escapeHtml(t('preview.original')) + '">' + icon('download') + '</a>' +
+    button('download-unavailable', t('preview.unavailable'), 'download') + button('upload', t('preview.upload'), 'upload') +
+    button('metadata', t('preview.info.show'), 'info') + button('close', t('preview.close'), 'close') + '</div></header>' +
+    '<div class="media-preview-body"><div class="media-preview-canvas"><div class="media-preview-stage" tabindex="0" aria-label="' + escapeHtml(t('action.preview')) + '"><div class="media-preview-pages"></div></div>' +
+    '<nav class="media-preview-navigation" aria-label="' + escapeHtml(t('preview.switch')) + '">' + button('previous', t('preview.previous'), 'chevron_left') +
+    button('next', t('preview.next'), 'chevron_right') + '</nav></div>' +
+    '<aside class="media-preview-meta" id="media-preview-meta" hidden><h3>' + escapeHtml(t('swisstopo.info.metadata')) + '</h3><dl></dl></aside></div>' +
     '<footer class="media-preview-controls"><div class="media-preview-zoom" role="group" aria-label="Zoom">' +
-    button('zoom-out', 'Verkleinern', 'remove') + '<button type="button" class="icon-btn icon-btn--on-dark media-preview-button media-preview-readout" data-doc-action="fit" title="Einpassen" aria-label="Einpassen"></button>' +
-    button('zoom-in', 'Vergrössern', 'add') + '</div><span id="media-preview-page" aria-live="polite"></span></footer>';
+    button('zoom-out', t('preview.zoom.out'), 'remove') + '<button type="button" class="icon-btn icon-btn--on-dark media-preview-button media-preview-readout" data-doc-action="fit" title="' + escapeHtml(t('preview.zoom.fit')) + '" aria-label="' + escapeHtml(t('preview.zoom.fit')) + '"></button>' +
+    button('zoom-in', t('preview.zoom.in'), 'add') + '</div><span id="media-preview-page" aria-live="polite"></span></footer>';
   document.body.appendChild(root);
   const stage = root.querySelector('.media-preview-stage');
   const pages = root.querySelector('.media-preview-pages');
@@ -74,7 +75,7 @@ function openMediaPreview(doc, siblings, context, isImage) {
   root.querySelector('[data-doc-action="upload"]').disabled = true;
   root.querySelector('[data-doc-action="download-unavailable"]').disabled = true;
   if (isImage) {
-    for (const [action, text] of [['previous', 'Vorheriges Bild'], ['next', 'Nächstes Bild']]) {
+    for (const [action, text] of [['previous', t('image.previous')], ['next', t('image.next')]]) {
       const control = root.querySelector('[data-doc-action="' + action + '"]');
       control.title = text; control.setAttribute('aria-label', text);
     }
@@ -83,12 +84,12 @@ function openMediaPreview(doc, siblings, context, isImage) {
   metaButton.setAttribute('aria-expanded', 'false');
 
   function updatePage() {
-    if (isImage) { root.querySelector('#media-preview-page').textContent = 'Bild ' + (index + 1) + ' / ' + list.length; return; }
+    if (isImage) { root.querySelector('#media-preview-page').textContent = t('preview.image.count', { current: index + 1, total: list.length }); return; }
     const position = stage.getBoundingClientRect().top + stage.clientHeight / 2;
     let page = 1;
     const sheets = Array.from(pages.children);
     sheets.forEach((sheet, i) => { if (sheet.getBoundingClientRect().top < position) page = i + 1; });
-    root.querySelector('#media-preview-page').textContent = 'Seite ' + page + ' / ' + sheets.length;
+    root.querySelector('#media-preview-page').textContent = t('preview.page.count', { current: page, total: sheets.length });
   }
   function applyZoom(value) {
     zoom = Math.max(minimumZoom, Math.min(3, value));
@@ -110,22 +111,22 @@ function openMediaPreview(doc, siblings, context, isImage) {
     title.textContent = current.name;
     title.title = current.name;
     const caption = root.querySelector('#media-preview-caption');
-    caption.textContent = isImage ? current.photo.credit || 'Gebäudebild' : 'Demovorschau';
+    caption.textContent = isImage ? current.photo.credit || t('preview.image') : t('preview.demo');
     caption.title = caption.textContent;
-    root.querySelector('#media-preview-counter').textContent = ' · ' + (isImage ? 'Bild ' : 'Dokument ') + (index + 1) + ' / ' + list.length;
+    root.querySelector('#media-preview-counter').textContent = ' · ' + t(isImage ? 'preview.image.count' : 'preview.document.count', { current: index + 1, total: list.length });
     const source = root.querySelector('[data-doc-source]');
     const url = isImage ? current.url : documentSourceUrl(current);
     source.hidden = !url;
     root.querySelector('[data-doc-action="download-unavailable"]').hidden = !!url;
     if (url) source.href = url; else source.removeAttribute('href');
-    if (isImage) { source.download = current.url.split('/').pop(); source.title = 'Bild herunterladen'; source.setAttribute('aria-label', source.title); }
-    const facts = isImage ? [['Beschreibung', current.name], ['Copyright', current.photo.credit], ['Ansicht', current.photo.scene === 'interior' ? 'Innenaufnahme' : 'Aussenaufnahme']] :
-      [['Titel', current.name], ['KBOB-Typ', [current.documentTypeCode, current.type].filter(Boolean).join(' · ')],
-      ['Objekt', context.buildingName], ['Format', current.fileFormat], ['Stand', formatDate(current.validFrom)],
-      ['Version', current.version], ['Dateigrösse', current.fileSize], ['Inhalt der Vorschau', 'Generierter Beispielinhalt, keine Originaldatei']];
+    if (isImage) { source.download = current.url.split('/').pop(); source.title = t('preview.image.download'); source.setAttribute('aria-label', source.title); }
+    const facts = isImage ? [[t('preview.description'), current.name], ['Copyright', current.photo.credit], [t('preview.view'), current.photo.scene === 'interior' ? t('preview.interior') : t('preview.exterior')]] :
+      [[t('field.title'), current.name], [t('preview.kbob'), [current.documentTypeCode, current.type].filter(Boolean).join(' · ')],
+      [t('preview.property'), context.buildingName], [t('field.format'), current.fileFormat], [t('preview.asOf'), formatDate(current.validFrom)],
+      [t('preview.version'), current.version], [t('preview.fileSize'), current.fileSize], [t('preview.content'), t('preview.generated')]];
     meta.querySelector('dl').innerHTML = facts.map(([label, value]) => '<dt>' + escapeHtml(label) + '</dt><dd>' + escapeHtml(value || '—') + '</dd>').join('');
     const original = documentSourceUrl({ url: isImage ? current.photo.originalUrl : current.url });
-    if (original) meta.querySelector('dl').insertAdjacentHTML('beforeend', '<dt>Quelle</dt><dd><a href="' + escapeHtml(original) + '" target="_blank" rel="noopener noreferrer">Original öffnen</a></dd>');
+    if (original) meta.querySelector('dl').insertAdjacentHTML('beforeend', '<dt>' + escapeHtml(t('field.source')) + '</dt><dd><a href="' + escapeHtml(original) + '" target="_blank" rel="noopener noreferrer">' + escapeHtml(t('preview.openOriginal')) + '</a></dd>');
     if (isImage) {
       pages.innerHTML = '<div class="media-image-frame"><img id="lightbox-image" class="media-preview-image" alt="' + escapeHtml(current.name) + '" draggable="false"></div>';
       const img = pages.querySelector('img');
@@ -137,7 +138,7 @@ function openMediaPreview(doc, siblings, context, isImage) {
     stage.scrollTop = 0; stage.scrollLeft = 0;
     root.querySelectorAll('.media-preview-navigation button').forEach(el => { el.disabled = list.length < 2; });
     fit();
-    if (!isImage) root.querySelector('#media-preview-page').textContent = 'Seite 1 / ' + pages.children.length;
+    if (!isImage) root.querySelector('#media-preview-page').textContent = t('preview.page.count', { current: 1, total: pages.children.length });
   }
   function go(delta) {
     if (list.length < 2) return;
@@ -189,7 +190,7 @@ function openMediaPreview(doc, siblings, context, isImage) {
       metadataOpen = !metadataOpen;
       meta.hidden = !metadataOpen;
       metaButton.setAttribute('aria-expanded', String(metadataOpen));
-      metaButton.setAttribute('aria-label', metadataOpen ? 'Informationen ausblenden' : 'Informationen anzeigen');
+      metaButton.setAttribute('aria-label', metadataOpen ? t('preview.info.hide') : t('preview.info.show'));
       metaButton.title = metaButton.getAttribute('aria-label');
       onResize();
     }

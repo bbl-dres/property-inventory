@@ -217,6 +217,5 @@ function boot() {
 
 initGlobalErrorHandlers();
 
-// Load translations first (German UI; the JS-rendered texts come from the same file as prototype-simple),
-// then initialise everything. Any error on the way is made visible.
-initI18n('data/i18n.json', { persistLang: false }).then(boot).catch(fatalBootError);
+// Load the local DE/FR/IT/EN dictionary before rendering; ?lang= records the selected language.
+initI18n('data/i18n.json').then(boot).catch(fatalBootError);

@@ -20,7 +20,7 @@ export function restorePanelFocus(panel) {
 export function preparePanelOpen(panelId) {
   lastOpened = panelId;
   // Two drawers on a small screen leave no usable content area.
-  if (window.innerWidth < 1280) {
+  if (!isMobileLayout() && window.innerWidth < 1280) {
     const other = panelId === 'tree-panel' ? 'filter-panel' : 'tree-panel';
     if (document.getElementById(other)?.classList.contains('open'))
       document.getElementById(other === 'tree-panel' ? 'tree-close-btn' : 'drawer-close-btn')?.click();
@@ -39,13 +39,14 @@ function clearSheet() {
 
 function update() {
   frame = null;
-  if (window.innerWidth < 1280 && document.querySelector('#tree-panel.open') && document.querySelector('#filter-panel.open')) {
+  if (!isMobileLayout() && window.innerWidth < 1280 && document.querySelector('#tree-panel.open') && document.querySelector('#filter-panel.open')) {
     document.getElementById(lastOpened === 'tree-panel' ? 'drawer-close-btn' : 'tree-close-btn')?.click();
   }
   const header = document.getElementById('header');
   const bottom = Math.max(0, Math.min(window.innerHeight, header?.getBoundingClientRect().bottom || 0));
   document.documentElement.style.setProperty('--detail-panel-top', bottom + 'px');
-  const next = isMobileLayout() ? document.querySelector('#filter-panel.open, #tree-panel.open') : null;
+  // The phone tree lives inside the tools accordion; only filters use a separate sheet.
+  const next = isMobileLayout() ? document.querySelector('#filter-panel.open') : null;
   if (next === sheet) return;
   clearSheet();
   if (!next) return;
