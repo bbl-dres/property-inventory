@@ -256,16 +256,16 @@
     "it": "Errore nella creazione del PDF: {message}"
   },
   "banner.prototype.title": {
-    "de": "Prototyp",
-    "en": "Prototype",
-    "fr": "Prototype",
-    "it": "Prototipo"
+    "de": "Prototyp,",
+    "en": "Prototype,",
+    "fr": "Prototype,",
+    "it": "Prototipo,"
   },
   "banner.prototype.text": {
-    "de": "Reale Standorte und Fotos, ergänzt um fiktive Betriebsdaten. Nur zu Demonstrationszwecken.",
-    "en": "Real locations and photos with fictional operational data. For demonstration only.",
-    "fr": "Sites et photos réels, avec des données de gestion fictives. Démonstration uniquement.",
-    "it": "Sedi e foto reali, con dati operativi fittizi. Solo a scopo dimostrativo."
+    "de": "fiktive oder öffentlich verfügbare Inhalte — nur zur Demonstration",
+    "en": "fictional or publicly available content — for demonstration only",
+    "fr": "contenus fictifs ou accessibles au public — uniquement à des fins de démonstration",
+    "it": "contenuti fittizi o pubblicamente disponibili — solo a scopo dimostrativo"
   },
   "map.loading": {
     "de": "Karte wird geladen…",
@@ -2566,10 +2566,10 @@
     "it": "Copertura del suolo"
   },
   "banner.prototype.short": {
-    "de": "Reale Standorte · Demodaten",
-    "en": "Real locations · Demo data",
-    "fr": "Sites réels · Données fictives",
-    "it": "Sedi reali · Dati dimostrativi"
+    "de": "nur zur Demonstration",
+    "en": "for demonstration only",
+    "fr": "démonstration uniquement",
+    "it": "solo a scopo dimostrativo"
   },
   "filter.apply": {
     "de": "{count} Objekte anzeigen",
