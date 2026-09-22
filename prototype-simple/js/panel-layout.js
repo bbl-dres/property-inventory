@@ -43,7 +43,7 @@ function update() {
     document.getElementById(lastOpened === 'tree-panel' ? 'drawer-close-btn' : 'tree-close-btn')?.click();
   }
   const header = document.getElementById('header');
-  const bottom = Math.max(0, Math.min(innerHeight, header?.getBoundingClientRect().bottom || 0));
+  const bottom = Math.max(0, Math.min(window.innerHeight, header?.getBoundingClientRect().bottom || 0));
   document.documentElement.style.setProperty('--detail-panel-top', bottom + 'px');
   const next = isMobileLayout() ? document.querySelector('#filter-panel.open, #tree-panel.open') : null;
   if (next === sheet) return;

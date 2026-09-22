@@ -53,6 +53,11 @@ prototype is available at the path shown above.
 The two inventory prototypes use a [shared modular table component](docs/TABLE-COMPONENT.md)
 with consistent column-width presets, compact dates, and internal row IDs.
 
+See the [responsive design review](docs/DESIGN-REVIEW-2026-09-22.md),
+[shared image/document preview](docs/DOCUMENT-PREVIEW.md),
+[reference-data findings](docs/REFERENCE-DATA.md), and
+[parcel label positioning](docs/PARCEL-LABELS.md) for the latest implementation notes.
+
 The Simple and Tabs datasets cover 14 real sites in nine countries, with 42 actual
 interior/exterior photos and verified EGID/EGRID/parcel polygons for five Swiss
 sites. See the [research, sources, assumptions and rebuild scripts](scripts/portfolio/README.md).

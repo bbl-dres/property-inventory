@@ -60,3 +60,11 @@ copyright and are excluded from the repository MIT licence. Each image has
 public availability does not assert an open licence.
 
 The body font is the system font stack; the icon font above is the only web font.
+
+## Parcel label positioning
+
+[polylabel 2.0.1](https://github.com/mapbox/polylabel/tree/v2.0.1) and
+[tinyqueue 3.0.0](https://github.com/mourner/tinyqueue/tree/v3.0.0), ISC-licensed,
+are bundled in `vendor/polylabel/` and `vendor/tinyqueue/`, including licences.
+Only polylabel's import path is changed for offline browser modules.
+Reproduce the downloads with `python scripts/vendor-parcel-labels.py` at the repository root.

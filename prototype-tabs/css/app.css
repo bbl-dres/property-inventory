@@ -527,3 +527,10 @@ body.detail-active .header-detail {
     display: none !important;
   }
 }
+
+/* Compact toolbar actions in narrow cards, retaining their accessible names. */
+@container (max-width: 600px) {
+  .detail-table-actions { gap: var(--space-1); }
+  .detail-table-actions .btn-action { width: 44px; min-width: 44px; height: 44px; padding: 0; justify-content: center; }
+  .detail-table-actions .action-label { display: none; }
+}

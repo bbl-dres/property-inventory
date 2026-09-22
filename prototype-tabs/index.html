@@ -464,16 +464,12 @@
                                 <div class="active-layer-item" data-internal-layer="buildings">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" title="Gebäude ein-/ausblenden">
                                     <span class="active-layer-title">Gebäude</span>
-                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="buildings" title="Layer-Informationen">
-                                        <span class="material-symbols-outlined">info</span>
-                                    </button>
+                                    <span data-internal-layer-info="buildings"></span>
                                 </div>
                                 <div class="active-layer-item" data-internal-layer="parcels">
                                     <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden">
                                     <span class="active-layer-title">Grundstücke</span>
-                                    <button class="icon-btn icon-btn--xs active-layer-info" data-action="showInternalLayerInfo" data-layer-key="parcels" title="Layer-Informationen">
-                                        <span class="material-symbols-outlined">info</span>
-                                    </button>
+                                    <span data-internal-layer-info="parcels"></span>
                                 </div>
                             </div>
                             <div class="layer-group">
@@ -766,11 +762,6 @@
                 </div>
             </div>
             <div class="api-docs-content">
-                <div class="api-docs-header">
-                    <h1>BBL GIS IMMO API</h1>
-                    <p class="api-docs-subtitle">Interaktive API-Dokumentation (OpenAPI 3.0). Diese API ist ein Platzhalter für zukünftige Entwicklung – die dokumentierten Endpunkte sind nicht erreichbar.</p>
-                    <p class="api-docs-links"><a href="data/swagger.json" target="_blank" rel="noopener">OpenAPI-Spezifikation (swagger.json)</a></p>
-                </div>
                 <!-- Swagger UI (vendor/swagger-ui) is loaded on first open and renders data/swagger.json here -->
                 <div id="swagger-ui" class="swagger-ui-host">
                     <div class="loading-row"><span class="spinner inline-spinner" aria-hidden="true"></span><span>API-Dokumentation wird geladen…</span></div>
@@ -928,7 +919,7 @@
                             <div class="detail-section-title">Adresse</div>
                             <div class="detail-section-content">
                                 <div class="mini-map-wrapper">
-                                    <div class="mini-map-header" id="mini-map-address">–</div>
+                                    <a class="mini-map-header" id="mini-map-address" target="_blank" rel="noopener noreferrer">–</a>
                                     <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
                                 </div>
                                 <!-- data-label: shown as row labels when the column is too narrow for 7 table columns (container query) -->
@@ -980,18 +971,12 @@
                                     <input type="text" id="measurements-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action measurements-action" disabled>
-                                        <span class="material-symbols-outlined">open_in_new</span>
-                                        Anzeigen
-                                    </button>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action measurements-action" disabled aria-label="Anzeigen" title="Anzeigen">
+                                        <span class="material-symbols-outlined">open_in_new</span><span class="action-label">Anzeigen</span></button>
                                     <button class="btn-back" id="btn-add-measurement">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
@@ -1040,18 +1025,12 @@
                                     <input type="text" id="costs-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action costs-action" disabled>
-                                        <span class="material-symbols-outlined">description</span>
-                                        Details
-                                    </button>
+                                    <button class="btn-tertiary btn-action costs-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action costs-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action costs-action" disabled aria-label="Details" title="Details">
+                                        <span class="material-symbols-outlined">description</span><span class="action-label">Details</span></button>
                                     <button class="btn-back" id="btn-add-cost">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
@@ -1100,18 +1079,12 @@
                                     <input type="text" id="contracts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action contracts-action" disabled>
-                                        <span class="material-symbols-outlined">description</span>
-                                        Details
-                                    </button>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action contracts-action" disabled aria-label="Details" title="Details">
+                                        <span class="material-symbols-outlined">description</span><span class="action-label">Details</span></button>
                                     <button class="btn-back" id="btn-add-contract">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
@@ -1160,18 +1133,12 @@
                                     <input type="text" id="assets-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action assets-action" disabled>
-                                        <span class="material-symbols-outlined">info</span>
-                                        Details
-                                    </button>
+                                    <button class="btn-tertiary btn-action assets-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action assets-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action assets-action" disabled aria-label="Details" title="Details">
+                                        <span class="material-symbols-outlined">info</span><span class="action-label">Details</span></button>
                                     <button class="btn-back" id="btn-add-asset">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
@@ -1220,22 +1187,14 @@
                                     <input type="text" id="documents-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action documents-action" id="btn-preview-document" disabled>
-                                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
-                                        Vorschau
-                                    </button>
-                                    <button class="btn-tertiary btn-action documents-action" disabled>
-                                        <span class="material-symbols-outlined">download</span>
-                                        Herunterladen
-                                    </button>
+                                    <button class="btn-tertiary btn-action documents-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action documents-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action documents-action" id="btn-preview-document" disabled aria-label="Vorschau" title="Vorschau">
+                                        <span class="material-symbols-outlined" aria-hidden="true">visibility</span><span class="action-label">Vorschau</span></button>
+                                    <button class="btn-tertiary btn-action documents-action" disabled aria-label="Herunterladen" title="Herunterladen">
+                                        <span class="material-symbols-outlined">download</span><span class="action-label">Herunterladen</span></button>
                                     <button class="btn-back" id="btn-add-document">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen
@@ -1284,18 +1243,12 @@
                                     <input type="text" id="contacts-filter" placeholder="Alle Spalten filtern">
                                 </div>
                                 <div class="toolbar-actions detail-table-actions">
-                                    <button class="btn-tertiary btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">edit</span>
-                                        Bearbeiten
-                                    </button>
-                                    <button class="btn-tertiary btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">delete</span>
-                                        Löschen
-                                    </button>
-                                    <button class="btn-tertiary btn-action contacts-action" disabled>
-                                        <span class="material-symbols-outlined">mail</span>
-                                        Kontaktieren
-                                    </button>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled aria-label="Bearbeiten" title="Bearbeiten">
+                                        <span class="material-symbols-outlined">edit</span><span class="action-label">Bearbeiten</span></button>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled aria-label="Löschen" title="Löschen">
+                                        <span class="material-symbols-outlined">delete</span><span class="action-label">Löschen</span></button>
+                                    <button class="btn-tertiary btn-action contacts-action" disabled aria-label="Kontaktieren" title="Kontaktieren">
+                                        <span class="material-symbols-outlined">mail</span><span class="action-label">Kontaktieren</span></button>
                                     <button class="btn-back" id="btn-add-contact">
                                         <span class="material-symbols-outlined">add</span>
                                         Hinzufügen

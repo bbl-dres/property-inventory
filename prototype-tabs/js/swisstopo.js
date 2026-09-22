@@ -1,3 +1,4 @@
+import { layerInfoButton, renderInternalInfoButtons } from './layer-info-button.js';
 // swisstopo integration (shared): external WMS layers of the Geokatalog, feature identification,
 // layer info modal, catalog tree and the "Thema wechseln" topic grid of map.geo.admin.ch.
 // Needs the markup ids: external-layers-list, layer-info-modal, layer-info-content,
@@ -31,6 +32,7 @@ const SWISSTOPO_ATTRIBUTION = '&copy; <a href="https://www.swisstopo.admin.ch">s
 export function initSwisstopo(options) {
   map = options.map;
   internalLayers = options.internalLayers || {};
+  renderInternalInfoButtons();
   initLayerInfoModal();
   initTopicSwitch();
 }
@@ -162,9 +164,7 @@ function layerItemHtml(layer, itemClass, titleClass, infoClass) {
     '</button>' +
     '<input type="checkbox" class="active-layer-checkbox" ' + (visible ? 'checked' : '') + ' data-action="toggleLayerVisibility" data-layer-id="' + id + '">' +
     '<span class="' + titleClass + '">' + escapeHtml(layer.title) + '</span>' +
-    '<button type="button" class="' + infoClass + '" data-action="showLayerInfo" data-layer-id="' + id + '" title="' + escapeHtml(t('accordion.layers.info')) + '">' +
-      '<span class="material-symbols-outlined">info</span>' +
-    '</button>' +
+    layerInfoButton({ layerId: layer.id, mobile: infoClass === 'mobile-layer-info' }) +
   '</div>';
 }
 
@@ -720,6 +720,7 @@ function initTopicSwitch() {
   }
   // The header label, the grid and the layer lists are rendered from JS: refresh them after a language change
   onLangChange(function() {
+    renderInternalInfoButtons();
     updateTopicHeader();
     if (topicList && topicModal && topicModal.classList.contains('show')) renderTopicGrid();
     renderActiveLayersList();

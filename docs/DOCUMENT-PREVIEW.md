@@ -27,6 +27,9 @@ Entry points:
 Document titles have no underline. Checkboxes remain independent of row activation;
 Enter/Space on a focused row opens the preview and closing restores focus.
 
+Previous/next arrows sit at the left and right sides of the preview canvas in
+both viewers, inset 32–64 px from the edges to clear the document scrollbar;
+zoom and the page/image counter remain in the shared footer.
 The viewer supports previous/next documents, scrollable pages, page count, zoom,
 fit to width, a metadata panel and the original public-source link where available.
 Keyboard: Left/Right changes document, +/− zooms, 0 fits, Escape closes, and Tab stays

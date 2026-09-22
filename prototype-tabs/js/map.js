@@ -1,3 +1,4 @@
+import { addParcelLabels, buildingMapLabel, MAP_LABEL_MIN_ZOOM, addBuildingLabelObstacles, updateBuildingLabelObstacles } from './parcel-labels.js';
 // Map: data layers (buildings, parcels), selection and the restore after a basemap change.
 // Map creation, controls, style switcher, context menu and measure tool are common modules.
 
@@ -158,8 +159,10 @@ function addBuildingLayers(map) {
     paint: { 'circle-radius': 24, 'circle-color': 'transparent', 'circle-stroke-width': 2, 'circle-stroke-color': '#c00', 'circle-stroke-opacity': 0.4 }
   });
   map.addLayer({
-    id: 'buildings-labels', type: 'symbol', source: 'buildings', filter: ['!', ['has', 'point_count']], minzoom: 16,
-    layout: { 'text-field': ['get', 'buildingId'], 'text-font': ['Open Sans Bold', 'Noto Sans Bold'], 'text-size': 13, 'text-anchor': 'bottom', 'text-offset': [0, -1.5], 'text-allow-overlap': false },
+    id: 'buildings-labels', type: 'symbol', source: 'buildings', filter: ['!', ['has', 'point_count']], minzoom: MAP_LABEL_MIN_ZOOM,
+    layout: { 'text-field': buildingMapLabel('buildingId'), 'text-font': ['Open Sans Bold', 'Noto Sans Bold'], 'text-size': 13,
+      'text-max-width': 1000, 'text-variable-anchor': ['bottom', 'top', 'left', 'right'], 'text-radial-offset': 1.5,
+      'text-justify': 'auto', 'text-allow-overlap': false, 'text-ignore-placement': false, 'text-padding': 4 },
     paint: { 'text-color': '#1a1a1a', 'text-halo-color': '#ffffff', 'text-halo-width': 2 }
   });
 }
@@ -171,6 +174,9 @@ export function addMapLayers() {
 
   if (state.parcelData && state.parcelData.features) addParcelLayers(map);
   addBuildingLayers(map);
+  if (state.parcelData?.features) addParcelLabels(map, state.parcelData, 'parcelId');
+  addBuildingLabelObstacles(map);
+  updateBuildingLabelObstacles(map, 'buildingId', state.selectedBuildingId);
 
   // The "Interne Karten" checkboxes are the source of truth for visibility (also after a basemap change)
   applyInternalLayerVisibility();
@@ -296,7 +302,7 @@ function restoreSelectionFromUrl() {
 // ===== SELECTION =====
 
 function infoRow(labelKey, valueHtml, secondary) {
-  return '<div class="info-row' + (secondary ? ' info-row-secondary' : '') + '"><span class="info-label">' + t(labelKey) + '</span><span class="info-value">' + valueHtml + '</span></div>';
+  return '<div class="info-row' + (secondary ? ' info-row-secondary' : '') + '"><span class="info-label" title="' + escapeHtml(t(labelKey)) + '">' + escapeHtml(t(labelKey)) + '</span><span class="info-value">' + valueHtml + '</span></div>';
 }
 
 function showInfoPanel(titleKey, bodyHtml, previewImageUrl) {
@@ -390,6 +396,7 @@ export function selectParcel(parcelId, flyToParcel) {
 // Selection highlight layers (cluster-aware filters for buildings)
 export function updateSelectedBuilding() {
   const map = state.map;
+  updateBuildingLabelObstacles(map, 'buildingId', state.selectedBuildingId);
   const id = state.selectedBuildingId || '';
   ['buildings-selected', 'buildings-selected-pulse'].forEach(function(layer) {
     if (map && map.getLayer(layer)) map.setFilter(layer, ['all', ['!', ['has', 'point_count']], ['==', ['get', 'buildingId'], id]]);

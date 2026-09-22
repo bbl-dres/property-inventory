@@ -20,7 +20,7 @@ import { zoomToFilteredPoints, resetFilters, toggleSmartDrawer } from './filters
 import { getShareUrl, updateShareLink, updateExportCount } from './export.js';
 import { clearSelection, zoomToSelection, setInternalLayerVisibility } from './map.js';
 import { flyHome } from './map-controls.js';
-import { clearSearch } from './search.js';
+import { clearSearch, dismissSearchResults } from './search.js';
 
 // ===== URL HELPERS =====
 
@@ -64,6 +64,7 @@ const VIEWS = ['map', 'gallery', 'detail', 'api-docs'];
 
 // Show one view container, sync the toggle buttons and the page scroll mode
 function setActiveView(view) {
+  dismissSearchResults();
   VIEWS.forEach(function(v) {
     const el = document.getElementById(v + '-view');
     if (el) el.classList.toggle('active', v === view);
@@ -207,6 +208,14 @@ export function activateTab(tab) {
 
 function initDetailTabs() {
   document.querySelectorAll('.detail-tab').forEach(function(tab) {
+    tab.id = 'detail-tab-' + tab.dataset.tab;
+    const panel = document.querySelector('.tab-content[data-content="' + tab.dataset.tab + '"]');
+    if (panel) {
+      panel.id = 'detail-panel-' + tab.dataset.tab;
+      panel.setAttribute('role', 'tabpanel');
+      panel.setAttribute('aria-labelledby', tab.id);
+      tab.setAttribute('aria-controls', panel.id);
+    }
     function select() {
       if (tab.classList.contains('disabled')) return;
       activateTab(tab.dataset.tab);

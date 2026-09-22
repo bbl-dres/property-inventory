@@ -10,10 +10,44 @@ const toastIcons = {
   info: 'info'
 };
 
+let positionInitialized = false;
+let positionFrame;
+function updateToastPosition() {
+  if (positionFrame) cancelAnimationFrame(positionFrame);
+  positionFrame = requestAnimationFrame(function() {
+    positionFrame = null;
+    const container = document.getElementById('toast-container');
+    const toggle = document.getElementById('tbl-toggle');
+    if (!container) return;
+    if (toggle?.getClientRects().length) {
+      const rect = toggle.getBoundingClientRect();
+      const scale = container.offsetWidth ? container.getBoundingClientRect().width / container.offsetWidth : 1;
+      container.style.setProperty('--toast-bottom', (window.innerHeight - rect.top + 16) / scale + 'px');
+    } else container.style.removeProperty('--toast-bottom');
+  });
+}
+
+function initToastPosition() {
+  if (!positionInitialized) {
+    positionInitialized = true;
+    window.addEventListener('resize', updateToastPosition);
+    // The map shrinks while the table opens/resizes; the toggle moves with it.
+    if (window.ResizeObserver) {
+      const observer = new ResizeObserver(updateToastPosition);
+      ['map', 'tbl-toggle', 'footer'].forEach(id => {
+        const element = document.getElementById(id);
+        if (element) observer.observe(element);
+      });
+    }
+  }
+  updateToastPosition();
+}
+
 // options: { type, title, message, duration (0 = sticky), actions: [{ label, primary, onClick }] }
 export function showToast(options) {
   const container = document.getElementById('toast-container');
   if (!container) return null;
+  initToastPosition();
 
   const type = options.type || 'info';
   const title = options.title || '';

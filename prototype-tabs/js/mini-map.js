@@ -44,6 +44,15 @@ function add3DBuildings() {
 }
 
 export function showMiniMap(coords) {
+  const address = document.getElementById('mini-map-address');
+  if (address) {
+    address.removeAttribute('href');
+    if (Array.isArray(coords) && coords.length >= 2 && coords.every(Number.isFinite)) {
+      address.href = 'https://www.google.com/maps/search/?api=1&query=' + encodeURIComponent(coords[1] + ',' + coords[0]);
+      address.title = 'In Google Maps öffnen (neuer Tab)';
+      address.setAttribute('aria-label', address.textContent + ' – ' + address.title);
+    }
+  }
   pendingCoords = coords;
   if (!document.getElementById('mini-map')) return;
 

@@ -38,6 +38,7 @@ export function createMap(containerId, styleUrl, styleOptions = {}) {
   const view = readMapViewFromUrl();
   const map = new maplibregl.Map({
     container: containerId,
+    crossSourceCollisions: true, // Parcel and building labels share collision detection.
     style: styleOptions.transformStyle ? null : styleUrl,
     center: view.center,
     zoom: view.zoom,

@@ -6,11 +6,19 @@ const { launchBrowser, openPage, navigate, evaluate, BASE, VIEWPORTS } = require
 const out = path.resolve('visual-out/document-preview');
 const settled = 'await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)));';
 const inspect = `(() => {
-  const root = document.getElementById('document-preview');
+  const root = document.querySelector('.media-preview');
   const stage = root.querySelector('.media-preview-stage');
   const rect = root.getBoundingClientRect();
   const scale = Number(root.querySelector('.media-preview-pages').style.getPropertyValue('--document-scale'));
+  const canvas = root.querySelector('.media-preview-canvas').getBoundingClientRect();
+  const previous = root.querySelector('[data-doc-action="previous"]').getBoundingClientRect();
+  const next = root.querySelector('[data-doc-action="next"]').getBoundingClientRect();
   return {
+    sideArrows: previous.x - canvas.x >= 32 && previous.x - canvas.x <= 65 &&
+      canvas.right - next.right >= 32 && canvas.right - next.right <= 65 &&
+      canvas.right - next.right - (stage.offsetWidth - stage.clientWidth) >= 12 &&
+      Math.abs(previous.y + previous.height / 2 - (canvas.y + canvas.height / 2)) < 1 &&
+      !root.querySelector('.media-preview-controls [data-doc-action="previous"]'),
     fullscreen: rect.x === 0 && rect.y === 0 && Math.abs(rect.width - innerWidth) < 1 && Math.abs(rect.height - innerHeight) < 1,
     overflow: document.documentElement.scrollWidth > innerWidth,
     fits: stage.scrollWidth <= stage.clientWidth + 1,
@@ -28,6 +36,7 @@ const inspect = `(() => {
 })()`;
 
 function checkLayout(result, label) {
+  assert.equal(result.sideArrows, true, label + ' navigation at canvas sides');
   assert.equal(result.fullscreen, true, label + ' fullscreen');
   assert.equal(result.overflow, false, label + ' page overflow');
   assert.equal(result.fits, true, label + ' fit-to-width overflow');
@@ -73,7 +82,7 @@ function checkLayout(result, label) {
           assert.deepEqual(await run(`({ open: !!document.getElementById('document-preview'), focus: document.activeElement.dataset.previewDocument || document.activeElement.outerHTML.slice(0, 200), inert: document.getElementById('header').inert })`), { open: false, focus: id, inert: false }, name + ' close/focus cleanup');
         }
         // Check every building's titles and page content, including the longest names.
-        if (viewport === 'desktop') {
+        if (viewport === 'desktop' && !process.argv.includes('--quick')) {
           const results = await run(`(async () => {
             const { state } = await import('./js/state.js');
             const { openDocumentPreview, closeDocumentPreview } = await import('./js/document-preview.js');
@@ -97,6 +106,15 @@ function checkLayout(result, label) {
           })()`);
           for (const { name, result } of results) { checkLayout(result, prototype + '/' + name); checked++; }
         }
+        await run(`(async()=>{const ui=await import('./js/ui.js');ui.activateTab('overview');document.getElementById('carousel-image').click();await new Promise(r=>setTimeout(r,250));})()`);
+        checkLayout(await run(inspect), prototype + '/' + viewport + '/image'); checked++;
+        await run(`(async()=>{document.querySelector('[data-doc-action="metadata"]').click();${settled}})()`);
+        checkLayout(await run(inspect), prototype + '/' + viewport + '/image-info');
+        const imageShot = await cdp.send('Page.captureScreenshot', {format:'png'},page.sessionId);
+        fs.writeFileSync(path.join(out,prototype+'--'+viewport+'--image.png'),Buffer.from(imageShot.data,'base64'));
+        await run(`(async()=>{document.querySelector('[data-doc-action="next"]').click();await new Promise(r=>setTimeout(r,250));})()`);
+        checkLayout(await run(inspect), prototype + '/' + viewport + '/image-next');
+        await run(`document.querySelector('[data-doc-action="close"]').click()`);
         assert.deepEqual(page.errors, [], prototype + '/' + viewport + ' browser errors');
         await cdp.send('Target.closeTarget', { targetId: page.targetId });
       }

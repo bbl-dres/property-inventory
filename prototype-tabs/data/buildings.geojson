@@ -32,6 +32,11 @@
         "extensionData": {
           "numberOfFloors": 6,
           "responsiblePerson": "Mira Waldner (Demo)",
+          "sapId": {
+            "companyCode": "1080",
+            "economicUnit": "4840",
+            "objectNumber": "AF"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "008",
@@ -421,6 +426,11 @@
         "extensionData": {
           "numberOfFloors": 5,
           "responsiblePerson": "Levin Feldmann (Demo)",
+          "sapId": {
+            "companyCode": "1080",
+            "economicUnit": "5210",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -576,6 +586,11 @@
         "extensionData": {
           "numberOfFloors": 7,
           "responsiblePerson": "Nora Birchler (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9002",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "001",
@@ -980,6 +995,11 @@
         "extensionData": {
           "numberOfFloors": 7,
           "responsiblePerson": "Elio Sommer (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9003",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "001",
@@ -1844,6 +1864,11 @@
         "extensionData": {
           "numberOfFloors": 9,
           "responsiblePerson": "Jana Linden (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9004",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "001",
@@ -2287,6 +2312,11 @@
         "extensionData": {
           "numberOfFloors": 4,
           "responsiblePerson": "Silvan Tanner (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9005",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "006",
@@ -3350,6 +3380,11 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Lina Moser (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9006",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -3503,6 +3538,11 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Noé Auer (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9007",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -3656,6 +3696,11 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Alina Keller (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9008",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -3817,6 +3862,11 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Milo Bachmann (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9009",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -3978,6 +4028,11 @@
         "extensionData": {
           "numberOfFloors": 3,
           "responsiblePerson": "Lea Vogt (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9010",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -4140,6 +4195,11 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Jonas Steiner (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9011",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -4302,6 +4362,11 @@
         "extensionData": {
           "numberOfFloors": 1,
           "responsiblePerson": "Sina Berger (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9012",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Eigentum",
             "building.portfolio": "002",
@@ -4463,6 +4528,11 @@
         "extensionData": {
           "numberOfFloors": 2,
           "responsiblePerson": "Flurin Frei (Demo)",
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9013",
+            "objectNumber": "AA"
+          },
           "referenceCodes": {
             "building.ownership": "Anmiete",
             "building.portfolio": "002",

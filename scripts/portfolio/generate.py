@@ -321,6 +321,7 @@ def main():
                                 'costs':[c for c in entities['costs'] if bid in c['buildingIds']]})
         simple.append(feature(simple_props,coords))
         ext = dict(numberOfFloors=s['aboveGroundFloors']+s['belowGroundFloors'],responsiblePerson=building_contacts[0]['name'],
+            sapId=dict(companyCode=book,economicUnit=site,objectNumber=obj),
             referenceCodes=reference_codes,gwrStatus=simple_props['gwr_stat'],rentalModel=None,
             egid=b['egid'],egrid=b.get('egrid'),portfolio=portfolio,portfolioGroup=portfolio_group,heatingGenerator=heating,
             heatingSource='Elektrizität (Demo)' if diplomatic else 'Fernwärme (Demo)',hotWater='Zentrale Versorgung (Demo)',
@@ -350,7 +351,8 @@ def main():
             fid=None,fid_src=None,objectid=index+1,etl_ts=STAMP,provenance=geom_prov),polygon))
         tabs_parcels.append(feature(dict(parcelId=pid,buildingId=bid,plotNumber=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',egrid=b.get('egrid'),name=plotname,
             municipality=cadastre['municipality'] if cadastre else b['city'],canton=b['region'] if b['country']=='CH' else None,area=m['GSF'],landUseZone=None,
-            ownershipType=ownership,provenance=geom_prov),polygon))
+            ownershipType=ownership,provenance=geom_prov,
+            extensionData=dict(sapId=dict(companyCode=book,economicUnit=site,objectNumber='01'))),polygon))
         for j,(kind,area,g) in enumerate(covers):
             landcovers.append(feature(dict(bbl_id=pid,geb_id=bid if kind=='Gebaeude' else None,av_stat='Demo',av_egid=None,av_egrid=None,
                 av_type=kind,lc_area=round(area,2),wgs84_lat=b['coordinates'][1],wgs84_lon=b['coordinates'][0],

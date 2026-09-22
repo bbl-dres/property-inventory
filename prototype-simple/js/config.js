@@ -47,9 +47,9 @@ export const landCoverColors = {
 
 // Map layer ids of each internal dataset (shown/hidden together by the "Interne Karten" toggles)
 export const internalLayerIds = {
-  buildings: ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels'],
+  buildings: ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'buildings-label-obstacles'],
   landcovers: ['landcovers-fill', 'landcovers-outline', 'landcovers-highlight', 'landcovers-selected', 'landcovers-selected-outline'],
-  parcels: ['parcels-fill', 'parcels-outline', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline']
+  parcels: ['parcels-fill', 'parcels-outline', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline', 'parcels-labels']
 };
 
 function legendHtml(items) {

@@ -27,6 +27,13 @@
           "buildingId": "1080/4840/AF",
           "retrievedAt": "2026-09-22",
           "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "1080",
+            "economicUnit": "4840",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -255,6 +262,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "1080/5210/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "1080",
+            "economicUnit": "5210",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -308,6 +322,13 @@
           "buildingId": "9900/9002/AA",
           "retrievedAt": "2026-09-22",
           "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9002",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -557,6 +578,13 @@
           "buildingId": "9900/9003/AA",
           "retrievedAt": "2026-09-22",
           "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9003",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -1266,6 +1294,13 @@
           "buildingId": "9900/9004/AA",
           "retrievedAt": "2026-09-22",
           "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9004",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -1555,6 +1590,13 @@
           "buildingId": "9900/9005/AA",
           "retrievedAt": "2026-09-22",
           "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9005",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2459,6 +2501,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9006/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9006",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2507,6 +2556,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9007/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9007",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2555,6 +2611,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9008/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9008",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2603,6 +2666,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9009/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9009",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2651,6 +2721,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9010/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9010",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2699,6 +2776,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9011/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9011",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2747,6 +2831,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9012/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9012",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {
@@ -2795,6 +2886,13 @@
           "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
           "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
           "buildingId": "9900/9013/AA"
+        },
+        "extensionData": {
+          "sapId": {
+            "companyCode": "9900",
+            "economicUnit": "9013",
+            "objectNumber": "01"
+          }
         }
       },
       "geometry": {

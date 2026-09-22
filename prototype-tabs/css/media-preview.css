@@ -18,7 +18,7 @@
 .media-preview [hidden] { display: none !important; }
 .media-preview-body { display: flex; flex: 1; min-height: 0; }
 .media-preview-canvas { position: relative; display: flex; flex: 1; min-width: 0; min-height: 0; }
-.media-preview-navigation { position: absolute; inset-inline: var(--space-3); top: 50%; transform: translateY(-50%); justify-content: space-between; pointer-events: none; }
+.media-preview-navigation { position: absolute; inset-inline: clamp(var(--space-8), 4vw, var(--space-16)); top: 50%; transform: translateY(-50%); justify-content: space-between; pointer-events: none; }
 .media-preview-navigation .media-preview-button { pointer-events: auto; width: var(--control-lg); height: var(--control-lg); border-radius: var(--radius-full); background: var(--scrim-strong); border: 1px solid var(--on-dark-divider); }
 .media-preview-stage { flex: 1; min-width: 0; overflow: auto; overscroll-behavior: contain; }
 .media-preview-pages { --document-scale: 1; display: flex; flex-direction: column; align-items: center; gap: 24px; width: max-content; min-width: 100%; padding: 24px; box-sizing: border-box; }

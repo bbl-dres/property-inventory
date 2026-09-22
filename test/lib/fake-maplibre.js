@@ -32,6 +32,7 @@ class FakeMap extends Evented {
     super();
     this.options = options || {};
     this._sources = {};
+    this._images = {};
     this._layers = [];
     this._loaded = false;
     const center = this.options.center || [0, 0];
@@ -76,6 +77,8 @@ class FakeMap extends Evented {
     }, source);
   }
   getSource(id) { return this._sources[id]; }
+  hasImage(id) { return !!this._images[id]; }
+  addImage(id, image) { this._images[id] = image; }
   removeSource(id) { delete this._sources[id]; }
 
   addLayer(layer, beforeId) {
@@ -101,6 +104,7 @@ class FakeMap extends Evented {
   setStyle(style) {
     this.calls.setStyle.push(style);
     this._sources = {};
+    this._images = {};
     this._layers = [];
     const self = this;
     setTimeout(() => { self.fire('style.load'); self.fire('idle'); }, 0);

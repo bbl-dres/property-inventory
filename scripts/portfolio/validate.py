@@ -79,6 +79,13 @@ def main():
     for simple,tab,src,parcel,tabparcel in zip(a,b,source,ap,bp):
         p,q= simple['properties'],tab['properties']
         bid=p['bbl_id']
+        assert bid == '/'.join([p['bbl_buch'],p['bbl_we'],p['bbl_obj']])
+        assert q['extensionData']['sapId'] == dict(companyCode=p['bbl_buch'],economicUnit=p['bbl_we'],objectNumber=p['bbl_obj'])
+        pp,pq=parcel['properties'],tabparcel['properties']
+        assert pp['bbl_id'] == pq['parcelId'] == '/'.join([pp['bbl_buch'],pp['bbl_we'],pp['bbl_obj']])
+        assert pq['extensionData']['sapId'] == dict(companyCode=pp['bbl_buch'],economicUnit=pp['bbl_we'],objectNumber=pp['bbl_obj'])
+        assert len(p['bbl_obj']) == 2 and p['bbl_obj'].isalpha()
+        assert len(pp['bbl_obj']) == 2 and pp['bbl_obj'].isdigit()
         assert p['demoRelatedRecords']['costs']==[c for c in entities['costs'] if bid in c['buildingIds']]
         assert q['buildingId']==bid and p['bbl_bez']==q['name']==src['name']
         assert simple['geometry']==tab['geometry']

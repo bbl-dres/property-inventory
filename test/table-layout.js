@@ -19,6 +19,10 @@ const inspect = `(() => {
       return content && getComputedStyle(content).whiteSpace === 'nowrap' && getComputedStyle(content).textOverflow === 'ellipsis' && !content.querySelector('br') && content.offsetHeight < 30;
     }),
     fullHints: cells.every(td => td.title === td.textContent.replace(/\\s+/g, ' ').trim()),
+    centeredCheckboxes: Array.from(table.querySelectorAll('.col-checkbox input')).every(input => {
+      const box = input.getBoundingClientRect(), cell = input.closest('th,td').getBoundingClientRect();
+      return Math.abs(box.y + box.height / 2 - cell.y - cell.height / 2) < 1.1;
+    }),
     documentNote: table.textContent.includes('Demo · nur Registereintrag'),
     columns: Array.from(table.querySelectorAll('thead th')).filter(th => getComputedStyle(th).display !== 'none').map(th => ({
       key: th.dataset.sort, role: th.dataset.width, width: th.offsetWidth
@@ -48,6 +52,7 @@ const inspect = `(() => {
         assert.equal(result.spacer, true, viewport + '/' + tab + ' presentation spacer missing');
         assert.equal(result.singleLine, true, viewport + '/' + tab + ' multiline cell');
         assert.equal(result.fullHints, true, viewport + '/' + tab + ' incomplete hover hint');
+        assert.equal(result.centeredCheckboxes, true, viewport + '/' + tab + ' checkbox vertical alignment');
         assert.equal(result.documentNote, false, 'removed document note');
         if (viewport === 'phone-14') assert.equal(result.canScroll, true, tab + ' mobile scrolling');
         const widths = { date:136, amount:168, number:152, code:136, year:104, status:144, phone:176 };

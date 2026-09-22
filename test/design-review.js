@@ -34,6 +34,9 @@ const inspect = `(() => {
         await run(`(async()=>{window.reviewUI=await import('./js/ui.js');window.reviewTree=await import('./js/location-tree.js');window.reviewFilter=await import('./js/filters.js');})()`);
         const states = [
           ['map',''],
+          ['map-tree',"reviewTree.toggleTreePanel(true);"],
+          ['map-both',"reviewFilter.toggleSmartDrawer(true);"],
+          ['map-close',"reviewTree.toggleTreePanel(false);reviewFilter.toggleSmartDrawer(false);"],
           ['gallery',"reviewUI.switchView('gallery');"],
           ['gallery-filter',"reviewFilter.toggleSmartDrawer(true);"],
           ['detail',"reviewUI.showDetailView('9900/9005/AA');"],
@@ -45,12 +48,22 @@ const inspect = `(() => {
           ['documents',proto==='prototype-tabs'?"reviewUI.activateTab('documents');":"reviewUI.activateTab('overview');"],
           ['tree-wide',"reviewUI.activateTab('overview');document.documentElement.style.setProperty('--tree-panel-width','600px');reviewTree.toggleTreePanel(true);"],
           ['search',"reviewTree.toggleTreePanel(false);reviewUI.switchView('map');const i=document.getElementById('search-input');i.value='Bern';i.dispatchEvent(new Event('input',{bubbles:true}));"],
+          ['api-docs',"reviewUI.switchView('api-docs');"],
         ];
         for(const [name,setup] of states) {
           await run(`(async()=>{${setup}${settle}})()`);
           const result=await run(inspect); const label=proto+'--'+vp+'--'+name;
           results.push({label,...result});
-          if(['detail-tree','detail-both','tree-wide','documents','search'].includes(name)) {
+          if(name==='detail-tree'&&result.mobile) {
+            const focusCheck = await run(`(() => {
+              const tree=document.getElementById('tree-panel');
+              const good=tree.contains(document.activeElement)&&tree.getAttribute('aria-modal')==='true'&&document.getElementById('header').inert&&document.body.style.overflow==='hidden';
+              document.activeElement.dispatchEvent(new KeyboardEvent('keydown',{key:'Tab',shiftKey:true,bubbles:true,cancelable:true}));
+              return good&&tree.contains(document.activeElement);
+            })()`);
+            if(!focusCheck) throw new Error(label+' phone sheet focus/semantics');
+          }
+          if(['detail-tree','detail-both','tree-wide','documents','search','api-docs'].includes(name)) {
             const {data}=await cdp.send('Page.captureScreenshot',{format:'jpeg',quality:75},page.sessionId);
             fs.writeFileSync(path.join(out,label+'.jpg'),Buffer.from(data,'base64'));
           }
@@ -61,7 +74,7 @@ const inspect = `(() => {
     }
     fs.writeFileSync(path.join(out,'review.json'),JSON.stringify(results,null,2));
     const failures=results.filter(r=>r.overflow||r.contentOffscreen||r.detailFilterInvalid||r.treeOffscreen||r.drawerOffscreen||Math.abs(r.treeGap)>2||r.errors?.length);
-    console.log(JSON.stringify(failures.map(r=>({label:r.label,overflow:r.overflow,treeGap:r.treeGap,treeOffscreen:r.treeOffscreen,drawerOffscreen:r.drawerOffscreen,errors:r.errors})),null,2));
+    console.log(JSON.stringify(failures,null,2));
     console.log(results.length+' states recorded; '+failures.length+' flagged');
     if(process.argv.includes('--check')&&failures.length)process.exitCode=1;
   } finally {proc.kill();}

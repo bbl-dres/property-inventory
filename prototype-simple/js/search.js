@@ -77,6 +77,12 @@ let searchResults = null;
 let searchClearBtn = null;
 let searchSpinner = null;
 
+let cancelSearchForNavigation = () => {};
+export function dismissSearchResults() {
+  cancelSearchForNavigation();
+  hideResults();
+}
+
 function hideResults() {
   if (searchResults) searchResults.classList.remove('active');
 }
@@ -167,6 +173,12 @@ export function initSearch() {
       searchAbortController = null;
     }
   }
+
+  cancelSearchForNavigation = function() {
+    clearTimeout(searchDebounceTimer);
+    cancelPendingSearch();
+    setSpinner(false);
+  };
 
   function showSearchHistory() {
     const history = getSearchHistory();

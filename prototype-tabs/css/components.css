@@ -1629,6 +1629,7 @@
 
 .info-row {
   display: flex;
+  gap: var(--space-3);
   padding: var(--space-2) 0;
   font-size: var(--text-sm);
 }
@@ -1636,11 +1637,19 @@
 .info-label {
   color: var(--grey-600);
   width: 120px;
+  max-width: 40%;
+  min-width: 0;
   flex-shrink: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .info-value {
   color: var(--grey-900);
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .info-footer {
@@ -2644,6 +2653,7 @@
 .data-table tbody tr:hover td { background: var(--grey-50); }
 .data-table tbody tr.selected td { background: var(--status-planning-bg); }
 .data-table .col-checkbox { text-align: center; padding-inline: var(--space-2); }
+.data-table .col-checkbox input[type="checkbox"] { display: block; margin: 0 auto; }
 .data-table .table-spacer { padding: 0; cursor: default; }
 .data-table [data-width="number"],
 .data-table [data-width="amount"],
@@ -3064,24 +3074,6 @@
   box-sizing: border-box;
 }
 
-.api-docs-header h1 {
-  font-size: var(--text-xl);
-  font-weight: var(--font-semibold);
-  color: var(--grey-900);
-  margin: 0 0 var(--space-2) 0;
-}
-
-.api-docs-subtitle {
-  font-size: var(--text-sm);
-  color: var(--grey-500);
-  margin: 0 0 var(--space-6) 0;
-}
-
-.api-docs-links a {
-  color: var(--interactive-blue);
-  font-size: var(--text-sm);
-}
-
 
 /* Swagger UI inside the app: no outer box, tighter spacing, app colours for links */
 .swagger-ui-host .swagger-ui .information-container,
@@ -3468,7 +3460,7 @@ body.detail-active #detail-view {
 /* ===== TOAST NOTIFICATIONS ===== */
 .toast-container {
   position: fixed;
-  bottom: 60px;
+  bottom: max(var(--toast-bottom, calc(var(--footer-height) + var(--space-4))), calc(var(--space-4) + env(safe-area-inset-bottom, 0px)));
   left: 50%;
   transform: translateX(-50%);
   z-index: var(--z-toast); /* above modals, drawers and the loading overlay */
@@ -4987,3 +4979,9 @@ body.detail-active #detail-view {
     overflow: visible;
   }
 }
+
+/* Disabled portfolio filters stay visible in detail mode. */
+.header-btn:disabled { opacity: var(--opacity-disabled); cursor: default; background: var(--white); }
+.mini-map-header { text-decoration: none; overflow-wrap: anywhere; }
+.mini-map-header[href]:hover { color: var(--interactive-blue); text-decoration: underline; }
+.mini-map-header:focus-visible { outline: 2px solid var(--interactive-blue); outline-offset: -2px; }
