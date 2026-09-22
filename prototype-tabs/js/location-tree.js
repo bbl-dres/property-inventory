@@ -21,7 +21,7 @@ import { preparePanelOpen, restorePanelFocus } from './panel-layout.js';
 
 import { state } from './state.js';
 import { escapeHtml, isMobileLayout, storageGet, storageSet } from './utils.js';
-import { t } from './i18n.js';
+import { t, onLangChange } from './i18n.js';
 import { onEscape } from './keys.js';
 import { closePhoneMenu } from './tools-panel.js';
 import { openAccordion } from './accordion.js';
@@ -542,6 +542,7 @@ export function initLocationTree(a) {
     prefetchTreeCountries();
   });
   window.addEventListener('resize', placeTree);
+  onLangChange(renderLocationTree);
 
   onEscape(function() {
     if (isMobileLayout() || !panel.classList.contains('open')) return false;

@@ -149,7 +149,7 @@ function emptyStateHtml() {
     '<span class="material-symbols-outlined">search_off</span>' +
     '<div class="empty-state-title">' + t('empty.title') + '</div>' +
     '<div class="empty-state-description">' + t('empty.description') + '</div>' +
-    '<div class="empty-state-action"><button type="button" class="btn-secondary" data-action="resetAllFilters">' + t('empty.reset') + '</button></div>' +
+    '<div class="empty-state-action"><button type="button" class="btn-secondary" data-action="resetAllFilters"><span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>' + t('empty.reset') + '</button></div>' +
     '</div>';
 }
 

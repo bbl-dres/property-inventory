@@ -9,6 +9,31 @@ const out = path.resolve(process.argv[2] || 'tmp/mobile-tree-layout');
   fs.mkdirSync(out, { recursive: true });
   const { proc, cdp } = await launchBrowser();
   const results = [];
+  const inspectReset = `(() => {
+    const button = document.getElementById('map-reset-filters');
+    const map = document.getElementById('map').getBoundingClientRect();
+    const rect = button.getBoundingClientRect();
+    const busy = document.getElementById('map-busy');
+    const busyShown = busy.classList.contains('show');
+    busy.classList.add('show');
+    const busyRect = busy.getBoundingClientRect();
+    if (!busyShown) busy.classList.remove('show');
+    const nav = document.querySelector('#map .maplibregl-ctrl-top-right')?.getBoundingClientRect();
+    const text = [...button.querySelectorAll('[data-i18n]')].find(el => getComputedStyle(el).display !== 'none');
+    return { visible: !button.hidden && rect.width > 0,
+      centered: Math.abs((rect.left + rect.right) / 2 - (map.left + map.right) / 2) < 2,
+      contained: rect.left >= map.left && rect.right <= map.right && rect.bottom <= map.bottom,
+      touchTarget: rect.height >= 44,
+      textFits: text.scrollWidth <= text.clientWidth + 1,
+      belowLoading: busyRect.top >= rect.bottom,
+      clearOfZoom: !nav || rect.right <= nav.left || rect.top >= nav.bottom || rect.bottom <= nav.top,
+      clearOfPanels: ['#info-panel.show', '#accordion-wrapper'].every(selector => {
+        const el = document.querySelector(selector); if (!el) return true;
+        const other = el.getBoundingClientRect();
+        return !other.width || !other.height || rect.right <= other.left || rect.left >= other.right || rect.bottom <= other.top || rect.top >= other.bottom;
+      })
+    };
+  })()`;
   try {
     for (const prototype of ['prototype-simple', 'prototype-tabs']) {
       for (const viewport of ['phone-se', 'phone-land']) {
@@ -47,6 +72,14 @@ const out = path.resolve(process.argv[2] || 'tmp/mobile-tree-layout');
         const shot = await cdp.send('Page.captureScreenshot', { format: 'png' }, page.sessionId);
         fs.writeFileSync(path.join(out, prototype + '-' + viewport + '.png'), Buffer.from(shot.data, 'base64'));
         await run(`(async () => {
+          document.getElementById('mobile-menu-close').click();
+          const { setLang } = await import('./js/i18n.js'); await setLang('fr');
+          await new Promise(resolve => setTimeout(resolve, 400));
+        })()`);
+        results.push({ prototype, viewport, view: 'map-reset', checks: await run(inspectReset) });
+        const resetShot = await cdp.send('Page.captureScreenshot', { format: 'png' }, page.sessionId);
+        fs.writeFileSync(path.join(out, prototype + '-' + viewport + '-reset.png'), Buffer.from(resetShot.data, 'base64'));
+        await run(`(async () => {
           const { showDetailView } = await import('./js/ui.js');
           const id = document.querySelector('#tree-panel-content [data-kind="building"]').dataset.id;
           showDetailView(id);
@@ -68,6 +101,14 @@ const out = path.resolve(process.argv[2] || 'tmp/mobile-tree-layout');
             sidebarOpen: document.getElementById('tree-panel').classList.contains('open'),
             mobileItemHidden: getComputedStyle(document.querySelector('.mobile-tree-accordion')).display === 'none' };
         })()`) });
+        await run(`(async () => {
+          const ui = await import('./js/ui.js'); const filters = await import('./js/filters.js');
+          ui.switchView('map'); filters.toggleSmartDrawer(true);
+          await new Promise(resolve => setTimeout(resolve, 450));
+        })()`);
+        results.push({ prototype, viewport: 'desktop', view: 'map-reset-drawers', checks: await run(inspectReset) });
+        const drawerShot = await cdp.send('Page.captureScreenshot', { format: 'png' }, page.sessionId);
+        fs.writeFileSync(path.join(out, prototype + '-desktop-reset.png'), Buffer.from(drawerShot.data, 'base64'));
         if (page.errors.length) throw new Error(page.errors.join('\n'));
         await cdp.send('Target.closeTarget', { targetId: page.targetId });
       }

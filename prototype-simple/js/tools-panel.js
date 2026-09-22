@@ -47,10 +47,24 @@ export function initToolsPanel() {
   const backdrop = document.getElementById('mobile-menu-backdrop');
   if (!menuToggle || !panel) return;
   const toggleIcon = menuToggle.querySelector('.material-symbols-outlined');
+  // The phone menu is global navigation. Its desktop dock lives inside the map
+  // view, which is display:none on detail/gallery pages. Keep stable return points.
+  const docks = [backdrop, document.getElementById('accordion-wrapper')].filter(Boolean).map(function(el) {
+    const marker = document.createComment('desktop tools dock');
+    el.before(marker);
+    return { el, marker };
+  });
 
   // Backdrop and hamburger state only apply to the phone layout
   function syncPhoneChrome() {
-    const phoneOpen = menuOpen && isMobileLayout();
+    const mobile = isMobileLayout();
+    const focused = panel.contains(document.activeElement) ? document.activeElement : null;
+    docks.forEach(function({ el, marker }) {
+      if (mobile && el.parentElement !== document.body) document.body.appendChild(el);
+      else if (!mobile && el.parentElement !== marker.parentElement) marker.after(el);
+    });
+    if (focused && focused !== document.activeElement && focused.getClientRects().length) focused.focus();
+    const phoneOpen = menuOpen && mobile;
     if (backdrop) backdrop.classList.toggle('active', phoneOpen);
     if (hamburgerBtn) hamburgerBtn.setAttribute('aria-expanded', phoneOpen ? 'true' : 'false');
   }

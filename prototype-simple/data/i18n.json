@@ -3694,5 +3694,17 @@
     "en": "Image carousel",
     "fr": "Carrousel d’images",
     "it": "Carosello di immagini"
+  },
+  "filter.reset.active": {
+    "de": "Alle aktiven Filter zurücksetzen",
+    "en": "Reset all active filters",
+    "fr": "Réinitialiser tous les filtres actifs",
+    "it": "Reimpostare tutti i filtri attivi"
+  },
+  "filter.reset.active.short": {
+    "de": "Filter zurücksetzen",
+    "en": "Reset filters",
+    "fr": "Réinitialiser les filtres",
+    "it": "Reimposta filtri"
   }
 }

@@ -21,13 +21,14 @@ consistent width roles, compact dates, and technical IDs kept out of display col
 - **List** — sortable (header click, second click reverses), searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
 - **Detail panel** — building dashboard with credited photographs, source links, basic info, mini-map, and SIA 416 / RICS measurement scenarios. Published values and estimates are distinguished; these are not certified surveys.
-- **Mobile** — phones (portrait and landscape) get a two-row header, the tools panel as a hamburger menu (print, Geokatalog, layers, share, language), a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
+- **Mobile** — phones (portrait and landscape) get a two-row header and a hamburger menu available in every view. “Standorte” is its first accordion: browse the tree in place; selecting a building or parcel closes the menu. Branches and filters persist, and the same tree returns to the desktop dock when resized. The other menu sections, full-screen filter sheet and swipe-to-dismiss object info remain available. Tablets keep the desktop layout with 44 px touch targets. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ### Search & filtering
 - Multi-source search: local buildings + swisstopo location API + Geokatalog layers. Rows show an icon, the highlighted term and a meta line; Geokatalog rows carry a "+ Als Ebene" button and an info button that opens the layer info modal. A scope menu ("Alle ▾") with checkboxes narrows the sources (several can be combined).
 - "Thema wechseln": the Geokatalog accordion switches between the ~30 topics of map.geo.admin.ch (federal offices and themes) in a topic grid borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names in `data/i18n.json` as `topic.*`, images in `assets/topics.png`); the catalog tree reloads for the chosen topic, the header shows its name and the choice is kept in the URL (`topic=`).
 - 6 filter categories: status, ownership type, portfolio, building type, country, region.
 - Deep linking with URL-based navigation and filter persistence.
+- A translated reset button appears at the top centre of the map while location or master-data filters are active. It clears those filters and their URL state; phones use a shorter label.
 
 ### Basemap links
 - `?basemap=light` selects Light (the default).

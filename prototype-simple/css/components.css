@@ -636,13 +636,53 @@
   position: relative;
 }
 
-/* Map busy indicator (style or tiles still loading) */
-.map-busy {
+/* Map actions are centred inside the map, so docked drawers cannot cover them. */
+.map-top-controls {
   position: absolute;
   top: var(--space-3);
   left: 50%;
   transform: translateX(-50%);
   z-index: 20;
+  width: max-content;
+  max-width: calc(100% - 152px); /* touch controls + their margins on either side */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  pointer-events: none;
+}
+
+.map-reset-filters {
+  max-width: 100%;
+  min-height: 44px;
+  border-radius: var(--radius-full);
+  box-shadow: var(--shadow-md);
+  white-space: normal;
+  pointer-events: auto;
+}
+
+.map-reset-filters[hidden] { display: none; }
+.map-reset-filters .material-symbols-outlined { flex: none; }
+.map-reset-filters .map-reset-label-short { display: none; }
+
+/* Reserve a top row for the reset action above floating tools and object information. */
+@media (min-width: 768px) and (min-height: 501px), (min-width: 768px) and (pointer: fine) {
+  #map-view:has(#map-reset-filters:not([hidden])) #accordion-wrapper {
+    top: 64px;
+  }
+  #map-view:has(#map-reset-filters:not([hidden])) #info-panel {
+    top: calc(64px + var(--space-3));
+  }
+}
+
+@media (max-width: 767px), (max-height: 500px) and (pointer: coarse) {
+  .map-reset-filters { padding-inline: var(--space-3); }
+  .map-reset-filters .map-reset-label-full { display: none; }
+  .map-reset-filters .map-reset-label-short { display: inline; }
+}
+
+/* Loading stays below the reset action instead of overlapping it. */
+.map-busy {
   display: none;
   align-items: center;
   gap: var(--space-2);
@@ -682,17 +722,25 @@
   right: var(--space-3);
 }
 
-/* Home and 3D buttons match the MapLibre default control size */
-/* Home and 3D buttons sit in a MapLibre control group. Its own rules (.maplibregl-ctrl-group button:
-   display block, 29px) outrank a single class, so ours name the group too. The group draws the white box,
-   the radius, the 2px ring and the hover (rgba(0,0,0,.05)) for every button, like for zoom and compass. */
+/* All navigation buttons, including mini-map controls, use one size token.
+   Change the token for phones/touch instead of competing with custom-button specificity. */
+.maplibregl-ctrl-group button {
+  width: var(--map-control-size);
+  height: var(--map-control-size);
+}
+
+@media (max-width: 767px), (pointer: coarse) {
+  .maplibregl-ctrl-group {
+    --map-control-size: var(--touch-target-min);
+  }
+}
+
+/* MapLibre supplies the group background, border, radius and interaction states. */
 .maplibregl-ctrl-group .map-home-btn,
 .maplibregl-ctrl-group .map-3d-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: var(--map-control-size);
-  height: var(--map-control-size);
   padding: 0;
   border: none;
   background: transparent;
@@ -700,7 +748,7 @@
 }
 
 .map-home-btn .material-symbols-outlined {
-  font-size: var(--icon-md);
+  font-size: var(--icon-lg);
   line-height: 1;
   color: var(--grey-600);
 }
@@ -714,6 +762,12 @@
 
 .map-3d-btn.active {
   color: var(--primary-red);
+}
+
+.map-location-pin {
+  font-size: var(--icon-2xl);
+  color: var(--primary-red);
+  text-shadow: 0 1px 2px var(--white);
 }
 
 /* MapLibre popup overrides */
@@ -1863,6 +1917,7 @@
 
 /* ===== FILTER DRAWER ===== */
 #filter-panel {
+  container: filter-drawer / inline-size;
   position: relative;
   width: 0;
   min-width: 0;
@@ -1955,7 +2010,28 @@
 }
 
 .filter-panel-reset .material-symbols-outlined {
-  font-size: var(--icon-md);
+  font-size: var(--icon-lg);
+}
+
+/* One size for the same navigation/reset action in headers, panels and map. */
+.material-symbols-outlined.action-icon {
+  font-size: var(--icon-lg);
+  flex: none;
+}
+
+/* Keep the title and both actions available in narrow/resized drawers.
+   The visually hidden reset label still supplies its accessible name. */
+@container filter-drawer (max-width: 380px) {
+  .filter-panel-reset > [data-i18n] {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
 }
 
 .filter-panel-content {
@@ -4134,13 +4210,8 @@ body.detail-active #detail-view {
     justify-content: center;
   }
 
-  #filter-panel.open {
-    width: 340px;
-    min-width: 340px;
-  }
-
   :root {
-    --tree-panel-width: 300px; /* a dragged width (inline on <html>) still wins */
+    --side-panel-default-width: 300px; /* each panel's dragged width (inline on <html>) still wins */
   }
 
   :root {
@@ -4179,13 +4250,6 @@ body.detail-active #detail-view {
 
 /* --- Touch devices, independent of width: 44px targets (WCAG 2.5.8), 20px checkboxes --- */
 @media (pointer: coarse) {
-  .maplibregl-ctrl-group button,
-  .map-home-btn,
-  .map-3d-btn {
-    width: var(--touch-target-min);
-    height: var(--touch-target-min);
-  }
-
   .filter-panel-reset {
     min-height: var(--touch-target-min);
   }
@@ -4649,7 +4713,7 @@ body.detail-active #detail-view {
   }
 
   #map-view:has(#info-panel.show) .style-switcher,
-  #map-view:has(#accordion-panel:not(.collapsed)) .style-switcher {
+  body:has(#accordion-panel:not(.collapsed)) .style-switcher {
     display: none;
   }
 
@@ -4859,6 +4923,15 @@ body.detail-active #detail-view {
 
 /* --- Landscape phones: one header row, info panel docks to the right, two gallery columns --- */
 @media screen and (max-height: 500px) and (pointer: coarse) and (min-width: 600px) {
+  /* Keep the basemap switcher clear of the full-height navigation stack. */
+  .style-switcher,
+  .style-switcher-panel {
+    left: var(--space-3);
+    right: auto;
+  }
+
+  .style-switcher-panel { left: 0; }
+
   .header-main {
     flex-wrap: nowrap;
     padding: var(--space-1) var(--space-3);

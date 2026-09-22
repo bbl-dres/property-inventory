@@ -17,11 +17,13 @@ consistent width roles, compact dates, and technical IDs kept out of display col
 - **Seven tabs** per property: Übersicht, Bemessungen, Kosten, Verträge, Ausstattung, Dokumente, Kontakte.
 - **KI in the search box.** The search suggestions start with a "Frage stellen" section: one suggested question for the typed term, answered inline (Enter or tap) — mock answers computed from the loaded data, no model. A scope menu in the search box ("Alle ▾") opens checkboxes for Fragen, Objekte, Orte and Karten; several can be combined. Geokatalog rows carry a "+ Als Ebene" button and an info button that opens the layer info modal. This replaced the former AI side panel.
 - **Thema wechseln.** The Geokatalog accordion can switch between the ~30 topics of map.geo.admin.ch (federal offices and themes, e.g. swisstopo, MeteoSchweiz, Energie): a modal with a topic grid, borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names and `assets/topics.png`), reloads the catalog tree for the chosen topic; the header shows the topic name and the choice is kept in the URL (`topic=`).
-- **Mobile.** Phones (portrait and landscape) get a two-row header, a hamburger menu for the map tools (share, print, export, Geokatalog, external layers), a full-screen filter sheet with a live result count, a swipe-to-dismiss info sheet and a sticky tab strip on the detail page; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
+- **Mobile.** Phones (portrait and landscape) get a two-row header and a hamburger menu available in every view. “Standorte” is its first accordion: browse the tree in place; selecting a building or parcel closes the menu. Branches and filters persist, and the same tree returns to the desktop dock when resized. Map tools, the full-screen filter sheet, swipe-to-dismiss info sheet and sticky detail tabs remain available. Tablets keep the desktop layout with 44 px touch targets. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 - **Aligned with the simple app.** Same module layout, markup hooks and behaviour for the map tools: PDF export of the print panel, Geokatalog with "Thema wechseln", measure tool, search history, lightbox, URL-owned basemap and selection. The data model still differs (camelCase BuildingMinds schema with `extensionData`, see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)).
 
 ## Running
+
+Active location or master-data filters reveal a translated reset button at the top centre of the map. It clears those filters and their URL state; phones use a shorter label.
 
 The same 14 researched buildings/sites as the simple app are exported into this
 prototype's camelCase schema and related-entity JSON files. Measurements distinguish

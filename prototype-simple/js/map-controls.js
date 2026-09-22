@@ -53,6 +53,14 @@ export function createMap(containerId, styleUrl, styleOptions = {}) {
 
 // ===== STANDARD CONTROLS =====
 
+export function createLocationMarker() {
+  const element = document.createElement('span');
+  element.className = 'material-symbols-outlined map-location-pin';
+  element.textContent = 'location_on';
+  element.setAttribute('aria-hidden', 'true');
+  return new maplibregl.Marker({ element, anchor: 'bottom' });
+}
+
 function HomeControl() {}
 HomeControl.prototype.onAdd = function(map) {
   this._map = map;
@@ -62,7 +70,7 @@ HomeControl.prototype.onAdd = function(map) {
   button.className = 'map-home-btn';
   button.type = 'button';
   button.title = t('map.home');
-  button.innerHTML = '<span class="material-symbols-outlined">home</span>';
+  button.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">home</span>';
   button.onclick = function() { flyHome(map); };
   this._container.appendChild(button);
   return this._container;

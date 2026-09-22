@@ -134,7 +134,7 @@ export function renderFilterPills() {
     });
   });
   if (hasAny) {
-    html += '<button type="button" class="filter-pills-reset" id="filter-pills-reset">' + t('filter.reset.all') + '</button>';
+    html += '<button type="button" class="filter-pills-reset" id="filter-pills-reset"><span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>' + t('filter.reset.all') + '</button>';
   }
   container.innerHTML = html;
 }
@@ -223,6 +223,11 @@ export function updateFilterButtonState() {
   const drawerBtn = document.getElementById('filter-panel-btn');
   if (!drawerBtn) return;
   const count = getActiveFilterCount();
+  const mapReset = document.getElementById('map-reset-filters');
+  if (mapReset) {
+    if (!count && document.activeElement === mapReset) drawerBtn.focus({ preventScroll: true });
+    mapReset.hidden = count === 0;
+  }
 
   drawerBtn.classList.toggle('has-active-filters', count > 0);
   let badge = drawerBtn.querySelector('.filter-count');

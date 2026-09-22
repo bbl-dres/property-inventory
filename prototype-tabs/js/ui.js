@@ -9,7 +9,7 @@ import { showToast } from './toast.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
 import { initAccordion } from './accordion.js';
 import { initToolsPanel, closePhoneMenu } from './tools-panel.js';
-import { toggleTreePanel, renderLocationTree } from './location-tree.js';
+import { toggleTreePanel } from './location-tree.js';
 import { initSheetGesture } from './gestures.js';
 import { shareUrl } from './context-menu.js';
 import { renderFilteredTables, renderGalleryView, syncGalleryFilter, setTablePanelOpen } from './list.js';
@@ -449,7 +449,6 @@ function initLanguageSelector() {
     setActiveLanguageUi(lang);
     updateShareLink();
     updateExportCount();
-    renderLocationTree();
     updateDetailHeaderOffset();
   });
 

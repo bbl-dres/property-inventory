@@ -167,12 +167,13 @@
   --footer-height: 27px;
   --header-total-height: calc(var(--header-main-height) + var(--header-detail-height));
 
-  --drawer-width: 450px;
+  --side-panel-default-width: 320px; /* matching defaults; each panel can still be resized independently */
+  --drawer-width: var(--side-panel-default-width);
   --drawer-min-width: 300px;
   --drawer-max-width: 800px;
 
   --tools-panel-width: 300px;
-  --tree-panel-width: 320px;
+  --tree-panel-width: var(--side-panel-default-width);
   --tree-panel-min-width: 240px;
   --tree-panel-max-width: 600px;
   --content-max-width: 1500px;

@@ -6,7 +6,7 @@ import { escapeHtml, stripHtml, highlightMatch, storageGet, storageSet } from '.
 import { t, onLangChange, getLang } from './i18n.js';
 import { onEscape } from './keys.js';
 import { parseBox2d } from './geo.js';
-import { smartFlyTo } from './map-controls.js';
+import { smartFlyTo, createLocationMarker } from './map-controls.js';
 import { selectBuilding, clearSelection } from './map.js';
 import { addSwisstopoLayer } from './swisstopo.js';
 import { switchView } from './ui.js';
@@ -121,7 +121,7 @@ export function handleSearchClick(type, id, lat, lon, title, bbox, origin) {
     } else {
       smartFlyTo(state.map, { center: [lon, lat], zoom: zoomForOrigin(origin) });
     }
-    state.searchMarker = new maplibregl.Marker({ color: '#c00' }).setLngLat([lon, lat]).addTo(state.map);
+    state.searchMarker = createLocationMarker().setLngLat([lon, lat]).addTo(state.map);
     clearSelection();
     searchClearBtn.classList.add('visible');
   } else if (type === 'layer') {

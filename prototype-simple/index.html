@@ -133,11 +133,11 @@
 
             <div id="header-right">
                 <button class="header-btn" id="tree-panel-btn" data-i18n-title="tree.title" data-i18n-aria-label="tree.open" title="Standorte" aria-label="Standorte öffnen" aria-expanded="false" aria-controls="tree-panel">
-                    <span class="material-symbols-outlined" aria-hidden="true">account_tree</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                     <span class="header-btn-label" data-i18n="tree.title">Standorte</span>
                 </button>
                 <button class="header-btn" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
-                    <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">tune</span>
                     <span class="header-btn-label" data-i18n="header.filter">Filter</span>
                 </button>
                 <div id="lang-selector">
@@ -172,7 +172,7 @@
         <aside id="tree-panel" role="complementary" aria-label="Standorte">
             <div class="panel-header tree-panel-header">
                 <span class="panel-header-title" id="tree-panel-title">
-                    <span class="material-symbols-outlined" aria-hidden="true">account_tree</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                     <span data-i18n="tree.title">Standorte</span>
                 </span>
                 <div class="filter-panel-actions">
@@ -217,10 +217,17 @@
                 </button>
             </div>
 
-            <!-- Map loading indicator: shown while the style or tiles are still loading -->
-            <div id="map-busy" class="map-busy" role="status" aria-live="polite">
-                <span class="spinner inline-spinner" aria-hidden="true"></span>
-                <span data-i18n="map.loading">Karte wird geladen…</span>
+            <div class="map-top-controls">
+                <button type="button" id="map-reset-filters" class="btn-secondary map-reset-filters" data-action="resetAllFilters" data-i18n-aria-label="filter.reset.active" aria-label="Alle aktiven Filter zurücksetzen" hidden>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>
+                    <span class="map-reset-label-full" data-i18n="filter.reset.active">Alle aktiven Filter zurücksetzen</span>
+                    <span class="map-reset-label-short" data-i18n="filter.reset.active.short" aria-hidden="true">Filter zurücksetzen</span>
+                </button>
+                <!-- Map loading indicator: shown while the style or tiles are still loading -->
+                <div id="map-busy" class="map-busy" role="status" aria-live="polite">
+                    <span class="spinner inline-spinner" aria-hidden="true"></span>
+                    <span data-i18n="map.loading">Karte wird geladen…</span>
+                </div>
             </div>
 
             <!-- Measure Distance Display (inside #map for correct positioning) -->
@@ -266,6 +273,7 @@
                 <div class="accordion-item mobile-tree-accordion" data-accordion="locations">
                     <button type="button" class="accordion-header" id="mobile-tree-btn" aria-expanded="false" aria-controls="mobile-tree-content">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                         <span data-i18n="tree.title">Standorte</span>
                     </button>
                     <div class="accordion-content" id="mobile-tree-content" role="region" aria-labelledby="mobile-tree-btn"></div>
@@ -960,12 +968,12 @@
         <aside id="filter-panel" role="complementary" aria-label="Filter">
             <div class="panel-header filter-panel-header">
                 <span class="panel-header-title" id="filter-panel-title">
-                    <span class="material-symbols-outlined">filter_list</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">tune</span>
                     <span data-i18n="filter.title">Filter</span>
                 </span>
                 <div class="filter-panel-actions">
                     <button type="button" class="btn-tertiary filter-panel-reset" id="drawer-reset-btn" data-i18n-title="filter.reset.all" title="Alle Filter zurücksetzen">
-                        <span class="material-symbols-outlined" aria-hidden="true">replay</span>
+                        <span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>
                         <span data-i18n="filter.reset">Zurücksetzen</span>
                     </button>
                     <button class="icon-btn filter-panel-btn" id="drawer-close-btn" data-i18n-title="modal.close" title="Schliessen">
@@ -1037,7 +1045,7 @@
 
             <!-- Mobile footer: filters apply instantly; this closes the full-screen drawer and shows the result count -->
             <div class="filter-panel-footer">
-                <button type="button" class="btn-secondary" id="drawer-reset-mobile-btn" data-i18n="filter.reset">Zurücksetzen</button>
+                <button type="button" class="btn-secondary" id="drawer-reset-mobile-btn"><span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span><span data-i18n="filter.reset">Zurücksetzen</span></button>
                 <button type="button" class="btn-primary" id="drawer-apply-btn"><span id="drawer-apply-text">Objekte anzeigen</span></button>
             </div>
 

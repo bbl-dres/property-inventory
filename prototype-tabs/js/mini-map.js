@@ -3,7 +3,7 @@
 
 import { t, onLangChange } from './i18n.js';
 import { getMapStyleUrl } from './basemaps.js';
-import { findVectorSourceId } from './map-controls.js';
+import { findVectorSourceId, createLocationMarker } from './map-controls.js';
 
 let miniMap = null;
 let miniMapMarker = null;
@@ -91,7 +91,7 @@ export function showMiniMap(coords) {
   miniMap.on('load', function() {
     add3DBuildings();
     // Marker at the most recently requested position
-    miniMapMarker = new maplibregl.Marker({ color: '#c00' })
+    miniMapMarker = createLocationMarker()
       .setLngLat(pendingCoords || coords)
       .addTo(miniMap);
     miniMap.resize();

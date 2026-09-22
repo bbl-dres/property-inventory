@@ -134,11 +134,11 @@
 
             <div id="header-right">
                 <button class="header-btn" id="tree-panel-btn" title="Standorte" aria-label="Standorte öffnen" aria-expanded="false" aria-controls="tree-panel" data-i18n-title="tree.title" data-i18n-aria-label="tree.open">
-                    <span class="material-symbols-outlined" aria-hidden="true">account_tree</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                     <span class="header-btn-label" data-i18n="tree.title">Standorte</span>
                 </button>
                 <button class="header-btn" id="filter-panel-btn" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel" data-i18n-title="filter.title" data-i18n-aria-label="header.filter.open">
-                    <span class="material-symbols-outlined" aria-hidden="true">tune</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">tune</span>
                     <span class="header-btn-label" data-i18n="filter.title">Filter</span>
                 </button>
                 <!-- Desktop language selector; phones use the language buttons in the menu. -->
@@ -213,7 +213,7 @@
         <aside id="tree-panel" role="complementary" aria-label="Standorte" data-i18n-aria-label="tree.title">
             <div class="panel-header tree-panel-header">
                 <span class="panel-header-title" id="tree-panel-title">
-                    <span class="material-symbols-outlined" aria-hidden="true">account_tree</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                     <span data-i18n="tree.title">Standorte</span>
                 </span>
                 <div class="filter-panel-actions">
@@ -228,11 +228,18 @@
         <div class="main-content">
             <div id="map-view" class="active">
             <div id="map">
+            <div class="map-top-controls">
+                <button type="button" id="map-reset-filters" class="btn-secondary map-reset-filters" data-action="resetAllFilters" data-i18n-aria-label="filter.reset.active" aria-label="Alle aktiven Filter zurücksetzen" hidden>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>
+                    <span class="map-reset-label-full" data-i18n="filter.reset.active">Alle aktiven Filter zurücksetzen</span>
+                    <span class="map-reset-label-short" data-i18n="filter.reset.active.short" aria-hidden="true">Filter zurücksetzen</span>
+                </button>
                 <!-- Map loading indicator: shown while the style or tiles are still loading -->
                 <div id="map-busy" class="map-busy" role="status" aria-live="polite">
                     <span class="spinner inline-spinner" aria-hidden="true"></span>
                     <span data-i18n="map.loading">Karte wird geladen…</span>
                 </div>
+            </div>
             <!-- Table toggle button (inside #map for correct positioning) -->
             <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden" data-i18n-title="table.toggle.title" data-i18n-aria-label="table.toggle.title">
                 <span class="material-symbols-outlined">expand_more</span>
@@ -253,6 +260,7 @@
                 <div class="accordion-item mobile-tree-accordion" data-accordion="locations">
                     <button type="button" class="accordion-header" id="mobile-tree-btn" aria-expanded="false" aria-controls="mobile-tree-content">
                         <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                        <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                         <span data-i18n="tree.title">Standorte</span>
                     </button>
                     <div class="accordion-content" id="mobile-tree-content" role="region" aria-labelledby="mobile-tree-btn"></div>
@@ -1275,12 +1283,12 @@
         <aside id="filter-panel" role="complementary" aria-label="Filter" data-i18n-aria-label="filter.title">
             <div class="panel-header filter-panel-header">
                 <div class="panel-header-title" id="filter-panel-title">
-                    <span class="material-symbols-outlined" aria-hidden="true">filter_list</span>
+                    <span class="material-symbols-outlined action-icon" aria-hidden="true">tune</span>
                     <span data-i18n="filter.master">Filter Stammdaten</span>
                 </div>
                 <div class="filter-panel-actions">
                     <button type="button" class="btn-tertiary filter-panel-reset" id="drawer-reset-btn" title="Alle Filter zurücksetzen" data-i18n-title="filter.reset.all">
-                        <span class="material-symbols-outlined" aria-hidden="true">replay</span>
+                        <span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span>
                         <span data-i18n="filter.reset">Zurücksetzen</span>
                     </button>
                     <button class="icon-btn filter-panel-btn" id="drawer-close-btn" title="Schliessen" aria-label="Schliessen" data-i18n-title="modal.close" data-i18n-aria-label="modal.close">
@@ -1349,7 +1357,7 @@
 
             <!-- Mobile only: sticky footer with live result count (see css/main.css, mobile breakpoint) -->
             <div class="filter-panel-footer">
-                <button class="btn-secondary" id="drawer-reset-mobile-btn" type="button" data-i18n="filter.reset">Zurücksetzen</button>
+                <button class="btn-secondary" id="drawer-reset-mobile-btn" type="button"><span class="material-symbols-outlined action-icon" aria-hidden="true">restart_alt</span><span data-i18n="filter.reset">Zurücksetzen</span></button>
                 <button class="btn-primary" id="drawer-apply-btn" type="button"><span id="drawer-apply-text">10 Objekte anzeigen</span></button>
             </div>
         </aside>

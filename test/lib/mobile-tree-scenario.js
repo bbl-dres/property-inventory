@@ -15,6 +15,8 @@ module.exports = function(prototype) {
       const header = document.getElementById('mobile-tree-btn');
       const content = document.getElementById('mobile-tree-content');
       const hamburger = document.getElementById('hamburger-btn');
+      const mapReset = document.getElementById('map-reset-filters');
+      check('map reset is hidden without filters', mapReset.hidden);
       check('phone tree is mounted once inside the menu', host.parentElement === content && document.querySelectorAll('#tree-panel-content').length === 1);
       check('closed accordion remains lazy', header.getAttribute('aria-expanded') === 'false' && !host.children.length);
       hamburger.click(); header.click();
@@ -24,6 +26,7 @@ module.exports = function(prototype) {
       check('countries rendered with accessible tree label', host.querySelectorAll(':scope > .tree > .tree-item').length === 9 && host.getAttribute('aria-labelledby') === header.id);
       host.querySelector('[data-node="country:CH"]').click();
       check('country selection filters without closing the menu', state.activeFilters.land[0] === 'CH' && !menu.classList.contains('collapsed'));
+      check('map reset becomes available for tree filters', !mapReset.hidden);
       host.querySelector('.tree-row[data-node^="region:CH/"]').click();
       host.querySelector('.tree-row[data-node^="city:CH/"]').click();
       host.querySelector('.tree-row[data-node^="we:CH/"]').click();
@@ -63,6 +66,11 @@ module.exports = function(prototype) {
       mobile = false; window.innerWidth = 1440;
       window.dispatchEvent(new window.Event('resize')); await settle();
       check('desktop open state survives phone layout', host.parentElement === panel && panel.classList.contains('open'));
+      modules.ui.switchView('map');
+      mapReset.focus(); mapReset.click();
+      check('map action clears every active filter and restores records', modules.filters.getActiveFilterCount() === 0 && state.filteredData.features.length === state.buildingsData.features.length && !new URL(window.location).search.includes('filter_'));
+      check('reset clears checkboxes and active tree path', !document.querySelector('#filter-panel input[data-filter]:checked') && !host.querySelector('.tree-row[aria-selected="true"]:not([data-kind])'));
+      check('reset hides again and leaves keyboard focus on a visible control', mapReset.hidden && document.activeElement.id === 'filter-panel-btn');
     }
   };
 };
