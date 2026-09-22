@@ -73,7 +73,7 @@ class FakeMap extends Evented {
     const self = this;
     this._sources[id] = Object.assign({
       setData(data) { self._sources[id].data = data; },
-      getClusterExpansionZoom(clusterId, cb) { cb(null, 12); }
+      async getClusterExpansionZoom(clusterId) { return 12; }
     }, source);
   }
   getSource(id) { return this._sources[id]; }

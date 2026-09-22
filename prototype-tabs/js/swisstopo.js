@@ -31,6 +31,7 @@ const SWISSTOPO_ATTRIBUTION = '&copy; <a href="https://www.swisstopo.admin.ch">s
 // options: { map, internalLayers: { key: { title, description, source, format, geometryType, legendHtml() } } }
 export function initSwisstopo(options) {
   map = options.map;
+  map.on('style.load', clearIdentifyHighlight);
   internalLayers = options.internalLayers || {};
   renderInternalInfoButtons();
   initLayerInfoModal();
@@ -122,6 +123,7 @@ export function addSwisstopoLayer(layerId, title, silent) {
 export function removeSwisstopoLayer(layerId) {
   const index = activeSwisstopoLayers.findIndex(function(l) { return l.id === layerId; });
   if (index === -1) return;
+  clearIdentifyHighlight();
   const layer = activeSwisstopoLayers[index];
   try {
     if (map.getLayer(layer.mapLayerId)) map.removeLayer(layer.mapLayerId);
@@ -143,6 +145,7 @@ export function toggleSwisstopoLayerVisibility(layerId) {
     return;
   }
   const newVisibility = map.getLayoutProperty(layer.mapLayerId, 'visibility') === 'none' ? 'visible' : 'none';
+  clearIdentifyHighlight();
   map.setLayoutProperty(layer.mapLayerId, 'visibility', newVisibility);
   layer.visible = newVisibility !== 'none';
   renderActiveLayersList();
@@ -264,7 +267,12 @@ export function initIdentifyHighlightLayer() {
 }
 
 export function clearIdentifyHighlight() {
-  const source = map.getSource(identifyHighlightSourceId);
+  if (identifyController) {
+    identifyController.abort();
+    identifyController = null;
+    if (map) map.getCanvas().style.cursor = isMeasuring() ? 'crosshair' : '';
+  }
+  const source = map?.getSource(identifyHighlightSourceId);
   if (source) source.setData({ type: 'FeatureCollection', features: [] });
   if (identifiedFeaturePopup) {
     // Null the reference BEFORE removing: popup.remove() fires 'close', which calls this function again
@@ -277,6 +285,7 @@ export function clearIdentifyHighlight() {
 let identifyController = null;
 
 export function identifySwisstopoFeatures(lngLat) {
+  clearIdentifyHighlight();
   const visibleLayers = activeSwisstopoLayers.filter(isLayerVisible).map(function(l) { return l.id; });
   if (visibleLayers.length === 0) return;
 
@@ -294,7 +303,6 @@ export function identifySwisstopoFeatures(lngLat) {
     '&lang=' + encodeURIComponent(getLang());
 
   // A newer click supersedes a pending request (responses could otherwise arrive out of order)
-  if (identifyController) identifyController.abort();
   identifyController = new AbortController();
   const signal = identifyController.signal;
 
@@ -308,6 +316,7 @@ export function identifySwisstopoFeatures(lngLat) {
       return response.json();
     })
     .then(function(data) {
+      if (signal.aborted) return;
       if (data.results && data.results.length > 0) {
         showIdentifiedFeature(data.results[0], lngLat);
       } else {
@@ -315,13 +324,16 @@ export function identifySwisstopoFeatures(lngLat) {
       }
     })
     .catch(function(e) {
-      if (e.name === 'AbortError') return;
+      if (signal.aborted || e.name === 'AbortError') return;
       console.error('[swisstopo] identify error:', e);
       clearIdentifyHighlight();
       showToast({ type: 'warning', title: t('swisstopo.error'), message: t('swisstopo.identify.failed'), duration: 5000 });
     })
     .finally(function() {
-      if (!signal.aborted) canvas.style.cursor = isMeasuring() ? 'crosshair' : '';
+      if (!signal.aborted) {
+        identifyController = null;
+        canvas.style.cursor = isMeasuring() ? 'crosshair' : '';
+      }
     });
 }
 

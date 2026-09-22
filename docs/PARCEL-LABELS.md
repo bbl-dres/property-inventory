@@ -6,12 +6,12 @@ remain in the datasets, tables, detail views and selection state. SAP components
 are strings, preserving leading zeros: Simple uses `bbl_buch`, `bbl_we`, `bbl_obj`;
 Tabs uses `extensionData.sapId.companyCode`, `.economicUnit`, `.objectNumber`
 on buildings and parcels. Cadastral plot numbers and EGRID remain separate
-attributes. Both label types start at zoom 15.5 and use
-16 px blue text with a white halo, compared with the buildings' 13 px text.
+attributes. Both label types start at zoom 15. Parcels use 16 px blue text with
+a white halo, compared with the buildings' 13 px text.
 
 ## Placement
 
-The shared `js/parcel-labels.js` uses [Mapbox polylabel 2.0.1](https://github.com/mapbox/polylabel/tree/v2.0.1)
+Each prototype's local `js/parcel-labels.js` uses [Mapbox polylabel 2.0.1](https://github.com/mapbox/polylabel/tree/v2.0.1)
 to find the point with the greatest distance from the polygon boundary. This
 avoids centroids or bounding-box centres that can fall outside concave parcels
 or inside holes. Its input includes every ring, so holes remain excluded.
@@ -35,8 +35,11 @@ symbol layer. This keeps the anchor independent of tile clipping and prevents
 multiple labels on disconnected parts. Text is centred on the anchor and stays
 on one line. A generous `text-max-width` prevents soft wrapping at ID slashes
 (zero is not used as a no-wrap setting). Both layers share collision detection,
-reserve space for each other and disallow overlap. Building labels try bottom,
-top, left and right anchors with a gap from their marker. Parcel anchors stay at
+reserve space for each other and disallow overlap. Building labels stay above
+their dots (`text-anchor: bottom`, `text-offset: [0, -2.25]`), with identical
+clearance whether selected or not. A smaller unselected offset collided with
+the dot's own invisible collision box and suppressed the label; regression tests
+cover both states. Building text has priority over parcel text. Parcel anchors stay at
 the visual centre; the text first tries that centre, then small screen offsets
 below, right, left or above it. Crowded labels may be suppressed until the user
 zooms further in. See [MapLibre's symbol layout options](https://maplibre.org/maplibre-style-spec/layers/#symbol).
@@ -65,6 +68,7 @@ alignment check includes all these files.
   degenerate/invalid input, narrow parcels, date-line crossing, every supplied
   parcel's interior anchor and source-data immutability.
 - `node test/parcel-labels-layout.js`: actual MapLibre labels in both prototypes,
+  visibility above dots at zoom 15, 16 and 18.25, selected/unselected states,
   zoom threshold, visibility toggle, basemap restoration and info-card spacing.
 - `node test/all.js`: both schema adapters, layer lifecycle and related UI changes.
 

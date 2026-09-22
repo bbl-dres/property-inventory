@@ -23,17 +23,17 @@ export function readMapViewFromUrl() {
   const pitch = parseFloat(params.get('pitch'));
   const bearing = parseFloat(params.get('bearing'));
   const view = { center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, pitch: 0, bearing: 0, is3D: params.get('3d') === '1' };
-  if (!isNaN(lat) && !isNaN(lng) && !isNaN(zoom)) {
-    view.center = [lng, lat];
-    view.zoom = zoom;
+  if ([lat, lng, zoom].every(Number.isFinite) && Math.abs(lat) <= 90) {
+    view.center = [((lng + 180) % 360 + 360) % 360 - 180, Math.max(-85.05112878, Math.min(85.05112878, lat))];
+    view.zoom = Math.max(0, Math.min(22, zoom));
   }
-  if (!isNaN(pitch)) view.pitch = pitch;
-  if (!isNaN(bearing)) view.bearing = bearing;
+  if (Number.isFinite(pitch)) view.pitch = Math.max(0, Math.min(60, pitch));
+  if (Number.isFinite(bearing)) view.bearing = bearing;
   return view;
 }
 
-// MapLibre map with the view from the URL. preserveDrawingBuffer keeps the canvas readable
-// (needed by the print module); antialias smooths the fill-extrusion 3D buildings.
+// The live map needs no preserved drawing buffer: printing renders its own offscreen map.
+// Antialias smooths the fill-extrusion 3D buildings.
 export function createMap(containerId, styleUrl, styleOptions = {}) {
   const view = readMapViewFromUrl();
   const map = new maplibregl.Map({
@@ -44,7 +44,7 @@ export function createMap(containerId, styleUrl, styleOptions = {}) {
     zoom: view.zoom,
     pitch: view.pitch,
     bearing: view.bearing,
-    canvasContextAttributes: { antialias: true, preserveDrawingBuffer: true }
+    canvasContextAttributes: { antialias: true, preserveDrawingBuffer: false }
   });
   // Style transforms are setStyle options, not constructor options.
   if (styleOptions.transformStyle) map.setStyle(styleUrl, styleOptions);

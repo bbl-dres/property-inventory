@@ -1,3 +1,4 @@
+import { readFilterParams, writeFilterParams } from './filter-url.js';
 import { preparePanelOpen, restorePanelFocus } from './panel-layout.js';
 // Filters: URL state, filter drawer, option lists, pills, object count and the map filter.
 
@@ -15,22 +16,11 @@ import { updateFilteredExportHeader, updateExportCount } from './export.js';
 
 export function getFiltersFromURL() {
   const params = new URLSearchParams(window.location.search);
-  const filters = {};
-  Object.keys(filterConfig).forEach(function(key) {
-    const value = params.get('filter_' + key);
-    filters[key] = value ? value.split(',').map(function(v) { return decodeURIComponent(v); }) : [];
-  });
-  return filters;
+  return readFilterParams(params, Object.keys(filterConfig));
 }
 
 export function setFiltersInURL(filters) {
-  const url = new URL(window.location);
-  Object.keys(filters).forEach(function(key) {
-    url.searchParams.delete('filter_' + key);
-    if (filters[key].length > 0) {
-      url.searchParams.set('filter_' + key, filters[key].map(function(v) { return encodeURIComponent(v); }).join(','));
-    }
-  });
+  const url = writeFilterParams(new URL(window.location), filters);
   // replaceState on purpose: a history entry per checkbox click made the Back button change the
   // URL without changing the filters. Filters stay deep-linkable via the share URL.
   window.history.replaceState({}, '', url);

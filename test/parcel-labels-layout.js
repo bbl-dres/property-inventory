@@ -24,13 +24,20 @@ const {launchBrowser,openPage,navigate,evaluate,BASE,VIEWPORTS}=require('./visua
         assert(noPointOverlap,proto+'/'+parcel+' parcel text clears selected building dot');
         const {data}=await cdp.send('Page.captureScreenshot',{format:'png'},page.sessionId);
         fs.writeFileSync(path.join(out,proto+'--'+parcel.replaceAll('/','-')+'.png'),Buffer.from(data,'base64'));
+        for (const zoom of [15, 16, 18.25]) {
+          for (const selected of [false, true]) {
+            await run(`(async()=>{${selected ? `m.selectBuilding('${building}')` : 'm.clearSelection()'};s.map.jumpTo({zoom:${zoom}});await new Promise(r=>setTimeout(r,600));})()`);
+            assert(await run(`s.map.queryRenderedFeatures({layers:['buildings-labels']}).some(f=>(f.properties.bbl_id||f.properties.buildingId)==='${building}')`),proto+'/'+building+' label visible at '+zoom+', selected='+selected);
+            assert(await run(`(() => {const p=s.map.project(s.buildingIndex.get('${building}').geometry.coordinates);return s.map.queryRenderedFeatures([[p.x-65,p.y-60],[p.x+65,p.y-24]],{layers:['buildings-labels']}).some(f=>(f.properties.bbl_id||f.properties.buildingId)==='${building}');})()`),'building ID stays above its dot');
+          }
+        }
       }
       await run(`(async()=>{m.clearSelection();await new Promise(r=>setTimeout(r,600));})()`);
       assert(await run(`(() => {const p=s.map.project(s.buildingIndex.get('9900/9012/AA').geometry.coordinates);return s.map.queryRenderedFeatures([[p.x-12,p.y-12],[p.x+12,p.y+12]],{layers:['parcels-labels']}).length===0;})()`),'parcel text clears unselected building dot');
-      await run(`(async()=>{s.map.jumpTo({zoom:15.4});await new Promise(r=>setTimeout(r,500));})()`);
-      assert.equal(await run(`s.map.queryRenderedFeatures({layers:['parcels-labels','buildings-labels']}).length`),0,'hidden below zoom 15.5');
-      await run(`(async()=>{s.map.jumpTo({zoom:15.5});await new Promise(r=>setTimeout(r,800));})()`);
-      assert((await run(`s.map.queryRenderedFeatures({layers:['parcels-labels','buildings-labels']}).length`))>0,'labels available at zoom 15.5');
+      await run(`(async()=>{s.map.jumpTo({zoom:14.9});await new Promise(r=>setTimeout(r,500));})()`);
+      assert.equal(await run(`s.map.queryRenderedFeatures({layers:['parcels-labels','buildings-labels']}).length`),0,'hidden below zoom 15');
+      await run(`(async()=>{s.map.jumpTo({zoom:15});await new Promise(r=>setTimeout(r,800));})()`);
+      assert((await run(`s.map.queryRenderedFeatures({layers:['parcels-labels','buildings-labels']}).length`))>0,'labels available at zoom 15');
       await run(`(async()=>{s.map.jumpTo({zoom:18.25});const toggle=document.getElementById('layer-toggle-parcels');toggle.checked=false;toggle.dispatchEvent(new Event('change'));await new Promise(r=>setTimeout(r,500));})()`);
       assert.equal(await run(`s.map.queryRenderedFeatures({layers:['parcels-labels']}).length`),0,'hidden with parcel layer');
       await run(`(async()=>{document.querySelector('[data-style="dark-matter"]').click();await new Promise(r=>setTimeout(r,2500));})()`);

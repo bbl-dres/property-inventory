@@ -1,3 +1,4 @@
+import { computePrintParams, computeCornerCoords, createPrintStyle } from './print-geometry.js';
 // Print to PDF (shared): print preview overlay on the map, high-resolution offscreen rendering
 // (tiled for large paper sizes that exceed WebGL limits) and PDF composition with jsPDF.
 // Needs the print form markup (print-orientation, print-scale, print-dpi, print-legend, print-title,
@@ -9,9 +10,6 @@ import { t, getLocale } from './i18n.js';
 import { showError } from './toast.js';
 import { getActiveSwisstopoLayers } from './swisstopo.js';
 import { getCurrentMapStyleName } from './basemaps.js';
-
-// Maximum WebGL canvas dimension (conservative; most GPUs support 4096 to 16384)
-const MAX_GL_SIZE = 4096;
 
 const paperSizes = {
   'a0': { width: 841, height: 1189 },
@@ -160,90 +158,6 @@ export function updatePrintPreview() {
 
 // ===== HIGH-RESOLUTION RENDERING =====
 
-// Canvas size, zoom level and (if needed) tile grid for the paper at the target scale and DPI
-function computePrintParams(paperMM, scale, dpi, center) {
-  const canvasW = Math.round((paperMM.width / 25.4) * dpi);
-  const canvasH = Math.round((paperMM.height / 25.4) * dpi);
-
-  // One canvas pixel covers scale * (0.0254 / dpi) metres; invert MapLibre's metres-per-pixel formula
-  const latRad = center.lat * Math.PI / 180;
-  const metersPerDot = scale * (0.0254 / dpi);
-  const zoom = Math.log2(156543.03392 * Math.cos(latRad) / metersPerDot);
-
-  const needsTiling = canvasW > MAX_GL_SIZE || canvasH > MAX_GL_SIZE;
-  const tileGrid = needsTiling ? computeTileGrid(canvasW, canvasH, zoom, center) : null;
-  return { canvasW: canvasW, canvasH: canvasH, zoom: zoom, needsTiling: needsTiling, tileGrid: tileGrid };
-}
-
-function computeTileGrid(canvasW, canvasH, zoom, center) {
-  const tileSize = MAX_GL_SIZE;
-  const cols = Math.ceil(canvasW / tileSize);
-  const rows = Math.ceil(canvasH / tileSize);
-  const latRad = center.lat * Math.PI / 180;
-  const mpp = metersPerPixel(center.lat, zoom);
-  const metersPerDegreeLng = 111320 * Math.cos(latRad);
-  const metersPerDegreeLat = 110574;
-
-  const tiles = [];
-  for (let r = 0; r < rows; r++) {
-    for (let c = 0; c < cols; c++) {
-      const px = c * tileSize;
-      const py = r * tileSize;
-      const tw = Math.min(tileSize, canvasW - px);
-      const th = Math.min(tileSize, canvasH - py);
-      // Tile centre in pixels relative to the full canvas centre, converted to a lng/lat offset (Y is flipped)
-      const tileCenterPxX = px + tw / 2 - canvasW / 2;
-      const tileCenterPxY = py + th / 2 - canvasH / 2;
-      tiles.push({
-        row: r, col: c, px: px, py: py, width: tw, height: th,
-        center: {
-          lng: center.lng + (tileCenterPxX * mpp) / metersPerDegreeLng,
-          lat: center.lat + (-tileCenterPxY * mpp) / metersPerDegreeLat
-        }
-      });
-    }
-  }
-  return { tiles: tiles, cols: cols, rows: rows, tileSize: tileSize };
-}
-
-// Clone the current map style for printing: inline the application's GeoJSON data (without
-// clustering), drop cluster/selection/highlight/measure/identify layers and zoom restrictions.
-function cloneMapStyle(includeLabels) {
-  const cloned = JSON.parse(JSON.stringify(map.getStyle()));
-  const sourceData = options.getSources ? options.getSources() : {};
-
-  Object.keys(sourceData).forEach(function(sourceId) {
-    if (cloned.sources[sourceId] && sourceData[sourceId]) {
-      cloned.sources[sourceId] = { type: 'geojson', data: sourceData[sourceId], cluster: false };
-    }
-  });
-
-  cloned.layers = cloned.layers.filter(function(layer) {
-    const id = layer.id || '';
-    if (id === 'buildings-clusters' || id === 'buildings-cluster-count') return false; // need cluster: true
-    if (id.indexOf('measure-') === 0) return false;
-    if (id.indexOf('swisstopo-identify-') === 0) return false;
-    return true;
-  });
-
-  cloned.layers.forEach(function(layer) {
-    const id = layer.id || '';
-    // Without clustering there is never a point_count property: drop the filters that test it
-    if (layer.filter && JSON.stringify(layer.filter).indexOf('point_count') !== -1) delete layer.filter;
-    // Building labels at every print zoom when requested
-    if (includeLabels && id === 'buildings-labels' && layer.minzoom) delete layer.minzoom;
-    // Data layers render at any print zoom
-    if (sourceData[layer.source] && layer.minzoom) delete layer.minzoom;
-    // Selection and highlight layers are not useful in print
-    if (id.indexOf('-selected') !== -1 || id.indexOf('-highlight') !== -1 || id.indexOf('-pulse') !== -1) {
-      if (!layer.layout) layer.layout = {};
-      layer.layout.visibility = 'none';
-    }
-  });
-
-  return cloned;
-}
-
 // Render a single offscreen MapLibre map and return a canvas
 function renderOffscreenTile(style, center, zoom, width, height) {
   return new Promise(function(resolve, reject) {
@@ -312,30 +226,16 @@ function renderOffscreenTile(style, center, zoom, width, height) {
   });
 }
 
-async function renderHighResMap(params, style, center, onProgress) {
-  if (!params.needsTiling) {
-    onProgress(t('print.rendering'), 0.1);
-    const canvas = await renderOffscreenTile(style, center, params.zoom, params.canvasW, params.canvasH);
-    onProgress(t('print.rendering'), 1.0);
-    return canvas;
+// Encode and place one bounded tile at a time. Do not allocate a full A0/600dpi
+// canvas (hundreds of millions of pixels) just to feed it back into the PDF.
+async function renderHighResMap(params, style, onProgress, onTile) {
+  for (const [index, tile] of params.tiles.entries()) {
+    onProgress(t('print.rendering.tile', { current: index + 1, total: params.tiles.length }), (index + 1) / params.tiles.length);
+    const canvas = await renderOffscreenTile(style, tile.center, params.zoom, tile.width, tile.height);
+    try { onTile(canvas, tile); }
+    finally { canvas.width = 0; canvas.height = 0; }
+    await new Promise(resolve => setTimeout(resolve, 0));
   }
-
-  const grid = params.tileGrid;
-  const totalTiles = grid.tiles.length;
-  const finalCanvas = document.createElement('canvas');
-  finalCanvas.width = params.canvasW;
-  finalCanvas.height = params.canvasH;
-  const ctx = finalCanvas.getContext('2d');
-
-  for (let i = 0; i < totalTiles; i++) {
-    const tile = grid.tiles[i];
-    onProgress(t('print.rendering.tile', { current: i + 1, total: totalTiles }), (i + 1) / totalTiles);
-    const tileCanvas = await renderOffscreenTile(style, tile.center, params.zoom, tile.width, tile.height);
-    ctx.drawImage(tileCanvas, tile.px, tile.py);
-    // Small delay between tiles to let the GPU/browser recover
-    await new Promise(function(r) { setTimeout(r, 100); });
-  }
-  return finalCanvas;
 }
 
 // ===== PDF COMPOSITION =====
@@ -446,19 +346,6 @@ function drawLegend(pdf, x, y) {
   return y;
 }
 
-function computeCornerCoords(center, zoom, canvasW, canvasH) {
-  const latRad = center.lat * Math.PI / 180;
-  const mpp = metersPerPixel(center.lat, zoom);
-  const dLng = ((canvasW / 2) * mpp) / (111320 * Math.cos(latRad));
-  const dLat = ((canvasH / 2) * mpp) / 110574;
-  return {
-    nw: { lat: center.lat + dLat, lng: center.lng - dLng },
-    ne: { lat: center.lat + dLat, lng: center.lng + dLng },
-    sw: { lat: center.lat - dLat, lng: center.lng - dLng },
-    se: { lat: center.lat - dLat, lng: center.lng + dLng }
-  };
-}
-
 function formatCoord(lat, lng) {
   return lat.toFixed(5) + '° / ' + lng.toFixed(5) + '°';
 }
@@ -506,18 +393,20 @@ async function doGeneratePDF() {
   // Render the map for the area it will occupy on the page (see getPrintLayout)
   const params = computePrintParams({ width: layout.mapW, height: layout.mapH }, printScale, dpi, center);
   showProgress(t('print.rendering'), 0.05);
-  const style = cloneMapStyle(includeLabels);
-  const mapCanvas = await renderHighResMap(params, style, center, showProgress);
-
-  showProgress(t('print.composing'), 0.9);
-  await new Promise(function(r) { setTimeout(r, 50); }); // let the UI update
-
-  const mapDataUrl = mapCanvas.toDataURL('image/jpeg', 0.92);
+  const style = createPrintStyle(map.getStyle(), options.getSources ? options.getSources() : {}, includeLabels);
   const pdf = new window.jspdf.jsPDF({
     orientation: isLandscape ? 'landscape' : 'portrait',
     unit: 'mm',
     format: [dims.width, dims.height]
   });
+  await renderHighResMap(params, style, showProgress, (canvas, tile) => {
+    pdf.addImage(canvas.toDataURL('image/jpeg', 0.92), 'JPEG',
+      layout.margin + tile.px / params.canvasW * layout.mapW,
+      layout.mapY + tile.py / params.canvasH * layout.mapH,
+      tile.width / params.canvasW * layout.mapW,
+      tile.height / params.canvasH * layout.mapH);
+  });
+  showProgress(t('print.composing'), 0.9);
 
   const pw = dims.width;
   const ph = dims.height;
@@ -551,7 +440,6 @@ async function doGeneratePDF() {
   const mapAreaW = layout.mapW;
   const mapAreaH = layout.mapH;
   const mapY = layout.mapY;
-  pdf.addImage(mapDataUrl, 'JPEG', m, mapY, mapAreaW, mapAreaH);
   pdf.setDrawColor(150);
   pdf.setLineWidth(0.3);
   pdf.rect(m, mapY, mapAreaW, mapAreaH);

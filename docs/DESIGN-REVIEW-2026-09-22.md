@@ -58,7 +58,7 @@ table geometry, parcel labels and the new detail/navigation behavior.
 Results: all 21 regression scenarios, 192 interface states plus 12 browser-error
 records, 210 previews, 18 table layouts and 50 geometry checks passed. The parcel
 browser check additionally covers eight rendered parcel/info-card views and
-checks dot clearance, zoom 15.5, layer toggles and basemap restoration. Overlay
+checks dot clearance, zoom 15, layer toggles and basemap restoration. Overlay
 checks compare computed internal/external icon styles and exercise toast spacing
 with the table open/closed at desktop, 125% CSS scale, tablet and phone sizes.
 

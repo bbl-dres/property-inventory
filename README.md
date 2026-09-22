@@ -53,7 +53,8 @@ prototype is available at the path shown above.
 The two inventory prototypes use a [shared modular table component](docs/TABLE-COMPONENT.md)
 with consistent column-width presets, compact dates, and internal row IDs.
 
-See the [responsive design review](docs/DESIGN-REVIEW-2026-09-22.md),
+See the [code and performance review](docs/CODE-REVIEW-2026-09-22.md),
+[responsive design review](docs/DESIGN-REVIEW-2026-09-22.md),
 [shared image/document preview](docs/DOCUMENT-PREVIEW.md),
 [reference-data findings](docs/REFERENCE-DATA.md), and
 [parcel label positioning](docs/PARCEL-LABELS.md) for the latest implementation notes.
@@ -65,9 +66,11 @@ Measurements distinguish published values, calculated cadastral areas and plausi
 SIA 416 / RICS scenarios. Contacts are fictional; document types follow KBOB 2016.
 
 Detailed features, setup, technology, and file layouts are documented in the
-prototype READMEs linked in the table. The simple app and the tabs prototype share the same module
-layout and the same design system (18 modules, `css/tokens.css`, `css/components.css` and the design
-guide are identical copies); `test/` holds a jsdom regression harness for both, a headless-browser probe
+prototype READMEs linked in the table. Each prototype owns its runtime modules and
+remains independent: there are no cross-prototype or shared-directory code imports.
+Similar modules and design tokens are maintained as local copies; an alignment
+check reports drift, and `node test/check-independence.js` checks the import boundary.
+`test/` holds a jsdom regression harness for both, a headless-browser probe
 (`visual.js`) and a check that reports drift between the copies (`cd test && npm install && npm test && npm run align`). The height-enrichment utility also has a
 [Python implementation guide](osm-height/python_version/README.md).
 

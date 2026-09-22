@@ -39,7 +39,7 @@ function updateColumnStylesheet() {
     if (/^[a-zA-Z0-9_-]+$/.test(cls)) css += columnScope + ' .' + cls + '{display:none;}';
   });
   columnStyleEl.textContent = css;
-  setTableHiddenColumns(hiddenColumns);
+  setTableHiddenColumns(hiddenColumns, columnScope);
 }
 
 export function handleColumnToggle(checkbox) {
@@ -150,6 +150,7 @@ export function initTableSearch(inputId, clearId, onSearch) {
   });
   if (clearBtn) {
     clearBtn.addEventListener('click', function() {
+      clearTimeout(timer);
       input.value = '';
       clearBtn.hidden = true;
       onSearch('');

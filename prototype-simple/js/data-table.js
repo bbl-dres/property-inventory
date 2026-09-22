@@ -2,6 +2,7 @@
 // paging, selection and accessible headers. Schema adapters live in list/entity-tables.
 import { escapeHtml, formatDate } from './utils.js';
 import { t, getLocale, onLangChange } from './i18n.js';
+import { compareTableValues } from './table-sort.js';
 
 // Text columns share spare space up to a role-specific cap. A presentation-only
 // trailing column fills the panel without stretching the data columns.
@@ -53,19 +54,15 @@ function contentWidth(element) {
 
 const instances = new Set();
 let hiddenColumns = new Set();
+let hiddenColumnScope = '';
 
-export function setTableHiddenColumns(classes) {
+export function setTableHiddenColumns(classes, scope = '') {
   hiddenColumns = new Set(classes);
+  hiddenColumnScope = scope;
   instances.forEach(function(table) { table.layout(); });
 }
 
 function isEmpty(value) { return value === null || value === undefined || value === ''; }
-
-function compare(a, b, direction) {
-  if (isEmpty(a) || isEmpty(b)) return isEmpty(a) && isEmpty(b) ? 0 : isEmpty(a) ? 1 : -1;
-  const numeric = !isNaN(Number(a)) && !isNaN(Number(b));
-  return (numeric ? Number(a) - Number(b) : String(a).localeCompare(String(b), getLocale(), { numeric: true, sensitivity: 'base' })) * direction;
-}
 
 export function createDataTable(config) {
   const columns = config.columns;
@@ -88,7 +85,10 @@ export function createDataTable(config) {
     textDecoder.innerHTML = display;
     return escapeHtml(textDecoder.content.textContent.replace(/\s+/g, ' ').trim());
   }
-  function visibleColumns() { return columns.filter(function(col) { return !hiddenColumns.has(col.className); }); }
+  function visibleColumns() {
+    if (hiddenColumnScope && !element()?.closest(hiddenColumnScope)) return columns;
+    return columns.filter(function(col) { return !hiddenColumns.has(col.className); });
+  }
 
   function rows() {
     let data = config.getRows() || [];
@@ -101,7 +101,10 @@ export function createDataTable(config) {
       return text.includes(st.searchTerm);
     });
     const col = columns.find(function(c) { return c.key === st.sortField; });
-    if (col) data = data.slice().sort(function(a, b) { return compare(value(a, col), value(b, col), st.sortDir === 'desc' ? -1 : 1); });
+    if (col) {
+      const locale = getLocale(), direction = st.sortDir === 'desc' ? -1 : 1;
+      data = data.slice().sort(function(a, b) { return compareTableValues(value(a, col), value(b, col), direction, locale); });
+    }
     return data;
   }
 
@@ -117,6 +120,8 @@ export function createDataTable(config) {
     defs.push({ key: '_spacer' });
     widths.push(Math.max(0, available - used));
     const signature = defs.map(function(c) { return c.key; }).join('|') + widths.join('|');
+    const empty = table.querySelector('tbody .table-empty-cell, tbody .empty-row td');
+    if (empty) empty.colSpan = Math.max(1, defs.length);
     if (signature === lastLayout) return;
     lastLayout = signature;
     let group = table.querySelector('colgroup');
@@ -128,8 +133,6 @@ export function createDataTable(config) {
     table.style.width = Math.max(widths.reduce(function(sum, width) { return sum + width; }, 0), 1) + 'px';
     table.style.minWidth = minimum + 'px';
     table.dataset.minimumWidth = String(minimum);
-    const empty = table.querySelector('tbody .table-empty-cell, tbody .empty-row td');
-    if (empty) empty.colSpan = Math.max(1, defs.length);
   }
 
   function updateSortIndicator() {
@@ -192,6 +195,10 @@ export function createDataTable(config) {
     const tbody = body();
     if (!tbody) return;
     const data = rows();
+    if (selected.size) {
+      const keys = new Set(data.map(rowKey));
+      selected.forEach(key => { if (!keys.has(key)) selected.delete(key); });
+    }
     const empty = config.empty || {};
     const wrapper = empty.afterSelector && document.querySelector(empty.afterSelector);
     const oldEmpty = wrapper && wrapper.parentElement.querySelector('.empty-state');
@@ -213,8 +220,11 @@ export function createDataTable(config) {
         if (selection) html += '<td class="col-checkbox"><input type="checkbox" class="' + selection.checkboxClass + '" aria-label="Zeile auswählen"></td>';
         columns.forEach(function(col) {
           const raw = value(row, col);
-          const display = col.render ? col.render(row) : col.width === 'date' ? escapeHtml(formatDate(raw) || '—') : escapeHtml(isEmpty(raw) ? '—' : String(raw));
-          html += '<td class="' + col.className + '" data-width="' + (col.width || 'text') + '" title="' + hint(display) + '"><span class="table-cell-content">' + display + '</span></td>';
+          const plain = col.width === 'date' ? formatDate(raw) || '—' : isEmpty(raw) ? '—' : String(raw);
+          const display = col.render ? col.render(row) : escapeHtml(plain);
+          // Plain cells already have their text: only rich cells need HTML decoding.
+          const title = col.render ? hint(display) : escapeHtml(plain.replace(/\s+/g, ' ').trim());
+          html += '<td class="' + col.className + '" data-width="' + (col.width || 'text') + '" title="' + title + '"><span class="table-cell-content">' + display + '</span></td>';
         });
         return html + '<td class="table-spacer" aria-hidden="true" role="presentation"></td></tr>';
       }).join('');
@@ -253,7 +263,10 @@ export function createDataTable(config) {
       if (!selection || event.target.type !== 'checkbox') return;
       const cb = event.target;
       if (cb.id === selection.selectAllId) {
-        table.querySelectorAll('tbody tr[data-id]').forEach(function(row) { if (cb.checked) selected.add(row.dataset.id); else selected.delete(row.dataset.id); });
+        table.querySelectorAll('tbody tr[' + (config.rowIdAttr || 'data-id') + ']').forEach(function(row) {
+          const key = row.getAttribute(config.rowIdAttr || 'data-id');
+          if (cb.checked) selected.add(key); else selected.delete(key);
+        });
       } else {
         const key = cb.closest('tr').getAttribute(config.rowIdAttr || 'data-id');
         if (cb.checked) selected.add(key); else selected.delete(key);

@@ -42,7 +42,7 @@ module.exports = function(prototype) {
       check('one label per parcel', map.getSource('parcel-labels').data.features.length === state.parcelData.features.length);
       check('parcel labels share building zoom and have larger type', map.getLayer('parcels-labels').minzoom === map.getLayer('buildings-labels').minzoom && map.getLayoutProperty('parcels-labels','text-size') > map.getLayoutProperty('buildings-labels','text-size'));
       check('map labels keep one line and reserve collision space', ['parcels-labels','buildings-labels'].every(layer => map.getLayoutProperty(layer,'text-max-width') >= 100 && !map.getLayoutProperty(layer,'text-allow-overlap') && !map.getLayoutProperty(layer,'text-ignore-placement')));
-      check('building labels have alternate placements', map.getLayoutProperty('buildings-labels','text-variable-anchor').length === 4);
+      check('building labels stay above points; only parcels move', map.getLayoutProperty('buildings-labels','text-anchor') === 'bottom' && !map.getLayoutProperty('buildings-labels','text-variable-anchor') && map.getLayoutProperty('parcels-labels','text-variable-anchor-offset').length > 2);
       const toggle = document.getElementById('layer-toggle-parcels');
       toggle.checked = false; toggle.dispatchEvent(new window.Event('change'));
       check('parcel toggle hides labels', map.getLayoutProperty('parcels-labels','visibility') === 'none');

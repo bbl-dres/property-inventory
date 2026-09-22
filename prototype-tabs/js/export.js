@@ -1,4 +1,4 @@
-// Share (URL, panel, social links), the export panel (GeoJSON, CSV, KML, Shapefile-ready GeoJSON)
+// Share (URL and copy panel), the export panel (GeoJSON, CSV, KML, Shapefile-ready GeoJSON)
 // and the quick export of the table toolbar.
 
 import { state } from './state.js';
@@ -42,27 +42,7 @@ export function updateShareLink() {
   if (input) input.value = getShareUrl();
 }
 
-function openShareWindow(url) {
-  window.open(url, '_blank', 'width=600,height=400,noopener');
-}
-
-export const shareActions = {
-  shareViaEmail: function() {
-    const subject = encodeURIComponent(t('share.email.subject'));
-    const body = encodeURIComponent(t('share.email.body') + '\n\n' + getShareUrl());
-    window.location.href = 'mailto:?subject=' + subject + '&body=' + body;
-  },
-  shareViaFacebook: function() {
-    openShareWindow('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(getShareUrl()));
-  },
-  shareViaLinkedIn: function() {
-    openShareWindow('https://www.linkedin.com/sharing/share-offsite/?url=' + encodeURIComponent(getShareUrl()));
-  },
-  shareViaX: function() {
-    openShareWindow('https://twitter.com/intent/tweet?url=' + encodeURIComponent(getShareUrl()) + '&text=' + encodeURIComponent(t('share.email.subject')));
-  },
-  copyShareLink: function() { copyShareLink(); }
-};
+export const shareActions = { copyShareLink };
 
 function flashCopied(button) {
   if (!button) return;

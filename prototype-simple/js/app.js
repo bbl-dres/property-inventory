@@ -168,7 +168,7 @@ function boot() {
   initSwisstopo({ map: state.map, internalLayers: internalLayers });
   initPrintWidget(state.map, {
     getSources: function() {
-      return { buildings: state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData };
+      return { buildings: state.filteredData || state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData };
     },
     legendItems: statusLegendItems
   });

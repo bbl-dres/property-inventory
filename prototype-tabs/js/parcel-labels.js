@@ -2,7 +2,8 @@
 import polylabel from '../vendor/polylabel/polylabel.js';
 
 const R = 6378137;
-export const MAP_LABEL_MIN_ZOOM = 15.5;
+import { MAP_LABEL_MIN_ZOOM } from './portfolio-map-layers.js';
+export { MAP_LABEL_MIN_ZOOM, buildingMapLabel } from './portfolio-map-layers.js';
 const RAD = Math.PI / 180;
 const cache = new WeakMap();
 const normalLongitude = lon => ((lon + 180) % 360 + 360) % 360 - 180;
@@ -68,12 +69,6 @@ export function addParcelLabels(map, collection, idProperty) {
   });
 }
 
-// Display-only expression: omit SAP Buchungskreis, retaining WE/Objekt and zeros.
-export function buildingMapLabel(idProperty) {
-  return ['let', 'id', ['to-string', ['get', idProperty]],
-    ['slice', ['var', 'id'], ['+', ['index-of', '/', ['var', 'id']], 1]]];
-}
-
 // Circle layers are not part of symbol collision detection. A transparent icon
 // reserves their screen space without changing the visible marker or its events.
 // Add this last: higher symbol layers have first placement priority.
@@ -92,5 +87,4 @@ export function updateBuildingLabelObstacles(map, idProperty, selectedId) {
   if (!map?.getLayer('buildings-label-obstacles')) return;
   const selected = ['==', ['get', idProperty], selectedId || ''];
   map.setLayoutProperty('buildings-label-obstacles', 'icon-size', ['case', selected, 44 / 28, 1]);
-  map.setLayoutProperty('buildings-labels', 'text-radial-offset', ['case', selected, 2.25, 1.5]);
 }

@@ -1,8 +1,8 @@
 // Geodesy helpers (shared): distances, areas, centroids, Web Mercator scale.
 
 export const EARTH_RADIUS_M = 6371000;
-// Metres per pixel at the equator, zoom 0, 256 px tiles (Web Mercator)
-export const WEB_MERCATOR_MPP = 156543.03392;
+// MapLibre's world is 512 CSS pixels at zoom 0, regardless of source tile size.
+export const WEB_MERCATOR_MPP = 2 * Math.PI * 6378137 / 512;
 
 export function metersPerPixel(lat, zoom) {
   return WEB_MERCATOR_MPP * Math.cos(lat * Math.PI / 180) / Math.pow(2, zoom);
