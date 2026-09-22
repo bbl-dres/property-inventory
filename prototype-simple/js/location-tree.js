@@ -1,3 +1,4 @@
+import { preparePanelOpen, restorePanelFocus } from './panel-layout.js';
 // Location tree (shared): Land → Region → Ort → Wirtschaftseinheit → objects, in the left panel.
 // A country, region or city node sets the matching filters of the drawer (Land, Region, Ort): the tree is a
 // second way to reach the same filters, so the Filter button counts them and the pills show them. Node
@@ -340,6 +341,7 @@ export function toggleTreePanel(open) {
   if (!panel) return;
   if (open === undefined) open = !panel.classList.contains('open');
   const wasOpen = panel.classList.contains('open');
+  if (open && !wasOpen) preparePanelOpen('tree-panel');
   panel.classList.toggle('open', open);
   if (btn) {
     btn.classList.toggle('panel-open', open);
@@ -352,8 +354,8 @@ export function toggleTreePanel(open) {
       const closeBtn = document.getElementById('tree-close-btn');
       if (closeBtn) closeBtn.focus();
     }
-  } else if (!open && wasOpen && btn && panel.contains(document.activeElement)) {
-    btn.focus();
+  } else if (!open && wasOpen) {
+    restorePanelFocus(panel);
   }
   if (state.map) setTimeout(function() { state.map.resize(); }, 350);
 }

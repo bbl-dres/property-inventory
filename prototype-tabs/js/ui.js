@@ -1,3 +1,4 @@
+import { initPanelLayout, updatePanelLayout } from './panel-layout.js';
 // UI: views (map, gallery, detail), detail tabs, tools panel / phone menu, info panel
 // and browser history.
 
@@ -73,6 +74,10 @@ function setActiveView(view) {
     btn.setAttribute('aria-selected', active ? 'true' : 'false');
   });
   document.body.classList.toggle('detail-active', view === 'detail');
+  // Master-data filters affect the portfolio; they have no action on this object.
+  if (view === 'detail') toggleSmartDrawer(false);
+  document.getElementById('filter-panel-btn').disabled = view === 'detail';
+  updatePanelLayout();
   setStyleSwitcherVisible(view === 'map');
   updateDetailHeaderOffset();
 }
@@ -125,7 +130,7 @@ export function showDetailView(buildingId, tab) {
     console.error('[ui] building not found:', buildingId);
     return;
   }
-  if (!tab) tab = 'overview';
+  tab = validDetailTab(tab);
 
   rememberPreviousView();
   state.currentDetailBuilding = building;
@@ -178,7 +183,12 @@ function updateTabStripFade() {
   strip.classList.toggle('can-scroll-right', more);
 }
 
+function validDetailTab(tab) {
+  return Array.from(document.querySelectorAll('.detail-tab:not(.disabled)')).some(el => el.dataset.tab === tab) ? tab : 'overview';
+}
+
 export function activateTab(tab) {
+  tab = validDetailTab(tab);
   document.querySelectorAll('.detail-tab').forEach(function(el) {
     const active = el.dataset.tab === tab;
     el.classList.toggle('active', active);
@@ -204,7 +214,15 @@ function initDetailTabs() {
     }
     tab.addEventListener('click', select);
     tab.addEventListener('keydown', function(e) {
-      if (e.key === 'Enter' || e.key === ' ') {
+      if (['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(e.key)) {
+        e.preventDefault();
+        const tabs = Array.from(document.querySelectorAll('.detail-tab:not(.disabled)'));
+        const index = tabs.indexOf(tab);
+        const next = e.key === 'Home' ? 0 : e.key === 'End' ? tabs.length - 1 :
+          (index + (e.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
+        tabs[next].focus();
+        tabs[next].click();
+      } else if (e.key === 'Enter' || e.key === ' ') {
         e.preventDefault();
         select();
       }
@@ -450,6 +468,7 @@ export function comingSoon() {
 // ===== INIT =====
 
 export function initUI() {
+  initPanelLayout();
   initAccordion({
     onOpen: function(key) {
       if (key === 'share') updateShareLink();

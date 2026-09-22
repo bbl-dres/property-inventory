@@ -25,65 +25,6 @@ body.detail-active .header-detail {
   transition: padding-right var(--transition-slow);
 }
 
-/* Align header elements with detail-content when the drawer is open (drawer width + content padding) */
-body:has(#filter-panel.open) .header-detail .detail-header,
-body:has(#filter-panel.open) .header-detail .detail-tabs {
-  padding-right: calc(var(--drawer-width) + var(--page-gutter));
-}
-
-body.detail-active:has(#filter-panel.open) .detail-content {
-  padding-right: calc(var(--drawer-width) + var(--page-gutter));
-}
-
-/* Drawer in the detail view: fixed below the full header (the page scrolls) */
-body.detail-active #filter-panel:not(.open),
-body.detail-active #tree-panel:not(.open) {
-  height: 0;
-  min-height: 0;
-  width: 0;
-  min-width: 0;
-  padding: 0;
-  border: none;
-  position: absolute; /* remove from flow when closed */
-}
-
-body.detail-active #filter-panel.open {
-  position: fixed;
-  top: var(--header-total-height);
-  right: 0;
-  height: calc(100vh - var(--header-total-height));
-  z-index: var(--z-panel);
-}
-
-body.detail-active #tree-panel.open {
-  position: fixed;
-  top: var(--header-total-height);
-  left: 0;
-  height: calc(100vh - var(--header-total-height));
-  z-index: var(--z-panel);
-}
-
-body.detail-active:has(#tree-panel.open) .detail-content {
-  padding-left: calc(var(--tree-panel-width) + var(--page-gutter));
-}
-
-/* Their resize grips follow the fixed panels */
-body.detail-active #tree-panel.open + .panel-resize-handle,
-body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
-  position: fixed;
-  top: var(--header-total-height);
-  bottom: 0;
-  z-index: calc(var(--z-panel) + 1);
-}
-
-body.detail-active #tree-panel.open + .panel-resize-handle {
-  left: var(--tree-panel-width);
-}
-
-body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
-  right: var(--drawer-width);
-}
-
 .btn-edit {
   background: var(--grey-900);
   color: var(--white);
@@ -514,16 +455,6 @@ body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
 
 /* Tablet */
 @media screen and (max-width: 1024px) {
-  body:has(#filter-panel.open) .header-detail .detail-header,
-  body:has(#filter-panel.open) .header-detail .detail-tabs,
-  body.detail-active:has(#filter-panel.open) .detail-content {
-    padding-right: calc(340px + var(--page-gutter));
-  }
-
-  body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
-    right: 340px;
-  }
-
   .detail-grid {
     gap: var(--space-4);
   }
@@ -563,30 +494,6 @@ body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
   body.detail-active #header {
     position: sticky;
     top: var(--header-sticky-offset, 0px);
-  }
-
-  /* No padding adjustment on phones — the drawer is a full-screen sheet */
-  body:has(#filter-panel.open) .header-detail .detail-header {
-    padding-right: var(--space-4);
-  }
-
-  body:has(#filter-panel.open) .header-detail .detail-tabs {
-    padding-right: 0;
-  }
-
-  body.detail-active #filter-panel.open,
-  body.detail-active #tree-panel.open {
-    position: fixed;
-    top: 0;
-    height: auto;
-  }
-
-  body.detail-active:has(#tree-panel.open) .detail-content {
-    padding-left: var(--space-3);
-  }
-
-  body.detail-active:has(#filter-panel.open) .detail-content {
-    padding-right: var(--space-3);
   }
 
   .detail-grid {

@@ -1,3 +1,4 @@
+import { preparePanelOpen, restorePanelFocus } from './panel-layout.js';
 // Filters: URL state, filter drawer, option lists, pills, object count and the map filter.
 
 import { state } from './state.js';
@@ -260,7 +261,9 @@ export function toggleSmartDrawer(open) {
   const drawerBtn = document.getElementById('filter-panel-btn');
   if (!drawer || !drawerBtn) return;
   if (open === undefined) open = !drawer.classList.contains('open');
+  if (open && state.currentView === 'detail') return;
   const wasOpen = drawer.classList.contains('open');
+  if (open && !wasOpen) preparePanelOpen('filter-panel');
 
   drawer.classList.toggle('open', open);
   drawerBtn.classList.toggle('panel-open', open);
@@ -271,8 +274,8 @@ export function toggleSmartDrawer(open) {
     // Full-screen sheet on phones: move focus into it
     const closeBtn = document.getElementById('drawer-close-btn');
     if (closeBtn) closeBtn.focus();
-  } else if (!open && wasOpen && drawer.contains(document.activeElement)) {
-    drawerBtn.focus();
+  } else if (!open && wasOpen) {
+    restorePanelFocus(drawer);
   }
 
   // Resize the map after the transition completes

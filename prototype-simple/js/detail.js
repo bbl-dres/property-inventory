@@ -164,7 +164,23 @@ function initCollapsibleSections() {
     chevron.className = 'material-symbols-outlined detail-overline-chevron';
     chevron.textContent = 'expand_more';
     overline.appendChild(chevron);
-    overline.addEventListener('click', function() { this.classList.toggle('collapsed'); });
+    overline.setAttribute('role', 'button');
+    overline.tabIndex = 0;
+    overline.setAttribute('aria-expanded', String(!overline.classList.contains('collapsed')));
+    const card = overline.nextElementSibling;
+    if (card) {
+      // Include the tab name to keep generated IDs unique; preserve existing hooks.
+      if (!card.id) card.id = (overline.closest('[data-content]')?.dataset.content || 'detail') +
+        '-section-' + Array.from(overline.parentElement.children).indexOf(overline);
+      overline.setAttribute('aria-controls', card.id);
+    }
+    overline.addEventListener('click', function() {
+      this.classList.toggle('collapsed');
+      this.setAttribute('aria-expanded', String(!this.classList.contains('collapsed')));
+    });
+    overline.addEventListener('keydown', function(event) {
+      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }
+    });
   });
 }
 
@@ -172,14 +188,14 @@ function initCollapsibleSections() {
 
 const labelDescriptions = {
   // Stammdaten
-  'Status': 'Aktueller Status des Objekts im SAP-System (bbl_stat)',
+  'Bewirtschaftungsstatus': 'Betrieblicher Status im Demoportfolio, getrennt vom Gebäudestatus im GWR',
   'Bezeichnung': 'Offizielle Objektbezeichnung gemäss SAP (bbl_bez)',
   'ID': 'Interne BBL-ID: Buchungskreis / Wirtschaftseinheit / Teilobjekt (bbl_id)',
   'Objektart 1': 'Gebäudeart Stufe 1 gemäss SAP (bbl_gbda1)',
   'Objektart 2': 'Gebäudeart Stufe 2 gemäss SAP (bbl_gbda2)',
-  'Art Eigentum': 'Eigentumsverhältnis: Eigentum Bund, Miete, etc. (bbl_eigen)',
+  'Art Eigentum': 'Art Eigentum gemäss Referenzkatalog: Eigentum, Anmiete oder Spezialfall',
   'Objektstrategie': 'Strategische Ausrichtung: Erhalten, Optimieren, Veräussern (bbl_ostr)',
-  'Mietmodell': 'Mietmodell gemäss SAP: Vollkosten-, Kosten-, Marktmiete (bbl_mietm)',
+  'Mietmodell': 'Mietmodell gemäss BBL-Referenzkatalog; ohne belegte Zuordnung keine Angabe',
   'Teilportfolio': 'Teilportfolio-Zuordnung gemäss SAP (bbl_port)',
   'Portfoliogruppe': 'Übergeordnete Teilportfoliogruppe (bbl_port2)',
   'Baujahr': 'Erstellungsjahr des Gebäudes (bbl_bjahr)',
@@ -209,7 +225,7 @@ const labelDescriptions = {
   'Geschossfläche GF': 'Brutto-Geschossfläche aller Geschosse nach SIA 416 (garea_gf)',
   'GF Oberirdisch': 'Geschossfläche der oberirdischen Geschosse (garea_gfo)',
   'GF Unterirdisch': 'Geschossfläche der unterirdischen Geschosse (garea_gfu)',
-  'Genauigkeit': 'Angabe zur Datenherkunft: Vermessen, Geschätzt, oder AV',
+  'Genauigkeit': 'Bemessungsgenauigkeit gemäss Referenzkatalog, z. B. Gemessen, Geschätzt oder Unbekannt; die Quelle wird separat geführt',
   'Netto-Geschossfl. NGF': 'Nutzbare Fläche ohne Konstruktionsfläche nach SIA 416 (garea_ngf)',
   'Nutzfläche NF': 'Summe Haupt- und Nebennutzfläche nach SIA 416 (garea_nf)',
   'Hauptnutzfläche HNF': 'Fläche für die Hauptnutzung des Gebäudes nach SIA 416 (garea_hnf)',

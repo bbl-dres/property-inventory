@@ -112,7 +112,7 @@
 /* Grid row: label | value | info icon column; horizontal padding matches .detail-overline */
 .detail-grid-row {
   display: grid;
-  grid-template-columns: 1fr 1fr var(--control-xs);
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) var(--control-xs);
   gap: var(--space-4) var(--space-3);
   padding: var(--space-2) var(--space-3);
   border-bottom: var(--border-subtle);
@@ -252,3 +252,6 @@
     padding: var(--space-2);
   }
 }
+
+.detail-grid-row > * { min-width: 0; overflow-wrap: anywhere; }
+.detail-overline:focus-visible { outline: 2px solid var(--interactive-blue); outline-offset: -2px; }
