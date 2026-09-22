@@ -34,7 +34,7 @@ basemaps, the swisstopo services and the placeholder photos come from the intern
 | Esri Hybrid Reference (`www.arcgis.com`, `cdn.arcgis.com`, `basemaps.arcgis.com`) | Roads, boundaries and place labels above the imagery in "Hybrid" | [Hybrid Reference Layer](https://www.arcgis.com/home/item.html?id=30d6b8271e1849cd9c3042060001f425); Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community. Public style, sprite and vector tiles; attribution is shown on the map. Arial labels are adapted to the existing CARTO Open Sans/Noto glyph service. |
 | swisstopo WMS (`wms.geo.admin.ch`) | Rendering of the Geokatalog layers added to the map | © swisstopo |
 | geoadmin API (`api3.geo.admin.ch`) | Location and layer search (SearchServer), topics and catalog trees (CatalogServer), layer legends (MapServer legend), feature identification (identify) | No key required |
-| Unsplash (`images.unsplash.com`) | Placeholder photos of the detail carousel (`placeholderImages` in `js/config.js`) and sample values in `data/swagger.json` | [Unsplash License](https://unsplash.com/license); placeholders only |
+| Unsplash (`images.unsplash.com`) | Example URLs in `data/swagger.json` only | [Unsplash License](https://unsplash.com/license); portfolio photos are local BBL source images |
 
 The labeled aerial option uses Esri’s current vector Hybrid Reference Layer, the reference component of [Imagery Hybrid](https://www.arcgis.com/home/item.html?id=86265e5a4bbb4187a59719cf134e0018). It avoids the legacy raster World Hybrid Overlay and World Boundaries and Places services, which Esri has [scheduled for retirement](https://www.esri.com/arcgis-blog/products/arcgis-living-atlas/announcements/sunsetting-legacy-basemaps). The source is fetched when this basemap is selected; no API key is configured in the prototypes.
 
@@ -43,7 +43,15 @@ The labeled aerial option uses Esri’s current vector Hybrid Reference Layer, t
 - Share links to X (Twitter), Facebook and LinkedIn in the "Teilen" section open the respective site with the current URL.
 - Generated KML files reference the standard Google Earth paddle icons (`maps.google.com/mapfiles/kml/paddle/`); the KML viewer fetches them, not this app.
 
-## Not third-party
+## Portfolio source data and photographs
 
-All data (`data/*.geojson`, `data/*.json`) is fictional and was created for this prototype. The body
-font is the system font stack; the icon font above is the only web font.
+The portfolio combines public BBL/EDA facts, swisstopo/BFS/cantonal register and parcel
+data, OpenStreetMap geocodes (ODbL), and fictional operational records. See the
+[source and methodology guide](../scripts/portfolio/README.md).
+
+The 42 local photographs in `../assets/portfolio/` retain the credited photographers'
+copyright and are excluded from the repository MIT licence. Each image has
+[attribution and an original source link](../assets/portfolio/ATTRIBUTION.md);
+public availability does not assert an open licence.
+
+The body font is the system font stack; the icon font above is the only web font.

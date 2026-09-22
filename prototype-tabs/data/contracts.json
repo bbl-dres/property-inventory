@@ -1,542 +1,535 @@
 {
+  "dataVersion": "2026-09-22",
   "contracts": [
     {
-      "contractId": "a577c15f-a616-41b1-bb66-85f2bbf5ca29",
-      "type": "Wartungsvertrag",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Siemens Building Technologies AG",
-      "amount": 85000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "cb0a8510-2904-5804-994d-4318eeeb79eb",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 199200,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "4840-V1",
+      "legacyId": "DEMO-4840-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "0118b3bf-b58d-44a3-b150-82bcaf42a480",
+      "buildingIds": [
+        "1080/4840/AF"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "7f27ee36-03d4-5f80-8dcf-de9de6f8cfdc",
       "type": "Reinigungsvertrag",
-      "buildingIds": [
-        "1080/4840/AF"
-      ],
-      "validFrom": "2021-04-01T00:00:00Z",
-      "validUntil": "2026-03-31T00:00:00Z",
-      "contractPartner": "ISS Facility Services AG",
-      "amount": 120000,
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 224100,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "4840-V2",
+      "legacyId": "DEMO-4840-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "1830a432-da31-4283-8578-3ac557596f14",
-      "type": "Sicherheitsdienst",
-      "buildingIds": [
-        "1080/4840/AF"
-      ],
-      "validFrom": "2019-01-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Securitas AG",
-      "amount": 95000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "4840-V3",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "55576a74-59f8-4837-bf1c-8e60c5b6de39",
-      "type": "Wartungsvertrag",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "validFrom": "2021-01-01T00:00:00Z",
-      "validUntil": "2026-12-31T00:00:00Z",
-      "contractPartner": "Bosch Building Technologies GmbH",
-      "amount": 42000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "3fe17820-31b4-5ecd-9005-4365ee1759c5",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 61600,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5210-V1",
+      "legacyId": "DEMO-5210-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "c5aebc6a-13b8-4f7f-999a-2e1aedf148ff",
-      "type": "Sicherheitsdienst",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "validFrom": "2020-07-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Kötter Security GmbH",
-      "amount": 78000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "5210-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "8e854c5b-c5dc-4a52-a67a-a493a236c1a2",
-      "type": "Wartungsvertrag",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "validFrom": "2018-01-01T00:00:00Z",
-      "validUntil": "2024-12-31T00:00:00Z",
-      "contractPartner": "Johnson Controls AG",
-      "amount": 65000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "3120-V1",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "2c4ef3a9-5140-4087-ac27-e0da3cb76790",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "f51aca12-6bc7-59f0-9ced-70c77d238fc8",
       "type": "Reinigungsvertrag",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Vebego AG",
-      "amount": 48000,
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 69300,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "3120-V2",
+      "legacyId": "DEMO-5210-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "389860aa-9907-4f90-8094-a022b7e9d8c0",
-      "type": "Logistikdienstleistung",
       "buildingIds": [
-        "1080/3120/AB"
+        "9900/9002/AA"
       ],
-      "validFrom": "2019-06-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Planzer Transport AG",
-      "amount": 180000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "3120-V3",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "40b4bd32-81a2-46f2-ba01-e0df9f38baf8",
-      "type": "Heizungswartung",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "validFrom": "2017-01-01T00:00:00Z",
-      "validUntil": "2022-12-31T00:00:00Z",
-      "contractPartner": "Meier Tobler AG",
-      "amount": 12000,
-      "currency": "CHF",
-      "status": "Ausgelaufen",
-      "legacyId": "3120-V4",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "36755f2b-3220-4587-bb91-5fc7ed80e159",
-      "type": "Mietvertrag",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": "2030-12-31T00:00:00Z",
-      "contractPartner": "Third Avenue Tower LLC",
-      "amount": 450000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "5320-V1",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "27f65319-18d6-4bc0-bc64-e552d74fe506",
-      "type": "Sicherheitsdienst",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "validFrom": "2021-01-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Allied Universal Security",
-      "amount": 125000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "5320-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "ae85fdbe-eaf8-4e14-82b6-99f9a6f9c90d",
-      "type": "Sanierungsvertrag",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "validFrom": "2024-01-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Implenia Schweiz AG",
-      "amount": 2500000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "4100-V1",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "89eb0e80-7a1e-43f6-b3b0-73bf14385ddd",
-      "type": "Architekturleistung",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "validFrom": "2023-06-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Herzog & de Meuron",
-      "amount": 350000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "4100-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "8247e3f0-0570-40d3-b359-faa6d14b33ad",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "4c4f97f4-4dbb-552d-9a41-e30339822c03",
       "type": "Wartungsvertrag",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "validFrom": "2018-01-01T00:00:00Z",
-      "validUntil": "2023-12-31T00:00:00Z",
-      "contractPartner": "Honeywell Schweiz AG",
-      "amount": 35000,
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 247000,
       "currency": "CHF",
-      "status": "Ausgelaufen",
-      "legacyId": "4100-V3",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9002-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "27b650cf-300d-4c1c-b2f6-9dc2cf3434f2",
-      "type": "Wartungsvertrag",
       "buildingIds": [
-        "1080/5410/AA"
+        "9900/9002/AA"
       ],
-      "validFrom": "2019-04-01T00:00:00Z",
-      "validUntil": "2025-03-31T00:00:00Z",
-      "contractPartner": "Daikin Industries Ltd",
-      "amount": 55000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "5410-V1",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "cb65ae93-ae44-4627-b16f-3e0d4ce19057",
-      "type": "Sicherheitsdienst",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "ALSOK Co., Ltd.",
-      "amount": 92000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "5410-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "b5748b11-0c63-4305-9c94-a24432ad9e0f",
-      "type": "Gartenpflege",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "validFrom": "2018-04-01T00:00:00Z",
-      "validUntil": "2024-03-31T00:00:00Z",
-      "contractPartner": "Tokyo Green Service Co.",
-      "amount": 18000,
-      "currency": "CHF",
-      "status": "Gekündigt",
-      "legacyId": "5410-V3",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "57885867-3bc9-475c-8ac3-469e7f259951",
-      "type": "Heizungswartung",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "validFrom": "2016-01-01T00:00:00Z",
-      "validUntil": "2026-12-31T00:00:00Z",
-      "contractPartner": "IWB Industrielle Werke Basel",
-      "amount": 8500,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "2800-V1",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "cbe3b0b8-e0b3-47ce-b4b6-e3e225f19c94",
-      "type": "Hauswartung",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "validFrom": "2020-07-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Livit AG",
-      "amount": 42000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "2800-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "283532cd-850f-4924-9ca2-dd50d6fbbf14",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "be9e5371-b0a7-5f55-84e8-2512b37f3415",
       "type": "Reinigungsvertrag",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "validFrom": "2021-01-01T00:00:00Z",
-      "validUntil": "2024-12-31T00:00:00Z",
-      "contractPartner": "Clean Expert GmbH",
-      "amount": 28000,
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 277800,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "2800-V3",
+      "legacyId": "DEMO-9002-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "f99b9640-f398-47bc-8db5-70dca411a093",
-      "type": "Klimaanlagenwartung",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9003/AA"
       ],
-      "validFrom": "2022-01-01T00:00:00Z",
-      "validUntil": "2027-12-31T00:00:00Z",
-      "contractPartner": "Carrier do Brasil",
-      "amount": 38000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "3c6510cc-c376-515a-bb18-59288f266ab5",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 389900,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5510-V1",
+      "legacyId": "DEMO-9003-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "65544b87-9be1-4411-acba-300ae0a227bf",
-      "type": "Sicherheitsdienst",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9003/AA"
       ],
-      "validFrom": "2020-06-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Prosegur Brasil",
-      "amount": 65000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "5d29aa6c-0199-593d-a210-46ee96587f29",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 438600,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5510-V2",
+      "legacyId": "DEMO-9003-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
       }
     },
     {
-      "contractId": "91f339c6-6f47-458d-a061-29a44cf37529",
-      "type": "Gartenpflege",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9004/AA"
       ],
-      "validFrom": "2022-01-01T00:00:00Z",
-      "validUntil": "2024-12-31T00:00:00Z",
-      "contractPartner": "Verde Vida Ltda",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "0aabfee7-d5fe-530d-acd7-805e2df62b86",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 435600,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9004-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9004/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "f1730a94-dbc2-54af-9556-7cf3923b5073",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 490000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9004-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "18c280f7-e2dc-59b6-9096-503f443afce7",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 94700,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9005-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "d9a96391-073c-5a90-87f8-fc5130b1aebb",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 106600,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9005-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "a0f94a99-98bd-5ac3-8b3d-2022e4fa634f",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 17800,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9006-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "f5900535-9556-500c-b56b-dd6104c0d8ce",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 20100,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9006-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "a4fd8964-16be-53e3-83ed-8c4e0e305cfd",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 20900,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9007-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "104a8951-8532-530d-a6ed-aac723af43fe",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 23600,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9007-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "168d749b-ead8-596e-a288-3313ceb84bad",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 35600,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9008-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "4354b153-4122-55d2-a6e7-59fa76d146f1",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 40000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9008-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "93e217d4-0bd9-5be2-a8f9-49c0cec83c49",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
       "amount": 12000,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5510-V3",
+      "legacyId": "DEMO-9009-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "f32c2cf9-453b-4f1c-9faf-3c07df4c9f0a",
-      "type": "Bauvertrag",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9009/AA"
       ],
-      "validFrom": "2023-07-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Marti AG Bauunternehmung",
-      "amount": 45000000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "e2fff531-3028-5236-94e2-9c43ad49fef2",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 13600,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "1950-V1",
+      "legacyId": "DEMO-9009-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "bb7563e3-29e5-488c-b180-b4c92e8d2fb2",
-      "type": "IT-Infrastruktur",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9010/AA"
       ],
-      "validFrom": "2024-01-01T00:00:00Z",
-      "validUntil": "2034-12-31T00:00:00Z",
-      "contractPartner": "Swisscom (Schweiz) AG",
-      "amount": 2500000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "1950-V2",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "08d7aebe-f014-4b0d-b114-0ee7aa7118f3",
-      "type": "Kühlanlagenwartung",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "validFrom": "2025-01-01T00:00:00Z",
-      "validUntil": "2030-12-31T00:00:00Z",
-      "contractPartner": "Schneider Electric Schweiz AG",
-      "amount": 180000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "1950-V3",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": false
-      }
-    },
-    {
-      "contractId": "27788036-7f4a-4210-8d7e-e97c1a9ac280",
-      "type": "Sicherheitsdienst",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "validFrom": "2025-01-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Protectas SA",
-      "amount": 320000,
-      "currency": "CHF",
-      "status": "Aktiv",
-      "legacyId": "1950-V4",
-      "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
-      }
-    },
-    {
-      "contractId": "b530445b-80f6-4e4d-95e6-c05aee495b0a",
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "fc1c76c8-562b-509f-a596-64819f4404e8",
       "type": "Wartungsvertrag",
-      "buildingIds": [
-        "1080/5620/AA"
-      ],
-      "validFrom": "2017-01-01T00:00:00Z",
-      "validUntil": "2025-12-31T00:00:00Z",
-      "contractPartner": "Daikin Australia Pty Ltd",
-      "amount": 22000,
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 44400,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5620-V1",
+      "legacyId": "DEMO-9010-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     },
     {
-      "contractId": "4d3dc347-5d26-4159-8d1e-a0e9a111ae13",
-      "type": "Sicherheitsdienst",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9010/AA"
       ],
-      "validFrom": "2018-07-01T00:00:00Z",
-      "validUntil": null,
-      "contractPartner": "Wilson Security",
-      "amount": 48000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "db9e6112-473e-59df-86ad-621652deb404",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 50000,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5620-V2",
+      "legacyId": "DEMO-9010-V2",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
-        "autoRenewal": true
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
       }
     },
     {
-      "contractId": "ba592b80-b923-481f-b27e-7661a8cb6166",
-      "type": "Gartenpflege",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9011/AA"
       ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": "2024-12-31T00:00:00Z",
-      "contractPartner": "Canberra Landscaping Services",
-      "amount": 15000,
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "3931ceeb-b72f-543c-9232-568a0529ea4c",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 16900,
       "currency": "CHF",
       "status": "Aktiv",
-      "legacyId": "5620-V3",
+      "legacyId": "DEMO-9011-V1",
       "extensionData": {
-        "paymentTerms": "Jährlich im Voraus",
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "9ec13feb-a0b0-5ce7-8c14-232548d4e6d7",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 19000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9011-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "794f171d-6d13-5075-8cd0-c7eaa9deb6ae",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 7100,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9012-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "64312c6c-900c-50f3-9f53-d4e4278a6f7e",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 8000,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9012-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "282b0f0a-73af-51b8-a399-1026ff4ebe34",
+      "type": "Wartungsvertrag",
+      "contractPartner": "Haustechnik Muster AG (fiktiv)",
+      "amount": 28500,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9013-V1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
+        "autoRenewal": false
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-01-01T00:00:00Z",
+      "validUntil": "2028-12-31T00:00:00Z",
+      "contractId": "6d5f38ed-36e8-5861-9ea9-f0255b323fa5",
+      "type": "Reinigungsvertrag",
+      "contractPartner": "Arealservice Muster AG (fiktiv)",
+      "amount": 32100,
+      "currency": "CHF",
+      "status": "Aktiv",
+      "legacyId": "DEMO-9013-V2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "paymentTerms": "Jahresbetrag, quartalsweise Zahlung",
         "autoRenewal": false
       }
     }

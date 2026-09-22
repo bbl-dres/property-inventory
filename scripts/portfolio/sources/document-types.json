@@ -1,0 +1,12 @@
+{
+  "edition": "KBOB/IPB Anhang C, Version 2016-01",
+  "sourceUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+  "types": {
+    "O03001": "Betriebsführungshandbuch",
+    "O07003": "Wartungsplan",
+    "O12001": "Publikation",
+    "B14005": "Flächen/Volumenberechnung",
+    "B14102": "Kostenstatistik",
+    "B14103": "Energiestatistik"
+  }
+}

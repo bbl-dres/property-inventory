@@ -1,0 +1,17 @@
+{
+  "classification": "BKP",
+  "standard": "SN 506 500:2017",
+  "retrievedAt": "2026-09-22",
+  "sourceUrl": "https://www.crb.ch/de/normen-standards/baukostenplane/baukostenplan-bkp",
+  "structureSourceUrl": "https://www.crb.ch/_Resources/Persistent/6/f/8/5/6f85df34c0bb4ab9a796335b20f81b566376d28f/Auszug_BKP2017_de.pdf",
+  "groupSourceUrl": "https://www.stadt-zuerich.ch/content/dam/web/de/politik-verwaltung/statistik-und-daten/publikationen-dienstleistungen/publikationen/periodika/zuercher-index-der-wohnbaupreise/ZIW_2019_Web.pdf",
+  "groupSourceNote": "Selected two-digit BKP groups used in Statistik Stadt Zürich's public construction-price report (BKP 2017). Display labels describe the work packages; this is not a reproduction of the complete CRB catalogue.",
+  "groups": {
+    "23": "Elektroanlagen",
+    "24": "Heizungs-, Lüftungs- und Klimaanlagen",
+    "25": "Sanitäranlagen",
+    "27": "Ausbau 1",
+    "28": "Ausbau 2",
+    "29": "Honorare"
+  }
+}

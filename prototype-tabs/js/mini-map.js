@@ -20,7 +20,7 @@ const MINI_MAP_3D_LAYER = {
     'fill-extrusion-color': '#A8B0B7',
     'fill-extrusion-height': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_height'], 5]],
     'fill-extrusion-base': ['interpolate', ['linear'], ['zoom'], 15, 0, 15.05, ['coalesce', ['get', 'render_min_height'], 0]],
-    'fill-extrusion-opacity': 0.6
+    'fill-extrusion-opacity': 1
   }
 };
 
@@ -29,16 +29,18 @@ function add3DBuildings() {
   const vectorSourceId = findVectorSourceId(style);
   if (!vectorSourceId) return;
   const layers = style.layers || [];
-  // Insert below the first label layer so street names stay readable; hide the basemap's own
-  // flat building layers to prevent double-rendering that causes a "transparent" look
-  let labelLayerId;
-  layers.forEach(function(layer) {
-    if (!labelLayerId && layer.type === 'symbol' && layer.layout && layer.layout['text-field']) labelLayerId = layer.id;
+  // CARTO has an early waterway label BEFORE its roads. Insert above all ground
+  // geometry, below the final label block, so roads cannot paint over roofs.
+  let lastGeometryIndex = -1;
+  layers.forEach(function(layer, index) {
+    if (layer.type !== 'symbol') lastGeometryIndex = index;
+    // Hide the basemap's flat buildings to avoid drawing the footprints twice.
     if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
       miniMap.setLayoutProperty(layer.id, 'visibility', 'none');
     }
   });
-  miniMap.addLayer(Object.assign({}, MINI_MAP_3D_LAYER, { source: vectorSourceId }), labelLayerId);
+  const firstOverlay = layers[lastGeometryIndex + 1];
+  miniMap.addLayer(Object.assign({}, MINI_MAP_3D_LAYER, { source: vectorSourceId }), firstOverlay && firstOverlay.id);
 }
 
 export function showMiniMap(coords) {

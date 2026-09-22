@@ -41,7 +41,7 @@
 <body>
     <!-- Prototype warning banner (always visible, all views) -->
     <div id="prototype-banner" class="prototype-banner" role="note">
-        <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp</strong> <span class="prototype-banner-text-long" data-i18n="banner.prototype.text">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span><span class="prototype-banner-text-short" data-i18n="banner.prototype.short">Alle Daten sind fiktiv.</span></span>
+        <span class="prototype-banner-text"><strong data-i18n="banner.prototype.title">Prototyp</strong> <span class="prototype-banner-text-long" data-i18n="banner.prototype.text">Reale Standorte und Fotos, ergänzt um fiktive Betriebsdaten. Nur zu Demonstrationszwecken.</span><span class="prototype-banner-text-short" data-i18n="banner.prototype.short">Reale Standorte · Demodaten</span></span>
     </div>
 
     <!-- Fullscreen image lightbox -->
@@ -534,10 +534,6 @@
                                     <div class="columns-list" id="columns-list" data-columns-tab="buildings">
                                         <!-- Sorted to match DATAMODEL.json -->
                                         <div class="columns-group-label" data-i18n="columns.group.master">Stammdaten</div>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_id"> ID (bbl_id)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_buch"> Buchungskreis (bbl_buch)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_we"> Wirtschaftseinheit (bbl_we)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_obj"> Teilobjekt (bbl_obj)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_bez"> Bezeichnung (bbl_bez)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-bbl_stat"> Status (bbl_stat)</label>
                                         <!-- Adresse -->
@@ -573,8 +569,6 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bbl_pvtw"> Portfoliomanager (bbl_pvtw)</label>
                                         <!-- Amtliche Vermessung -->
                                         <div class="columns-group-label" data-i18n="columns.group.survey">Amtliche Vermessung</div>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egid"> EGID (av_egid)</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-av_egrid"> EGRID (av_egrid)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gem"> Gemeindename (bfs_gem)</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-bfs_gemnr"> Gemeindenr. (bfs_gemnr)</label>
                                         <!-- Bauzone -->
@@ -589,7 +583,6 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-kgs_nr"> KGS Nummer (kgs_nr)</label>
                                         <!-- Sonstiges -->
                                         <div class="columns-group-label" data-i18n="columns.group.other">Sonstiges</div>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-objectid"> OBJECTID (objectid)</label>
                                         <!-- Flächen -->
                                         <div class="columns-group-label" data-i18n="columns.group.areas">Flächen (SIA 416/380)</div>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-garea_gf"> GF (garea_gf)</label>
@@ -624,7 +617,6 @@
                                     </div>
                                     <!-- Parcel columns (shown when Grundstücke tab active) -->
                                     <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> <span data-i18n="col.parcel.id">ID</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> <span data-i18n="col.parcel.plot">Grundstück-Nr.</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> <span data-i18n="col.parcel.municipality">Gemeinde</span></label>
@@ -634,20 +626,13 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
                                     </div>
                                     <div class="columns-list" id="landcover-columns-list" data-columns-tab="landcovers" style="display: none;">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-bbl_id"> Grundstück ID</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-geb_id"> Gebäude ID</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_type"> Typ</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-lc_area"> Fläche</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_stat"> AV Status</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-av_egid"> EGID</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-av_egrid"> EGRID</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lat"> Lat</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-wgs84_lon"> Lon</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_e"> LV95 E</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-lv95_n"> LV95 N</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid"> FID</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-fid_src"> FID Quelle</label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-objectid"> OBJECTID</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-etl_ts"> ETL</label>
                                     </div>
                                 </div>
@@ -659,9 +644,7 @@
                     <div class="table-tab-content active" id="buildings-table-content">
                         <div class="list-table-wrapper">
                             <table class="list-table" id="list-table">
-                                <thead>
-                                    <tr id="list-table-header-row"></tr>
-                                </thead>
+                                <thead><tr id="list-table-header-row"></tr></thead>
                                 <tbody id="list-body"></tbody>
                             </table>
                         </div>
@@ -693,18 +676,7 @@
                     <div class="table-tab-content" id="parcels-table-content">
                         <div class="list-table-wrapper">
                             <table class="list-table" id="parcels-table">
-                                <thead>
-                                    <tr>
-                                        <th class="col-parcel-id"><span data-i18n="col.parcel.id">ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-plot"><span data-i18n="col.parcel.plot">Grundstück-Nr.</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-name"><span data-i18n="col.parcel.name">Bezeichnung</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-municipality"><span data-i18n="col.parcel.municipality">Gemeinde</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-canton"><span data-i18n="col.parcel.canton">Kanton</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-area"><span data-i18n="col.parcel.area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-zone"><span data-i18n="col.parcel.zone">Nutzungszone</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-ownership"><span data-i18n="col.parcel.ownership">Eigentum</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                    </tr>
-                                </thead>
+                                <thead><tr></tr></thead>
                                 <tbody id="parcels-body"></tbody>
                             </table>
                         </div>
@@ -735,25 +707,7 @@
                     <div class="table-tab-content" id="landcovers-table-content">
                         <div class="list-table-wrapper">
                             <table class="list-table" id="landcovers-table">
-                                <thead>
-                                    <tr>
-                                        <th class="col-lc-bbl_id"><span data-i18n="col.lc.bbl_id">Grundstück ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-geb_id"><span data-i18n="col.lc.geb_id">Gebäude ID</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-av_type"><span data-i18n="col.lc.av_type">Typ</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-lc_area"><span data-i18n="col.lc.lc_area">Fläche</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-av_stat"><span data-i18n="col.lc.av_stat">AV Status</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-av_egid">EGID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-av_egrid">EGRID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-wgs84_lat">Lat <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-wgs84_lon">Lon <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-lv95_e">LV95 E <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-lv95_n">LV95 N <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-fid">FID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-fid_src"><span data-i18n="col.lc.fid_src">FID Quelle</span> <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-objectid">OBJECTID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-lc-etl_ts">ETL <span class="material-symbols-outlined">unfold_more</span></th>
-                                    </tr>
-                                </thead>
+                                <thead><tr></tr></thead>
                                 <tbody id="landcovers-body"></tbody>
                             </table>
                         </div>
@@ -975,12 +929,20 @@
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-garea-acu">–</span></div>
                         <div class="detail-grid-spacer"></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ngf">Netto-Geschossfl. NGF</span><span class="detail-value" id="detail-garea-ngf">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">Konstruktionsfläche KF</span><span class="detail-value" id="detail-garea-kf">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nf">Nutzfläche NF</span><span class="detail-value" id="detail-garea-nf">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_hnf">Hauptnutzfläche HNF</span><span class="detail-value" id="detail-garea-hnf">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nnf">Nebennutzfläche NNF</span><span class="detail-value" id="detail-garea-nnf">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ff">Funktionsfläche FF</span><span class="detail-value" id="detail-garea-ff">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vf">Verkehrsfläche VF</span><span class="detail-value" id="detail-garea-vf">–</span></div>
                         <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vmf">Vermietbare Fl. VMF</span><span class="detail-value" id="detail-garea-vmf">–</span></div>
+                    </div>
+
+                    <div class="detail-overline">RICS · Code of Measuring Practice (6th ed.) · Demo</div>
+                    <div class="detail-card">
+                        <div class="detail-grid-row"><span class="detail-label">RICS GEA · Demo</span><span class="detail-value" id="detail-rics-gea">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">RICS GIA · Demo</span><span class="detail-value" id="detail-rics-gia">–</span></div>
+                        <div class="detail-grid-row"><span class="detail-label">RICS NIA · Demo</span><span class="detail-value" id="detail-rics-nia">–</span></div>
                     </div>
 
                     <div class="detail-overline" data-i18n="detail.section.ebf_sia380">Energiebezugsfläche (SIA 380)</div>

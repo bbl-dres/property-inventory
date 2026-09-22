@@ -91,6 +91,6 @@ export function populateDetailView(building) {
   setText('detail-eigentum', props.typeOfOwnership);
 
   loadEntityTablesForBuilding(building);
-  showCarousel(placeholderImages);
+  showCarousel(ext.photos && ext.photos.length ? ext.photos.map(function(p) { return p.url; }) : placeholderImages, ext.photos);
   showMiniMap(coords);
 }

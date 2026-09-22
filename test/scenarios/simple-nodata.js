@@ -21,8 +21,8 @@ module.exports = {
     ctx.setFetch({});
     toast.querySelector('.toast-action-btn.primary').click();
     await settle(80);
-    check('data loaded after retry', state.buildingsData && state.buildingsData.features.length === 11);
-    check('rows rendered after retry', document.querySelectorAll('#list-body tr').length === 11);
+    check('data loaded after retry', state.buildingsData && state.buildingsData.features.length === 14);
+    check('rows rendered after retry', document.querySelectorAll('#list-body tr').length === 14);
     check('map layers added once', map._layers.filter(l => l.id === 'buildings-points').length === 1);
 
     // Listeners were registered once: one click toggles the table exactly once

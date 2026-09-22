@@ -90,6 +90,7 @@ export function switchView(view) {
 
   if (view === 'map' && state.map) {
     setTimeout(function() {
+      if (state.currentView !== 'map') return;
       state.map.resize();
       // A filter applied while the map was hidden could not zoom to its result (a hidden map has no
       // size): do it now, once. Returning to an unchanged filter keeps the reader's map position.

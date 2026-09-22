@@ -19,7 +19,7 @@ module.exports = {
     ctx.setFetch({});
     toast.querySelector('.toast-action-btn.primary').click();
     await settle(80);
-    check('data loaded after retry', state.buildingsData && state.buildingsData.features.length === 10);
+    check('data loaded after retry', state.buildingsData && state.buildingsData.features.length === 14);
     check('map layers added once', map._layers.filter(l => l.id === 'buildings-points').length === 1);
 
     const cb = document.querySelector('#filter-status-options input[type="checkbox"]');

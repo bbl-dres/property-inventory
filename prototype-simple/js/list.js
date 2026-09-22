@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { collapseToolsPanelIfColliding } from './tools-panel.js';
 import { placeholderImages, getStatusClassName } from './config.js';
 import { formatCHF, formatArea, formatVolume, formatNum, escapeHtml, cssUrl } from './utils.js';
-import { t, onLangChange } from './i18n.js';
+import { t } from './i18n.js';
 import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumnsSearch, initDropdowns, initTableSearch } from './table.js';
 import { selectBuilding, selectParcel, selectLandCover } from './map.js';
 import { showDetailView } from './ui.js';
@@ -23,9 +23,71 @@ function statusBadge(v) {
 }
 
 // Sorted to match DATAMODEL.json. Header labels come from the col.<field> translations.
+const columnLabels = {
+  "col-parcel-plot": {
+    "labelKey": "col.parcel.plot"
+  },
+  "col-parcel-name": {
+    "labelKey": "col.parcel.name"
+  },
+  "col-parcel-municipality": {
+    "labelKey": "col.parcel.municipality"
+  },
+  "col-parcel-canton": {
+    "labelKey": "col.parcel.canton"
+  },
+  "col-parcel-area": {
+    "labelKey": "col.parcel.area"
+  },
+  "col-parcel-zone": {
+    "labelKey": "col.parcel.zone"
+  },
+  "col-parcel-ownership": {
+    "labelKey": "col.parcel.ownership"
+  },
+  "col-lc-av_type": {
+    "labelKey": "col.lc.av_type"
+  },
+  "col-lc-lc_area": {
+    "labelKey": "col.lc.lc_area"
+  },
+  "col-lc-av_stat": {
+    "labelKey": "col.lc.av_stat"
+  },
+  "col-lc-wgs84_lat": {
+    "label": "Lat"
+  },
+  "col-lc-wgs84_lon": {
+    "label": "Lon"
+  },
+  "col-lc-lv95_e": {
+    "label": "LV95 E"
+  },
+  "col-lc-lv95_n": {
+    "label": "LV95 N"
+  },
+  "col-lc-etl_ts": {
+    "label": "ETL"
+  }
+};
+
+function columnWidth(col) {
+  const field = col.sortField || col.field;
+  if (/^(garea_|gvol_|larea_)/.test(field) && !field.endsWith('_acu') || ['area','lc_area','extensionData.netFloorArea'].includes(field)) return 'number';
+  if (['bbl_awrt','bbl_bwrt'].includes(field)) return 'amount';
+  if (['bbl_stat','status','av_stat'].includes(field)) return 'status';
+  if (field === 'etl_ts') return 'date';
+  if (['bbl_bjahr','bbl_vjahr','gastw','gastw_og','gastw_ug'].includes(field)) return 'year';
+  if (['wgs84_lat','wgs84_lon','lv95_e','lv95_n','egm_elev'].includes(field)) return 'number';
+  if (['adr_land','country','adr_reg','canton','av_nr','plotNumber','adr_plz','adr_hsnr','bfs_gemnr','kgs_nr','kgs_kat'].includes(field)) return 'code';
+  if (['bbl_bez','name'].includes(field)) return 'name';
+  if (['adr_conct','streetName'].includes(field)) return 'description';
+  return 'text';
+}
+
 const buildingColumns = [
   // Master data
-  { field: 'bbl_id' }, { field: 'bbl_buch' }, { field: 'bbl_we' }, { field: 'bbl_obj' }, { field: 'bbl_bez' },
+  { field: 'bbl_bez' },
   { field: 'bbl_stat', format: statusBadge },
   // Address
   { field: 'adr_land' }, { field: 'adr_reg' }, { field: 'adr_ort' }, { field: 'adr_plz' }, { field: 'adr_str' }, { field: 'adr_hsnr' }, { field: 'adr_conct' },
@@ -36,13 +98,12 @@ const buildingColumns = [
   { field: 'bbl_port' }, { field: 'bbl_port2' }, chfCol('bbl_awrt'), chfCol('bbl_bwrt'),
   { field: 'bbl_gbda1' }, { field: 'bbl_gbda2' }, { field: 'bbl_ovtw' }, { field: 'bbl_pvtw' },
   // Official survey
-  { field: 'av_egid' }, { field: 'av_egrid' }, { field: 'bfs_gem' }, { field: 'bfs_gemnr' },
+  { field: 'bfs_gem' }, { field: 'bfs_gemnr' },
   // Zoning
   { field: 'av_zbez' }, { field: 'av_znut' },
   // Heritage protection
   { field: 'bbl_hist' }, { field: 'bbl_arch' }, { field: 'kgs_kat' }, { field: 'kgs_nr' },
   // Other
-  { field: 'objectid' },
   // Dimensions SIA 416 / SIA 380
   areaCol('garea_gf'), areaCol('garea_gfo'), areaCol('garea_gfu'), { field: 'garea_acu' },
   areaCol('garea_ngf'), areaCol('garea_nf'), areaCol('garea_hnf'), areaCol('garea_nnf'),
@@ -55,10 +116,9 @@ const buildingColumns = [
   areaCol('larea_ggf'), areaCol('larea_gsf'), areaCol('larea_uf'), { field: 'larea_acu' },
   // Other
   { field: 'etl_ts' }
-].map(function(col) { return { field: col.field, cls: 'col-' + col.field, format: col.format }; });
+].map(function(col) { return { field: col.field, cls: 'col-' + col.field, format: col.format, labelKey: 'col.' + col.field }; });
 
 const parcelColumns = [
-  { field: 'bbl_id', cls: 'col-parcel-id' },
   { field: 'av_nr', cls: 'col-parcel-plot' },
   { field: 'bbl_bez', cls: 'col-parcel-name' },
   { field: 'bfs_gem', cls: 'col-parcel-municipality' },
@@ -69,10 +129,14 @@ const parcelColumns = [
 ];
 
 const landCoverColumns = [
-  { field: 'bbl_id' }, { field: 'geb_id' }, { field: 'av_type' }, areaCol('lc_area'), { field: 'av_stat' },
-  { field: 'av_egid' }, { field: 'av_egrid' }, { field: 'wgs84_lat' }, { field: 'wgs84_lon' },
-  intCol('lv95_e'), intCol('lv95_n'), { field: 'fid' }, { field: 'fid_src' }, { field: 'objectid' }, { field: 'etl_ts' }
+  { field: 'av_type' }, areaCol('lc_area'), { field: 'av_stat' },
+  { field: 'wgs84_lat' }, { field: 'wgs84_lon' },
+  intCol('lv95_e'), intCol('lv95_n'), { field: 'etl_ts' }
 ].map(function(col) { return { field: col.field, cls: 'col-lc-' + col.field, format: col.format }; });
+
+[buildingColumns, parcelColumns, landCoverColumns].forEach(function(columns) {
+  columns.forEach(function(col) { Object.assign(col, columnLabels[col.cls] || {}, { width: columnWidth(col) }); });
+});
 
 const BUILDING_SEARCH_FIELDS = ['bbl_id', 'bbl_bez', 'adr_land', 'adr_ort', 'adr_conct', 'bbl_port', 'bbl_stat'];
 const PARCEL_SEARCH_FIELDS = ['bbl_id', 'av_nr', 'bbl_bez', 'bfs_gem', 'adr_reg', 'av_zbez', 'bbl_eigen'];
@@ -151,18 +215,8 @@ export function renderFilteredTables() {
 
 // ===== TABLE HEADERS (buildings: rendered from the column definitions) =====
 
-function renderBuildingTableHeaders() {
-  const row = document.getElementById('list-table-header-row');
-  if (!row) return;
-  row.innerHTML = buildingColumns.map(function(col) {
-    return '<th class="' + col.cls + '">' + t('col.' + col.field) + ' <span class="material-symbols-outlined">unfold_more</span></th>';
-  }).join('');
-  tables.buildings.updateSortIndicator(); // the sorted column keeps its marker after a language change
-}
-
 export function initBuildingTableHeaders() {
-  renderBuildingTableHeaders();
-  onLangChange(renderBuildingTableHeaders);
+  tables.buildings.renderHeaders();
 }
 
 // ===== TABLE TABS =====

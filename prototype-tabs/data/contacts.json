@@ -1,388 +1,803 @@
 {
+  "dataVersion": "2026-09-22",
   "contacts": [
     {
-      "contactId": "78d4ef76-b4fa-4629-a843-ce40fbec9bc9",
-      "name": "Anna Müller",
-      "role": "Objektverantwortliche",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "organisation": "BBL Immobilienmanagement",
-      "phone": "+41 58 462 12 34",
-      "email": "anna.mueller@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "95d3bd83-05ad-58af-a2cf-dc1fc9c5efc0",
+      "name": "Mira Waldner (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "bundeshaus-west.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "4840-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-4840-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "d0165fef-964b-4944-a455-a9e3482b6a13",
-      "name": "Peter Gerber",
-      "role": "Hauswart",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 12 50",
-      "email": "peter.gerber@bbl.admin.ch",
-      "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "legacyId": "4840-K2",
-      "extensionData": {}
+      "contactId": "b4913f53-7803-58a4-a593-c228aabca743",
+      "name": "Silvan Sommer (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "bundeshaus-west.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-4840-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "479e83c5-6f2b-4a57-8a54-923ee24cc30b",
-      "name": "Sandra Keller",
-      "role": "Portfolioverantwortliche",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "organisation": "BBL Portfoliomanagement",
-      "phone": "+41 58 462 10 01",
-      "email": "sandra.keller@bbl.admin.ch",
-      "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "legacyId": "4840-K3",
-      "extensionData": {}
+      "contactId": "823b6d59-6483-58cd-a024-d574dd308771",
+      "name": "Lea Moser (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "bundeshaus-west.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-4840-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "b3bca808-87db-463c-90b3-fb92e4c79218",
-      "name": "Peter Schmidt",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "organisation": "EDA Auslandsvertretungen",
-      "phone": "+49 30 390 4000",
-      "email": "peter.schmidt@eda.admin.ch",
-      "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "legacyId": "5210-K1",
-      "extensionData": {}
+      "contactId": "6e931de4-2832-5a33-be0d-bb7a23de5af7",
+      "name": "Levin Feldmann (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "berlin.1@example.invalid",
+      "isPrimary": true,
+      "legacyId": "DEMO-5210-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "4f7d7dd4-b508-4344-9203-74b2db2a5314",
-      "name": "Klaus Weber",
-      "role": "Facility Manager",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+49 30 390 4010",
-      "email": "klaus.weber@bbl.admin.ch",
-      "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "legacyId": "5210-K2",
-      "extensionData": {}
+      "contactId": "b58286ea-14be-5c61-a2bc-a0e2d21dd27a",
+      "name": "Lina Linden (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "berlin.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-5210-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "6f01d424-ef11-435c-a969-df75517127e0",
-      "name": "Marco Bernasconi",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
-        "1080/3120/AB"
+        "1080/5210/AA"
       ],
-      "organisation": "BBL Logistik",
-      "phone": "+41 58 462 45 00",
-      "email": "marco.bernasconi@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "dd58c99f-645f-5880-89aa-5d8067063419",
+      "name": "Jonas Auer (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "berlin.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-5210-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9002/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "763e0c1c-63c2-5e10-b936-6d8f1c89afbb",
+      "name": "Nora Birchler (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "bbl-fellerstrasse.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "3120-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9002-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "4a915168-20d4-4b1a-b040-87c7d8e20b33",
-      "name": "Thomas Huber",
-      "role": "Technischer Dienst",
       "buildingIds": [
-        "1080/3120/AB"
+        "9900/9002/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 45 20",
-      "email": "thomas.huber@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "2476e26e-0352-5383-87b2-6f8d1e979eff",
+      "name": "Noé Tanner (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "bbl-fellerstrasse.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "3120-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9002-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "109debeb-02d2-49b5-b116-5258b5414926",
-      "name": "Sandra Keller",
-      "role": "Portfolioverantwortliche",
       "buildingIds": [
-        "1080/3120/AB"
+        "9900/9002/AA"
       ],
-      "organisation": "BBL Portfoliomanagement",
-      "phone": "+41 58 462 10 01",
-      "email": "sandra.keller@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "ba6c7823-fdaf-59a5-966d-87f96c797348",
+      "name": "Sina Keller (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "bbl-fellerstrasse.3@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "3120-K3",
-      "extensionData": {}
+      "legacyId": "DEMO-9002-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "1aa9c772-d1b1-458b-9164-183a8659ae51",
-      "name": "Sarah Johnson",
-      "role": "Objektverantwortliche",
       "buildingIds": [
-        "1080/5320/AA"
+        "9900/9003/AA"
       ],
-      "organisation": "EDA Auslandsvertretungen",
-      "phone": "+1 212 599 5700",
-      "email": "sarah.johnson@eda.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "92cac493-bae4-5368-99cc-dbb20d1edf9c",
+      "name": "Elio Sommer (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "liebefeld.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5320-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9003-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "f10d52a9-45a0-4a0a-855e-58582b10b0d5",
-      "name": "Michael Brown",
-      "role": "Sicherheitsbeauftragter",
       "buildingIds": [
-        "1080/5320/AA"
+        "9900/9003/AA"
       ],
-      "organisation": "EDA Sicherheit",
-      "phone": "+1 212 599 5710",
-      "email": "michael.brown@eda.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "6dedc04e-99a1-5c57-9918-e5a2e1439b5b",
+      "name": "Alina Moser (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "liebefeld.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5320-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9003-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "f57958aa-1518-4819-ad6d-065a540531ce",
-      "name": "Claire Dubois",
-      "role": "Objektverantwortliche",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9003/AA"
       ],
-      "organisation": "BBL Immobilienmanagement",
-      "phone": "+41 58 462 80 00",
-      "email": "claire.dubois@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "972aa884-f7b8-5bbc-bd2e-bb4765ade3bd",
+      "name": "Flurin Bachmann (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "liebefeld.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9003-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9004/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "6bb9d5a2-8b1a-5e70-961e-2ff4e05f8173",
+      "name": "Jana Linden (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "zollikofen.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "4100-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9004-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "2f8779b0-326e-4e5e-9793-c40bf33a23ca",
-      "name": "François Martin",
-      "role": "Facility Manager",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9004/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 80 15",
-      "email": "francois.martin@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "72b24625-a11a-52e4-a35a-b7275269e766",
+      "name": "Milo Auer (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "zollikofen.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "4100-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9004-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "10d1a4ab-7d78-495d-8b83-fb6ff8dca6f7",
-      "name": "René Favre",
-      "role": "Hauswart",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9004/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 80 20",
-      "email": "rene.favre@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "b12994fe-8f6b-5743-b3db-69bb6a0c3877",
+      "name": "Mira Vogt (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "zollikofen.3@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "4100-K3",
-      "extensionData": {}
+      "legacyId": "DEMO-9004-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "72193b97-1883-4d56-9e3a-829b1eb626e2",
-      "name": "Kenji Yamamoto",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
-        "1080/5410/AA"
+        "9900/9005/AA"
       ],
-      "organisation": "EDA Auslandsvertretungen",
-      "phone": "+81 3 5449 8400",
-      "email": "kenji.yamamoto@eda.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "03478f1c-4c70-53f1-b4d3-81b389c0c0f1",
+      "name": "Silvan Tanner (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "landesmuseum.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5410-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9005-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "19015087-575c-45cc-be54-4e6e7a27d802",
-      "name": "Yuki Tanaka",
-      "role": "Facility Manager",
       "buildingIds": [
-        "1080/5410/AA"
+        "9900/9005/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+81 3 5449 8410",
-      "email": "yuki.tanaka@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "fff29fa4-42da-518a-9e04-6d723269caa4",
+      "name": "Lea Keller (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "landesmuseum.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5410-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9005-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "63192cd7-b711-4414-b596-859aee1d97e6",
-      "name": "Thomas Weber",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9005/AA"
       ],
-      "organisation": "BBL Immobilienmanagement",
-      "phone": "+41 58 462 55 00",
-      "email": "thomas.weber@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "ce6992d3-f801-5b16-b750-b000fdbaffc2",
+      "name": "Levin Steiner (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "landesmuseum.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9005-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "2a24b830-c562-5d61-84bc-1e8620997633",
+      "name": "Lina Moser (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "canberra.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "2800-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9006-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "4dff26dd-68d5-43cc-9ee6-77051699b4fb",
-      "name": "Barbara Steiner",
-      "role": "Hauswart",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9006/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 55 10",
-      "email": "barbara.steiner@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "29404da8-8d5e-56e2-94c5-9bb7d5219027",
+      "name": "Jonas Bachmann (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "canberra.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "2800-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9006-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "f42f1d39-0e93-49a2-90fe-0718cd234668",
-      "name": "Carlos Silva",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9006/AA"
       ],
-      "organisation": "EDA Auslandsvertretungen",
-      "phone": "+55 61 3443 5500",
-      "email": "carlos.silva@eda.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "4f924c5e-a236-5834-8cdd-6f0f3df7057b",
+      "name": "Nora Berger (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "canberra.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9006-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "622d84a6-d1ed-562c-bad1-a3d4c3200af5",
+      "name": "Noé Auer (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "brasilia.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5510-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9007-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "1cea0bb1-379b-4aa0-80af-2983448bf9a9",
-      "name": "Maria Santos",
-      "role": "Facility Manager",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9007/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+55 61 3443 5510",
-      "email": "maria.santos@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "116599ac-8678-5aa2-8bfe-9d0528e36bbd",
+      "name": "Sina Vogt (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "brasilia.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5510-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9007-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "2f09d074-a810-4471-8aca-0aa6f4d83acc",
-      "name": "Elena Bentivoglio",
-      "role": "Objektverantwortliche",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9007/AA"
       ],
-      "organisation": "BBL IT Infrastruktur",
-      "phone": "+41 58 462 90 00",
-      "email": "elena.bentivoglio@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "4e984c10-6705-5dfe-9942-77907c389567",
+      "name": "Elio Frei (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "brasilia.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9007-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "f98b9d66-95f2-5f74-8b11-8a87d672864d",
+      "name": "Alina Keller (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "seoul.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "1950-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9008-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "33fca67e-7c69-4697-805c-8c5717f8b3b8",
-      "name": "Luca Ferretti",
-      "role": "Technischer Dienst",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9008/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+41 58 462 90 20",
-      "email": "luca.ferretti@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "f3795fcc-cbcd-519d-a6ef-9a4c901cd167",
+      "name": "Flurin Steiner (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "seoul.2@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "1950-K2",
-      "extensionData": {}
+      "legacyId": "DEMO-9008-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "a3c09f01-579f-47b1-aae1-12ab241fe127",
-      "name": "Marco Rossi",
-      "role": "Sicherheitsbeauftragter",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9008/AA"
       ],
-      "organisation": "BBL IT Sicherheit",
-      "phone": "+41 58 462 90 30",
-      "email": "marco.rossi@bbl.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "53a91225-f186-54e3-81d8-6db9cec9d1ff",
+      "name": "Jana Waldner (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "seoul.3@example.invalid",
       "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "1950-K3",
-      "extensionData": {}
+      "legacyId": "DEMO-9008-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "889f361b-654b-4f34-9f14-654faa87a88e",
-      "name": "Michael Thompson",
-      "role": "Objektverantwortlicher",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9009/AA"
       ],
-      "organisation": "EDA Auslandsvertretungen",
-      "phone": "+61 2 6162 8400",
-      "email": "michael.thompson@eda.admin.ch",
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "658380f9-48c4-5d82-9946-2dcf16a891a2",
+      "name": "Milo Bachmann (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "nairobi.1@example.invalid",
       "isPrimary": true,
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
-      "legacyId": "5620-K1",
-      "extensionData": {}
+      "legacyId": "DEMO-9009-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     },
     {
-      "contactId": "7a058981-1d02-4285-a2a7-a5d6b0a68dd2",
-      "name": "Emily Wilson",
-      "role": "Facility Manager",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9009/AA"
       ],
-      "organisation": "BBL Objektmanagement",
-      "phone": "+61 2 6162 8410",
-      "email": "emily.wilson@bbl.admin.ch",
-      "isPrimary": false,
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "legacyId": "5620-K2",
-      "extensionData": {}
+      "contactId": "4355f6ee-741f-581c-a4b3-e3af4159cb78",
+      "name": "Mira Berger (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "nairobi.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9009-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "73d0476b-07c8-5cde-a921-0816a6f1cf0a",
+      "name": "Silvan Feldmann (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "nairobi.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9009-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "fce26ce1-81b1-5d3a-8152-da722aa87b15",
+      "name": "Lea Vogt (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "washington.1@example.invalid",
+      "isPrimary": true,
+      "legacyId": "DEMO-9010-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "fd75b18c-3a07-5212-bb6c-93b4295e31d2",
+      "name": "Levin Frei (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "washington.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9010-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "39974be0-1a40-57c7-9ac4-412c7b21726d",
+      "name": "Lina Birchler (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "washington.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9010-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "d1f034d2-2de1-564a-be91-89d8c2398fd8",
+      "name": "Jonas Steiner (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "singapore.1@example.invalid",
+      "isPrimary": true,
+      "legacyId": "DEMO-9011-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "2006d0e3-87cb-529d-8ef6-e89e3c96f221",
+      "name": "Nora Waldner (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "singapore.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9011-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "f949c559-717f-5674-bd34-01088c3cf1f1",
+      "name": "Noé Sommer (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "singapore.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9011-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "f6e00f4b-907c-5410-8da6-e48752ef4230",
+      "name": "Sina Berger (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "abidjan.1@example.invalid",
+      "isPrimary": true,
+      "legacyId": "DEMO-9012-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "05094035-a9df-5d14-a627-04285e0adc69",
+      "name": "Elio Feldmann (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "abidjan.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9012-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "67317ae0-d550-5632-ba5b-25719184e820",
+      "name": "Alina Linden (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "abidjan.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9012-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "fdd2d20e-a42c-560a-8f5c-d98f0faeca02",
+      "name": "Flurin Frei (Demo)",
+      "role": "Objektverantwortung",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "san-francisco.1@example.invalid",
+      "isPrimary": true,
+      "legacyId": "DEMO-9013-K1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "4c6b0295-18bd-5465-8617-3e7200254869",
+      "name": "Jana Birchler (Demo)",
+      "role": "Portfoliomanagement",
+      "organisation": "Portfolio Team (Demo)",
+      "phone": null,
+      "email": "san-francisco.2@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9013-K2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "contactId": "35769aed-50e1-57ed-9573-c8873f3b73a8",
+      "name": "Milo Tanner (Demo)",
+      "role": "Facility Management",
+      "organisation": "Arealservice Muster AG (fiktiv)",
+      "phone": null,
+      "email": "san-francisco.3@example.invalid",
+      "isPrimary": false,
+      "legacyId": "DEMO-9013-K3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "isFictionalPerson": true
+      }
     }
   ]
 }

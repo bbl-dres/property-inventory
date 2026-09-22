@@ -7,7 +7,9 @@
 
 > [!CAUTION]
 > **Unofficial prototypes for demonstration purposes only.** Portfolio records and
-> workflows are fictional mock content. The height-enrichment tool queries public
+> workflows include demonstration assumptions. Simple and Tabs use researched public
+> building facts and photos alongside clearly identified fictional operational data.
+> The height-enrichment tool queries public
 > OpenStreetMap and Swiss elevation services, so its results depend on upstream data.
 > The tools are incomplete and are not intended for production use.
 
@@ -48,6 +50,15 @@ prototype is available at the path shown above.
 
 ## Documentation
 
+The two inventory prototypes use a [shared modular table component](docs/TABLE-COMPONENT.md)
+with consistent column-width presets, compact dates, and internal row IDs.
+
+The Simple and Tabs datasets cover 14 real sites in nine countries, with 42 actual
+interior/exterior photos and verified EGID/EGRID/parcel polygons for five Swiss
+sites. See the [research, sources, assumptions and rebuild scripts](scripts/portfolio/README.md).
+Measurements distinguish published values, calculated cadastral areas and plausible
+SIA 416 / RICS scenarios. Contacts are fictional; document types follow KBOB 2016.
+
 Detailed features, setup, technology, and file layouts are documented in the
 prototype READMEs linked in the table. The simple app and the tabs prototype share the same module
 layout and the same design system (18 modules, `css/tokens.css`, `css/components.css` and the design
@@ -57,4 +68,6 @@ guide are identical copies); `test/` holds a jsdom regression harness for both, 
 
 ## License
 
-[MIT](LICENSE)
+[MIT](LICENSE) for code. Third-party photographs and source data retain their own
+rights and are excluded from this licence; see [photo attribution](assets/portfolio/ATTRIBUTION.md)
+and the [data source notes](scripts/portfolio/README.md).

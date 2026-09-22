@@ -10,7 +10,7 @@ module.exports = {
   async run(ctx, check) {
     const { document, map, modules } = ctx;
     const state = modules.state.state;
-    check('buildings loaded', state.buildingsData && state.buildingsData.features.length === 11);
+    check('buildings loaded', state.buildingsData && state.buildingsData.features.length === 14);
     check('parcels null', state.parcelData === null && state.landCoverData === null);
     check('warning toast shown', !!document.querySelector('#toast-container .toast-warning'));
     check('building layers present, parcel layers absent', !!map.getLayer('buildings-points') && !map.getLayer('parcels-fill') && !map.getLayer('landcovers-fill'));

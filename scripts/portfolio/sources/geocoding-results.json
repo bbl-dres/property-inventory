@@ -1,0 +1,882 @@
+{
+  "bundeshaus-west": {
+    "query": "Bundesgasse 1 Bern",
+    "url": "https://api3.geo.admin.ch/rest/services/api/SearchServer?searchText=Bundesgasse+1+Bern&type=locations&origins=address&limit=3&sr=4326",
+    "results": {
+      "results": [
+        {
+          "attrs": {
+            "detail": "bundesgasse 1 3011 bern 351 bern ch be",
+            "featureId": "1230654_0",
+            "geom_quadindex": "021300202201233030210",
+            "geom_st_box2d": "BOX(7.442976 46.946344,7.442976 46.946344)",
+            "label": "Bundesgasse 1 <b>3011 Bern</b>",
+            "lat": 46.946346282958984,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/100778995",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1230654_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.442977428436279,
+            "num": 1,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.442977428436279,
+            "y": 46.946346282958984,
+            "zoomlevel": 10
+          },
+          "id": 1158993,
+          "weight": 7
+        },
+        {
+          "attrs": {
+            "detail": "bundesgasse 1a 3011 bern 351 bern ch be",
+            "featureId": "1230654_1",
+            "geom_quadindex": "021300202201302321201",
+            "geom_st_box2d": "BOX(7.4435 46.94674,7.4435 46.94674)",
+            "label": "Bundesgasse 1a <b>3011 Bern</b>",
+            "lat": 46.946739196777344,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/100778996",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1230654_1",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.443500995635986,
+            "num": 1,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.443500995635986,
+            "y": 46.946739196777344,
+            "zoomlevel": 10
+          },
+          "id": 1444524,
+          "weight": 2
+        },
+        {
+          "attrs": {
+            "detail": "bundesgasse 1b 3011 bern 351 bern ch be",
+            "featureId": "1230654_2",
+            "geom_quadindex": "021300202201221211320",
+            "geom_st_box2d": "BOX(7.442267 46.946533,7.442267 46.946533)",
+            "label": "Bundesgasse 1b <b>3011 Bern</b>",
+            "lat": 46.946533203125,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/100778997",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1230654_2",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.442267894744873,
+            "num": 1,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.442267894744873,
+            "y": 46.946533203125,
+            "zoomlevel": 10
+          },
+          "id": 1632925,
+          "weight": 2
+        }
+      ]
+    }
+  },
+  "berlin": {
+    "query": "Otto-von-Bismarck-Allee 4A Berlin Germany",
+    "url": "https://nominatim.openstreetmap.org/search?q=Otto-von-Bismarck-Allee+4A+Berlin+Germany&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 143583298,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "relation",
+        "osm_id": 2886766,
+        "lat": "52.5211082",
+        "lon": "13.3712807",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 0.3511138876399894,
+        "addresstype": "office",
+        "name": "Schweizerische Botschaft",
+        "display_name": "Schweizerische Botschaft, 4A, Otto-von-Bismarck-Allee, Tiergarten, Mitte, Berlin, 10557, Deutschland",
+        "address": {
+          "office": "Schweizerische Botschaft",
+          "house_number": "4A",
+          "road": "Otto-von-Bismarck-Allee",
+          "suburb": "Tiergarten",
+          "borough": "Mitte",
+          "city": "Berlin",
+          "ISO3166-2-lvl4": "DE-BE",
+          "postcode": "10557",
+          "country": "Deutschland",
+          "country_code": "de"
+        },
+        "boundingbox": [
+          "52.5209989",
+          "52.5212048",
+          "13.3708996",
+          "13.3716618"
+        ]
+      },
+      {
+        "place_id": 145415920,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 2272492186,
+        "lat": "52.5210141",
+        "lon": "13.3715745",
+        "category": "place",
+        "type": "house",
+        "place_rank": 30,
+        "importance": 8.875486381318407e-05,
+        "addresstype": "place",
+        "name": "",
+        "display_name": "4A, Otto-von-Bismarck-Allee, Tiergarten, Mitte, Berlin, 10557, Deutschland",
+        "address": {
+          "house_number": "4A",
+          "road": "Otto-von-Bismarck-Allee",
+          "suburb": "Tiergarten",
+          "borough": "Mitte",
+          "city": "Berlin",
+          "ISO3166-2-lvl4": "DE-BE",
+          "postcode": "10557",
+          "country": "Deutschland",
+          "country_code": "de"
+        },
+        "boundingbox": [
+          "52.5209641",
+          "52.5210641",
+          "13.3715245",
+          "13.3716245"
+        ]
+      }
+    ]
+  },
+  "bbl-fellerstrasse": {
+    "query": "Fellerstrasse 21 Bern",
+    "url": "https://api3.geo.admin.ch/rest/services/api/SearchServer?searchText=Fellerstrasse+21+Bern&type=locations&origins=address&limit=3&sr=4326",
+    "results": {
+      "results": [
+        {
+          "attrs": {
+            "detail": "fellerstrasse 21 3027 bern 351 bern ch be",
+            "featureId": "1243999_0",
+            "geom_quadindex": "021211303311320032201",
+            "geom_st_box2d": "BOX(7.387943 46.946562,7.387943 46.946562)",
+            "label": "Fellerstrasse 21 <b>3027 Bern</b>",
+            "lat": 46.946563720703125,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/100762691",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1243999_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.387943744659424,
+            "num": 21,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.387943744659424,
+            "y": 46.946563720703125,
+            "zoomlevel": 10
+          },
+          "id": 1316432,
+          "weight": 7
+        }
+      ]
+    }
+  },
+  "liebefeld": {
+    "query": "Schwarzenburgstrasse 157 Liebefeld",
+    "url": "https://api3.geo.admin.ch/rest/services/api/SearchServer?searchText=Schwarzenburgstrasse+157+Liebefeld&type=locations&origins=address&limit=3&sr=4326",
+    "results": {
+      "results": [
+        {
+          "attrs": {
+            "detail": "schwarzenburgstrasse 157 3097 liebefeld 355 koeniz ch be",
+            "featureId": "191458950_0",
+            "geom_quadindex": "021211331210213202321",
+            "geom_st_box2d": "BOX(7.421357 46.929894,7.421357 46.929894)",
+            "label": "Schwarzenburgstrasse 157 <b>3097 Liebefeld</b>",
+            "lat": 46.929893493652344,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/102156337",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191458950_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.42135763168335,
+            "num": 157,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.42135763168335,
+            "y": 46.929893493652344,
+            "zoomlevel": 10
+          },
+          "id": 1827041,
+          "weight": 7
+        }
+      ]
+    }
+  },
+  "zollikofen": {
+    "query": "Eichenweg 3 Zollikofen",
+    "url": "https://api3.geo.admin.ch/rest/services/api/SearchServer?searchText=Eichenweg+3+Zollikofen&type=locations&origins=address&limit=3&sr=4326",
+    "results": {
+      "results": [
+        {
+          "attrs": {
+            "detail": "eichenweg 3 3052 zollikofen 361 zollikofen ch be",
+            "featureId": "191688442_0",
+            "geom_quadindex": "021300020311303310012",
+            "geom_st_box2d": "BOX(7.462434 46.997411,7.462434 46.997411)",
+            "label": "Eichenweg 3 <b>3052 Zollikofen</b>",
+            "lat": 46.99740982055664,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/102395220",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191688442_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.462435245513916,
+            "num": 3,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.462435245513916,
+            "y": 46.99740982055664,
+            "zoomlevel": 10
+          },
+          "id": 1238385,
+          "weight": 7
+        },
+        {
+          "attrs": {
+            "detail": "eichenweg 31 3052 zollikofen 361 zollikofen ch be",
+            "featureId": "1287030_0",
+            "geom_quadindex": "021300021200203322121",
+            "geom_st_box2d": "BOX(7.463897 46.997307,7.463897 46.997307)",
+            "label": "Eichenweg 31 <b>3052 Zollikofen</b>",
+            "lat": 46.99730682373047,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/102086079",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1287030_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.463897705078125,
+            "num": 31,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.463897705078125,
+            "y": 46.99730682373047,
+            "zoomlevel": 10
+          },
+          "id": 1618958,
+          "weight": 2
+        },
+        {
+          "attrs": {
+            "detail": "eichenweg 34 3052 zollikofen 361 zollikofen ch be",
+            "featureId": "191951257_0",
+            "geom_quadindex": "021300021201232331210",
+            "geom_st_box2d": "BOX(7.467487 46.996805,7.467487 46.996805)",
+            "label": "Eichenweg 34 <b>3052 Zollikofen</b>",
+            "lat": 46.99680709838867,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/102999614",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191951257_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 7.467487812042236,
+            "num": 34,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 7.467487812042236,
+            "y": 46.99680709838867,
+            "zoomlevel": 10
+          },
+          "id": 1753373,
+          "weight": 2
+        }
+      ]
+    }
+  },
+  "landesmuseum": {
+    "query": "Museumstrasse 2 Zürich",
+    "url": "https://api3.geo.admin.ch/rest/services/api/SearchServer?searchText=Museumstrasse+2+Z%C3%BCrich&type=locations&origins=address&limit=3&sr=4326",
+    "results": {
+      "results": [
+        {
+          "attrs": {
+            "detail": "museumstrasse 2 8001 zuerich 261 zuerich ch zh",
+            "featureId": "2372933_0",
+            "geom_quadindex": "030003122213002032311",
+            "geom_st_box2d": "BOX(8.540555 47.379025,8.540555 47.379025)",
+            "label": "Museumstrasse 2 <b>8001 Zürich</b>",
+            "lat": 47.379024505615234,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/101146629",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/2372933_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 8.540567398071289,
+            "num": 2,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 8.540567398071289,
+            "y": 47.379024505615234,
+            "zoomlevel": 10
+          },
+          "id": 2386993,
+          "weight": 7
+        },
+        {
+          "attrs": {
+            "detail": "museumstrasse 2a 8001 zuerich 261 zuerich ch zh",
+            "featureId": "302040831_0",
+            "geom_quadindex": "030003122213020001030",
+            "geom_st_box2d": "BOX(8.540469 47.378868,8.540469 47.378868)",
+            "label": "Museumstrasse 2a <b>8001 Zürich</b>",
+            "lat": 47.378868103027344,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/101732818",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/302040831_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 8.540480613708496,
+            "num": 2,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 8.540480613708496,
+            "y": 47.378868103027344,
+            "zoomlevel": 10
+          },
+          "id": 2842056,
+          "weight": 2
+        },
+        {
+          "attrs": {
+            "detail": "museumstrasse 21 8001 zuerich 261 zuerich ch zh",
+            "featureId": "302065945_0",
+            "geom_quadindex": "030003122212030331101",
+            "geom_st_box2d": "BOX(8.538448 47.378699,8.538448 47.378699)",
+            "label": "Museumstrasse 21 <b>8001 Zürich</b>",
+            "lat": 47.37869644165039,
+            "links": [
+              {
+                "href": "/rest/services/ech/MapServer/ch.swisstopo.amtliches-gebaeudeadressverzeichnis/103096916",
+                "rel": "related",
+                "title": "ch.swisstopo.amtliches-gebaeudeadressverzeichnis"
+              },
+              {
+                "href": "/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/302065945_0",
+                "rel": "related",
+                "title": "ch.bfs.gebaeude_wohnungs_register"
+              }
+            ],
+            "lon": 8.538459777832031,
+            "num": 21,
+            "objectclass": "",
+            "origin": "address",
+            "rank": 7,
+            "x": 8.538459777832031,
+            "y": 47.37869644165039,
+            "zoomlevel": 10
+          },
+          "id": 2122614,
+          "weight": 2
+        }
+      ]
+    }
+  },
+  "canberra": {
+    "query": "7 Melbourne Avenue Forrest Australia",
+    "url": "https://nominatim.openstreetmap.org/search?q=7+Melbourne+Avenue+Forrest+Australia&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 24085258,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 429089428,
+        "lat": "-35.3136760",
+        "lon": "149.1212815",
+        "category": "building",
+        "type": "yes",
+        "place_rank": 30,
+        "importance": 7.258182650487553e-05,
+        "addresstype": "building",
+        "name": "",
+        "display_name": "7, Melbourne Avenue, Forrest, Canberra, District of Canberra Central, Australian Capital Territory, 2603, Australia",
+        "address": {
+          "house_number": "7",
+          "road": "Melbourne Avenue",
+          "suburb": "Forrest",
+          "city": "Canberra",
+          "county": "District of Canberra Central",
+          "territory": "Australian Capital Territory",
+          "ISO3166-2-lvl4": "AU-ACT",
+          "postcode": "2603",
+          "country": "Australia",
+          "country_code": "au"
+        },
+        "boundingbox": [
+          "-35.3138359",
+          "-35.3134766",
+          "149.1208372",
+          "149.1214223"
+        ]
+      },
+      {
+        "place_id": 24091350,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 429089834,
+        "lat": "-35.3134473",
+        "lon": "149.1210857",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 7.258182650487553e-05,
+        "addresstype": "office",
+        "name": "Embassy of Switzerland",
+        "display_name": "Embassy of Switzerland, 7, Melbourne Avenue, Forrest, Canberra, District of Canberra Central, Australian Capital Territory, 2603, Australia",
+        "address": {
+          "office": "Embassy of Switzerland",
+          "house_number": "7",
+          "road": "Melbourne Avenue",
+          "suburb": "Forrest",
+          "city": "Canberra",
+          "county": "District of Canberra Central",
+          "territory": "Australian Capital Territory",
+          "ISO3166-2-lvl4": "AU-ACT",
+          "postcode": "2603",
+          "country": "Australia",
+          "country_code": "au"
+        },
+        "boundingbox": [
+          "-35.3141946",
+          "-35.3127583",
+          "149.1200191",
+          "149.1220740"
+        ]
+      }
+    ]
+  },
+  "brasilia": {
+    "query": "Embaixada da Suíça Brasília Brazil",
+    "url": "https://nominatim.openstreetmap.org/search?q=Embaixada+da+Su%C3%AD%C3%A7a+Bras%C3%ADlia+Brazil&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 15562559,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 141477118,
+        "lat": "-15.8316069",
+        "lon": "-47.8972753",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 0.31776205367205024,
+        "addresstype": "office",
+        "name": "Embaixada da Suiça",
+        "display_name": "Embaixada da Suiça, Lote 41, SES Quadra 811, Asa Sul, Brasília, Plano Piloto, Distrito Federal, Região Centro-Oeste, 70448-900, Brasil",
+        "address": {
+          "office": "Embaixada da Suiça",
+          "house_number": "Lote 41",
+          "road": "SES Quadra 811",
+          "suburb": "Asa Sul",
+          "city": "Brasília",
+          "state": "Distrito Federal",
+          "ISO3166-2-lvl4": "BR-DF",
+          "region": "Região Centro-Oeste",
+          "postcode": "70448-900",
+          "country": "Brasil",
+          "country_code": "br"
+        },
+        "boundingbox": [
+          "-15.8327309",
+          "-15.8304922",
+          "-47.8984229",
+          "-47.8961234"
+        ]
+      }
+    ]
+  },
+  "seoul": {
+    "query": "Embassy of Switzerland Seoul South Korea",
+    "url": "https://nominatim.openstreetmap.org/search?q=Embassy+of+Switzerland+Seoul+South+Korea&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 223105234,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 777430919,
+        "lat": "37.5702322",
+        "lon": "126.9649301",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 0.32547572759041243,
+        "addresstype": "office",
+        "name": "스위스 대사관",
+        "display_name": "스위스 대사관, 77, 송월길, 교북동, 교남동, 종로구, 서울특별시, 03165, 대한민국",
+        "address": {
+          "office": "스위스 대사관",
+          "house_number": "77",
+          "road": "송월길",
+          "quarter": "교북동",
+          "suburb": "교남동",
+          "borough": "종로구",
+          "city": "서울특별시",
+          "ISO3166-2-lvl4": "KR-11",
+          "postcode": "03165",
+          "country": "대한민국",
+          "country_code": "kr"
+        },
+        "boundingbox": [
+          "37.5699800",
+          "37.5704843",
+          "126.9648058",
+          "126.9653850"
+        ]
+      }
+    ]
+  },
+  "nairobi": {
+    "query": "Embassy of Switzerland Nairobi Kenya",
+    "url": "https://nominatim.openstreetmap.org/search?q=Embassy+of+Switzerland+Nairobi+Kenya&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 38441073,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 554666964,
+        "lat": "-1.2286794",
+        "lon": "36.8008600",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 7.250400549320238e-05,
+        "addresstype": "office",
+        "name": "Switzerland Embassy, Nairobi",
+        "display_name": "Switzerland Embassy, Nairobi, Rosslyn Green Estate Rosslyn Green Drive, off Red Hill Road Nairobi, Nairobi, Rosslyn Green Crescent, Karura sublocation, Highridge location, Highridge division, Westlands, Nairobi, 00601, Kenya",
+        "address": {
+          "office": "Switzerland Embassy, Nairobi",
+          "house_number": "Rosslyn Green Estate Rosslyn Green Drive, off Red Hill Road Nairobi, Nairobi",
+          "road": "Rosslyn Green Crescent",
+          "city_block": "Karura sublocation",
+          "neighbourhood": "Highridge location",
+          "suburb": "Highridge division",
+          "city_district": "Westlands",
+          "city": "Nairobi",
+          "state": "Nairobi",
+          "ISO3166-2-lvl4": "KE-30",
+          "postcode": "00601",
+          "country": "Kenya",
+          "country_code": "ke"
+        },
+        "boundingbox": [
+          "-1.2287889",
+          "-1.2283793",
+          "36.8006519",
+          "36.8011471"
+        ]
+      }
+    ]
+  },
+  "washington": {
+    "query": "2900 Cathedral Avenue NW Washington USA",
+    "url": "https://nominatim.openstreetmap.org/search?q=2900+Cathedral+Avenue+NW+Washington+USA&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 351727474,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 819092453,
+        "lat": "38.9286131",
+        "lon": "-77.0579432",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 0.37310569550553185,
+        "addresstype": "office",
+        "name": "Embassy of Switzerland",
+        "display_name": "Embassy of Switzerland, 2900, Cathedral Avenue Northwest, Woodley Park, Ward 3, Washington, District of Columbia, 20008, United States",
+        "address": {
+          "office": "Embassy of Switzerland",
+          "house_number": "2900",
+          "road": "Cathedral Avenue Northwest",
+          "suburb": "Woodley Park",
+          "city_district": "Ward 3",
+          "city": "Washington",
+          "state": "District of Columbia",
+          "ISO3166-2-lvl4": "US-DC",
+          "postcode": "20008",
+          "country": "United States",
+          "country_code": "us"
+        },
+        "boundingbox": [
+          "38.9285631",
+          "38.9286631",
+          "-77.0579932",
+          "-77.0578932"
+        ]
+      },
+      {
+        "place_id": 348263000,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 67847125,
+        "lat": "38.9284809",
+        "lon": "-77.0579381",
+        "category": "building",
+        "type": "yes",
+        "place_rank": 30,
+        "importance": 8.492942702368227e-05,
+        "addresstype": "building",
+        "name": "",
+        "display_name": "2900, Cathedral Avenue Northwest, Woodley Park, Ward 3, Washington, District of Columbia, 20008, United States",
+        "address": {
+          "house_number": "2900",
+          "road": "Cathedral Avenue Northwest",
+          "suburb": "Woodley Park",
+          "city_district": "Ward 3",
+          "city": "Washington",
+          "state": "District of Columbia",
+          "ISO3166-2-lvl4": "US-DC",
+          "postcode": "20008",
+          "country": "United States",
+          "country_code": "us"
+        },
+        "boundingbox": [
+          "38.9282153",
+          "38.9287638",
+          "-77.0583119",
+          "-77.0578548"
+        ]
+      }
+    ]
+  },
+  "singapore": {
+    "query": "1 Swiss Club Link Singapore",
+    "url": "https://nominatim.openstreetmap.org/search?q=1+Swiss+Club+Link+Singapore&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 253936038,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 392814796,
+        "lat": "1.3425516",
+        "lon": "103.7896081",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 0.19938740066310082,
+        "addresstype": "office",
+        "name": "Embassy of Switzerland",
+        "display_name": "Embassy of Switzerland, 1, Swiss Club Link, Swiss Club, Bukit Timah, Central Region, Singapore, 288162, Singapore",
+        "address": {
+          "office": "Embassy of Switzerland",
+          "house_number": "1",
+          "road": "Swiss Club Link",
+          "neighbourhood": "Swiss Club",
+          "suburb": "Bukit Timah",
+          "borough": "Central Region",
+          "city": "Singapore",
+          "postcode": "288162",
+          "country": "Singapore",
+          "country_code": "sg"
+        },
+        "boundingbox": [
+          "1.3423799",
+          "1.3426737",
+          "103.7894646",
+          "103.7897516"
+        ]
+      }
+    ]
+  },
+  "abidjan": {
+    "query": "Ambassade de Suisse Abidjan Ivory Coast",
+    "url": "https://nominatim.openstreetmap.org/search?q=Ambassade+de+Suisse+Abidjan+Ivory+Coast&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 300666978,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "node",
+        "osm_id": 4196615473,
+        "lat": "5.3292355",
+        "lon": "-3.9933619",
+        "category": "office",
+        "type": "diplomatic",
+        "place_rank": 30,
+        "importance": 6.766536964975994e-05,
+        "addresstype": "office",
+        "name": "Ambassade de Suisse",
+        "display_name": "Ambassade de Suisse, Rue des Ambassades, Ambassade, Cocody, Abidjan, Côte d’Ivoire",
+        "address": {
+          "office": "Ambassade de Suisse",
+          "road": "Rue des Ambassades",
+          "residential": "Ambassade",
+          "suburb": "Ambassade",
+          "city": "Abidjan",
+          "state": "Abidjan",
+          "ISO3166-2-lvl4": "CI-AB",
+          "country": "Côte d’Ivoire",
+          "country_code": "ci"
+        },
+        "boundingbox": [
+          "5.3291855",
+          "5.3292855",
+          "-3.9934119",
+          "-3.9933119"
+        ]
+      }
+    ]
+  },
+  "san-francisco": {
+    "query": "Pier 17 San Francisco USA",
+    "url": "https://nominatim.openstreetmap.org/search?q=Pier+17+San+Francisco+USA&format=jsonv2&limit=3&addressdetails=1",
+    "results": [
+      {
+        "place_id": 323864523,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 1390720126,
+        "lat": "37.8021916",
+        "lon": "-122.3981182",
+        "category": "man_made",
+        "type": "pier",
+        "place_rank": 30,
+        "importance": 8.251392385743523e-05,
+        "addresstype": "man_made",
+        "name": "Pier 17",
+        "display_name": "Pier 17, The Embarcadero, Telegraph Hill, Financial District, San Francisco, California, 94111, United States",
+        "address": {
+          "man_made": "Pier 17",
+          "road": "The Embarcadero",
+          "neighbourhood": "Telegraph Hill",
+          "quarter": "Financial District",
+          "city": "San Francisco",
+          "state": "California",
+          "ISO3166-2-lvl4": "US-CA",
+          "postcode": "94111",
+          "country": "United States",
+          "country_code": "us"
+        },
+        "boundingbox": [
+          "37.8013879",
+          "37.8030420",
+          "-122.3994320",
+          "-122.3967715"
+        ]
+      },
+      {
+        "place_id": 321087134,
+        "licence": "Data © OpenStreetMap contributors, ODbL 1.0. http://osm.org/copyright",
+        "osm_type": "way",
+        "osm_id": 25489458,
+        "lat": "37.8021791",
+        "lon": "-122.3981076",
+        "category": "building",
+        "type": "industrial",
+        "place_rank": 30,
+        "importance": 8.251392385743523e-05,
+        "addresstype": "building",
+        "name": "Pier 17",
+        "display_name": "Pier 17, Herb Caen Way..., Telegraph Hill, Financial District, San Francisco, California, 94111, United States",
+        "address": {
+          "building": "Pier 17",
+          "road": "Herb Caen Way...",
+          "neighbourhood": "Telegraph Hill",
+          "quarter": "Financial District",
+          "city": "San Francisco",
+          "state": "California",
+          "ISO3166-2-lvl4": "US-CA",
+          "postcode": "94111",
+          "country": "United States",
+          "country_code": "us"
+        },
+        "boundingbox": [
+          "37.8014172",
+          "37.8029708",
+          "-122.3993276",
+          "-122.3968876"
+        ]
+      }
+    ]
+  }
+}

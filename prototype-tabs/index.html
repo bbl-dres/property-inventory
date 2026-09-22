@@ -41,7 +41,7 @@
 <body>
     <!-- Prototype warning banner (always visible) -->
     <div id="prototype-banner" class="prototype-banner" role="note">
-        <span class="prototype-banner-text"><strong>Prototyp</strong> <span class="prototype-banner-text-long">Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.</span><span class="prototype-banner-text-short">Alle Daten sind fiktiv.</span></span>
+        <span class="prototype-banner-text"><strong>Prototyp</strong> <span class="prototype-banner-text-long">Reale Standorte und Fotos, ergänzt um fiktive Betriebsdaten. Nur zu Demonstrationszwecken.</span><span class="prototype-banner-text-short">Reale Standorte · Demodaten</span></span>
     </div>
 
     <!-- Fullscreen image lightbox (carousel of the detail view) -->
@@ -682,7 +682,6 @@
                                     </div>
                                     <!-- Building columns (shown when Gebäude tab active) -->
                                     <div class="columns-list" id="columns-list" data-columns-tab="buildings">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-id"> ID</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-name"> Bezeichnung</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-land"> Land</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-ort"> Ort</label>
@@ -693,7 +692,6 @@
                                     </div>
                                     <!-- Parcel columns (shown when Grundstücke tab active) -->
                                     <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-id"> ID</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> Grundstück-Nr.</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> Bezeichnung</label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> Gemeinde</label>
@@ -710,18 +708,7 @@
                     <div class="table-tab-content active" id="buildings-table-content">
                     <div class="list-table-wrapper">
                         <table class="list-table" id="list-table">
-                            <thead>
-                                <tr>
-                                    <th class="col-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-land">Land <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-ort">Ort <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-adresse">Adresse <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-portfolio">Teilportfolio <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-flaeche">Fläche NGF <span class="material-symbols-outlined">unfold_more</span></th>
-                                    <th class="col-status">Status <span class="material-symbols-outlined">unfold_more</span></th>
-                                </tr>
-                            </thead>
+                            <thead><tr></tr></thead>
                             <tbody id="list-body"></tbody>
                         </table>
                     </div>
@@ -750,18 +737,7 @@
                     <div class="table-tab-content" id="parcels-table-content">
                         <div class="list-table-wrapper">
                             <table class="list-table" id="parcels-table">
-                                <thead>
-                                    <tr>
-                                        <th class="col-parcel-id">ID <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-plot">Grundstück-Nr. <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-name">Bezeichnung <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-municipality">Gemeinde <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-canton">Kanton <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-area">Fläche <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-zone">Nutzungszone <span class="material-symbols-outlined">unfold_more</span></th>
-                                        <th class="col-parcel-ownership">Eigentum <span class="material-symbols-outlined">unfold_more</span></th>
-                                    </tr>
-                                </thead>
+                                <thead><tr></tr></thead>
                                 <tbody id="parcels-body"></tbody>
                             </table>
                         </div>
@@ -1043,55 +1019,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="measurements-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-measurements">
-                                            </th>
-                                            <th class="col-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-type sortable" data-sort="areaType">
-                                                Bemessungsart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-area sortable" data-sort="value">
-                                                Wert
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-source">Herkunft</th>
-                                            <th class="col-accuracy sortable" data-sort="accuracy">
-                                                Genauigkeit
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-standard sortable" data-sort="standard">
-                                                Standard
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-from sortable" data-sort="validFrom">
-                                                Gültig von
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-until">Gültig bis</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="measurements-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="measurements-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="measurements-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="measurements" disabled>
+                                    <button class="pagination-btn pagination-prev" id="measurements-prev" data-table="measurements" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="measurements" disabled>
+                                    <button class="pagination-btn pagination-next" id="measurements-next" data-table="measurements" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="measurements">
+                                    <select class="pagination-rows-select" id="measurements-page-size" data-table="measurements">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>
@@ -1135,53 +1079,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="costs-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-costs">
-                                            </th>
-                                            <th class="col-cost-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-group sortable" data-sort="kostengruppe">
-                                                Kostengruppe
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-type sortable" data-sort="kostenart">
-                                                Kostenart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-amount sortable" data-sort="betrag">
-                                                Betrag
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-unit sortable" data-sort="einheit">
-                                                Einheit
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-cost-date sortable" data-sort="stichtag">
-                                                Stichtag
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="costs-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="costs-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="costs-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="costs" disabled>
+                                    <button class="pagination-btn pagination-prev" id="costs-prev" data-table="costs" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="costs" disabled>
+                                    <button class="pagination-btn pagination-next" id="costs-next" data-table="costs" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="costs">
+                                    <select class="pagination-rows-select" id="costs-page-size" data-table="costs">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>
@@ -1225,57 +1139,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="contracts-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-contracts">
-                                            </th>
-                                            <th class="col-contract-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-type sortable" data-sort="vertragsart">
-                                                Vertragsart
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-partner sortable" data-sort="vertragspartner">
-                                                Vertragspartner
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-start sortable" data-sort="vertragsbeginn">
-                                                Beginn
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-end sortable" data-sort="vertragsende">
-                                                Ende
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-amount sortable" data-sort="betrag">
-                                                Betrag/Jahr
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contract-status sortable" data-sort="status">
-                                                Status
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="contracts-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="contracts-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="contracts-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="contracts" disabled>
+                                    <button class="pagination-btn pagination-prev" id="contracts-prev" data-table="contracts" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="contracts" disabled>
+                                    <button class="pagination-btn pagination-next" id="contracts-next" data-table="contracts" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contracts">
+                                    <select class="pagination-rows-select" id="contracts-page-size" data-table="contracts">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>
@@ -1319,53 +1199,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="assets-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-assets">
-                                            </th>
-                                            <th class="col-asset-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-name sortable" data-sort="bezeichnung">
-                                                Bezeichnung
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-category sortable" data-sort="kategorie">
-                                                Kategorie
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-manufacturer sortable" data-sort="hersteller">
-                                                Hersteller
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-year sortable" data-sort="baujahr">
-                                                Baujahr
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-asset-location sortable" data-sort="standort">
-                                                Standort
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="assets-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="assets-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="assets-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="assets" disabled>
+                                    <button class="pagination-btn pagination-prev" id="assets-prev" data-table="assets" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="assets" disabled>
+                                    <button class="pagination-btn pagination-next" id="assets-next" data-table="assets" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="assets">
+                                    <select class="pagination-rows-select" id="assets-page-size" data-table="assets">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>
@@ -1409,47 +1259,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="documents-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-documents">
-                                            </th>
-                                            <th class="col-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-title sortable" data-sort="titel">
-                                                Titel
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-type sortable" data-sort="dokumentTyp">
-                                                Typ
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-format">Format</th>
-                                            <th class="col-date sortable" data-sort="datum">
-                                                Datum
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-size">Grösse</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="documents-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="documents-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="documents-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="documents" disabled>
+                                    <button class="pagination-btn pagination-prev" id="documents-prev" data-table="documents" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="documents" disabled>
+                                    <button class="pagination-btn pagination-next" id="documents-next" data-table="documents" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="documents">
+                                    <select class="pagination-rows-select" id="documents-page-size" data-table="documents">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>
@@ -1493,47 +1319,23 @@
 
                             <div class="detail-table-wrapper">
                                 <table class="detail-table" id="contacts-table">
-                                    <thead>
-                                        <tr>
-                                            <th class="col-checkbox">
-                                                <input type="checkbox" id="select-all-contacts">
-                                            </th>
-                                            <th class="col-contact-id sortable" data-sort="id">
-                                                ID
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-name sortable" data-sort="name">
-                                                Name
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-role sortable" data-sort="rolle">
-                                                Rolle
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-org sortable" data-sort="organisation">
-                                                Organisation
-                                                <span class="material-symbols-outlined sort-icon">unfold_more</span>
-                                            </th>
-                                            <th class="col-contact-phone">Telefon</th>
-                                            <th class="col-contact-email">E-Mail</th>
-                                        </tr>
-                                    </thead>
+                                    <thead><tr></tr></thead>
                                     <tbody id="contacts-tbody"></tbody>
                                 </table>
                             </div>
                             <div class="pagination-footer" id="contacts-pagination">
-                                <div class="pagination-info">Seite 1 von 1</div>
+                                <div class="pagination-info" id="contacts-page-info">Seite 1 von 1</div>
                                 <div class="pagination-nav">
-                                    <button class="pagination-btn pagination-prev" data-table="contacts" disabled>
+                                    <button class="pagination-btn pagination-prev" id="contacts-prev" data-table="contacts" disabled>
                                         <span class="material-symbols-outlined">chevron_left</span>
                                     </button>
-                                    <button class="pagination-btn pagination-next" data-table="contacts" disabled>
+                                    <button class="pagination-btn pagination-next" id="contacts-next" data-table="contacts" disabled>
                                         <span class="material-symbols-outlined">chevron_right</span>
                                     </button>
                                 </div>
                                 <div class="pagination-rows">
                                     <span>Zeilen pro Seite:</span>
-                                    <select class="pagination-rows-select" data-table="contacts">
+                                    <select class="pagination-rows-select" id="contacts-page-size" data-table="contacts">
                                         <option value="25">25</option>
                                         <option value="50" selected>50</option>
                                         <option value="100">100</option>

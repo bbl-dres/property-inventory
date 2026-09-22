@@ -5,7 +5,7 @@
 //   node visual.js probe  <outJson> [prototype]    computed metrics (JSON) per viewport x scenario
 //   node visual.js both   <outDir> [prototype]     screenshots plus probe.json in one pass
 //   node visual.js eval   <expression> <prototype> <viewport> <scenario>   evaluate an expression in one page
-// VIEWPORTS=desktop,phone-14 limits the viewports; CDP_PORT=<port> selects the DevTools port (default 9333) so two probes can run side by side.
+// VIEWPORTS=desktop,phone-14 and SCENARIOS=gallery,detail limit the review; CDP_PORT=<port> selects the DevTools port (default 9333).
 //
 // Needs a static server on http://127.0.0.1:8123/ serving the repository root
 // (python -m http.server 8123). No npm dependency: uses Node's built-in WebSocket and fetch.
@@ -45,7 +45,12 @@ const SCENARIOS = {
   'gallery':    { query: 'view=gallery' },
   'table':      { query: 'table=open' },
   'detail':     { query: 'view=detail&id=' },
-  'detail-tab': { query: 'view=detail&tab=measurements&id=' }
+  'detail-tab': { query: 'view=detail&tab=measurements&id=' },
+  'contracts':  { query: 'view=detail&tab=contracts&id=', only: 'prototype-tabs' },
+  'costs':      { query: 'view=detail&tab=costs&id=', only: 'prototype-tabs' },
+  'documents':  { query: 'view=detail&tab=documents&id=', only: 'prototype-tabs' },
+  'contacts':   { query: 'view=detail&tab=contacts&id=', only: 'prototype-tabs' },
+  'assets':     { query: 'view=detail&tab=assets&id=', only: 'prototype-tabs' }
 };
 
 const IDS = { 'prototype-simple': '1080%2F4840%2FAF', 'prototype-tabs': '1080/4840/AF' };
@@ -89,7 +94,9 @@ function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 async function launchBrowser() {
   const exe = BROWSERS.find(p => fs.existsSync(p));
   if (!exe) throw new Error('No Edge/Chrome found');
-  const userDir = path.join(require('os').tmpdir(), 'pi-visual-profile-' + PORT);
+  const tempRoot = path.resolve(require('os').tmpdir());
+  const userDir = path.resolve(tempRoot, 'pi-visual-profile-' + PORT);
+  if (!Number.isInteger(PORT) || path.dirname(userDir) !== tempRoot) throw new Error('Invalid browser profile path');
   fs.rmSync(userDir, { recursive: true, force: true }); // fresh profile: no cached stylesheets from an earlier run
   const proc = spawn(exe, [
     '--headless=new', '--disable-gpu', '--no-first-run', '--no-default-browser-check', '--disable-extensions',
@@ -207,6 +214,7 @@ async function run(mode, outArg, onlyPrototype) {
       for (const [vpName, viewport] of Object.entries(VIEWPORTS).filter(v => !process.env.VIEWPORTS || process.env.VIEWPORTS.split(",").includes(Array.isArray(v) ? v[0] : v))) {
         results[prototype][vpName] = {};
         for (const [scName, sc] of Object.entries(SCENARIOS)) {
+          if (process.env.SCENARIOS && !process.env.SCENARIOS.split(',').includes(scName)) continue;
           if (sc.only && sc.only !== prototype) continue;
           // One tab per scenario: a tab reused across navigations can composite stale layers into the screenshot
           const page = await openPage(cdp, viewport);
@@ -259,11 +267,15 @@ async function evalOnce(expression, prototype, vpName, scName) {
   }
 }
 
-const [mode, out, only] = process.argv.slice(2);
-if (mode === 'eval') {
-  evalOnce(out, process.argv[4] || 'prototype-simple', process.argv[5] || 'phone-14', process.argv[6] || 'map').catch(e => { console.error(e); process.exit(1); });
-} else if (!mode || !out) {
-  console.error('usage: node visual.js shots|probe|both <out> [prototype-simple|prototype-tabs]');
-  process.exit(2);
+module.exports = { launchBrowser, openPage, navigate, evaluate, BASE, VIEWPORTS };
+
+if (require.main === module) {
+  const [mode, out, only] = process.argv.slice(2);
+  if (mode === 'eval') {
+    evalOnce(out, process.argv[4] || 'prototype-simple', process.argv[5] || 'phone-14', process.argv[6] || 'map').catch(e => { console.error(e); process.exit(1); });
+  } else if (!mode || !out) {
+    console.error('usage: node visual.js shots|probe|both <out> [prototype-simple|prototype-tabs]');
+    process.exit(2);
+  }
+  if (mode !== 'eval') run(mode, out, only).catch(e => { console.error(e); process.exit(1); });
 }
-if (mode !== 'eval') run(mode, out, only).catch(e => { console.error(e); process.exit(1); });

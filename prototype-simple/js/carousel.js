@@ -7,13 +7,18 @@ import { onEscape } from './keys.js';
 import { initSwipe } from './gestures.js';
 
 let images = [];
+let photoDetails = [];
 let currentIndex = 0;
 let carouselInitialized = false;
 
 function updateCarouselImage() {
   const imageEl = document.getElementById('carousel-image');
-  if (!imageEl || images.length === 0) return;
+  if (!imageEl) return;
+  if (images.length === 0) { imageEl.style.backgroundImage = ''; return; }
   imageEl.style.backgroundImage = cssUrl(images[currentIndex]);
+  const photo = photoDetails[currentIndex] || {};
+  imageEl.setAttribute('role', 'img');
+  imageEl.setAttribute('aria-label', photo.alt || 'Gebäudebild');
   document.querySelectorAll('.carousel-dot').forEach(function(dot, index) {
     dot.classList.toggle('active', index === currentIndex);
   });
@@ -37,8 +42,9 @@ export const carouselActions = {
 };
 
 // Show a list of image URLs (the first one active) and (once) bind the controls
-export function showCarousel(imageUrls) {
+export function showCarousel(imageUrls, details) {
   images = (imageUrls && imageUrls.length > 0) ? imageUrls.slice() : [];
+  photoDetails = details || [];
   currentIndex = 0;
 
   const dotsContainer = document.getElementById('carousel-dots');
@@ -90,9 +96,10 @@ function updateLightbox() {
   const img = document.getElementById('lightbox-image');
   const counter = document.getElementById('lightbox-counter');
   const filename = document.getElementById('lightbox-filename');
-  if (img) img.src = url;
+  const photo = photoDetails[lightboxIndex] || {};
+  if (img) { img.src = url; img.alt = photo.alt || 'Gebäudebild'; }
   if (counter) counter.textContent = (lightboxIndex + 1) + ' / ' + images.length;
-  if (filename) filename.textContent = getFilenameFromUrl(url);
+  if (filename) filename.textContent = photo.credit ? photo.credit + ' · ' + photo.alt : getFilenameFromUrl(url);
   // Keep the carousel in sync
   currentIndex = lightboxIndex;
   updateCarouselImage();

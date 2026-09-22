@@ -3,7 +3,7 @@ module.exports = {
   name: 'tabs: URL state restore (selection, table, filter, detail)',
   boot: {
     prototype: 'prototype-tabs',
-    url: 'http://localhost/prototype-tabs/?id=1080%2F4840%2FAF&table=open&filter_status=In%20Betrieb&basemap=dark&topic=swisstopo&bgLayers=ch.are.bauzonen'
+    url: 'http://localhost/prototype-tabs/?id=1080%2F4840%2FAF&table=open&filter_land=CH&filter_status=In%20Betrieb&basemap=dark&topic=swisstopo&bgLayers=ch.are.bauzonen'
   },
   async run(ctx, check) {
     const { window, document, map, modules, settle } = ctx;
@@ -13,7 +13,7 @@ module.exports = {
     check('table row synced with the restored selection', !!document.querySelector('#list-body tr.row-active[data-id="1080/4840/AF"]'));
     check('selection restored', state.selectedBuildingId === '1080/4840/AF' && document.getElementById('info-panel').classList.contains('show'));
     check('one fly-to for the restored selection', map.calls.flyTo.length === 1);
-    check('filter restored', state.activeFilters.status.length === 1 && state.filteredData.features.length < 10);
+    check('filter restored', state.activeFilters.status.length === 1 && state.filteredData.features.length === 5);
     check('filter checkbox checked', !!document.querySelector('#filter-status-options input[data-value="In Betrieb"]:checked'));
     check('filter badge', !!document.querySelector('#filter-panel-btn .filter-count'));
     check('list rows filtered', document.querySelectorAll('#list-body tr[data-id]').length === state.filteredData.features.length);

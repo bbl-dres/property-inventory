@@ -1,0 +1,6 @@
+requests>=2.32,<3
+beautifulsoup4>=4.12,<5
+PyMuPDF>=1.26,<2
+Pillow>=11,<13
+pyproj>=3.7,<4
+shapely>=2,<3

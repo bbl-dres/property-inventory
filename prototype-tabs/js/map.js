@@ -335,9 +335,9 @@ export function selectBuilding(buildingId, flyToBuilding) {
   const ext = props.extensionData || {};
   setSelection(buildingId, null);
 
-  // Placeholder image by position in the dataset (the mock data carries no photos)
-  const index = state.buildingsData.features.indexOf(building);
-  const imageUrl = placeholderImages[(index < 0 ? 0 : index) % placeholderImages.length];
+  // Use the same researched photograph as the gallery and detail view.
+  const photos = (props.extensionData || {}).photos || [];
+  const imageUrl = photos.length ? photos[0].url : placeholderImages[0];
 
   const html =
     infoRow('info.label.id', escapeHtml(props.buildingId)) +

@@ -1,6 +1,6 @@
 # Tabs Views — Property Detail Prototype
 
-> **Unofficial mockup.** Fictional data, not for production use. Part of the [`property-inventory`](../README.md) repo.
+> **Unofficial prototype.** Public building facts and photographs with fictional operational data; not for production use. Part of the [`property-inventory`](../README.md) repo.
 
 Tabbed property-detail view with structured sections and KI answers inside the search suggestions. A fork of the [simple app](../prototype-simple) that swaps the side info panel for a full-page detail view with seven tabs.
 
@@ -9,6 +9,9 @@ Tabbed property-detail view with structured sections and KI answers inside the s
 https://bbl-dres.github.io/property-inventory/prototype-tabs/
 
 ## Focus
+
+All data tables use the [shared table component](../docs/TABLE-COMPONENT.md), with
+consistent width roles, compact dates, and technical IDs kept out of display columns.
 
 - **Full-page detail view.** When a building is selected, the map collapses and a structured detail page takes over.
 - **Seven tabs** per property: Übersicht, Bemessungen, Kosten, Verträge, Ausstattung, Dokumente, Kontakte.
@@ -19,6 +22,13 @@ https://bbl-dres.github.io/property-inventory/prototype-tabs/
 - **Aligned with the simple app.** Same module layout, markup hooks and behaviour for the map tools: PDF export of the print panel, Geokatalog with "Thema wechseln", measure tool, search history, lightbox, URL-owned basemap and selection. The data model still differs (camelCase BuildingMinds schema with `extensionData`, see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)).
 
 ## Running
+
+The same 14 researched buildings/sites as the simple app are exported into this
+prototype's camelCase schema and related-entity JSON files. Measurements distinguish
+published SIA values, calculated Swiss parcel areas and SIA/RICS demo scenarios.
+Documents use KBOB codes, contacts are fictional, and photographs carry credits.
+See the [research and generation guide](../scripts/portfolio/README.md) for sources,
+verified Swiss register IDs, geometry, assumptions and reproduction commands.
 
 ### Basemap links
 

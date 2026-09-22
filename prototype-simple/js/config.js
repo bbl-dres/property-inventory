@@ -57,12 +57,7 @@ export function filterLabel(filterKey) {
 
 // ===== IMAGES =====
 
-export const placeholderImages = [
-  'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&h=600&fit=crop',
-  'https://images.unsplash.com/photo-1554435493-93422e8220c8?w=800&h=600&fit=crop',
-  'https://images.unsplash.com/photo-1577495508048-b635879837f1?w=800&h=600&fit=crop',
-  'https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&h=600&fit=crop'
-];
+export const placeholderImages = ['../assets/portfolio/no-photo.svg'];
 
 // ===== MAP LAYERS =====
 

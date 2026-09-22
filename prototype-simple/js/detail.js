@@ -117,6 +117,10 @@ export function populateDetailView(building) {
   setText('detail-garea-gfu', formatArea(props.garea_gfu));
   setText('detail-garea-acu', props.garea_acu);
   setText('detail-garea-ngf', formatArea(props.garea_ngf));
+  setText('detail-garea-kf', formatArea(props.garea_kf));
+  setText('detail-rics-gea', formatArea(props.rics_gea));
+  setText('detail-rics-gia', formatArea(props.rics_gia));
+  setText('detail-rics-nia', formatArea(props.rics_nia));
   setText('detail-garea-nf', formatArea(props.garea_nf));
   setText('detail-garea-hnf', formatArea(props.garea_hnf));
   setText('detail-garea-nnf', formatArea(props.garea_nnf));
@@ -137,7 +141,7 @@ export function populateDetailView(building) {
   setText('detail-larea-uf', formatArea(props.larea_uf));
   setText('detail-larea-acu', props.larea_acu);
 
-  showCarousel((props.img_url && props.img_url.length > 0) ? props.img_url : placeholderImages);
+  showCarousel((props.img_url && props.img_url.length > 0) ? props.img_url : placeholderImages, props.photos);
   showMiniMap(coords);
   initInfoIcons();
   initCollapsibleSections();

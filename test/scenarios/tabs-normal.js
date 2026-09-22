@@ -10,15 +10,15 @@ module.exports = {
     // Boot
     check('app signals boot', window.__appBooted === true);
     check('loading overlay hidden', document.getElementById('loading-overlay').classList.contains('hidden'));
-    check('buildings loaded (10)', state.buildingsData && state.buildingsData.features.length === 10);
-    check('parcels loaded (10)', state.parcelData && state.parcelData.features.length === 10);
+    check('buildings loaded (14)', state.buildingsData && state.buildingsData.features.length === 14);
+    check('parcels loaded (14)', state.parcelData && state.parcelData.features.length === 14);
     check('entity data loaded', state.allAreaMeasurements.length > 0 && state.allContracts.length > 0 && state.allCosts.length > 0);
     check('no lang parameter added to the URL', window.location.search.indexOf('lang=') === -1);
     check('basemap normalised in URL', window.location.search.indexOf('basemap=light') !== -1);
-    check('list rows rendered', document.querySelectorAll('#list-body tr[data-id]').length === 10);
-    check('parcel rows rendered', document.querySelectorAll('#parcels-body tr[data-parcel-id]').length === 10);
+    check('list rows rendered', document.querySelectorAll('#list-body tr[data-id]').length === 14);
+    check('parcel rows rendered', document.querySelectorAll('#parcels-body tr[data-parcel-id]').length === 14);
     check('table hidden by default', document.getElementById('table-panel').classList.contains('collapsed') && state.tableOpen === false);
-    check('filter options with counts', document.querySelectorAll('#filter-status-options .filter-option').length === 3 && !!document.querySelector('#filter-teilportfolio-options .filter-option-count'));
+    check('filter options with counts', document.querySelectorAll('#filter-status-options .filter-option').length === 1 && !!document.querySelector('#filter-teilportfolio-options .filter-option-count'));
     check('style switcher visible', document.getElementById('style-switcher').classList.contains('visible'));
     check('location tree not built while its panel is closed', document.getElementById('tree-panel-content').children.length === 0);
 
@@ -59,16 +59,16 @@ module.exports = {
 
     // Filters use replaceState
     const histBefore = window.history.length;
-    const cb = document.querySelector('#filter-status-options input[type="checkbox"]');
+    const cb = document.querySelector('#filter-land-options input[data-value="CH"]');
     cb.checked = true;
     cb.dispatchEvent(new window.Event('change', { bubbles: true }));
     await settle();
-    check('filter applied', state.filteredData.features.length < 10 && state.filteredData.features.length > 0);
+    check('filter applied', state.filteredData.features.length < 14 && state.filteredData.features.length > 0);
     check('filters do not push history', window.history.length === histBefore);
     check('map source filtered', map.getSource('buildings').data.features.length === state.filteredData.features.length);
     document.getElementById('drawer-reset-btn').click();
     await settle();
-    check('reset restores all buildings', state.filteredData.features.length === 10 && !cb.checked);
+    check('reset restores all buildings', state.filteredData.features.length === 14 && !cb.checked);
 
     // Table panel under the map: toggle opens it, a row selects the object on the map
     document.getElementById('tbl-toggle').click();
@@ -103,18 +103,18 @@ module.exports = {
     // "Keine" / "Alle" of the columns menu rebuild the column stylesheet
     const sheet = document.getElementById('column-visibility-style');
     document.getElementById('columns-toggle-none').click();
-    check('"Keine" hides every building column', sheet.textContent.indexOf('.col-id{') !== -1 && sheet.textContent.indexOf('.col-flaeche{') !== -1);
+    check('"Keine" hides every building column', sheet.textContent.indexOf('.col-name{') !== -1 && sheet.textContent.indexOf('.col-flaeche{') !== -1);
     document.getElementById('columns-toggle-all').click();
-    check('"Alle" shows every building column', sheet.textContent.indexOf('.col-id{') === -1 && sheet.textContent.indexOf('.col-flaeche{') === -1);
+    check('"Alle" shows every building column', sheet.textContent.indexOf('.col-name{') === -1 && sheet.textContent.indexOf('.col-flaeche{') === -1);
 
     // Detail view
     modules.ui.showDetailView('1080/4840/AF');
     await settle(50);
     check('detail view active', state.currentView === 'detail' && document.getElementById('detail-view').classList.contains('active'));
-    check('detail populated', document.getElementById('detail-name').textContent === 'Bundeshaus West' && document.getElementById('detail-baujahr').textContent === '1902');
-    check('address parsed', document.getElementById('detail-street').textContent === 'Bundesplatz' && document.getElementById('detail-plz').textContent === '3003');
+    check('detail populated', document.getElementById('detail-name').textContent === 'Bundeshaus West' && document.getElementById('detail-baujahr').textContent === '1857');
+    check('address parsed', document.getElementById('detail-street').textContent === 'Bundesgasse' && document.getElementById('detail-plz').textContent === '3011');
     check('breadcrumb populated', document.getElementById('breadcrumb-name').textContent === 'Bundeshaus West');
-    check('carousel dots rendered', document.querySelectorAll('#carousel-dots .carousel-dot').length === 4);
+    check('carousel dots rendered', document.querySelectorAll('#carousel-dots .carousel-dot').length === 3);
     check('mini map created', fake.Map.instances.length === 2);
 
     // Entity tabs render their tables
@@ -147,7 +147,7 @@ module.exports = {
     // Gallery
     document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
     await settle();
-    check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 10);
+    check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 14);
 
     // A filter applied while the gallery shows cannot zoom the hidden map: the zoom happens once,
     // when the map shows again; returning to an unchanged filter keeps the map position
@@ -167,19 +167,19 @@ module.exports = {
     cb.checked = false;
     cb.dispatchEvent(new window.Event('change', { bubbles: true }));
     await settle();
-    check('filter cleared again', state.filteredData.features.length === 10 && state.pendingFilterZoom === false);
+    check('filter cleared again', state.filteredData.features.length === 14 && state.pendingFilterZoom === false);
 
     // Map view + basemap switch
     document.querySelector('.view-toggle-btn[data-view="map"]').click();
     await settle(150);
-    map.fire('click', { features: [{ properties: { buildingId: '1080/3120/AB' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
+    map.fire('click', { features: [{ properties: { buildingId: '9900/9002/AA' } }], point: { x: 1, y: 1 }, lngLat: { lng: 7.4, lat: 46.9 } }, 'buildings-points');
     const flyBeforeStyle = map.calls.flyTo.length;
     document.querySelector('.style-option[data-style="voyager"]').click();
     await settle(50);
     check('setStyle called', map.calls.setStyle.length === 1);
     check('layers restored after style change', !!map.getSource('buildings') && !!map.getLayer('buildings-points') && !!map.getLayer('parcels-fill'));
     check('handlers still bound once', map.listenerCount('click', 'buildings-points') === 1);
-    check('selection highlight restored', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('1080/3120/AB') !== -1);
+    check('selection highlight restored', JSON.stringify(map.getLayer('buildings-selected').filter).indexOf('9900/9002/AA') !== -1);
     check('no fly-to on style change', map.calls.flyTo.length === flyBeforeStyle);
     check('basemap in URL, not in localStorage', window.location.search.indexOf('basemap=standard') !== -1 && window.localStorage.getItem('mapStyle') === null);
 
@@ -255,7 +255,7 @@ module.exports = {
     document.querySelector('.accordion-item[data-accordion="share"] .accordion-header').click();
     check('share link filled', /basemap=light/.test(document.getElementById('share-link-input').value));
     document.querySelector('.accordion-item[data-accordion="export"] .accordion-header').click();
-    check('export count for the current view', document.getElementById('export-count').textContent.indexOf('10 Objekte') === 0);
+    check('export count for the current view', document.getElementById('export-count').textContent.indexOf('14 Objekte') === 0);
     const selection = document.getElementById('export-data-selection');
     selection.value = 'selected';
     selection.dispatchEvent(new window.Event('change'));
@@ -289,7 +289,7 @@ module.exports = {
     document.getElementById('tree-panel-btn').click();
     await settle();
     check('tree panel opens; the button is a plain toggle', document.getElementById('tree-panel').classList.contains('open') && document.getElementById('tree-panel-btn').classList.contains('panel-open') && document.getElementById('tree-panel-btn').getAttribute('aria-expanded') === 'true');
-    check('tree lists the countries with counts', document.querySelectorAll('#tree-panel-content > .tree > .tree-item').length === 6 && document.querySelector('#tree-panel-content .tree-count').textContent !== '');
+    check('tree lists the countries with counts', document.querySelectorAll('#tree-panel-content > .tree > .tree-item').length === 9 && document.querySelector('#tree-panel-content .tree-count').textContent !== '');
     const rows = function(sel) { return document.querySelectorAll('#tree-panel-content .tree-row' + sel); };
     const fold = function(key) { document.querySelector('#tree-panel-content .tree-fold[data-fold="' + key + '"]').click(); };
     const row = function(key) { return document.querySelector('#tree-panel-content .tree-row[data-node="' + key + '"]'); };
@@ -303,7 +303,7 @@ module.exports = {
     check('outline layers sit under the data layers', map._layers.findIndex(l => l.id === 'country-highlight-line') < map._layers.findIndex(l => l.id === 'buildings-points'));
     check('filter button counts it, the Standorte button carries no badge', !!document.querySelector('#filter-panel-btn .filter-count') && !document.querySelector('#tree-panel-btn .filter-count') && !document.getElementById('tree-panel-btn').classList.contains('has-active-filters') && /CH/.test(document.getElementById('filter-pills').textContent));
     check('drawer checkbox follows', !!document.querySelector('#filter-panel input[data-filter="land"][data-value="CH"]:checked'));
-    check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 5 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
+    check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 2 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
     fold('country:DE');
     check('one open country at a time', rows('[data-node^="region:DE/"]').length === 1 && rows('[data-node^="region:CH/"]').length === 0 && state.activeFilters.land[0] === 'CH');
     fold('country:CH');
@@ -312,10 +312,10 @@ module.exports = {
     await settle(200); // assets/regions/CH-BE.geojson is fetched on the first use
     const cantonZoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
     check('canton outlined and zoomed to (Bern)', JSON.stringify(map.getLayer('country-highlight-line').filter) === JSON.stringify(['==', ['get', 'key'], 'CH-BE']) && map.getSource('countries').data.features.some(f => f.properties.key === 'CH-BE') && cantonZoom.bounds[0] > 6.7 && cantonZoom.bounds[0] < 7.2 && cantonZoom.bounds[2] > 8.3 && cantonZoom.bounds[2] < 8.6);
-    check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'Kanton Bern' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 1);
+    check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'Kanton Bern' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 4);
     check('country is on the path, region active, cities shown', document.querySelector('.tree-row[data-node="country:CH"]').closest('.tree-node').classList.contains('is-path') && row('region:CH/Kanton%20Bern').closest('.tree-node').classList.contains('is-active') && rows('[data-node="city:CH/Kanton%20Bern/Bern"]').length === 1 && rows('[data-node^="we:"]').length === 0);
     fold('city:CH/Kanton%20Bern/Bern');
-    check('city opens its WE nodes', rows('[data-node^="we:CH/"]').length === 1);
+    check('city opens its WE nodes', rows('[data-node^="we:CH/"]').length === 2);
     fold('region:CH/Kanton%20Z%C3%BCrich');
     check('one open region per country', rows('[data-node^="city:CH/"]').length === 1 && rows('[data-node^="we:"]').length === 0 && rows('[data-node="city:CH/Kanton%20Bern/Bern"]').length === 0);
     fold('region:CH/Kanton%20Bern');
@@ -419,7 +419,7 @@ module.exports = {
     document.getElementById('logo-area').click();
     await settle(400);
     check('logo returns to the map view', state.currentView === 'map' && document.getElementById('map-view').classList.contains('active'));
-    check('logo clears filters and selection', state.filteredData.features.length === 10 && state.selectedBuildingId === null && state.selectedParcelId === null && !document.getElementById('info-panel').classList.contains('show'));
+    check('logo clears filters and selection', state.filteredData.features.length === 14 && state.selectedBuildingId === null && state.selectedParcelId === null && !document.getElementById('info-panel').classList.contains('show'));
     check('logo closes the drawer and the table panel', !document.getElementById('filter-panel').classList.contains('open') && !state.tableOpen);
     check('logo cleans the URL', !/filter_|id=|parcelId=|view=detail|table=open/.test(window.location.search));
     check('logo flies to the initial extent', map.calls.flyTo.length === flyHomeBefore + 1);

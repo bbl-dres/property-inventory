@@ -1,968 +1,1235 @@
 {
+  "dataVersion": "2026-09-22",
   "assets": [
     {
-      "assetId": "442ce5ec-48ae-4b56-9b61-036e781bf5f2",
-      "name": "Fernwärmeübergabestation",
+      "assetId": "42fd903c-2678-53f6-b12c-61e80ad608c2",
+      "buildingIds": [
+        "1080/4840/AF"
+      ],
+      "name": "Fernwärmeübergabe",
       "category": "HVAC",
-      "buildingIds": [
-        "1080/4840/AF"
-      ],
-      "manufacturer": "Siemens AG",
-      "installationYear": 2019,
-      "location": "Untergeschoss Technikraum",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-4840-001",
+      "serialNumber": "DEMO-4840-001",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-08-15T00:00:00Z",
-      "nextMaintenanceDate": "2025-08-15T00:00:00Z",
-      "legacyId": "4840-A1",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-4840-A1",
       "extensionData": {
+        "dataStatus": "synthetic-demo",
         "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "873b3c7e-cd04-41c9-9f54-a7543957e3c9",
-      "name": "Personenaufzug Haupttreppe",
-      "category": "Aufzüge",
+      "assetId": "fcc6ebc9-257e-5fe0-91a2-d823c09ef4c4",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "manufacturer": "Schindler AG",
-      "installationYear": 2019,
-      "location": "Treppenhaus Mitte",
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-4840-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-05-02T00:00:00Z",
-      "nextMaintenanceDate": "2025-05-02T00:00:00Z",
-      "legacyId": "4840-A2",
+      "serialNumber": "DEMO-4840-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-4840-A2",
       "extensionData": {
+        "dataStatus": "synthetic-demo",
         "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "29b9f197-16e4-4b2b-ba2c-7550c3dfbdd0",
-      "name": "Brandmeldeanlage",
-      "category": "Brandschutz",
+      "assetId": "4af0d50e-88d9-5545-b01c-588f7526454c",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "manufacturer": "Siemens Building Technologies",
-      "installationYear": 2019,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4840-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-11-06T00:00:00Z",
-      "nextMaintenanceDate": "2025-11-06T00:00:00Z",
-      "legacyId": "4840-A3",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "f5405434-4e7d-4bcd-bf29-f286689517a9",
-      "name": "Zutrittskontrollsystem",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/4840/AF"
-      ],
-      "manufacturer": "dormakaba AG",
-      "installationYear": 2019,
-      "location": "Alle Eingänge",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4840-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-11-22T00:00:00Z",
-      "nextMaintenanceDate": "2025-11-22T00:00:00Z",
-      "legacyId": "4840-A4",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "33fbd493-aa30-4e9c-985b-dc044ddc5a65",
-      "name": "Notstromanlage",
+      "name": "LED-Grundbeleuchtung",
       "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-4840-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-4840-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "3d1083f7-3518-5b1f-b677-bfecf5d40cdb",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "manufacturer": "ABB Schweiz AG",
-      "installationYear": 2019,
-      "location": "Untergeschoss Technikraum",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4840-005",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-12-10T00:00:00Z",
-      "nextMaintenanceDate": "2025-12-10T00:00:00Z",
-      "legacyId": "4840-A5",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "b295ac1f-a703-471a-92c1-ad9623905c76",
-      "name": "Wärmepumpe Geothermie",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/5210/AA"
-      ],
-      "manufacturer": "Viessmann",
-      "installationYear": 2000,
-      "location": "Technikraum EG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5210-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-24T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-24T00:00:00Z",
-      "legacyId": "5210-A1",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "03318cae-8620-4044-9ffa-bf372764d4d4",
-      "name": "Klimaanlage Bürotrakt",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/5210/AA"
-      ],
-      "manufacturer": "Daikin",
-      "installationYear": 2021,
-      "location": "Dachgeschoss",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5210-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-08-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-08-05T00:00:00Z",
-      "legacyId": "5210-A2",
-      "extensionData": {
-        "warrantyUntil": "2026-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "30ae95ad-4671-4ef3-8fb4-74aa99bf244b",
-      "name": "Videoüberwachungsanlage",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/5210/AA"
-      ],
-      "manufacturer": "Bosch Security Systems",
-      "installationYear": 2020,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5210-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-18T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-18T00:00:00Z",
-      "legacyId": "5210-A3",
-      "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "a0c7518f-5f64-402e-bb59-1a04134b8a4e",
-      "name": "Personenaufzug",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/5210/AA"
-      ],
-      "manufacturer": "ThyssenKrupp",
-      "installationYear": 2000,
-      "location": "Haupteingang",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5210-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-08-19T00:00:00Z",
-      "nextMaintenanceDate": "2025-08-19T00:00:00Z",
-      "legacyId": "5210-A4",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "6acc29e4-e541-4cc8-ba90-ee9cdbd79a96",
-      "name": "Gasheizungsanlage",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "Viessmann",
-      "installationYear": 2017,
-      "location": "Heizzentrale UG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-11-24T00:00:00Z",
-      "nextMaintenanceDate": "2025-11-24T00:00:00Z",
-      "legacyId": "3120-A1",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "ce449e98-2d80-46ee-b8e3-3bb20bd28a08",
-      "name": "Lastenaufzug 3t",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "KONE",
-      "installationYear": 2017,
-      "location": "Lagerhalle Ost",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-05-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-05-05T00:00:00Z",
-      "legacyId": "3120-A2",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "8db1f7ed-4af2-45a0-bd6b-7da7930b5482",
-      "name": "Lastenaufzug 5t",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "KONE",
-      "installationYear": 2017,
-      "location": "Lagerhalle West",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-12-11T00:00:00Z",
-      "nextMaintenanceDate": "2025-12-11T00:00:00Z",
-      "legacyId": "3120-A3",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "a320dbcc-f0df-4064-bbea-cf061d53c06c",
-      "name": "Sprinkleranlage",
-      "category": "Brandschutz",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "Minimax",
-      "installationYear": 2017,
-      "location": "Gesamte Lagerhalle",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-03-22T00:00:00Z",
-      "nextMaintenanceDate": "2025-03-22T00:00:00Z",
-      "legacyId": "3120-A4",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "d1bc229f-5b9c-4d2b-a42f-48aa3f8f4ab0",
-      "name": "Lüftungsanlage Lagerhalle",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "Zehnder",
-      "installationYear": 2017,
-      "location": "Dach Lagerhalle",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-005",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-05-09T00:00:00Z",
-      "nextMaintenanceDate": "2025-05-09T00:00:00Z",
-      "legacyId": "3120-A5",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "8bf7bc10-197f-4d7e-920e-4be4a0321ded",
-      "name": "Hubarbeitsbühne",
-      "category": "Logistik",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "manufacturer": "Jungheinrich",
-      "installationYear": 2020,
-      "location": "Hochregallager",
-      "status": "In Betrieb",
-      "serialNumber": "SN-3120-006",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-03-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-03-05T00:00:00Z",
-      "legacyId": "3120-A6",
-      "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "6b217865-20c0-44ba-b444-336cd9d09258",
-      "name": "Klimaanlage VRF-System",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "manufacturer": "Carrier",
-      "installationYear": 2020,
-      "location": "Büroetagen 12-14",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5320-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-19T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-19T00:00:00Z",
-      "legacyId": "5320-A1",
-      "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "37ddd41d-b09b-4a13-a696-7f02e21304db",
-      "name": "Zutrittskontrollsystem",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "manufacturer": "HID Global",
-      "installationYear": 2020,
-      "location": "Alle Eingänge",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5320-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-05-25T00:00:00Z",
-      "nextMaintenanceDate": "2025-05-25T00:00:00Z",
-      "legacyId": "5320-A2",
-      "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "4912495c-e883-49c6-8fb7-15d4449882e8",
-      "name": "Brandmeldeanlage",
-      "category": "Brandschutz",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "manufacturer": "Honeywell",
-      "installationYear": 2020,
-      "location": "Gesamte Mietfläche",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5320-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-03-03T00:00:00Z",
-      "nextMaintenanceDate": "2025-03-03T00:00:00Z",
-      "legacyId": "5320-A3",
-      "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "59c96a3a-ec95-4b03-8583-29c6931c4b79",
-      "name": "Ölheizungsanlage (Ersatz geplant)",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "manufacturer": "Weishaupt",
-      "installationYear": 1965,
-      "location": "Heizzentrale UG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4100-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-08-07T00:00:00Z",
-      "nextMaintenanceDate": "2025-08-07T00:00:00Z",
-      "legacyId": "4100-A1",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "349683d7-fe89-4dc7-ac9b-e4674c98ce1e",
-      "name": "Personenaufzug",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "manufacturer": "Schindler AG",
-      "installationYear": 2015,
-      "location": "Treppenhaus Hauptgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4100-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-28T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-28T00:00:00Z",
-      "legacyId": "4100-A2",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "f703cdee-f125-4223-ad11-b66546b6c2d8",
-      "name": "Lüftungsanlage Schulungsräume",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "manufacturer": "Zehnder",
-      "installationYear": 2015,
-      "location": "Dachgeschoss",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4100-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-03-12T00:00:00Z",
-      "nextMaintenanceDate": "2025-03-12T00:00:00Z",
-      "legacyId": "4100-A3",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "98f3bf64-3730-4beb-b223-afc8345e372d",
-      "name": "Brandmeldeanlage",
-      "category": "Brandschutz",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "manufacturer": "Siemens",
-      "installationYear": 2015,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4100-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-12-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-12-05T00:00:00Z",
-      "legacyId": "4100-A4",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "22b9b709-d9b9-49e2-a30b-448cc10a847f",
-      "name": "Beamer Konferenzraum A",
-      "category": "Medientechnik",
-      "buildingIds": [
-        "1080/4100/AC"
-      ],
-      "manufacturer": "Epson",
-      "installationYear": 2022,
-      "location": "Konferenzraum A, 2. OG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-4100-005",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-02-28T00:00:00Z",
-      "nextMaintenanceDate": "2025-02-28T00:00:00Z",
-      "legacyId": "4100-A5",
-      "extensionData": {
-        "warrantyUntil": "2027-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "b1851ab6-fbb6-4cf8-8e89-682f2fab727e",
-      "name": "VRF-Klimaanlage",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "manufacturer": "Daikin",
-      "installationYear": 2018,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5410-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-04-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-04-05T00:00:00Z",
-      "legacyId": "5410-A1",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "d147565d-10f5-4ebe-8829-f71c8df7daec",
-      "name": "Personenaufzug",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "manufacturer": "Mitsubishi Electric",
-      "installationYear": 1991,
-      "location": "Hauptgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5410-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-09-12T00:00:00Z",
-      "nextMaintenanceDate": "2025-09-12T00:00:00Z",
-      "legacyId": "5410-A2",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "80524fc4-3421-4835-9e70-3b2342bfa914",
-      "name": "Erdbeben-Frühwarnsystem",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "manufacturer": "Omron",
-      "installationYear": 2018,
-      "location": "Technikraum EG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5410-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-04T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-04T00:00:00Z",
-      "legacyId": "5410-A3",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "e82fe6f0-53a1-48bd-a538-b71a7d7c2729",
-      "name": "Videoüberwachungsanlage",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "manufacturer": "Panasonic",
-      "installationYear": 2018,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5410-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-04-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-04-05T00:00:00Z",
-      "legacyId": "5410-A4",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "03cce24e-3336-41d8-9e8d-059aa3ac51c5",
-      "name": "Gasheizungsanlage",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "manufacturer": "Viessmann",
-      "installationYear": 2015,
-      "location": "Heizzentrale UG",
-      "status": "In Betrieb",
-      "serialNumber": "SN-2800-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-25T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-25T00:00:00Z",
-      "legacyId": "2800-A1",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "022d3f9b-fcca-4824-b8d0-4d1689502a87",
-      "name": "Personenaufzug",
-      "category": "Aufzüge",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "manufacturer": "Schindler AG",
-      "installationYear": 2015,
-      "location": "Treppenhaus",
-      "status": "In Betrieb",
-      "serialNumber": "SN-2800-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-09-09T00:00:00Z",
-      "nextMaintenanceDate": "2025-09-09T00:00:00Z",
-      "legacyId": "2800-A2",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "69c627d5-5bad-411a-ab4e-d5b2b7cbfde7",
-      "name": "Gegensprechanlage",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "manufacturer": "Siedle",
-      "installationYear": 2015,
-      "location": "Alle Wohnungen",
-      "status": "In Betrieb",
-      "serialNumber": "SN-2800-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-22T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-22T00:00:00Z",
-      "legacyId": "2800-A3",
-      "extensionData": {
-        "warrantyUntil": null,
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "9bd155ad-c384-4687-9ea9-b04f617324f8",
-      "name": "Waschmaschinen Gemeinschaftsraum",
+      "name": "Trinkwasserstation",
       "category": "Sanitär",
-      "buildingIds": [
-        "1080/2800/AD"
-      ],
-      "manufacturer": "Electrolux",
-      "installationYear": 2020,
-      "location": "Waschküche UG",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-2800-004",
+      "serialNumber": "DEMO-4840-004",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-11-13T00:00:00Z",
-      "nextMaintenanceDate": "2025-11-13T00:00:00Z",
-      "legacyId": "2800-A4",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-4840-A4",
       "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "2560b9e9-9557-4bbd-8ec3-b3b02052049f",
-      "name": "Split-Klimaanlage Büro",
+      "assetId": "6a869e9a-8061-5ce1-b264-6e6410f6ecb6",
+      "buildingIds": [
+        "1080/5210/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
       "category": "HVAC",
-      "buildingIds": [
-        "1080/5510/AA"
-      ],
-      "manufacturer": "Carrier",
-      "installationYear": 2022,
-      "location": "Bürotrakt",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5510-001",
+      "serialNumber": "DEMO-5210-001",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-07T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-07T00:00:00Z",
-      "legacyId": "5510-A1",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-5210-A1",
       "extensionData": {
-        "warrantyUntil": "2027-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "58848701-49b3-4a37-a82b-87e5a22715ce",
-      "name": "Split-Klimaanlage Residenz",
+      "assetId": "c90afd49-94e3-5987-b1a1-57001e56c58e",
+      "buildingIds": [
+        "1080/5210/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
       "category": "HVAC",
-      "buildingIds": [
-        "1080/5510/AA"
-      ],
-      "manufacturer": "Carrier",
-      "installationYear": 2022,
-      "location": "Residenz",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5510-002",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-10-02T00:00:00Z",
-      "nextMaintenanceDate": "2025-10-02T00:00:00Z",
-      "legacyId": "5510-A2",
+      "serialNumber": "DEMO-5210-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-5210-A2",
       "extensionData": {
-        "warrantyUntil": "2027-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "29c8bc98-2bfb-4a56-86aa-ebad256a90d2",
-      "name": "Solaranlage Warmwasser",
-      "category": "Solar/Energie",
+      "assetId": "c1de1bea-7791-5552-bf09-1191bc1f6a0d",
       "buildingIds": [
-        "1080/5510/AA"
+        "1080/5210/AA"
       ],
-      "manufacturer": "Soletrol",
-      "installationYear": 2022,
-      "location": "Dach",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5510-003",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-12-18T00:00:00Z",
-      "nextMaintenanceDate": "2025-12-18T00:00:00Z",
-      "legacyId": "5510-A3",
-      "extensionData": {
-        "warrantyUntil": "2027-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "3a25ae06-d703-4110-8b94-21b13354a3fc",
-      "name": "Alarmanlage",
-      "category": "Sicherheit",
-      "buildingIds": [
-        "1080/5510/AA"
-      ],
-      "manufacturer": "Intelbras",
-      "installationYear": 2022,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-5510-004",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-01-27T00:00:00Z",
-      "nextMaintenanceDate": "2025-01-27T00:00:00Z",
-      "legacyId": "5510-A4",
-      "extensionData": {
-        "warrantyUntil": "2027-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "a2ce7a9c-772e-4b2e-af1d-146674b89bef",
-      "name": "Präzisionsklimaanlage Serverraum",
-      "category": "HVAC",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "manufacturer": "Schneider Electric",
-      "installationYear": 2025,
-      "location": "Serverräume A-D",
-      "status": "In Betrieb",
-      "serialNumber": "SN-1950-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-01-06T00:00:00Z",
-      "nextMaintenanceDate": "2025-01-06T00:00:00Z",
-      "legacyId": "1950-A1",
-      "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "0da880b2-91e7-471c-b9f1-3c6138928ad8",
-      "name": "USV-Anlage 2MW",
+      "name": "LED-Grundbeleuchtung",
       "category": "Elektro",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "manufacturer": "ABB",
-      "installationYear": 2025,
-      "location": "Elektrozentrale",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-1950-002",
+      "serialNumber": "DEMO-5210-003",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-05T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-05T00:00:00Z",
-      "legacyId": "1950-A2",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-5210-A3",
       "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "87fede68-713a-4c15-a6db-63ab0180eaed",
-      "name": "Notstromdiesel 3MW",
+      "assetId": "f48fbc64-260c-58b4-aa2d-35c07537163d",
+      "buildingIds": [
+        "1080/5210/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-5210-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-5210-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "1a31c972-e705-5cc6-a4d0-ad893aef8de7",
+      "buildingIds": [
+        "9900/9002/AA"
+      ],
+      "name": "Fernwärmeübergabe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9002-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9002-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "fa1fe763-ae19-5131-8167-38eec978968a",
+      "buildingIds": [
+        "9900/9002/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9002-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9002-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "3e20aff2-305d-5786-a0cd-36b1edbecabf",
+      "buildingIds": [
+        "9900/9002/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
       "category": "Elektro",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "manufacturer": "Caterpillar",
-      "installationYear": 2025,
-      "location": "Aussenbereich Nord",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-1950-003",
+      "serialNumber": "DEMO-9002-003",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-01-20T00:00:00Z",
-      "nextMaintenanceDate": "2025-01-20T00:00:00Z",
-      "legacyId": "1950-A3",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9002-A3",
       "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "b511900b-96ba-4393-bb4b-aa88141e4219",
-      "name": "Brandlöschanlage Inergen",
-      "category": "Brandschutz",
+      "assetId": "ee86e42e-8b4d-520d-b265-1f051c29536c",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9002/AA"
       ],
-      "manufacturer": "Minimax",
-      "installationYear": 2025,
-      "location": "Alle Serverräume",
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-1950-004",
+      "serialNumber": "DEMO-9002-004",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-11-03T00:00:00Z",
-      "nextMaintenanceDate": "2025-11-03T00:00:00Z",
-      "legacyId": "1950-A4",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9002-A4",
       "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "2f08fafb-99fe-4273-be02-1005c7178e32",
-      "name": "Zutrittskontrollsystem",
-      "category": "Sicherheit",
+      "assetId": "74f4ddd6-f408-569b-b323-1a7d7e94437f",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9003/AA"
       ],
-      "manufacturer": "Dormakaba",
-      "installationYear": 2025,
-      "location": "Gesamtgebäude",
-      "status": "In Betrieb",
-      "serialNumber": "SN-1950-005",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-12-26T00:00:00Z",
-      "nextMaintenanceDate": "2025-12-26T00:00:00Z",
-      "legacyId": "1950-A5",
-      "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "2ad6e82f-8357-40f9-8e98-e9d6e0bf4ade",
-      "name": "Freikühler (Free Cooling)",
+      "name": "Fernwärmeübergabe",
       "category": "HVAC",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "manufacturer": "Güntner",
-      "installationYear": 2025,
-      "location": "Dach",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-1950-006",
+      "serialNumber": "DEMO-9003-001",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-04-09T00:00:00Z",
-      "nextMaintenanceDate": "2025-04-09T00:00:00Z",
-      "legacyId": "1950-A6",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9003-A1",
       "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "2e15c688-80a1-4c25-865c-6eea349f3a29",
-      "name": "Gebäudeleitsystem",
-      "category": "Gebäudeautomation",
+      "assetId": "d20f86df-3779-581c-9496-63f3aa8a94e6",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9003/AA"
       ],
-      "manufacturer": "Siemens",
-      "installationYear": 2025,
-      "location": "Leitwarte",
-      "status": "In Betrieb",
-      "serialNumber": "SN-1950-007",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-08-13T00:00:00Z",
-      "nextMaintenanceDate": "2025-08-13T00:00:00Z",
-      "legacyId": "1950-A7",
-      "extensionData": {
-        "warrantyUntil": "2030-12-31T00:00:00Z",
-        "technicalLifespan": 20
-      }
-    },
-    {
-      "assetId": "38b192df-f0f1-4a27-9b46-c65f99f6594e",
-      "name": "Split-Klimaanlage",
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
       "category": "HVAC",
-      "buildingIds": [
-        "1080/5620/AA"
-      ],
-      "manufacturer": "Daikin",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
       "installationYear": 2016,
-      "location": "Büro- und Residenzbereich",
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5620-001",
-      "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-14T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-14T00:00:00Z",
-      "legacyId": "5620-A1",
+      "serialNumber": "DEMO-9003-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9003-A2",
       "extensionData": {
+        "dataStatus": "synthetic-demo",
         "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "61582a3a-e1d1-4cd7-a552-e365296ef5d5",
-      "name": "Solaranlage Warmwasser",
-      "category": "Solar/Energie",
+      "assetId": "ff31a073-46c6-5b6a-82ed-a0e7d1857c4d",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9003/AA"
       ],
-      "manufacturer": "Rheem Australia",
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
       "installationYear": 2016,
-      "location": "Dach",
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5620-002",
+      "serialNumber": "DEMO-9003-003",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-01-25T00:00:00Z",
-      "nextMaintenanceDate": "2025-01-25T00:00:00Z",
-      "legacyId": "5620-A2",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9003-A3",
       "extensionData": {
+        "dataStatus": "synthetic-demo",
         "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "14b6d216-ee55-4c19-bfa7-37bac8cf397a",
-      "name": "Alarmanlage",
-      "category": "Sicherheit",
+      "assetId": "ce5f7118-ae01-5579-9ed1-f6847e5a0e51",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9003/AA"
       ],
-      "manufacturer": "Bosch Security",
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
       "installationYear": 2016,
-      "location": "Gesamtgebäude",
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5620-003",
+      "serialNumber": "DEMO-9003-004",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-03-12T00:00:00Z",
-      "nextMaintenanceDate": "2025-03-12T00:00:00Z",
-      "legacyId": "5620-A3",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9003-A4",
       "extensionData": {
+        "dataStatus": "synthetic-demo",
         "warrantyUntil": null,
         "technicalLifespan": 20
       }
     },
     {
-      "assetId": "905b3e16-632d-4942-9156-5f0e467f09ad",
-      "name": "Videoüberwachung",
-      "category": "Sicherheit",
+      "assetId": "73ad2e93-b026-5a84-be06-0a100f5aff25",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9004/AA"
       ],
-      "manufacturer": "Hikvision",
-      "installationYear": 2020,
-      "location": "Aussenbereich",
+      "name": "Fernwärmeübergabe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2021,
+      "location": "Technikbereich (Demo)",
       "status": "In Betrieb",
-      "serialNumber": "SN-5620-004",
+      "serialNumber": "DEMO-9004-001",
       "maintenanceInterval": "Jährlich",
-      "lastMaintenanceDate": "2024-06-15T00:00:00Z",
-      "nextMaintenanceDate": "2025-06-15T00:00:00Z",
-      "legacyId": "5620-A4",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9004-A1",
       "extensionData": {
-        "warrantyUntil": "2025-12-31T00:00:00Z",
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "f70b0621-1e08-5f67-a3b3-f33c96b854e6",
+      "buildingIds": [
+        "9900/9004/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2021,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9004-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9004-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "9a277e42-4be3-52f0-b818-3e492c2330bd",
+      "buildingIds": [
+        "9900/9004/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2021,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9004-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9004-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "76fe871a-46ae-5119-aea0-5934fd0fdaf6",
+      "buildingIds": [
+        "9900/9004/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2021,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9004-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9004-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "e725a315-dd48-556d-b9fd-f8d680a0a3f2",
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "name": "Fernwärmeübergabe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9005-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9005-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "a16fda59-47b8-5973-bcb3-6a516692cfc1",
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9005-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9005-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "323900a3-56bf-5c70-90b6-af781c9538b2",
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9005-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9005-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "68f7276b-8f5c-5d0c-8e35-ccf3facc6dd8",
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9005-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9005-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "b6fdfa16-944f-5b63-8647-9980854202e0",
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9006-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9006-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "571e869c-4af8-54c1-a46c-60cd97be7ad5",
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9006-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9006-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "b9555bbe-9224-5ab2-b52c-3aa2ccb974f7",
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9006-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9006-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "07cf1f1a-29ac-5484-bc7d-42de59be7d96",
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9006-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9006-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "335bc6db-2cb8-5006-80d4-4fe74dc6ed41",
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "name": "Kälteanlage / reversible Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9007-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9007-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "8787fcbc-4f21-5448-aa7f-7e926464682e",
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9007-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9007-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "3b19cf4a-6e5c-5658-a143-63f98e1086d4",
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9007-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9007-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "7cf365ee-759d-5031-b737-6fd5d380c158",
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2018,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9007-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9007-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "aff32a89-b6b4-5b5f-b9f5-eb94188820f8",
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2019,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9008-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9008-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "a992d511-ecfe-506c-851f-20b6fde091e2",
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2019,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9008-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9008-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "d4177a77-c70d-5a6b-94b1-db9cac739a4b",
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2019,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9008-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9008-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "7ed4c99e-9711-5971-8dd1-9398672e016f",
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2019,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9008-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9008-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "260927d2-6855-5190-b5d4-db1e419e31dc",
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9009-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9009-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "9823dd75-dbfa-5891-b4bb-34d9b799a23d",
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9009-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9009-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "8304e73f-d8fb-5966-9645-50e1a2261450",
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9009-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9009-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "7495fe87-72b9-54ae-9bde-f7543bbd23d6",
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9009-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9009-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "8479613e-bb21-57b4-b37f-937cfd288eda",
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2022,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9010-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9010-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "92229618-e353-576b-98c2-3a22250621db",
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2022,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9010-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9010-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "edf95673-3df0-55ae-b08e-a6f1b7e0fdb5",
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2022,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9010-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9010-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "badcc061-709b-52c4-acd3-4b8559911304",
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2022,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9010-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9010-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "debb3075-8455-5ba0-a485-72b4d26becda",
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "name": "Kälteanlage / reversible Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2024,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9011-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9011-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "f2fb8b58-2fbf-5355-a4b4-17d2ae0e9d46",
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2024,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9011-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9011-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "fc09e0ed-699a-565c-9e68-ab8fb7a722d1",
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2024,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9011-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9011-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "1bab6c93-9606-5fed-a0a2-622f7159ad50",
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2024,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9011-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9011-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "a72414f2-db76-5de1-9c77-e89d81dd6ae2",
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "name": "Kälteanlage / reversible Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9012-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9012-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "4d304efa-43df-56cb-956c-83e52e3dcaa6",
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9012-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9012-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "628a6485-ab36-5b55-a265-9d964504ddfb",
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9012-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9012-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "c5fae581-328b-52f6-8e9d-37d208fff5d5",
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9012-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9012-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "e9b4c25f-54b1-5fed-a550-285c2c74b95b",
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "name": "Luft-Wasser-Wärmepumpe",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9013-001",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9013-A1",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "611f7177-e215-578c-b700-a1f0c56df4e6",
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "name": "Lüftungsanlage mit Wärmerückgewinnung",
+      "category": "HVAC",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9013-002",
+      "maintenanceInterval": "Halbjährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2026-12-15T00:00:00Z",
+      "legacyId": "DEMO-9013-A2",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "374632f9-d9ce-5766-a86e-fb93947c6eaa",
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "name": "LED-Grundbeleuchtung",
+      "category": "Elektro",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9013-003",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9013-A3",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
+        "technicalLifespan": 20
+      }
+    },
+    {
+      "assetId": "b8aa8126-27c1-54ce-868a-6e323cee9713",
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "name": "Trinkwasserstation",
+      "category": "Sanitär",
+      "manufacturer": "Muster Gebäudetechnik (fiktiv)",
+      "installationYear": 2016,
+      "location": "Technikbereich (Demo)",
+      "status": "In Betrieb",
+      "serialNumber": "DEMO-9013-004",
+      "maintenanceInterval": "Jährlich",
+      "lastMaintenanceDate": "2026-06-15T00:00:00Z",
+      "nextMaintenanceDate": "2027-06-15T00:00:00Z",
+      "legacyId": "DEMO-9013-A4",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "warrantyUntil": null,
         "technicalLifespan": 20
       }
     }

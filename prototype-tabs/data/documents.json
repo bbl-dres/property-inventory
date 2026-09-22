@@ -1,616 +1,2021 @@
 {
+  "dataVersion": "2026-09-22",
   "documents": [
     {
-      "documentId": "1317ad70-17d4-4f5b-a236-3fa5e1c576b6",
-      "name": "Grundriss Erdgeschoss",
-      "type": "Grundriss",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "validFrom": "2019-03-15T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "fc298777-c5cf-5b39-a3d1-a3b644404655",
+      "name": "BBL Bautendokumentation – Bundeshaus West",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "2.4 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/4840/AF",
-      "version": "1.0",
-      "legacyId": "4840-D1",
-      "extensionData": {}
+      "fileSize": "4.73 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/xpRh20JjlO-A/20100101_Bern%2C%20Bundesgasse%201%2C%20Sanierung_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-4840-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "26bdfbf6-0681-4518-b15e-84f08e0c551a",
-      "name": "Fassadenplan West",
-      "type": "Bauplan",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "validFrom": "2019-03-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "DWG",
-      "fileSize": "8.1 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/4840/AF",
-      "version": "1.0",
-      "legacyId": "4840-D2",
-      "extensionData": {}
-    },
-    {
-      "documentId": "c700f547-d80e-43dd-8581-4748cc6bea18",
-      "name": "GEAK Zertifikat 2019",
-      "type": "Energieausweis",
-      "buildingIds": [
-        "1080/4840/AF"
-      ],
-      "validFrom": "2019-06-20T00:00:00Z",
-      "validUntil": null,
+      "documentId": "8685c0dc-9830-513d-9c9f-16f72b2a9fee",
+      "name": "Flächen/Volumenberechnung 2026 – Bundeshaus West (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "1.2 MB",
-      "url": "#",
-      "description": "Energieausweis für Gebäude 1080/4840/AF",
-      "version": "1.0",
-      "legacyId": "4840-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-4840-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "a61cd343-20e3-49a2-9943-ae7ea2bba2ab",
-      "name": "Denkmalschutz-Verfügung",
-      "type": "Baubewilligung",
       "buildingIds": [
         "1080/4840/AF"
       ],
-      "validFrom": "1950-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "5af451ba-30bb-5b0f-b8f4-0978d3979ddb",
+      "name": "Wartungsplan 2026 – Bundeshaus West (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "450 KB",
-      "url": "#",
-      "description": "Baubewilligung für Gebäude 1080/4840/AF",
-      "version": "1.0",
-      "legacyId": "4840-D4",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-4840-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
     },
     {
-      "documentId": "a58edb3e-cbf6-46f0-9f59-a77136493c7a",
-      "name": "Architekturpläne Gesamtobjekt",
-      "type": "Bauplan",
+      "buildingIds": [
+        "1080/4840/AF"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "bfe96ade-9e98-5466-8d70-544c45866302",
+      "name": "Betriebsführungshandbuch 2026 – Bundeshaus West (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-4840-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "1080/4840/AF"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "f218c990-2d84-5695-83b4-c365680fc95f",
+      "name": "Kostenstatistik 2026 – Bundeshaus West (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-4840-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "1080/4840/AF"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "3516f298-29f6-5abb-ad3d-c6411b34e35a",
+      "name": "Energiestatistik 2026 – Bundeshaus West (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-4840-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "validFrom": "2000-09-01T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "83fe7435-d8d5-5895-a5f0-380dbe04ebd8",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Berlin",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "15.3 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/5210/AA",
-      "version": "1.0",
-      "legacyId": "5210-D1",
-      "extensionData": {}
+      "fileSize": "3.78 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/6KztH5h4iF7L/20001201_Berlin%2C%20Deutschland%2C%20Schweizerische%20Botschaft_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-5210-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "3ecb8d18-7d9a-4c20-adcc-0ff259ecf7d0",
-      "name": "Energiepass EnEV",
-      "type": "Energieausweis",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "validFrom": "2021-06-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "14002180-b3f6-500f-9af3-f94eea13634c",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Berlin (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "890 KB",
-      "url": "#",
-      "description": "Energieausweis für Gebäude 1080/5210/AA",
-      "version": "1.0",
-      "legacyId": "5210-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-5210-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "fc3a561a-6d1c-49ad-9b8e-4ae207c19965",
-      "name": "Sicherheitskonzept",
-      "type": "Betriebsanleitung",
       "buildingIds": [
         "1080/5210/AA"
       ],
-      "validFrom": "2022-01-10T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "97fcacba-d69a-5bb5-855e-8ec551a68d61",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Berlin (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "3.2 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/5210/AA",
-      "version": "1.0",
-      "legacyId": "5210-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-5210-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
     },
     {
-      "documentId": "6363c302-d67a-41ec-bb25-879ffade5eaa",
-      "name": "Hallenlayout Lagerbereich",
-      "type": "Grundriss",
       "buildingIds": [
-        "1080/3120/AB"
+        "1080/5210/AA"
       ],
-      "validFrom": "2017-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "DWG",
-      "fileSize": "12.5 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/3120/AB",
-      "version": "1.0",
-      "legacyId": "3120-D1",
-      "extensionData": {}
-    },
-    {
-      "documentId": "8e403b4e-001e-4464-a9cd-0cd4be9b26d5",
-      "name": "Brandschutzkonzept",
-      "type": "Brandschutzkonzept",
-      "buildingIds": [
-        "1080/3120/AB"
-      ],
-      "validFrom": "2017-08-15T00:00:00Z",
-      "validUntil": null,
+      "documentId": "ff0f178d-9bb1-55b2-81d9-a376c823c6fa",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Berlin (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
       "fileFormat": "PDF",
-      "fileSize": "4.8 MB",
-      "url": "#",
-      "description": "Brandschutzkonzept für Gebäude 1080/3120/AB",
-      "version": "1.0",
-      "legacyId": "3120-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-5210-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
     },
     {
-      "documentId": "1391c97b-63d2-4b07-8425-d467f664b9b5",
-      "name": "Wartungsprotokoll Heizung 2023",
-      "type": "Wartungsprotokoll",
       "buildingIds": [
-        "1080/3120/AB"
+        "1080/5210/AA"
       ],
-      "validFrom": "2023-11-12T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "068439a9-3342-507a-8ef9-1af3c1a67353",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Berlin (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
       "fileFormat": "PDF",
-      "fileSize": "320 KB",
-      "url": "#",
-      "description": "Wartungsprotokoll für Gebäude 1080/3120/AB",
-      "version": "1.0",
-      "legacyId": "3120-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-5210-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
     },
     {
-      "documentId": "2bd3574c-5b7d-445c-9e48-1d151e21a25b",
-      "name": "Gebäudefoto Aussenansicht",
-      "type": "Foto",
       "buildingIds": [
-        "1080/3120/AB"
+        "1080/5210/AA"
       ],
-      "validFrom": "2020-03-20T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "JPG",
-      "fileSize": "5.2 MB",
-      "url": "#",
-      "description": "Foto für Gebäude 1080/3120/AB",
-      "version": "1.0",
-      "legacyId": "3120-D4",
-      "extensionData": {}
-    },
-    {
-      "documentId": "5a9130a5-f988-4764-b35a-01d88f310c91",
-      "name": "Mietvertrag Third Avenue",
-      "type": "Mietvertrag",
-      "buildingIds": [
-        "1080/5320/AA"
-      ],
-      "validFrom": "2020-01-01T00:00:00Z",
-      "validUntil": null,
+      "documentId": "a1092e2d-d6b9-580c-a508-f9caad3a12f8",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Berlin (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
       "fileFormat": "PDF",
-      "fileSize": "1.8 MB",
-      "url": "#",
-      "description": "Mietvertrag für Gebäude 1080/5320/AA",
-      "version": "1.0",
-      "legacyId": "5320-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-5210-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
     },
     {
-      "documentId": "4ec5afb6-735c-4e12-956e-2cfb2967d6c4",
-      "name": "Grundriss Büroflächen",
-      "type": "Grundriss",
       "buildingIds": [
-        "1080/5320/AA"
+        "9900/9002/AA"
       ],
-      "validFrom": "2020-01-01T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "6c686030-05fa-59ff-a6ff-c2ea8d078f06",
+      "name": "BBL Bautendokumentation – BBL – Fellerstrasse 21",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "3.4 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/5320/AA",
-      "version": "1.0",
-      "legacyId": "5320-D2",
-      "extensionData": {}
+      "fileSize": "1.93 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/lcmtOKfIKe6i/20100701_Bern%20Fellerstrasse%2021%2C%20Erweiterung%20und%20Sanierung_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9002-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "ed357140-cca8-46a8-a642-2b60d9d34baa",
-      "name": "Sanierungsprojekt 2024",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9002/AA"
       ],
-      "validFrom": "2024-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "4ea436f2-b2e3-51c2-ad0e-be2d192a422c",
+      "name": "Flächen/Volumenberechnung 2026 – BBL – Fellerstrasse 21 (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "28.5 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/4100/AC",
-      "version": "1.0",
-      "legacyId": "4100-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9002-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "0938e3b3-f773-46ae-accb-3baf995c5dd6",
-      "name": "GEAK Plus Bericht",
-      "type": "Energieausweis",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9002/AA"
       ],
-      "validFrom": "2023-12-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "9a6b5c64-fa23-54ca-ac61-67e5b35acb66",
+      "name": "Wartungsplan 2026 – BBL – Fellerstrasse 21 (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "2.1 MB",
-      "url": "#",
-      "description": "Energieausweis für Gebäude 1080/4100/AC",
-      "version": "1.0",
-      "legacyId": "4100-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9002-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
     },
     {
-      "documentId": "f0d6016f-4714-4aa4-8480-9efdcf4975b3",
-      "name": "Denkmalschutz Teilbereich",
-      "type": "Baubewilligung",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9002/AA"
       ],
-      "validFrom": "1980-05-10T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "675f8207-5450-5054-98a3-2258c9acf563",
+      "name": "Betriebsführungshandbuch 2026 – BBL – Fellerstrasse 21 (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
       "fileFormat": "PDF",
-      "fileSize": "650 KB",
-      "url": "#",
-      "description": "Baubewilligung für Gebäude 1080/4100/AC",
-      "version": "1.0",
-      "legacyId": "4100-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9002-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
     },
     {
-      "documentId": "b2988d09-feba-4675-8a1c-136e9729ce06",
-      "name": "Raumkonzept Schulungsräume",
-      "type": "Grundriss",
       "buildingIds": [
-        "1080/4100/AC"
+        "9900/9002/AA"
       ],
-      "validFrom": "2024-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "DWG",
-      "fileSize": "9.8 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/4100/AC",
-      "version": "1.0",
-      "legacyId": "4100-D4",
-      "extensionData": {}
-    },
-    {
-      "documentId": "a6eaac32-4eb0-4159-9e61-75f39666434e",
-      "name": "Architekturpläne Original",
-      "type": "Bauplan",
-      "buildingIds": [
-        "1080/5410/AA"
-      ],
-      "validFrom": "1991-03-01T00:00:00Z",
-      "validUntil": null,
+      "documentId": "279efe67-40a3-5027-afbe-2cf400e25666",
+      "name": "Kostenstatistik 2026 – BBL – Fellerstrasse 21 (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
       "fileFormat": "PDF",
-      "fileSize": "18.2 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/5410/AA",
-      "version": "1.0",
-      "legacyId": "5410-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9002-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
     },
     {
-      "documentId": "b09490ab-c184-4565-b4e9-c57db42dc88a",
-      "name": "Erdbebensicherheit Gutachten",
-      "type": "Betriebsanleitung",
       "buildingIds": [
-        "1080/5410/AA"
+        "9900/9002/AA"
       ],
-      "validFrom": "2018-09-20T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "1be5113f-fae5-555b-aad4-73a5997e1528",
+      "name": "Energiestatistik 2026 – BBL – Fellerstrasse 21 (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
       "fileFormat": "PDF",
-      "fileSize": "4.5 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/5410/AA",
-      "version": "1.0",
-      "legacyId": "5410-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9002-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
     },
     {
-      "documentId": "6b396647-b0b6-4f62-b9d8-e3e68a11174e",
-      "name": "Residenz Grundriss",
-      "type": "Grundriss",
       "buildingIds": [
-        "1080/5410/AA"
+        "9900/9003/AA"
       ],
-      "validFrom": "1991-03-01T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "b3980fab-3901-561d-bd6c-f92908d46578",
+      "name": "BBL Bautendokumentation – Verwaltungsgebäude Liebefeld",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "2.8 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/5410/AA",
-      "version": "1.0",
-      "legacyId": "5410-D3",
-      "extensionData": {}
+      "fileSize": "869.96 kB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/DhpU2Dp9QFh8/20150801_Liebefeld%20Schwarzenburgstrasse%20157%2C%20Neubau%20Verwaltungsgeb%C3%A4ude_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9003-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "5cc512d5-905f-45a1-a30b-c49b8b29332f",
-      "name": "Wohnungsspiegel",
-      "type": "Grundriss",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9003/AA"
       ],
-      "validFrom": "2015-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "81ae61ab-7856-5b47-af17-067559dbebe0",
+      "name": "Flächen/Volumenberechnung 2026 – Verwaltungsgebäude Liebefeld (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "5.6 MB",
-      "url": "#",
-      "description": "Grundriss für Gebäude 1080/2800/AD",
-      "version": "1.0",
-      "legacyId": "2800-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9003-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "9d5677cb-7c0f-4938-8983-b5744eabac26",
-      "name": "GEAK Zertifikat",
-      "type": "Energieausweis",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9003/AA"
       ],
-      "validFrom": "2015-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "c92e4e7e-1b52-55ea-a5be-c669e25d51d8",
+      "name": "Wartungsplan 2026 – Verwaltungsgebäude Liebefeld (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "980 KB",
-      "url": "#",
-      "description": "Energieausweis für Gebäude 1080/2800/AD",
-      "version": "1.0",
-      "legacyId": "2800-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9003-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
     },
     {
-      "documentId": "0bb2f6a3-ed07-49c0-80e2-002f61b25981",
-      "name": "Denkmalschutz Inventar",
-      "type": "Baubewilligung",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9003/AA"
       ],
-      "validFrom": "1985-03-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "2f069400-64db-574c-ae1c-7641c84f72dc",
+      "name": "Betriebsführungshandbuch 2026 – Verwaltungsgebäude Liebefeld (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
       "fileFormat": "PDF",
-      "fileSize": "1.2 MB",
-      "url": "#",
-      "description": "Baubewilligung für Gebäude 1080/2800/AD",
-      "version": "1.0",
-      "legacyId": "2800-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9003-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
     },
     {
-      "documentId": "a0a01a1b-bf8a-4cce-b482-4f715567ea7c",
-      "name": "Sanierungsbericht 2015",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9003/AA"
       ],
-      "validFrom": "2015-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "f728363d-6a83-59d2-ad4a-1ef2a3b1fffd",
+      "name": "Kostenstatistik 2026 – Verwaltungsgebäude Liebefeld (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
       "fileFormat": "PDF",
-      "fileSize": "12.3 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/2800/AD",
-      "version": "1.0",
-      "legacyId": "2800-D4",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9003-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
     },
     {
-      "documentId": "70e0d1d9-dd15-4b63-9d1f-106ac9d9c654",
-      "name": "Fassadenfoto nach Sanierung",
-      "type": "Foto",
       "buildingIds": [
-        "1080/2800/AD"
+        "9900/9003/AA"
       ],
-      "validFrom": "2015-07-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "JPG",
-      "fileSize": "4.8 MB",
-      "url": "#",
-      "description": "Foto für Gebäude 1080/2800/AD",
-      "version": "1.0",
-      "legacyId": "2800-D5",
-      "extensionData": {}
-    },
-    {
-      "documentId": "ecf50bcb-791f-4a96-805a-a96114ada6c5",
-      "name": "Sanierungspläne 2022",
-      "type": "Bauplan",
-      "buildingIds": [
-        "1080/5510/AA"
-      ],
-      "validFrom": "2022-03-01T00:00:00Z",
-      "validUntil": null,
+      "documentId": "95fdfd89-a249-53ae-9933-fec04d87852e",
+      "name": "Energiestatistik 2026 – Verwaltungsgebäude Liebefeld (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
       "fileFormat": "PDF",
-      "fileSize": "22.4 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/5510/AA",
-      "version": "1.0",
-      "legacyId": "5510-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9003-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
     },
     {
-      "documentId": "6df03105-af3d-40fc-9189-d5ce00ed7cf2",
-      "name": "Klimaanlagen-Dokumentation",
-      "type": "Betriebsanleitung",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9004/AA"
       ],
-      "validFrom": "2022-05-15T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "1b46b4de-12ba-5075-8811-d03a99679144",
+      "name": "BBL Bautendokumentation – Verwaltungsgebäude Eichenweg 3",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "3.1 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/5510/AA",
-      "version": "1.0",
-      "legacyId": "5510-D2",
-      "extensionData": {}
+      "fileSize": "4.73 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/rpE3newdRnYP/20210101_Zollikofen%20Eichenweg%203%2C%20Neubau%20Verwaltungsgeb%C3%A4ude_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9004-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "75fc2b4a-25fd-4097-b1ff-5f123e27a47e",
-      "name": "Gartenpflege-Konzept",
-      "type": "Betriebsanleitung",
       "buildingIds": [
-        "1080/5510/AA"
+        "9900/9004/AA"
       ],
-      "validFrom": "2022-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "8b607879-0769-5705-ad57-6ed00eedaf22",
+      "name": "Flächen/Volumenberechnung 2026 – Verwaltungsgebäude Eichenweg 3 (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "1.5 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/5510/AA",
-      "version": "1.0",
-      "legacyId": "5510-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9004-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "f9e1d306-1602-4ebd-9196-39640edc1150",
-      "name": "Bauprojekt Datacenter",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9004/AA"
       ],
-      "validFrom": "2023-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "d18d1648-8dd9-54e2-93dd-5d95ce095e0c",
+      "name": "Wartungsplan 2026 – Verwaltungsgebäude Eichenweg 3 (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "85.2 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/1950/AE",
-      "version": "1.0",
-      "legacyId": "1950-D1",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9004-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
     },
     {
-      "documentId": "8ceb0e1a-413b-44a9-ad6d-7ba72a8f01be",
-      "name": "BIM Modell Hauptgebäude",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9004/AA"
       ],
-      "validFrom": "2023-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
-      "fileFormat": "IFC",
-      "fileSize": "156.8 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/1950/AE",
-      "version": "1.0",
-      "legacyId": "1950-D2",
-      "extensionData": {}
-    },
-    {
-      "documentId": "27191a2b-22a8-4c10-93a3-087b2eb22813",
-      "name": "Baubewilligung Kanton TI",
-      "type": "Baubewilligung",
-      "buildingIds": [
-        "1080/1950/AE"
-      ],
-      "validFrom": "2023-06-01T00:00:00Z",
-      "validUntil": null,
+      "documentId": "18af78b4-c7f4-53a2-937b-8c417aa88bdf",
+      "name": "Betriebsführungshandbuch 2026 – Verwaltungsgebäude Eichenweg 3 (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
       "fileFormat": "PDF",
-      "fileSize": "2.3 MB",
-      "url": "#",
-      "description": "Baubewilligung für Gebäude 1080/1950/AE",
-      "version": "1.0",
-      "legacyId": "1950-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9004-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
     },
     {
-      "documentId": "44385f5d-b291-489f-81f1-e9aee48330f4",
-      "name": "Energiekonzept Tier IV",
-      "type": "Energieausweis",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9004/AA"
       ],
-      "validFrom": "2023-04-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "7bbe1e6b-6fe3-5dd9-b9f0-46e0996bf992",
+      "name": "Kostenstatistik 2026 – Verwaltungsgebäude Eichenweg 3 (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
       "fileFormat": "PDF",
-      "fileSize": "8.7 MB",
-      "url": "#",
-      "description": "Energieausweis für Gebäude 1080/1950/AE",
-      "version": "1.0",
-      "legacyId": "1950-D4",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9004-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
     },
     {
-      "documentId": "78a59370-f16e-4499-953a-a5093aa84f5f",
-      "name": "Sicherheitskonzept IT",
-      "type": "Betriebsanleitung",
       "buildingIds": [
-        "1080/1950/AE"
+        "9900/9004/AA"
       ],
-      "validFrom": "2023-06-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "45744c9b-af35-590e-8991-21191b207660",
+      "name": "Energiestatistik 2026 – Verwaltungsgebäude Eichenweg 3 (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
       "fileFormat": "PDF",
-      "fileSize": "5.4 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/1950/AE",
-      "version": "1.0",
-      "legacyId": "1950-D5",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9004-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
     },
     {
-      "documentId": "fe89a051-5b40-4c42-a72b-a8f37814671a",
-      "name": "Originalbaupläne 1968",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9005/AA"
       ],
-      "validFrom": "1968-09-01T00:00:00Z",
+      "validFrom": null,
       "validUntil": null,
+      "documentId": "0d69395b-97a5-5dc1-96ea-b8e7ec4e1751",
+      "name": "BBL Bautendokumentation – Landesmuseum Zürich – Erweiterungsbau",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
       "fileFormat": "PDF",
-      "fileSize": "6.8 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/5620/AA",
-      "version": "1.0",
-      "legacyId": "5620-D1",
-      "extensionData": {}
+      "fileSize": "12.61 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/a74sKG5sCA0H/20160101_Z%C3%BCrich%20Museumstrasse%202%20Landesmuseum%20Z%C3%BCrich%20Erweiterung_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9005-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
     },
     {
-      "documentId": "7f418ec7-ace5-40a5-9a37-9e062277eb8e",
-      "name": "Sanierungsdokumentation 2016",
-      "type": "Bauplan",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9005/AA"
       ],
-      "validFrom": "2016-01-01T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "2fc3c5e8-0b93-5758-a6be-d20bc05d9dd5",
+      "name": "Flächen/Volumenberechnung 2026 – Landesmuseum Zürich – Erweiterungsbau (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
       "fileFormat": "PDF",
-      "fileSize": "14.5 MB",
-      "url": "#",
-      "description": "Bauplan für Gebäude 1080/5620/AA",
-      "version": "1.0",
-      "legacyId": "5620-D2",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9005-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
     },
     {
-      "documentId": "29efa86a-40f3-4523-9a77-2e644b94013e",
-      "name": "Solar-Warmwasser Anlage",
-      "type": "Betriebsanleitung",
       "buildingIds": [
-        "1080/5620/AA"
+        "9900/9005/AA"
       ],
-      "validFrom": "2016-03-15T00:00:00Z",
+      "validFrom": "2026-09-22T00:00:00Z",
       "validUntil": null,
+      "documentId": "77664739-30aa-5706-8c1a-8e8081ec0579",
+      "name": "Wartungsplan 2026 – Landesmuseum Zürich – Erweiterungsbau (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
       "fileFormat": "PDF",
-      "fileSize": "2.1 MB",
-      "url": "#",
-      "description": "Betriebsanleitung für Gebäude 1080/5620/AA",
-      "version": "1.0",
-      "legacyId": "5620-D3",
-      "extensionData": {}
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9005-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "65411108-5cf9-548a-a923-bd78fe2acf5d",
+      "name": "Betriebsführungshandbuch 2026 – Landesmuseum Zürich – Erweiterungsbau (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9005-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "1548b16e-e7b6-55d3-abaf-e6f749f41266",
+      "name": "Kostenstatistik 2026 – Landesmuseum Zürich – Erweiterungsbau (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9005-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9005/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "2b981775-a1e3-5a10-8fdc-7c3719c63450",
+      "name": "Energiestatistik 2026 – Landesmuseum Zürich – Erweiterungsbau (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9005-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "ddedf450-5d05-5070-b78c-a5f8971e0405",
+      "name": "BBL Bildpublikation – Schweizer Botschaft Canberra",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "HTML",
+      "fileSize": null,
+      "url": "https://www.bbl.admin.ch/de/mediendatenbank",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9006-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "08174577-2d91-5550-837f-ce1b96758343",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Canberra (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9006-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "3631205d-dc72-5943-908a-4d6d12e89bb9",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Canberra (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9006-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "69bb6113-a0f2-5f73-b377-bd1d178d356b",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Canberra (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9006-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "4e1bdc40-530b-5a44-a715-ac4a48b22c94",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Canberra (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9006-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9006/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "a3857fd8-b5f9-5224-bb63-70de68b87028",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Canberra (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9006-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "37808424-92f4-5929-a735-e132a9a5666d",
+      "name": "BBL Bildpublikation – Schweizer Botschaft Brasília",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "HTML",
+      "fileSize": null,
+      "url": "https://www.bbl.admin.ch/de/mediendatenbank",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9007-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "012e0a78-3963-514c-ae1f-01c1e5b3e508",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Brasília (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9007-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "aaac2828-b1c9-54d3-aa78-f7509d6c1717",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Brasília (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9007-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "9dc8495d-3f0c-5fe0-8b1d-2c119e965b7a",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Brasília (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9007-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "bba47708-6fa5-55b6-85c7-3fa94d36ad5e",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Brasília (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9007-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9007/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "52a02a8c-9265-509f-bade-10a335b1910b",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Brasília (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9007-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "7818f478-c088-5a9c-a73b-9a06654a381a",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Seoul",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "16.12 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/vCKyrUqUx9JD/20190101_Seoul%20S%C3%BCdkorea%20Neubau%20der%20Schweizer%20Botschaft_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9008-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "6db44f00-5743-5de3-b9bb-4feafaa6c14e",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Seoul (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9008-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "303001ef-ee20-5fe7-8919-83955955957f",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Seoul (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9008-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "b80308df-1c06-561b-833f-377d65a3a235",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Seoul (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9008-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "1035bdf9-ca6f-5e13-9b74-ec2eafe9ba4e",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Seoul (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9008-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9008/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "8a39ed21-a913-5e12-a459-35be6ebe4bcf",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Seoul (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9008-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "269356a4-be4f-5b8d-a0f5-06f204c9643a",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Nairobi",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "8.76 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/yrVXj1ihTVNY/20160801_Nairobi%20Kenya%20Neubau%20Schweizer%20Botschaft_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9009-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "0d50369f-5ed2-5cac-be5c-60668eed9a95",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Nairobi (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9009-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "3a3544f3-a2aa-5a87-a730-d0650c40371e",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Nairobi (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9009-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "fadafe58-3543-5538-bda0-d011e9b4fe8a",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Nairobi (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9009-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "23ca9bd2-e3b7-52e2-b310-90e96de026f7",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Nairobi (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9009-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9009/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "cb7821c6-9fcf-5c43-8da1-1372d6866163",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Nairobi (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9009-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "7e3eadf6-0cbb-545d-8f9b-ac8b8eb96766",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Washington – Kanzlei",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "7.40 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/blTPOkHhPlZE/20220901_Washington%20DC%2C%20USA%2C%20Sanierung%20der%20Kanzlei_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9010-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "d5ddacaf-bf8c-5db2-bac1-a77417c868dc",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Washington – Kanzlei (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9010-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "304f0c24-ce27-5c63-8110-d02a4a18929a",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Washington – Kanzlei (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9010-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "09e83e0b-20e0-56c8-a596-ee94d31b26ac",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Washington – Kanzlei (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9010-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "629d8988-379c-5d53-b4a5-2c08aa3ba40a",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Washington – Kanzlei (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9010-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9010/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "5b7c3246-9975-5bfb-9129-adaeb25ecd46",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Washington – Kanzlei (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9010-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "c20ef016-b2cf-5837-a555-81257cbedcb0",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Singapur",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "5.51 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/0Ufbhz8I6Qgs/16_2024_Singapur%2C%20Gesamtsanierung%20und%20Erweiterung%20der%20Schweizer%20Botschaft.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9011-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "529e3a30-6e0c-52d9-af06-cd34a1152fce",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Singapur (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9011-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "378aa742-4511-5ae7-9016-15b468ccbbac",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Singapur (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9011-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "b5a3c7e2-68d6-5fcf-9de7-bea1e8aeab1f",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Singapur (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9011-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "0dd67e08-8b79-5143-beb0-f2420210a2da",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Singapur (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9011-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9011/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "388f4daa-6e75-5a69-9658-07d759771bf2",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Singapur (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9011-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "c2b3b862-ba17-592c-9eae-cbb8b6897b2a",
+      "name": "BBL Bautendokumentation – Schweizer Botschaft Abidjan",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "3.90 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/DMsBnTA-ZUVw/20150101_Abidjan%2C%20Republik%20C%C3%B4te%20d%E2%80%99Ivoire%2C%20Neubau%20der%20Schweizer%20Botschaft_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9012-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "8290289a-82db-584e-8150-e42e9e5e1523",
+      "name": "Flächen/Volumenberechnung 2026 – Schweizer Botschaft Abidjan (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9012-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "91056e0f-bcad-55ce-b4bf-b2230f0b2c09",
+      "name": "Wartungsplan 2026 – Schweizer Botschaft Abidjan (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9012-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "031dc0c9-83a4-57ec-9818-1c025c7db2a3",
+      "name": "Betriebsführungshandbuch 2026 – Schweizer Botschaft Abidjan (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9012-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "726c99b8-fb37-5946-937c-f2cc248c91ad",
+      "name": "Kostenstatistik 2026 – Schweizer Botschaft Abidjan (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9012-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9012/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "5ef6eed7-ece0-5708-8fd2-f09497a693e1",
+      "name": "Energiestatistik 2026 – Schweizer Botschaft Abidjan (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9012-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": null,
+      "validUntil": null,
+      "documentId": "8d0266d1-df73-526c-9d5c-8798abd8be14",
+      "name": "BBL Bautendokumentation – Generalkonsulat und Swissnex San Francisco",
+      "type": "Publikation",
+      "documentTypeCode": "O12001",
+      "fileFormat": "PDF",
+      "fileSize": "5.95 MB",
+      "url": "https://www.bbl.admin.ch/dam/de/sd-web/IxObZNLfQ10q/20160601_San%20Francisco%20USA%20Generalkonsulat%20und%20Swissnex_DE.pdf",
+      "description": "Öffentliche BBL-Publikation; historischer Projektstand.",
+      "version": "Publizierte Fassung",
+      "legacyId": "DEMO-9013-O12001",
+      "extensionData": {
+        "dataStatus": "public-source",
+        "availability": "external-publication",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O12001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "140466cb-a955-51a7-bda6-cc2058cf494d",
+      "name": "Flächen/Volumenberechnung 2026 – Generalkonsulat und Swissnex San Francisco (Demo)",
+      "type": "Flächen/Volumenberechnung",
+      "documentTypeCode": "B14005",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9013-B14005",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14005"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "d04ab189-c420-5af5-9582-a205930ecb6b",
+      "name": "Wartungsplan 2026 – Generalkonsulat und Swissnex San Francisco (Demo)",
+      "type": "Wartungsplan",
+      "documentTypeCode": "O07003",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9013-O07003",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O07003"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "41f62c8d-1a63-5344-ae29-24257049ecf1",
+      "name": "Betriebsführungshandbuch 2026 – Generalkonsulat und Swissnex San Francisco (Demo)",
+      "type": "Betriebsführungshandbuch",
+      "documentTypeCode": "O03001",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9013-O03001",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "O03001"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "c9f29315-5c74-5ce4-9c7f-4223afab6d6c",
+      "name": "Kostenstatistik 2026 – Generalkonsulat und Swissnex San Francisco (Demo)",
+      "type": "Kostenstatistik",
+      "documentTypeCode": "B14102",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9013-B14102",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14102"
+      }
+    },
+    {
+      "buildingIds": [
+        "9900/9013/AA"
+      ],
+      "validFrom": "2026-09-22T00:00:00Z",
+      "validUntil": null,
+      "documentId": "6c88e587-8ea5-52dc-a3aa-d2925eda5b8e",
+      "name": "Energiestatistik 2026 – Generalkonsulat und Swissnex San Francisco (Demo)",
+      "type": "Energiestatistik",
+      "documentTypeCode": "B14103",
+      "fileFormat": "PDF",
+      "fileSize": null,
+      "url": null,
+      "description": "Fiktiver Dokumentregistereintrag; keine Originaldatei vorhanden.",
+      "version": "0.1 Demo",
+      "legacyId": "DEMO-9013-B14103",
+      "extensionData": {
+        "dataStatus": "synthetic-demo",
+        "availability": "metadata-only",
+        "catalogue": "KBOB/IPB Anhang C, Version 2016-01",
+        "catalogueUrl": "https://www.kbob.admin.ch/dam/de/sd-web/rVvtgYM1wFVT/20171024_KBOB-IPB_Anhang_C_-_Dokumenttypenkatalog_2016_DE.pdf",
+        "documentTypeCode": "B14103"
+      }
     }
   ]
 }

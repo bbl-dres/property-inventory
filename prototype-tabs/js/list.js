@@ -21,8 +21,66 @@ function statusBadge(v) {
   return '<span class="badge status-badge ' + getStatusClassName(v) + '">' + escapeHtml(v) + '</span>';
 }
 
+const columnLabels = {
+  "col-name": {
+    "label": "Bezeichnung"
+  },
+  "col-land": {
+    "label": "Land"
+  },
+  "col-ort": {
+    "label": "Ort"
+  },
+  "col-adresse": {
+    "label": "Adresse"
+  },
+  "col-portfolio": {
+    "label": "Teilportfolio"
+  },
+  "col-flaeche": {
+    "label": "Fläche NGF"
+  },
+  "col-status": {
+    "label": "Status"
+  },
+  "col-parcel-plot": {
+    "label": "Grundstück-Nr."
+  },
+  "col-parcel-name": {
+    "label": "Bezeichnung"
+  },
+  "col-parcel-municipality": {
+    "label": "Gemeinde"
+  },
+  "col-parcel-canton": {
+    "label": "Kanton"
+  },
+  "col-parcel-area": {
+    "label": "Fläche"
+  },
+  "col-parcel-zone": {
+    "label": "Nutzungszone"
+  },
+  "col-parcel-ownership": {
+    "label": "Eigentum"
+  }
+};
+
+function columnWidth(col) {
+  const field = col.sortField || col.field;
+  if (/^(garea_|gvol_|larea_)/.test(field) && !field.endsWith('_acu') || ['area','lc_area','extensionData.netFloorArea'].includes(field)) return 'number';
+  if (['bbl_awrt','bbl_bwrt'].includes(field)) return 'amount';
+  if (['bbl_stat','status','av_stat'].includes(field)) return 'status';
+  if (field === 'etl_ts') return 'date';
+  if (['bbl_bjahr','bbl_vjahr','gastw','gastw_og','gastw_ug'].includes(field)) return 'year';
+  if (['wgs84_lat','wgs84_lon','lv95_e','lv95_n','egm_elev'].includes(field)) return 'number';
+  if (['adr_land','country','adr_reg','canton','av_nr','plotNumber','adr_plz','adr_hsnr','bfs_gemnr','kgs_nr','kgs_kat'].includes(field)) return 'code';
+  if (['bbl_bez','name'].includes(field)) return 'name';
+  if (['adr_conct','streetName'].includes(field)) return 'description';
+  return 'text';
+}
+
 const buildingColumns = [
-  { field: 'buildingId', cls: 'col-id' },
   { field: 'name', cls: 'col-name' },
   { field: 'country', cls: 'col-land' },
   { field: 'city', cls: 'col-ort' },
@@ -33,7 +91,6 @@ const buildingColumns = [
 ];
 
 const parcelColumns = [
-  { field: 'parcelId', cls: 'col-parcel-id' },
   { field: 'plotNumber', cls: 'col-parcel-plot' },
   { field: 'name', cls: 'col-parcel-name' },
   { field: 'municipality', cls: 'col-parcel-municipality' },
@@ -42,6 +99,10 @@ const parcelColumns = [
   { field: 'landUseZone', cls: 'col-parcel-zone' },
   { field: 'ownershipType', cls: 'col-parcel-ownership' }
 ];
+
+[buildingColumns, parcelColumns].forEach(function(columns) {
+  columns.forEach(function(col) { Object.assign(col, columnLabels[col.cls] || {}, { width: columnWidth(col) }); });
+});
 
 const BUILDING_SEARCH_FIELDS = ['buildingId', 'name', 'country', 'city', 'streetName', 'extensionData.portfolio', 'status'];
 const PARCEL_SEARCH_FIELDS = ['parcelId', 'plotNumber', 'name', 'municipality', 'canton', 'landUseZone', 'ownershipType'];
@@ -275,10 +336,11 @@ export function renderGalleryView() {
   const endIndex = Math.min(startIndex + GALLERY_PAGE_SIZE, totalItems);
 
   let html = '';
-  features.slice(startIndex, endIndex).forEach(function(feature, i) {
+  features.slice(startIndex, endIndex).forEach(function(feature) {
     const props = feature.properties;
     const flaeche = formatNum(ext(props).netFloorArea || 0, 0);
-    const imageUrl = placeholderImages[(startIndex + i) % placeholderImages.length];
+    const photos = ext(props).photos || [];
+    const imageUrl = photos.length ? photos[0].url : placeholderImages[0];
 
     html += '<div class="gallery-card" data-id="' + escapeHtml(props.buildingId) + '" tabindex="0" role="article" aria-label="' + escapeHtml(props.name) + '">' +
       '<div class="gallery-image" style="background-image: ' + cssUrl(imageUrl) + '" role="img" aria-label="' + escapeHtml(t('gallery.image.alt', { name: props.name })) + '">' +

@@ -1,1 +1,3 @@
 visual-out/
+tmp/
+__pycache__/

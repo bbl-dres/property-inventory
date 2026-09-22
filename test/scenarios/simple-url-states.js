@@ -3,7 +3,7 @@ module.exports = {
   name: 'simple: URL state restore (selection, table, filter, detail)',
   boot: {
     prototype: 'prototype-simple',
-    url: 'http://localhost/prototype-simple/?id=1080%2F4840%2FAF&table=open&filter_status=Aktiv&tableTab=parcels&basemap=aerial&topic=swisstopo&bgLayers=ch.are.bauzonen'
+    url: 'http://localhost/prototype-simple/?id=1080%2F4840%2FAF&table=open&filter_land=CH&filter_status=Aktiv&tableTab=parcels&basemap=aerial&topic=swisstopo&bgLayers=ch.are.bauzonen'
   },
   async run(ctx, check) {
     const { window, document, map, modules, settle } = ctx;
@@ -14,7 +14,7 @@ module.exports = {
     check('one fly-to for the restored selection', map.calls.flyTo.length === 1);
     check('table open from URL', state.tableOpen === true && !document.getElementById('table-panel').classList.contains('collapsed'));
     check('selection switches the table to buildings tab', state.activeTableTab === 'buildings');
-    check('filter restored from URL', state.activeFilters.status.length === 1 && state.filteredData.features.length < 11);
+    check('filter restored from URL', state.activeFilters.status.length === 1 && state.filteredData.features.length === 5);
     check('filter checkbox checked', !!document.querySelector('#filter-status-options input[data-value="Aktiv"]:checked'));
     check('filter badge on header button', !!document.querySelector('#filter-panel-btn .filter-count'));
     check('aerial basemap from URL', modules.basemaps.getCurrentMapStyle() === 'swissimage' && document.querySelector('.style-option[data-style="swissimage"]').classList.contains('active'));

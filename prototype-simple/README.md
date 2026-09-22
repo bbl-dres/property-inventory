@@ -1,6 +1,6 @@
 # Simple App — Liegenschaften Inventar
 
-> **Unofficial mockup.** Fictional data, not for production use. Part of the [`property-inventory`](../README.md) repo.
+> **Unofficial prototype.** Public building facts and photographs with fictional operational data; not for production use. Part of the [`property-inventory`](../README.md) repo.
 
 Read-only property inventory with **map**, **list**, and **gallery** views. This is the flagship prototype — the others either extend it (tabs, workflows) or explore adjacent problems (backend, osm-height).
 
@@ -13,10 +13,14 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
 ## Features
 
 ### Core views
+
+All data tables use the [shared table component](../docs/TABLE-COMPONENT.md), with
+consistent width roles, compact dates, and technical IDs kept out of display columns.
+
 - **Map** — MapLibre WebGL map with colour-coded property markers, 5 basemap styles (Light, Standard, Aerial, Hybrid, Dark), measure tool, print-to-PDF, and a sidebar accordion for layers/Geokatalog.
 - **List** — sortable (header click, second click reverses), searchable, paginated table with configurable columns. Three tabs: buildings, parcels, land covers.
 - **Gallery** — responsive 3-column grid with property cards and status badges.
-- **Detail panel** — building dashboard with images, basic info, mini-map, and area data (SIA 416 compliant).
+- **Detail panel** — building dashboard with credited photographs, source links, basic info, mini-map, and SIA 416 / RICS measurement scenarios. Published values and estimates are distinguished; these are not certified surveys.
 - **Mobile** — phones (portrait and landscape) get a two-row header, the tools panel as a hamburger menu (print, Geokatalog, layers, share, language), a full-screen filter sheet with a result-count button, and a swipe-to-dismiss bottom sheet for object details; tablets keep the desktop layout with 44 px touch targets and the tools panel collapsed by default. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
 ### Search & filtering
@@ -48,6 +52,11 @@ The repository root [`/`](https://bbl-dres.github.io/property-inventory/) redire
   identical copy of `data/swagger.json` and `vendor/swagger-ui/` (checked by `test/check-alignment.js`).
 
 ## Running
+
+The data covers 14 real buildings/sites in nine countries. Five Swiss properties
+have verified EGID/EGRID and cadastral polygons; overseas parcels are schematic
+rectangles. The shared [research and generation guide](../scripts/portfolio/README.md)
+documents evidence, measurement scope, fictional related records and photo rights.
 
 Static files only — no build step. From the repo root:
 

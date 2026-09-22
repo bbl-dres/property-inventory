@@ -1,298 +1,24 @@
-// Data tables (shared): a factory for paginated, searchable feature tables with row selection,
-// stylesheet-driven column visibility and the toolbar dropdowns.
+// Feature-table adapter plus column controls. Rendering and behavior live in data-table.js.
+import { getNestedProperty } from './utils.js';
+import { createDataTable, setTableHiddenColumns } from './data-table.js';
 
-import { escapeHtml, getNestedProperty } from './utils.js';
-import { t, getLocale } from './i18n.js';
-
-// ===== FEATURE TABLE FACTORY =====
-//
-// config = {
-//   tbodyId:        '<tbody id>'
-//   rowIdAttr:      'data-id'                       attribute carrying the row key
-//   getRowId:       props => key                    row key from feature properties
-//   parseRowId:     str => key                      (optional) key from the attribute string
-//   columns:        [{ field, cls, format(value, props, feature), sortField }]
-//                   sortField: dot path used for sorting when `field` holds an object (optional)
-//   getFeatures:    () => feature[]                 base data (already filtered by the app)
-//   searchFields:   ['bbl_id', ...]                 properties searched by the toolbar search
-//   onRowSelect:    key => void                     click / Enter / Space on a row
-//   pagination:     { infoId, pageInfoId, prevId, nextId, rowsSelectId, infoKey, emptyKey }
-//   empty:          { type: 'row', colspan, key } | { type: 'block', afterSelector, html: () => string }
-// }
-// A click on a header cell of the table's <thead> sorts by that column (second click: descending);
-// the header keeps the icon markup `<th class="col-x">Label <span class="material-symbols-outlined">unfold_more</span></th>`.
 export function createFeatureTable(config) {
-  const st = { page: 1, rowsPerPage: 50, searchTerm: '', sortField: null, sortDir: 'asc' };
-  // Lower-cased search strings are computed once per feature (WeakMap: no property pollution)
-  const searchTextCache = new WeakMap();
-
-  function getSearchText(feature) {
-    let text = searchTextCache.get(feature);
-    if (text === undefined) {
-      const p = feature.properties || {};
-      text = (config.searchFields || []).map(function(f) {
-        const v = getNestedProperty(p, f); // dot paths reach into nested objects
-        return v == null ? '' : String(v);
-      }).join(' ').toLowerCase();
-      searchTextCache.set(feature, text);
-    }
-    return text;
-  }
-
-  function isEmptyValue(v) {
-    return v === null || v === undefined || v === '';
-  }
-
-  // Numbers (also numeric strings) numerically, everything else with the locale's collation
-  function compareValues(a, b) {
-    if (typeof a === 'number' && typeof b === 'number') return a - b;
-    const na = Number(a);
-    const nb = Number(b);
-    if (!isNaN(na) && !isNaN(nb) && String(a).trim() !== '' && String(b).trim() !== '') return na - nb;
-    return String(a).localeCompare(String(b), getLocale(), { numeric: true, sensitivity: 'base' });
-  }
-
-  function sortFeatures(features) {
-    if (!st.sortField) return features;
-    const field = st.sortField;
-    const dir = st.sortDir === 'desc' ? -1 : 1;
-    return features.slice().sort(function(fa, fb) {
-      const a = getNestedProperty(fa.properties || {}, field);
-      const b = getNestedProperty(fb.properties || {}, field);
-      const aEmpty = isEmptyValue(a);
-      const bEmpty = isEmptyValue(b);
-      if (aEmpty || bEmpty) return aEmpty && bEmpty ? 0 : (aEmpty ? 1 : -1); // empty cells last in both directions
-      return compareValues(a, b) * dir;
-    });
-  }
-
-  function visibleFeatures() {
-    let features = config.getFeatures() || [];
-    if (st.searchTerm) {
-      features = features.filter(function(f) { return getSearchText(f).indexOf(st.searchTerm) !== -1; });
-    }
-    return sortFeatures(features);
-  }
-
-  function sortFieldOf(col) {
-    return col.sortField || col.field;
-  }
-
-  function tableEl() {
-    const tbody = document.getElementById(config.tbodyId);
-    return tbody ? tbody.closest('table') : null;
-  }
-
-  // Header classes, aria-sort and the icon of the sorted column
-  function updateSortIndicator() {
-    const table = tableEl();
-    if (!table) return;
-    table.querySelectorAll('thead th').forEach(function(th, index) {
-      const col = config.columns[index];
-      const active = !!col && st.sortField !== null && sortFieldOf(col) === st.sortField;
-      th.classList.toggle('sort-asc', active && st.sortDir === 'asc');
-      th.classList.toggle('sort-desc', active && st.sortDir === 'desc');
-      th.setAttribute('aria-sort', active ? (st.sortDir === 'asc' ? 'ascending' : 'descending') : 'none');
-      const icon = th.querySelector('.material-symbols-outlined');
-      if (icon) icon.textContent = active ? (st.sortDir === 'asc' ? 'arrow_upward' : 'arrow_downward') : 'unfold_more';
-    });
-  }
-
-  function sortBy(field) {
-    if (st.sortField === field) {
-      st.sortDir = st.sortDir === 'asc' ? 'desc' : 'asc';
-    } else {
-      st.sortField = field;
-      st.sortDir = 'asc';
-    }
-    st.page = 1;
-    render();
-  }
-
-  // One delegated listener on the <thead>: the building headers are re-rendered on a language change
-  function bindSortHeaders() {
-    const table = tableEl();
-    const thead = table ? table.querySelector('thead') : null;
-    if (!thead) return;
-    thead.addEventListener('click', function(e) {
-      const th = e.target.closest('th');
-      if (!th || !thead.contains(th)) return;
-      const col = config.columns[Array.prototype.indexOf.call(th.parentNode.children, th)];
-      if (col) sortBy(sortFieldOf(col));
-    });
-  }
-
-  function parseId(str) {
-    return config.parseRowId ? config.parseRowId(str) : str;
-  }
-
-  function renderEmpty(tbody) {
-    const empty = config.empty || { type: 'row', colspan: (config.columns || []).length, key: 'empty.title' };
-    if (empty.type === 'block') {
-      tbody.innerHTML = '';
-      const wrapper = document.querySelector(empty.afterSelector);
-      const parent = wrapper ? wrapper.parentElement : null;
-      if (parent && !parent.querySelector('.empty-state')) {
-        wrapper.insertAdjacentHTML('afterend', empty.html());
-      }
-    } else {
-      tbody.innerHTML = '<tr><td colspan="' + empty.colspan + '" class="table-empty-cell">' + t(empty.key) + '</td></tr>';
-    }
-  }
-
-  function clearEmpty() {
-    const empty = config.empty;
-    if (!empty || empty.type !== 'block') return;
-    const wrapper = document.querySelector(empty.afterSelector);
-    const parent = wrapper ? wrapper.parentElement : null;
-    const existing = parent ? parent.querySelector('.empty-state') : null;
-    if (existing) existing.remove();
-  }
-
-  function updatePagination(currentPage, totalPages, totalItems) {
-    const p = config.pagination || {};
-    const infoEl = document.getElementById(p.infoId);
-    const pageInfoEl = document.getElementById(p.pageInfoId);
-    const prevBtn = document.getElementById(p.prevId);
-    const nextBtn = document.getElementById(p.nextId);
-
-    if (infoEl) {
-      if (totalItems === 0) {
-        infoEl.textContent = t(p.emptyKey || 'pagination.empty');
-      } else {
-        const start = (currentPage - 1) * st.rowsPerPage + 1;
-        const end = Math.min(currentPage * st.rowsPerPage, totalItems);
-        infoEl.textContent = t(p.infoKey || 'pagination.info', { start: start, end: end, total: totalItems });
-      }
-    }
-    if (pageInfoEl) {
-      pageInfoEl.textContent = totalItems === 0 ? '' : t('pagination.page', { current: currentPage, total: totalPages });
-    }
-    if (prevBtn) prevBtn.disabled = currentPage <= 1;
-    if (nextBtn) nextBtn.disabled = currentPage >= totalPages;
-  }
-
-  function render() {
-    const tbody = document.getElementById(config.tbodyId);
-    if (!tbody) return;
-    const features = visibleFeatures();
-
-    if (features.length === 0) {
-      renderEmpty(tbody);
-      updatePagination(0, 0, 0);
-      return;
-    }
-    clearEmpty();
-
-    const totalItems = features.length;
-    const totalPages = Math.ceil(totalItems / st.rowsPerPage);
-    if (st.page > totalPages) st.page = totalPages;
-    if (st.page < 1) st.page = 1;
-    const startIndex = (st.page - 1) * st.rowsPerPage;
-    const endIndex = Math.min(startIndex + st.rowsPerPage, totalItems);
-
-    let html = '';
-    features.slice(startIndex, endIndex).forEach(function(feature) {
-      const props = feature.properties || {};
-      html += '<tr ' + config.rowIdAttr + '="' + escapeHtml(config.getRowId(props)) + '" tabindex="0" role="row">';
-      config.columns.forEach(function(col) {
-        const val = props[col.field];
-        let display = (val !== null && val !== undefined && val !== '') ? escapeHtml(String(val)) : '–';
-        if (col.format) display = col.format(val, props, feature);
-        html += '<td class="' + col.cls + '">' + display + '</td>';
-      });
-      html += '</tr>';
-    });
-    tbody.innerHTML = html;
-    updatePagination(st.page, totalPages, totalItems);
-    updateSortIndicator();
-  }
-
-  function highlightRow(tbody, row) {
-    tbody.querySelectorAll('tr.row-active').forEach(function(r) { r.classList.remove('row-active'); });
-    if (row) row.classList.add('row-active');
-  }
-
-  // Highlight the row of a key: jump to its page, mark it and scroll it into view
-  function syncTo(key) {
-    const features = visibleFeatures();
-    let index = -1;
-    for (let i = 0; i < features.length; i++) {
-      if (config.getRowId(features[i].properties || {}) === key) { index = i; break; }
-    }
-    if (index === -1) return;
-    const targetPage = Math.floor(index / st.rowsPerPage) + 1;
-    if (st.page !== targetPage) {
-      st.page = targetPage;
-      render();
-    }
-    const tbody = document.getElementById(config.tbodyId);
-    if (!tbody) return;
-    const row = Array.prototype.find.call(tbody.querySelectorAll('tr[' + config.rowIdAttr + ']'), function(r) {
-      return parseId(r.getAttribute(config.rowIdAttr)) === key;
-    });
-    highlightRow(tbody, row);
-    if (row) row.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
-  }
-
-  function init() {
-    bindSortHeaders();
-    const tbody = document.getElementById(config.tbodyId);
-    if (tbody) {
-      tbody.addEventListener('click', function(e) {
-        const row = e.target.closest('tr[' + config.rowIdAttr + ']');
-        if (!row) return;
-        highlightRow(tbody, row);
-        if (config.onRowSelect) config.onRowSelect(parseId(row.getAttribute(config.rowIdAttr)));
-      });
-      tbody.addEventListener('keydown', function(e) {
-        if (e.key !== 'Enter' && e.key !== ' ') return;
-        const row = e.target.closest('tr[' + config.rowIdAttr + ']');
-        if (!row) return;
-        e.preventDefault();
-        row.click();
-      });
-    }
-
-    const p = config.pagination || {};
-    const rowsSelect = document.getElementById(p.rowsSelectId);
-    const prevBtn = document.getElementById(p.prevId);
-    const nextBtn = document.getElementById(p.nextId);
-    if (rowsSelect) {
-      st.rowsPerPage = parseInt(rowsSelect.value, 10) || st.rowsPerPage;
-      rowsSelect.addEventListener('change', function() {
-        st.rowsPerPage = parseInt(this.value, 10);
-        st.page = 1;
-        render();
-      });
-    }
-    if (prevBtn) {
-      prevBtn.addEventListener('click', function() {
-        if (st.page > 1) { st.page--; render(); }
-      });
-    }
-    if (nextBtn) {
-      nextBtn.addEventListener('click', function() {
-        const totalPages = Math.ceil(visibleFeatures().length / st.rowsPerPage);
-        if (st.page < totalPages) { st.page++; render(); }
-      });
-    }
-  }
-
-  return {
-    render: render,
-    init: init,
-    syncTo: syncTo,
-    setSearchTerm: function(term) {
-      st.searchTerm = (term || '').toLowerCase().trim();
-      st.page = 1;
-      render();
+  return createDataTable({
+    ...config,
+    getRows: config.getFeatures,
+    getRowId: function(feature) { return config.getRowId(feature.properties || {}); },
+    searchText: function(feature) {
+      return (config.searchFields || []).map(function(key) { return getNestedProperty(feature.properties || {}, key) ?? ''; }).join(' ');
     },
-    resetPage: function() { st.page = 1; },
-    sortBy: sortBy,
-    updateSortIndicator: updateSortIndicator,
-    getState: function() { return st; }
-  };
+    columns: config.columns.map(function(col) {
+      return {
+        key: col.sortField || col.field, className: col.cls,
+        label: col.label, labelKey: col.labelKey, width: col.width,
+        value: function(feature) { return getNestedProperty(feature.properties || {}, col.sortField || col.field); },
+        render: col.format ? function(feature) { return col.format(feature.properties[col.field], feature.properties, feature); } : undefined
+      };
+    })
+  });
 }
 
 // ===== COLUMN VISIBILITY =====
@@ -313,6 +39,7 @@ function updateColumnStylesheet() {
     if (/^[a-zA-Z0-9_-]+$/.test(cls)) css += columnScope + ' .' + cls + '{display:none;}';
   });
   columnStyleEl.textContent = css;
+  setTableHiddenColumns(hiddenColumns);
 }
 
 export function handleColumnToggle(checkbox) {

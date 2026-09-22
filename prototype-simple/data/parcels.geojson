@@ -1,6 +1,8 @@
 {
   "type": "FeatureCollection",
   "name": "BBL_GIS_IMMO_Parcel",
+  "dataVersion": "2026-09-22",
+  "description": "Publicly sourced identities and locations; clearly marked synthetic demonstration records. Not an official BBL inventory.",
   "features": [
     {
       "type": "Feature",
@@ -10,68 +12,259 @@
         "bbl_buch": "1080",
         "bbl_we": "4840",
         "bbl_obj": "01",
-        "bbl_bez": "Bundesplatz Parzelle A",
+        "bbl_bez": "Parzelle 1058 – Bundeshaus West",
         "bbl_port": "Verwaltungsgebäude",
         "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 35000000.0,
-        "bbl_bwrt": 12000000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
         "adr_land": "CH",
         "adr_reg": "BE",
         "adr_ort": "Bern",
-        "adr_plz": "3003",
-        "adr_str": "Bundesplatz",
-        "adr_hsnr": "3",
-        "adr_conct": "Bundesplatz 3 3003 Bern",
-        "wgs84_lat": 46.9465,
-        "wgs84_lon": 7.4441,
-        "lv95_e": 2600416.2,
-        "lv95_n": 1199490.6,
-        "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH938391457759",
+        "adr_plz": "3011",
+        "adr_str": "Bundesgasse",
+        "adr_hsnr": "1",
+        "adr_conct": "Bundesgasse 1, 3011 Bern",
+        "wgs84_lon": 7.44294957,
+        "wgs84_lat": 46.94627776,
+        "lv95_e": 2600328.67,
+        "lv95_n": 1199465.83,
         "bfs_gem": "Bern",
         "bfs_gemnr": "351",
-        "av_nr": "1001",
-        "larea_ggf": 3200.0,
-        "larea_gsf": 5100.0,
-        "larea_uf": 1900.0,
-        "larea_buf": 1200.0,
-        "larea_uuf": 700.0,
-        "larea_acu": "AV",
-        "larea_ver": 3800.0,
-        "larea_gre": 1300.0,
-        "av_zbez": "Verwaltungszone",
-        "av_znut": "Zone für öffentliche Nutzung",
+        "egm_elev": null,
+        "av_stat": "AV / GWR",
+        "av_egrid": "CH127620463518",
+        "av_nr": "1058",
+        "larea_ggf": 2643,
+        "larea_gsf": 9893.02,
+        "larea_uf": 7250.02,
+        "larea_buf": 3182.93,
+        "larea_uuf": 4067.09,
+        "larea_acu": "GSF aus AV; Bodenbedeckung Demo",
+        "larea_ver": 5825.93,
+        "larea_gre": 4067.09,
+        "av_zbez": null,
+        "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 1,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "public-source",
+          "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
+          "notice": "AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.",
+          "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=7.442977%2C46.946345&geometryType=esriGeometryPoint&geometryFormat=geojson&sr=4326&layers=all%3Ach.kantone.cadastralwebmap-farbe&tolerance=0&returnGeometry=true&lang=de",
+          "gwrSourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1230654_0?sr=4326&geometryFormat=geojson",
+          "egrid": "CH127620463518",
+          "buildingId": "1080/4840/AF",
+          "retrievedAt": "2026-09-22",
+          "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              7.4435,
-              46.946
+              7.441802,
+              46.946456
             ],
             [
-              7.4447,
-              46.946
+              7.441815,
+              46.946421
             ],
             [
-              7.4447,
-              46.947
+              7.441817,
+              46.946422
             ],
             [
-              7.4435,
-              46.947
+              7.441923,
+              46.946132
             ],
             [
-              7.4435,
-              46.946
+              7.441919,
+              46.946131
+            ],
+            [
+              7.441953,
+              46.946034
+            ],
+            [
+              7.441948,
+              46.946033
+            ],
+            [
+              7.441964,
+              46.945989
+            ],
+            [
+              7.441953,
+              46.945986
+            ],
+            [
+              7.442084,
+              46.945932
+            ],
+            [
+              7.44271,
+              46.946051
+            ],
+            [
+              7.442723,
+              46.946015
+            ],
+            [
+              7.442749,
+              46.945949
+            ],
+            [
+              7.443009,
+              46.945841
+            ],
+            [
+              7.443306,
+              46.945892
+            ],
+            [
+              7.443465,
+              46.94607
+            ],
+            [
+              7.443428,
+              46.946171
+            ],
+            [
+              7.44361,
+              46.946198
+            ],
+            [
+              7.443771,
+              46.946222
+            ],
+            [
+              7.443746,
+              46.946335
+            ],
+            [
+              7.443754,
+              46.946336
+            ],
+            [
+              7.443717,
+              46.946438
+            ],
+            [
+              7.443738,
+              46.946442
+            ],
+            [
+              7.443732,
+              46.946457
+            ],
+            [
+              7.443731,
+              46.946457
+            ],
+            [
+              7.443721,
+              46.946487
+            ],
+            [
+              7.443721,
+              46.946488
+            ],
+            [
+              7.443717,
+              46.946501
+            ],
+            [
+              7.443716,
+              46.946501
+            ],
+            [
+              7.443678,
+              46.946605
+            ],
+            [
+              7.443679,
+              46.946605
+            ],
+            [
+              7.443674,
+              46.946619
+            ],
+            [
+              7.443673,
+              46.946618
+            ],
+            [
+              7.443662,
+              46.946649
+            ],
+            [
+              7.443663,
+              46.946649
+            ],
+            [
+              7.443658,
+              46.946664
+            ],
+            [
+              7.443634,
+              46.946661
+            ],
+            [
+              7.443603,
+              46.946746
+            ],
+            [
+              7.443604,
+              46.946746
+            ],
+            [
+              7.443598,
+              46.946762
+            ],
+            [
+              7.443575,
+              46.946758
+            ],
+            [
+              7.443575,
+              46.946757
+            ],
+            [
+              7.443403,
+              46.946728
+            ],
+            [
+              7.443403,
+              46.946729
+            ],
+            [
+              7.442354,
+              46.946551
+            ],
+            [
+              7.442354,
+              46.946551
+            ],
+            [
+              7.442182,
+              46.946521
+            ],
+            [
+              7.442181,
+              46.946522
+            ],
+            [
+              7.442159,
+              46.946518
+            ],
+            [
+              7.441802,
+              46.946456
             ]
           ]
         ]
@@ -85,12 +278,12 @@
         "bbl_buch": "1080",
         "bbl_we": "5210",
         "bbl_obj": "01",
-        "bbl_bez": "Diplomatenviertel Lot 41",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Berlin",
         "bbl_port": "Diplomatische Vertretung",
         "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 18000000.0,
-        "bbl_bwrt": 5000000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
         "adr_land": "DE",
         "adr_reg": "Berlin",
@@ -98,55 +291,61 @@
         "adr_plz": "10557",
         "adr_str": "Otto-von-Bismarck-Allee",
         "adr_hsnr": "4A",
-        "adr_conct": "Otto-von-Bismarck-Allee 4A 10557 Berlin",
-        "wgs84_lat": 52.52,
-        "wgs84_lon": 13.3695,
+        "adr_conct": "Otto-von-Bismarck-Allee 4A, 10557 Berlin",
+        "wgs84_lon": 13.3712807,
+        "wgs84_lat": 52.5211082,
         "lv95_e": null,
         "lv95_n": null,
-        "egm_elev": null,
-        "av_stat": null,
-        "av_egrid": null,
         "bfs_gem": null,
         "bfs_gemnr": null,
-        "av_nr": null,
-        "larea_ggf": 1400.0,
-        "larea_gsf": 1800.0,
-        "larea_uf": 400.0,
-        "larea_buf": 300.0,
-        "larea_uuf": 100.0,
-        "larea_acu": "Geschätzt",
-        "larea_ver": 1500.0,
-        "larea_gre": 300.0,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-5210",
+        "larea_ggf": 1140,
+        "larea_gsf": 2100,
+        "larea_uf": 960,
+        "larea_buf": 407.26,
+        "larea_uuf": 552.74,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 1547.26,
+        "larea_gre": 552.74,
         "av_zbez": null,
         "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 2,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "1080/5210/AA"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              13.3688,
-              52.5194
+              13.37094314,
+              52.520902291
             ],
             [
-              13.3702,
-              52.5194
+              13.37161826,
+              52.520902291
             ],
             [
-              13.3702,
-              52.5206
+              13.371618263,
+              52.521314108
             ],
             [
-              13.3688,
-              52.5206
+              13.370943137,
+              52.521314108
             ],
             [
-              13.3688,
-              52.5194
+              13.37094314,
+              52.520902291
             ]
           ]
         ]
@@ -156,147 +355,1021 @@
       "type": "Feature",
       "properties": {
         "bbl_stat": "Aktiv",
-        "bbl_id": "1080/3120/01",
-        "bbl_buch": "1080",
-        "bbl_we": "3120",
+        "bbl_id": "9900/9002/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9002",
         "bbl_obj": "01",
-        "bbl_bez": "Industriegebiet Lagerstrasse",
-        "bbl_port": "Lager / Logistik",
-        "bbl_mietm": "Kostenmiete",
+        "bbl_bez": "Parzelle 3571 – BBL – Fellerstrasse 21",
+        "bbl_port": "Verwaltungsgebäude",
+        "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 22000000.0,
-        "bbl_bwrt": 8500000.0,
-        "bbl_hgart": false,
-        "adr_land": "CH",
-        "adr_reg": "ZH",
-        "adr_ort": "Zürich",
-        "adr_plz": "8004",
-        "adr_str": "Lagerstrasse",
-        "adr_hsnr": "107",
-        "adr_conct": "Lagerstrasse 107 8004 Zürich",
-        "wgs84_lat": 47.3769,
-        "wgs84_lon": 8.532,
-        "lv95_e": 2682571.5,
-        "lv95_n": 1247915.3,
-        "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH672819345012",
-        "bfs_gem": "Zürich",
-        "bfs_gemnr": "261",
-        "av_nr": "2045",
-        "larea_ggf": 6500.0,
-        "larea_gsf": 12500.0,
-        "larea_uf": 6000.0,
-        "larea_buf": 4000.0,
-        "larea_uuf": 2000.0,
-        "larea_acu": "AV",
-        "larea_ver": 9500.0,
-        "larea_gre": 3000.0,
-        "av_zbez": "Industriezone",
-        "av_znut": "Industrie- und Gewerbezone",
-        "fid": null,
-        "fid_src": null,
-        "objectid": 3,
-        "etl_ts": "2026-03-18T06:00:00Z"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              8.531,
-              47.376
-            ],
-            [
-              8.533,
-              47.376
-            ],
-            [
-              8.533,
-              47.3778
-            ],
-            [
-              8.531,
-              47.3778
-            ],
-            [
-              8.531,
-              47.376
-            ]
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "bbl_stat": "Aktiv",
-        "bbl_id": "1080/5320/01",
-        "bbl_buch": "1080",
-        "bbl_we": "5320",
-        "bbl_obj": "01",
-        "bbl_bez": "Third Avenue Lot",
-        "bbl_port": "Diplomatische Vertretung",
-        "bbl_mietm": null,
-        "bbl_eigen": "Miete",
         "bbl_awrt": null,
         "bbl_bwrt": null,
         "bbl_hgart": false,
-        "adr_land": "US",
-        "adr_reg": "NY",
-        "adr_ort": "New York",
-        "adr_plz": "10022",
-        "adr_str": "633 Third Avenue",
-        "adr_hsnr": "633",
-        "adr_conct": "633 Third Avenue 633 10022 New York",
-        "wgs84_lat": 40.7528,
-        "wgs84_lon": -73.9712,
-        "lv95_e": null,
-        "lv95_n": null,
+        "adr_land": "CH",
+        "adr_reg": "BE",
+        "adr_ort": "Bern",
+        "adr_plz": "3027",
+        "adr_str": "Fellerstrasse",
+        "adr_hsnr": "21",
+        "adr_conct": "Fellerstrasse 21, 3027 Bern",
+        "wgs84_lon": 7.38765987,
+        "wgs84_lat": 46.94620118,
+        "lv95_e": 2596119.31,
+        "lv95_n": 1199458.62,
+        "bfs_gem": "Bern",
+        "bfs_gemnr": "351",
         "egm_elev": null,
-        "av_stat": null,
-        "av_egrid": null,
-        "bfs_gem": null,
-        "bfs_gemnr": null,
-        "av_nr": null,
-        "larea_ggf": null,
-        "larea_gsf": null,
-        "larea_uf": null,
-        "larea_buf": null,
-        "larea_uuf": null,
-        "larea_acu": null,
-        "larea_ver": null,
-        "larea_gre": null,
+        "av_stat": "AV / GWR",
+        "av_egrid": "CH373589574684",
+        "av_nr": "3571",
+        "larea_ggf": 3000,
+        "larea_gsf": 7551.05,
+        "larea_uf": 4551.05,
+        "larea_buf": 1801.35,
+        "larea_uuf": 2749.7,
+        "larea_acu": "GSF aus AV; Bodenbedeckung Demo",
+        "larea_ver": 4801.35,
+        "larea_gre": 2749.7,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 3,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "public-source",
+          "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
+          "notice": "AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.",
+          "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=7.387944%2C46.946562&geometryType=esriGeometryPoint&geometryFormat=geojson&sr=4326&layers=all%3Ach.kantone.cadastralwebmap-farbe&tolerance=0&returnGeometry=true&lang=de",
+          "gwrSourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/1243999_0?sr=4326&geometryFormat=geojson",
+          "egrid": "CH373589574684",
+          "buildingId": "9900/9002/AA",
+          "retrievedAt": "2026-09-22",
+          "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.38691,
+              46.946568
+            ],
+            [
+              7.387115,
+              46.945796
+            ],
+            [
+              7.387189,
+              46.945805
+            ],
+            [
+              7.387564,
+              46.94584
+            ],
+            [
+              7.388233,
+              46.946011
+            ],
+            [
+              7.388322,
+              46.946028
+            ],
+            [
+              7.388157,
+              46.946648
+            ],
+            [
+              7.388131,
+              46.946645
+            ],
+            [
+              7.388105,
+              46.946642
+            ],
+            [
+              7.388079,
+              46.946639
+            ],
+            [
+              7.388053,
+              46.946636
+            ],
+            [
+              7.388027,
+              46.946633
+            ],
+            [
+              7.388001,
+              46.946631
+            ],
+            [
+              7.387974,
+              46.946628
+            ],
+            [
+              7.387948,
+              46.946625
+            ],
+            [
+              7.387922,
+              46.946623
+            ],
+            [
+              7.387896,
+              46.94662
+            ],
+            [
+              7.38787,
+              46.946618
+            ],
+            [
+              7.387844,
+              46.946615
+            ],
+            [
+              7.387818,
+              46.946613
+            ],
+            [
+              7.387791,
+              46.946611
+            ],
+            [
+              7.387765,
+              46.946608
+            ],
+            [
+              7.387739,
+              46.946606
+            ],
+            [
+              7.387713,
+              46.946604
+            ],
+            [
+              7.387687,
+              46.946602
+            ],
+            [
+              7.387661,
+              46.9466
+            ],
+            [
+              7.387635,
+              46.946598
+            ],
+            [
+              7.387609,
+              46.946596
+            ],
+            [
+              7.387583,
+              46.946594
+            ],
+            [
+              7.387557,
+              46.946593
+            ],
+            [
+              7.38753,
+              46.946591
+            ],
+            [
+              7.387504,
+              46.946589
+            ],
+            [
+              7.387478,
+              46.946588
+            ],
+            [
+              7.387452,
+              46.946586
+            ],
+            [
+              7.387426,
+              46.946585
+            ],
+            [
+              7.3874,
+              46.946583
+            ],
+            [
+              7.387374,
+              46.946582
+            ],
+            [
+              7.387347,
+              46.946581
+            ],
+            [
+              7.387321,
+              46.94658
+            ],
+            [
+              7.387294,
+              46.946578
+            ],
+            [
+              7.387266,
+              46.946577
+            ],
+            [
+              7.387239,
+              46.946576
+            ],
+            [
+              7.387212,
+              46.946575
+            ],
+            [
+              7.387184,
+              46.946574
+            ],
+            [
+              7.387157,
+              46.946573
+            ],
+            [
+              7.387129,
+              46.946573
+            ],
+            [
+              7.387102,
+              46.946572
+            ],
+            [
+              7.387074,
+              46.946571
+            ],
+            [
+              7.387047,
+              46.946571
+            ],
+            [
+              7.38702,
+              46.94657
+            ],
+            [
+              7.386992,
+              46.94657
+            ],
+            [
+              7.386965,
+              46.946569
+            ],
+            [
+              7.386937,
+              46.946569
+            ],
+            [
+              7.38691,
+              46.946568
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9003/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9003",
+        "bbl_obj": "01",
+        "bbl_bez": "Parzelle 16 – Verwaltungsgebäude Liebefeld",
+        "bbl_port": "Verwaltungsgebäude",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "CH",
+        "adr_reg": "BE",
+        "adr_ort": "Liebefeld",
+        "adr_plz": "3097",
+        "adr_str": "Schwarzenburgstrasse",
+        "adr_hsnr": "157",
+        "adr_conct": "Schwarzenburgstrasse 157, 3097 Liebefeld",
+        "wgs84_lon": 7.42124344,
+        "wgs84_lat": 46.92990164,
+        "lv95_e": 2598675.7,
+        "lv95_n": 1197645.45,
+        "bfs_gem": "Köniz",
+        "bfs_gemnr": "355",
+        "egm_elev": null,
+        "av_stat": "AV / GWR",
+        "av_egrid": "CH208035154682",
+        "av_nr": "16",
+        "larea_ggf": 4271,
+        "larea_gsf": 55420.96,
+        "larea_uf": 51149.96,
+        "larea_buf": 25183.37,
+        "larea_uuf": 25966.59,
+        "larea_acu": "GSF aus AV; Bodenbedeckung Demo",
+        "larea_ver": 29454.37,
+        "larea_gre": 25966.59,
         "av_zbez": null,
         "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 4,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "public-source",
+          "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
+          "notice": "AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.",
+          "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=7.421357%2C46.929894&geometryType=esriGeometryPoint&geometryFormat=geojson&sr=4326&layers=all%3Ach.kantone.cadastralwebmap-farbe&tolerance=0&returnGeometry=true&lang=de",
+          "gwrSourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191458950_0?sr=4326&geometryFormat=geojson",
+          "egrid": "CH208035154682",
+          "buildingId": "9900/9003/AA",
+          "retrievedAt": "2026-09-22",
+          "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              -73.972,
-              40.7522
+              7.420199,
+              46.930155
             ],
             [
-              -73.9704,
-              40.7522
+              7.420203,
+              46.930152
             ],
             [
-              -73.9704,
-              40.7534
+              7.420345,
+              46.930087
             ],
             [
-              -73.972,
-              40.7534
+              7.421705,
+              46.929462
             ],
             [
-              -73.972,
-              40.7522
+              7.422691,
+              46.929008
+            ],
+            [
+              7.422703,
+              46.92902
+            ],
+            [
+              7.423323,
+              46.928735
+            ],
+            [
+              7.423399,
+              46.9287
+            ],
+            [
+              7.423404,
+              46.928698
+            ],
+            [
+              7.423408,
+              46.928696
+            ],
+            [
+              7.423413,
+              46.928694
+            ],
+            [
+              7.423417,
+              46.928692
+            ],
+            [
+              7.423422,
+              46.92869
+            ],
+            [
+              7.423427,
+              46.928688
+            ],
+            [
+              7.423432,
+              46.928687
+            ],
+            [
+              7.423437,
+              46.928685
+            ],
+            [
+              7.423442,
+              46.928683
+            ],
+            [
+              7.423447,
+              46.928682
+            ],
+            [
+              7.423452,
+              46.92868
+            ],
+            [
+              7.423457,
+              46.928679
+            ],
+            [
+              7.423462,
+              46.928678
+            ],
+            [
+              7.423467,
+              46.928676
+            ],
+            [
+              7.423472,
+              46.928675
+            ],
+            [
+              7.423477,
+              46.928674
+            ],
+            [
+              7.423482,
+              46.928673
+            ],
+            [
+              7.423488,
+              46.928672
+            ],
+            [
+              7.423493,
+              46.928671
+            ],
+            [
+              7.423498,
+              46.92867
+            ],
+            [
+              7.423503,
+              46.928669
+            ],
+            [
+              7.423509,
+              46.928668
+            ],
+            [
+              7.423514,
+              46.928667
+            ],
+            [
+              7.42352,
+              46.928667
+            ],
+            [
+              7.423525,
+              46.928666
+            ],
+            [
+              7.42353,
+              46.928665
+            ],
+            [
+              7.423535,
+              46.928665
+            ],
+            [
+              7.42354,
+              46.928665
+            ],
+            [
+              7.423545,
+              46.928664
+            ],
+            [
+              7.42355,
+              46.928664
+            ],
+            [
+              7.423556,
+              46.928664
+            ],
+            [
+              7.423561,
+              46.928664
+            ],
+            [
+              7.423566,
+              46.928664
+            ],
+            [
+              7.423571,
+              46.928664
+            ],
+            [
+              7.423576,
+              46.928664
+            ],
+            [
+              7.423581,
+              46.928664
+            ],
+            [
+              7.423586,
+              46.928664
+            ],
+            [
+              7.423591,
+              46.928664
+            ],
+            [
+              7.423597,
+              46.928664
+            ],
+            [
+              7.423602,
+              46.928665
+            ],
+            [
+              7.423607,
+              46.928665
+            ],
+            [
+              7.423612,
+              46.928666
+            ],
+            [
+              7.423617,
+              46.928666
+            ],
+            [
+              7.423622,
+              46.928667
+            ],
+            [
+              7.423627,
+              46.928667
+            ],
+            [
+              7.423632,
+              46.928668
+            ],
+            [
+              7.423637,
+              46.928669
+            ],
+            [
+              7.423642,
+              46.928669
+            ],
+            [
+              7.423647,
+              46.92867
+            ],
+            [
+              7.423652,
+              46.928671
+            ],
+            [
+              7.423657,
+              46.928672
+            ],
+            [
+              7.423662,
+              46.928673
+            ],
+            [
+              7.423667,
+              46.928674
+            ],
+            [
+              7.423672,
+              46.928676
+            ],
+            [
+              7.423677,
+              46.928677
+            ],
+            [
+              7.423681,
+              46.928678
+            ],
+            [
+              7.423686,
+              46.928679
+            ],
+            [
+              7.423691,
+              46.928681
+            ],
+            [
+              7.423696,
+              46.928682
+            ],
+            [
+              7.4237,
+              46.928684
+            ],
+            [
+              7.423705,
+              46.928685
+            ],
+            [
+              7.423709,
+              46.928687
+            ],
+            [
+              7.423714,
+              46.928689
+            ],
+            [
+              7.424097,
+              46.928838
+            ],
+            [
+              7.424101,
+              46.92884
+            ],
+            [
+              7.424105,
+              46.928841
+            ],
+            [
+              7.424109,
+              46.928843
+            ],
+            [
+              7.424114,
+              46.928844
+            ],
+            [
+              7.424118,
+              46.928845
+            ],
+            [
+              7.424122,
+              46.928847
+            ],
+            [
+              7.424127,
+              46.928848
+            ],
+            [
+              7.424131,
+              46.928849
+            ],
+            [
+              7.424136,
+              46.92885
+            ],
+            [
+              7.42414,
+              46.928851
+            ],
+            [
+              7.424145,
+              46.928852
+            ],
+            [
+              7.424149,
+              46.928853
+            ],
+            [
+              7.424154,
+              46.928854
+            ],
+            [
+              7.424158,
+              46.928854
+            ],
+            [
+              7.424163,
+              46.928855
+            ],
+            [
+              7.424167,
+              46.928856
+            ],
+            [
+              7.424337,
+              46.928921
+            ],
+            [
+              7.424416,
+              46.92895
+            ],
+            [
+              7.424366,
+              46.929013
+            ],
+            [
+              7.425034,
+              46.929262
+            ],
+            [
+              7.424788,
+              46.92955
+            ],
+            [
+              7.425165,
+              46.92969
+            ],
+            [
+              7.425031,
+              46.929836
+            ],
+            [
+              7.424958,
+              46.929869
+            ],
+            [
+              7.424922,
+              46.929886
+            ],
+            [
+              7.42465,
+              46.930012
+            ],
+            [
+              7.424397,
+              46.930129
+            ],
+            [
+              7.424144,
+              46.930246
+            ],
+            [
+              7.423749,
+              46.930429
+            ],
+            [
+              7.423463,
+              46.930562
+            ],
+            [
+              7.423122,
+              46.93072
+            ],
+            [
+              7.422922,
+              46.930813
+            ],
+            [
+              7.422887,
+              46.930779
+            ],
+            [
+              7.42263,
+              46.930535
+            ],
+            [
+              7.422537,
+              46.930578
+            ],
+            [
+              7.422015,
+              46.93082
+            ],
+            [
+              7.421814,
+              46.930913
+            ],
+            [
+              7.421626,
+              46.931001
+            ],
+            [
+              7.421364,
+              46.931122
+            ],
+            [
+              7.421211,
+              46.931193
+            ],
+            [
+              7.421028,
+              46.931278
+            ],
+            [
+              7.421024,
+              46.931274
+            ],
+            [
+              7.420985,
+              46.931218
+            ],
+            [
+              7.420953,
+              46.931171
+            ],
+            [
+              7.420922,
+              46.931126
+            ],
+            [
+              7.420888,
+              46.931082
+            ],
+            [
+              7.420854,
+              46.931039
+            ],
+            [
+              7.420824,
+              46.931004
+            ],
+            [
+              7.420839,
+              46.930997
+            ],
+            [
+              7.420786,
+              46.930938
+            ],
+            [
+              7.42077,
+              46.930945
+            ],
+            [
+              7.420702,
+              46.93087
+            ],
+            [
+              7.420642,
+              46.930806
+            ],
+            [
+              7.420539,
+              46.930693
+            ],
+            [
+              7.420505,
+              46.930655
+            ],
+            [
+              7.420472,
+              46.930615
+            ],
+            [
+              7.420435,
+              46.930567
+            ],
+            [
+              7.420429,
+              46.930559
+            ],
+            [
+              7.420422,
+              46.93055
+            ],
+            [
+              7.420416,
+              46.930541
+            ],
+            [
+              7.420409,
+              46.930532
+            ],
+            [
+              7.420403,
+              46.930523
+            ],
+            [
+              7.420397,
+              46.930514
+            ],
+            [
+              7.420391,
+              46.930505
+            ],
+            [
+              7.420385,
+              46.930497
+            ],
+            [
+              7.420379,
+              46.930488
+            ],
+            [
+              7.420373,
+              46.930479
+            ],
+            [
+              7.420367,
+              46.93047
+            ],
+            [
+              7.420233,
+              46.930261
+            ],
+            [
+              7.42023,
+              46.930256
+            ],
+            [
+              7.420228,
+              46.930251
+            ],
+            [
+              7.420225,
+              46.930247
+            ],
+            [
+              7.420222,
+              46.930242
+            ],
+            [
+              7.42022,
+              46.930237
+            ],
+            [
+              7.420217,
+              46.930232
+            ],
+            [
+              7.420215,
+              46.930227
+            ],
+            [
+              7.420213,
+              46.930222
+            ],
+            [
+              7.420211,
+              46.930217
+            ],
+            [
+              7.420209,
+              46.930212
+            ],
+            [
+              7.420207,
+              46.930207
+            ],
+            [
+              7.420205,
+              46.930202
+            ],
+            [
+              7.420203,
+              46.930197
+            ],
+            [
+              7.420201,
+              46.930192
+            ],
+            [
+              7.4202,
+              46.930189
+            ],
+            [
+              7.4202,
+              46.930187
+            ],
+            [
+              7.420199,
+              46.930184
+            ],
+            [
+              7.420199,
+              46.930181
+            ],
+            [
+              7.420198,
+              46.930179
+            ],
+            [
+              7.420198,
+              46.930176
+            ],
+            [
+              7.420198,
+              46.930174
+            ],
+            [
+              7.420198,
+              46.930171
+            ],
+            [
+              7.420198,
+              46.930168
+            ],
+            [
+              7.420198,
+              46.930166
+            ],
+            [
+              7.420198,
+              46.930163
+            ],
+            [
+              7.420199,
+              46.93016
+            ],
+            [
+              7.420199,
+              46.930158
+            ],
+            [
+              7.420199,
+              46.930155
             ]
           ]
         ]
@@ -306,72 +1379,319 @@
       "type": "Feature",
       "properties": {
         "bbl_stat": "Aktiv",
-        "bbl_id": "1080/4100/01",
-        "bbl_buch": "1080",
-        "bbl_we": "4100",
+        "bbl_id": "9900/9004/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9004",
         "bbl_obj": "01",
-        "bbl_bez": "Varembé Parzelle",
-        "bbl_port": "Ausbildung",
+        "bbl_bez": "Parzelle 225 – Verwaltungsgebäude Eichenweg 3",
+        "bbl_port": "Verwaltungsgebäude",
         "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 15000000.0,
-        "bbl_bwrt": 4500000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
         "adr_land": "CH",
-        "adr_reg": "GE",
-        "adr_ort": "Genf",
-        "adr_plz": "1211",
-        "adr_str": "Rue de Varembé",
-        "adr_hsnr": "9",
-        "adr_conct": "Rue de Varembé 9 1211 Genf",
-        "wgs84_lat": 46.2044,
-        "wgs84_lon": 6.1432,
-        "lv95_e": 2500016.2,
-        "lv95_n": 1117821.0,
+        "adr_reg": "BE",
+        "adr_ort": "Zollikofen",
+        "adr_plz": "3052",
+        "adr_str": "Eichenweg",
+        "adr_hsnr": "3",
+        "adr_conct": "Eichenweg 3, 3052 Zollikofen",
+        "wgs84_lon": 7.46259581,
+        "wgs84_lat": 46.99764581,
+        "lv95_e": 2601822.72,
+        "lv95_n": 1205176.73,
+        "bfs_gem": "Zollikofen",
+        "bfs_gemnr": "361",
         "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH456789123456",
-        "bfs_gem": "Genève",
-        "bfs_gemnr": "6621",
-        "av_nr": "3021",
-        "larea_ggf": 2200.0,
-        "larea_gsf": 4500.0,
-        "larea_uf": 2300.0,
-        "larea_buf": 1500.0,
-        "larea_uuf": 800.0,
-        "larea_acu": "AV",
-        "larea_ver": 3000.0,
-        "larea_gre": 1500.0,
-        "av_zbez": "Zone mixte",
-        "av_znut": "Mischzone Wohnen/Arbeiten",
+        "av_stat": "AV / GWR",
+        "av_egrid": "CH794682373511",
+        "av_nr": "225",
+        "larea_ggf": 3667,
+        "larea_gsf": 13051.83,
+        "larea_uf": 9384.83,
+        "larea_buf": 8969.54,
+        "larea_uuf": 415.29,
+        "larea_acu": "GSF aus AV; Bodenbedeckung Demo",
+        "larea_ver": 12636.54,
+        "larea_gre": 415.29,
+        "av_zbez": null,
+        "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 5,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "public-source",
+          "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
+          "notice": "AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.",
+          "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=7.462435%2C46.997411&geometryType=esriGeometryPoint&geometryFormat=geojson&sr=4326&layers=all%3Ach.kantone.cadastralwebmap-farbe&tolerance=0&returnGeometry=true&lang=de",
+          "gwrSourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/191688442_0?sr=4326&geometryFormat=geojson",
+          "egrid": "CH794682373511",
+          "buildingId": "9900/9004/AA",
+          "retrievedAt": "2026-09-22",
+          "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              6.1422,
-              46.2038
+              7.461843,
+              46.997813
             ],
             [
-              6.1442,
-              46.2038
+              7.461854,
+              46.997755
             ],
             [
-              6.1442,
-              46.205
+              7.461867,
+              46.997756
             ],
             [
-              6.1422,
-              46.205
+              7.461874,
+              46.997719
             ],
             [
-              6.1422,
-              46.2038
+              7.461861,
+              46.997717
+            ],
+            [
+              7.461906,
+              46.997527
+            ],
+            [
+              7.461903,
+              46.997526
+            ],
+            [
+              7.461921,
+              46.997459
+            ],
+            [
+              7.461942,
+              46.997391
+            ],
+            [
+              7.461963,
+              46.997325
+            ],
+            [
+              7.461987,
+              46.997256
+            ],
+            [
+              7.462034,
+              46.997133
+            ],
+            [
+              7.462041,
+              46.997116
+            ],
+            [
+              7.462049,
+              46.997099
+            ],
+            [
+              7.462056,
+              46.997082
+            ],
+            [
+              7.462064,
+              46.997065
+            ],
+            [
+              7.462072,
+              46.997048
+            ],
+            [
+              7.46208,
+              46.997031
+            ],
+            [
+              7.462087,
+              46.997014
+            ],
+            [
+              7.462096,
+              46.996997
+            ],
+            [
+              7.462104,
+              46.99698
+            ],
+            [
+              7.462112,
+              46.996964
+            ],
+            [
+              7.46212,
+              46.996947
+            ],
+            [
+              7.462129,
+              46.99693
+            ],
+            [
+              7.462137,
+              46.996913
+            ],
+            [
+              7.462146,
+              46.996896
+            ],
+            [
+              7.462154,
+              46.99688
+            ],
+            [
+              7.462163,
+              46.996863
+            ],
+            [
+              7.462172,
+              46.996846
+            ],
+            [
+              7.462181,
+              46.996829
+            ],
+            [
+              7.46219,
+              46.996813
+            ],
+            [
+              7.462199,
+              46.996796
+            ],
+            [
+              7.462208,
+              46.996779
+            ],
+            [
+              7.462218,
+              46.996763
+            ],
+            [
+              7.462227,
+              46.996746
+            ],
+            [
+              7.462237,
+              46.99673
+            ],
+            [
+              7.462246,
+              46.996713
+            ],
+            [
+              7.462256,
+              46.996697
+            ],
+            [
+              7.462266,
+              46.99668
+            ],
+            [
+              7.462276,
+              46.996664
+            ],
+            [
+              7.462286,
+              46.996647
+            ],
+            [
+              7.462296,
+              46.996631
+            ],
+            [
+              7.462338,
+              46.996553
+            ],
+            [
+              7.462372,
+              46.996497
+            ],
+            [
+              7.462586,
+              46.99658
+            ],
+            [
+              7.462846,
+              46.996684
+            ],
+            [
+              7.462881,
+              46.996695
+            ],
+            [
+              7.462917,
+              46.996707
+            ],
+            [
+              7.462952,
+              46.996719
+            ],
+            [
+              7.462988,
+              46.99673
+            ],
+            [
+              7.463023,
+              46.996742
+            ],
+            [
+              7.463059,
+              46.996753
+            ],
+            [
+              7.463094,
+              46.996765
+            ],
+            [
+              7.463131,
+              46.996776
+            ],
+            [
+              7.463167,
+              46.996788
+            ],
+            [
+              7.463204,
+              46.996799
+            ],
+            [
+              7.46324,
+              46.996811
+            ],
+            [
+              7.463277,
+              46.996822
+            ],
+            [
+              7.463313,
+              46.996834
+            ],
+            [
+              7.463486,
+              46.996889
+            ],
+            [
+              7.463656,
+              46.996947
+            ],
+            [
+              7.463319,
+              46.997686
+            ],
+            [
+              7.461957,
+              46.997803
+            ],
+            [
+              7.461843,
+              46.997813
             ]
           ]
         ]
@@ -381,72 +1701,939 @@
       "type": "Feature",
       "properties": {
         "bbl_stat": "Aktiv",
-        "bbl_id": "1080/5410/01",
-        "bbl_buch": "1080",
-        "bbl_we": "5410",
+        "bbl_id": "9900/9005/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9005",
         "bbl_obj": "01",
-        "bbl_bez": "Minami-Azabu Lot",
-        "bbl_port": "Diplomatische Vertretung",
+        "bbl_bez": "Parzelle AA8090 – Landesmuseum Zürich – Erweiterungsbau",
+        "bbl_port": "Kultur und Museen",
         "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 60000000.0,
-        "bbl_bwrt": 15000000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
-        "adr_land": "JP",
-        "adr_reg": "Tokyo",
-        "adr_ort": "Minato-ku",
-        "adr_plz": "106-8589",
-        "adr_str": "Minami-Azabu",
-        "adr_hsnr": "5-9-12",
-        "adr_conct": "Minami-Azabu 5-9-12 106-8589 Minato-ku",
-        "wgs84_lat": 35.652,
-        "wgs84_lon": 139.735,
-        "lv95_e": null,
-        "lv95_n": null,
+        "adr_land": "CH",
+        "adr_reg": "ZH",
+        "adr_ort": "Zürich",
+        "adr_plz": "8001",
+        "adr_str": "Museumstrasse",
+        "adr_hsnr": "6",
+        "adr_conct": "Museumstrasse 6, 8001 Zürich",
+        "wgs84_lon": 8.54052008,
+        "wgs84_lat": 47.37956593,
+        "lv95_e": 2683210.63,
+        "lv95_n": 1248220.75,
+        "bfs_gem": "Zürich",
+        "bfs_gemnr": "261",
         "egm_elev": null,
-        "av_stat": null,
-        "av_egrid": null,
-        "bfs_gem": null,
-        "bfs_gemnr": null,
-        "av_nr": null,
-        "larea_ggf": 1200.0,
-        "larea_gsf": 2100.0,
-        "larea_uf": 900.0,
-        "larea_buf": 600.0,
-        "larea_uuf": 300.0,
-        "larea_acu": "Geschätzt",
-        "larea_ver": 1500.0,
-        "larea_gre": 600.0,
+        "av_stat": "AV / GWR",
+        "av_egrid": "CH385599917023",
+        "av_nr": "AA8090",
+        "larea_ggf": 1850,
+        "larea_gsf": 18938.89,
+        "larea_uf": 17088.89,
+        "larea_buf": 14375.44,
+        "larea_uuf": 2713.45,
+        "larea_acu": "GSF aus AV; Bodenbedeckung Demo",
+        "larea_ver": 16225.44,
+        "larea_gre": 2713.45,
         "av_zbez": null,
         "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 6,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "public-source",
+          "geometryMethod": "swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised",
+          "notice": "AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.",
+          "sourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/identify?geometry=8.53997%2C47.379574&geometryType=esriGeometryPoint&geometryFormat=geojson&sr=4326&layers=all%3Ach.kantone.cadastralwebmap-farbe&tolerance=0&returnGeometry=true&lang=de",
+          "gwrSourceUrl": "https://api3.geo.admin.ch/rest/services/ech/MapServer/ch.bfs.gebaeude_wohnungs_register/302030043_0?sr=4326&geometryFormat=geojson",
+          "egrid": "CH385599917023",
+          "buildingId": "9900/9005/AA",
+          "retrievedAt": "2026-09-22",
+          "areaMethod": "WGS84 geodesic area of returned cadastral polygon; not a land-register area attribute"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              139.734,
-              35.6514
+              8.538467,
+              47.379289
             ],
             [
-              139.736,
-              35.6514
+              8.538715,
+              47.379175
             ],
             [
-              139.736,
-              35.6526
+              8.538726,
+              47.37917
             ],
             [
-              139.734,
-              35.6526
+              8.538737,
+              47.379165
             ],
             [
-              139.734,
-              35.6514
+              8.538749,
+              47.379159
+            ],
+            [
+              8.53876,
+              47.379154
+            ],
+            [
+              8.538772,
+              47.379149
+            ],
+            [
+              8.538783,
+              47.379144
+            ],
+            [
+              8.538795,
+              47.379139
+            ],
+            [
+              8.538806,
+              47.379134
+            ],
+            [
+              8.538818,
+              47.37913
+            ],
+            [
+              8.53883,
+              47.379125
+            ],
+            [
+              8.538841,
+              47.37912
+            ],
+            [
+              8.538853,
+              47.379115
+            ],
+            [
+              8.538865,
+              47.379111
+            ],
+            [
+              8.538877,
+              47.379106
+            ],
+            [
+              8.538889,
+              47.379102
+            ],
+            [
+              8.538901,
+              47.379097
+            ],
+            [
+              8.538913,
+              47.379093
+            ],
+            [
+              8.538925,
+              47.379088
+            ],
+            [
+              8.538937,
+              47.379084
+            ],
+            [
+              8.538949,
+              47.37908
+            ],
+            [
+              8.538961,
+              47.379075
+            ],
+            [
+              8.538973,
+              47.379071
+            ],
+            [
+              8.538985,
+              47.379067
+            ],
+            [
+              8.538998,
+              47.379063
+            ],
+            [
+              8.53901,
+              47.379059
+            ],
+            [
+              8.539022,
+              47.379055
+            ],
+            [
+              8.540205,
+              47.378734
+            ],
+            [
+              8.540217,
+              47.378731
+            ],
+            [
+              8.540228,
+              47.378728
+            ],
+            [
+              8.54024,
+              47.378725
+            ],
+            [
+              8.540251,
+              47.378722
+            ],
+            [
+              8.540263,
+              47.378719
+            ],
+            [
+              8.540275,
+              47.378716
+            ],
+            [
+              8.540287,
+              47.378714
+            ],
+            [
+              8.540298,
+              47.378711
+            ],
+            [
+              8.54031,
+              47.378709
+            ],
+            [
+              8.540322,
+              47.378706
+            ],
+            [
+              8.540334,
+              47.378704
+            ],
+            [
+              8.540346,
+              47.378701
+            ],
+            [
+              8.540358,
+              47.378699
+            ],
+            [
+              8.54037,
+              47.378696
+            ],
+            [
+              8.540382,
+              47.378694
+            ],
+            [
+              8.540394,
+              47.378692
+            ],
+            [
+              8.540406,
+              47.37869
+            ],
+            [
+              8.540418,
+              47.378688
+            ],
+            [
+              8.54043,
+              47.378686
+            ],
+            [
+              8.540442,
+              47.378684
+            ],
+            [
+              8.540454,
+              47.378682
+            ],
+            [
+              8.540466,
+              47.37868
+            ],
+            [
+              8.540478,
+              47.378679
+            ],
+            [
+              8.54049,
+              47.378677
+            ],
+            [
+              8.540503,
+              47.378676
+            ],
+            [
+              8.540515,
+              47.378674
+            ],
+            [
+              8.540527,
+              47.378673
+            ],
+            [
+              8.540539,
+              47.378671
+            ],
+            [
+              8.540552,
+              47.37867
+            ],
+            [
+              8.540564,
+              47.378669
+            ],
+            [
+              8.540576,
+              47.378667
+            ],
+            [
+              8.540588,
+              47.378666
+            ],
+            [
+              8.540601,
+              47.378665
+            ],
+            [
+              8.540613,
+              47.378664
+            ],
+            [
+              8.540625,
+              47.378663
+            ],
+            [
+              8.540638,
+              47.378662
+            ],
+            [
+              8.54065,
+              47.378662
+            ],
+            [
+              8.540663,
+              47.378661
+            ],
+            [
+              8.540675,
+              47.37866
+            ],
+            [
+              8.540687,
+              47.37866
+            ],
+            [
+              8.5407,
+              47.378659
+            ],
+            [
+              8.540712,
+              47.378659
+            ],
+            [
+              8.540724,
+              47.378658
+            ],
+            [
+              8.540737,
+              47.378658
+            ],
+            [
+              8.540749,
+              47.378658
+            ],
+            [
+              8.540762,
+              47.378657
+            ],
+            [
+              8.540774,
+              47.378657
+            ],
+            [
+              8.540787,
+              47.378657
+            ],
+            [
+              8.540799,
+              47.378657
+            ],
+            [
+              8.540811,
+              47.378657
+            ],
+            [
+              8.540982,
+              47.378658
+            ],
+            [
+              8.540988,
+              47.378659
+            ],
+            [
+              8.540994,
+              47.378659
+            ],
+            [
+              8.541,
+              47.378659
+            ],
+            [
+              8.541005,
+              47.378659
+            ],
+            [
+              8.541011,
+              47.378659
+            ],
+            [
+              8.541017,
+              47.37866
+            ],
+            [
+              8.541023,
+              47.37866
+            ],
+            [
+              8.541028,
+              47.378661
+            ],
+            [
+              8.541034,
+              47.378661
+            ],
+            [
+              8.54104,
+              47.378662
+            ],
+            [
+              8.541046,
+              47.378662
+            ],
+            [
+              8.541051,
+              47.378663
+            ],
+            [
+              8.541057,
+              47.378664
+            ],
+            [
+              8.541063,
+              47.378665
+            ],
+            [
+              8.541068,
+              47.378666
+            ],
+            [
+              8.541074,
+              47.378666
+            ],
+            [
+              8.54108,
+              47.378667
+            ],
+            [
+              8.541085,
+              47.378669
+            ],
+            [
+              8.541091,
+              47.37867
+            ],
+            [
+              8.541096,
+              47.378671
+            ],
+            [
+              8.541102,
+              47.378672
+            ],
+            [
+              8.541107,
+              47.378673
+            ],
+            [
+              8.541113,
+              47.378675
+            ],
+            [
+              8.541118,
+              47.378676
+            ],
+            [
+              8.541123,
+              47.378678
+            ],
+            [
+              8.541129,
+              47.378679
+            ],
+            [
+              8.541188,
+              47.378696
+            ],
+            [
+              8.541254,
+              47.37876
+            ],
+            [
+              8.541252,
+              47.378769
+            ],
+            [
+              8.541278,
+              47.378788
+            ],
+            [
+              8.541281,
+              47.37881
+            ],
+            [
+              8.541184,
+              47.379042
+            ],
+            [
+              8.541179,
+              47.379054
+            ],
+            [
+              8.541173,
+              47.379067
+            ],
+            [
+              8.541168,
+              47.379079
+            ],
+            [
+              8.541162,
+              47.379092
+            ],
+            [
+              8.541157,
+              47.379104
+            ],
+            [
+              8.541151,
+              47.379116
+            ],
+            [
+              8.541145,
+              47.379129
+            ],
+            [
+              8.541139,
+              47.379141
+            ],
+            [
+              8.541133,
+              47.379153
+            ],
+            [
+              8.541127,
+              47.379165
+            ],
+            [
+              8.541121,
+              47.379178
+            ],
+            [
+              8.541115,
+              47.37919
+            ],
+            [
+              8.541108,
+              47.379202
+            ],
+            [
+              8.541102,
+              47.379215
+            ],
+            [
+              8.541095,
+              47.379227
+            ],
+            [
+              8.541088,
+              47.37924
+            ],
+            [
+              8.541081,
+              47.379252
+            ],
+            [
+              8.541074,
+              47.379264
+            ],
+            [
+              8.541067,
+              47.379277
+            ],
+            [
+              8.54106,
+              47.379289
+            ],
+            [
+              8.541053,
+              47.379301
+            ],
+            [
+              8.541046,
+              47.379314
+            ],
+            [
+              8.541038,
+              47.379326
+            ],
+            [
+              8.541125,
+              47.379425
+            ],
+            [
+              8.541018,
+              47.379681
+            ],
+            [
+              8.540977,
+              47.379736
+            ],
+            [
+              8.540884,
+              47.379782
+            ],
+            [
+              8.540825,
+              47.379794
+            ],
+            [
+              8.540794,
+              47.379792
+            ],
+            [
+              8.54033,
+              47.379649
+            ],
+            [
+              8.539775,
+              47.379799
+            ],
+            [
+              8.539658,
+              47.379847
+            ],
+            [
+              8.539654,
+              47.379848
+            ],
+            [
+              8.539651,
+              47.37985
+            ],
+            [
+              8.539647,
+              47.379851
+            ],
+            [
+              8.539644,
+              47.379852
+            ],
+            [
+              8.53964,
+              47.379853
+            ],
+            [
+              8.539636,
+              47.379854
+            ],
+            [
+              8.539633,
+              47.379855
+            ],
+            [
+              8.539629,
+              47.379856
+            ],
+            [
+              8.539625,
+              47.379857
+            ],
+            [
+              8.539621,
+              47.379857
+            ],
+            [
+              8.539618,
+              47.379858
+            ],
+            [
+              8.539614,
+              47.379859
+            ],
+            [
+              8.53961,
+              47.379859
+            ],
+            [
+              8.539606,
+              47.37986
+            ],
+            [
+              8.539602,
+              47.37986
+            ],
+            [
+              8.539598,
+              47.379861
+            ],
+            [
+              8.539594,
+              47.379861
+            ],
+            [
+              8.539591,
+              47.379861
+            ],
+            [
+              8.539587,
+              47.379861
+            ],
+            [
+              8.539583,
+              47.379861
+            ],
+            [
+              8.539579,
+              47.379861
+            ],
+            [
+              8.539575,
+              47.379861
+            ],
+            [
+              8.539571,
+              47.379861
+            ],
+            [
+              8.539567,
+              47.379861
+            ],
+            [
+              8.539563,
+              47.379861
+            ],
+            [
+              8.539559,
+              47.379861
+            ],
+            [
+              8.539555,
+              47.37986
+            ],
+            [
+              8.539551,
+              47.37986
+            ],
+            [
+              8.539547,
+              47.37986
+            ],
+            [
+              8.539544,
+              47.379859
+            ],
+            [
+              8.53954,
+              47.379858
+            ],
+            [
+              8.539536,
+              47.379858
+            ],
+            [
+              8.539532,
+              47.379857
+            ],
+            [
+              8.539529,
+              47.379856
+            ],
+            [
+              8.539525,
+              47.379856
+            ],
+            [
+              8.539521,
+              47.379855
+            ],
+            [
+              8.539518,
+              47.379854
+            ],
+            [
+              8.539514,
+              47.379853
+            ],
+            [
+              8.539511,
+              47.379852
+            ],
+            [
+              8.539507,
+              47.379851
+            ],
+            [
+              8.539504,
+              47.379849
+            ],
+            [
+              8.5395,
+              47.379848
+            ],
+            [
+              8.539497,
+              47.379847
+            ],
+            [
+              8.539494,
+              47.379846
+            ],
+            [
+              8.539491,
+              47.379844
+            ],
+            [
+              8.539487,
+              47.379843
+            ],
+            [
+              8.539484,
+              47.379841
+            ],
+            [
+              8.539481,
+              47.37984
+            ],
+            [
+              8.539478,
+              47.379838
+            ],
+            [
+              8.539475,
+              47.379836
+            ],
+            [
+              8.539472,
+              47.379835
+            ],
+            [
+              8.539469,
+              47.379833
+            ],
+            [
+              8.539467,
+              47.379831
+            ],
+            [
+              8.539464,
+              47.379829
+            ],
+            [
+              8.539461,
+              47.379827
+            ],
+            [
+              8.539459,
+              47.379825
+            ],
+            [
+              8.539456,
+              47.379824
+            ],
+            [
+              8.539454,
+              47.379821
+            ],
+            [
+              8.539451,
+              47.379819
+            ],
+            [
+              8.539449,
+              47.379817
+            ],
+            [
+              8.539447,
+              47.379815
+            ],
+            [
+              8.539444,
+              47.379813
+            ],
+            [
+              8.539442,
+              47.379811
+            ],
+            [
+              8.53944,
+              47.379809
+            ],
+            [
+              8.539439,
+              47.379806
+            ],
+            [
+              8.539437,
+              47.379804
+            ],
+            [
+              8.539435,
+              47.379802
+            ],
+            [
+              8.539433,
+              47.379799
+            ],
+            [
+              8.539432,
+              47.379797
+            ],
+            [
+              8.53943,
+              47.379795
+            ],
+            [
+              8.539343,
+              47.379646
+            ],
+            [
+              8.538804,
+              47.379792
+            ],
+            [
+              8.538732,
+              47.379638
+            ],
+            [
+              8.53868,
+              47.379655
+            ],
+            [
+              8.538467,
+              47.379289
             ]
           ]
         ]
@@ -456,147 +2643,159 @@
       "type": "Feature",
       "properties": {
         "bbl_stat": "Aktiv",
-        "bbl_id": "1080/2800/01",
-        "bbl_buch": "1080",
-        "bbl_we": "2800",
+        "bbl_id": "9900/9006/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9006",
         "bbl_obj": "01",
-        "bbl_bez": "Aeschenvorstadt 36 Parzelle",
-        "bbl_port": "Wohnliegenschaft",
-        "bbl_mietm": "Marktmiete",
-        "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 3200000.0,
-        "bbl_bwrt": 800000.0,
-        "bbl_hgart": true,
-        "adr_land": "CH",
-        "adr_reg": "BS",
-        "adr_ort": "Basel",
-        "adr_plz": "4051",
-        "adr_str": "Aeschenvorstadt",
-        "adr_hsnr": "36",
-        "adr_conct": "Aeschenvorstadt 36 4051 Basel",
-        "wgs84_lat": 47.5596,
-        "wgs84_lon": 7.5886,
-        "lv95_e": 2611287.9,
-        "lv95_n": 1267665.0,
-        "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH789012345678",
-        "bfs_gem": "Basel",
-        "bfs_gemnr": "2701",
-        "av_nr": "456",
-        "larea_ggf": 380.0,
-        "larea_gsf": 520.0,
-        "larea_uf": 140.0,
-        "larea_buf": 100.0,
-        "larea_uuf": 40.0,
-        "larea_acu": "AV",
-        "larea_ver": 420.0,
-        "larea_gre": 100.0,
-        "av_zbez": "Wohnzone W3",
-        "av_znut": "Wohnzone",
-        "fid": null,
-        "fid_src": null,
-        "objectid": 7,
-        "etl_ts": "2026-03-18T06:00:00Z"
-      },
-      "geometry": {
-        "type": "Polygon",
-        "coordinates": [
-          [
-            [
-              7.5878,
-              47.559
-            ],
-            [
-              7.5894,
-              47.559
-            ],
-            [
-              7.5894,
-              47.5602
-            ],
-            [
-              7.5878,
-              47.5602
-            ],
-            [
-              7.5878,
-              47.559
-            ]
-          ]
-        ]
-      }
-    },
-    {
-      "type": "Feature",
-      "properties": {
-        "bbl_stat": "Aktiv",
-        "bbl_id": "1080/5510/01",
-        "bbl_buch": "1080",
-        "bbl_we": "5510",
-        "bbl_obj": "01",
-        "bbl_bez": "Setor de Embaixadas Sul Lote 44",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Canberra",
         "bbl_port": "Diplomatische Vertretung",
         "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 8000000.0,
-        "bbl_bwrt": 2000000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
-        "adr_land": "BR",
-        "adr_reg": "DF",
-        "adr_ort": "Brasília",
-        "adr_plz": "70443-900",
-        "adr_str": "SES Av. das Nações",
-        "adr_hsnr": "Lote 44",
-        "adr_conct": "SES Av. das Nações Lote 44 70443-900 Brasília",
-        "wgs84_lat": -15.7942,
-        "wgs84_lon": -47.8825,
+        "adr_land": "AU",
+        "adr_reg": "Australian Capital Territory",
+        "adr_ort": "Canberra",
+        "adr_plz": "2603",
+        "adr_str": "Melbourne Avenue",
+        "adr_hsnr": "7",
+        "adr_conct": "7 Melbourne Avenue, Canberra 2603",
+        "wgs84_lon": 149.1210857,
+        "wgs84_lat": -35.3134473,
         "lv95_e": null,
         "lv95_n": null,
-        "egm_elev": null,
-        "av_stat": null,
-        "av_egrid": null,
         "bfs_gem": null,
         "bfs_gemnr": null,
-        "av_nr": null,
-        "larea_ggf": null,
-        "larea_gsf": null,
-        "larea_uf": null,
-        "larea_buf": null,
-        "larea_uuf": null,
-        "larea_acu": null,
-        "larea_ver": null,
-        "larea_gre": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9006",
+        "larea_ggf": 725,
+        "larea_gsf": 6100,
+        "larea_uf": 5375,
+        "larea_buf": 1377.97,
+        "larea_uuf": 3997.03,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 2102.97,
+        "larea_gre": 3997.03,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 7,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9006/AA"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.120656274,
+              -35.313799282
+            ],
+            [
+              149.121515126,
+              -35.313799282
+            ],
+            [
+              149.121515122,
+              -35.313095316
+            ],
+            [
+              149.120656278,
+              -35.313095316
+            ],
+            [
+              149.120656274,
+              -35.313799282
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9007/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9007",
+        "bbl_obj": "01",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Brasília",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "BR",
+        "adr_reg": "Distrito Federal",
+        "adr_ort": "Brasília",
+        "adr_plz": "70448-900",
+        "adr_str": "SES Avenida das Nações, Quadra 811",
+        "adr_hsnr": "Lote 41",
+        "adr_conct": "SES Avenida das Nações, Quadra 811 Lote 41, 70448-900 Brasília",
+        "wgs84_lon": -47.8972753,
+        "wgs84_lat": -15.8316069,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9007",
+        "larea_ggf": 950,
+        "larea_gsf": 28500,
+        "larea_uf": 27550,
+        "larea_buf": 4253.36,
+        "larea_uuf": 23296.64,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 5203.36,
+        "larea_gre": 23296.64,
         "av_zbez": null,
         "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 8,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9007/AA"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              -47.8835,
-              -15.795
+              -47.898063269,
+              -15.832369704
             ],
             [
-              -47.8815,
-              -15.795
+              -47.896487331,
+              -15.832369704
             ],
             [
-              -47.8815,
-              -15.7934
+              -47.896487337,
+              -15.830844093
             ],
             [
-              -47.8835,
-              -15.7934
+              -47.898063263,
+              -15.830844093
             ],
             [
-              -47.8835,
-              -15.795
+              -47.898063269,
+              -15.832369704
             ]
           ]
         ]
@@ -606,72 +2805,78 @@
       "type": "Feature",
       "properties": {
         "bbl_stat": "Aktiv",
-        "bbl_id": "1080/1950/01",
-        "bbl_buch": "1080",
-        "bbl_we": "1950",
+        "bbl_id": "9900/9008/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9008",
         "bbl_obj": "01",
-        "bbl_bez": "Via Industria Parzelle",
-        "bbl_port": "Infrastruktur IT",
-        "bbl_mietm": "Kostenmiete",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Seoul",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
         "bbl_eigen": "Eigentum Bund",
-        "bbl_awrt": 12000000.0,
-        "bbl_bwrt": 3000000.0,
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
-        "adr_land": "CH",
-        "adr_reg": "TI",
-        "adr_ort": "Lugano",
-        "adr_plz": "6900",
-        "adr_str": "Via Industria",
-        "adr_hsnr": "12",
-        "adr_conct": "Via Industria 12 6900 Lugano",
-        "wgs84_lat": 46.0037,
-        "wgs84_lon": 8.9512,
-        "lv95_e": 2717168.7,
-        "lv95_n": 1095811.6,
+        "adr_land": "KR",
+        "adr_reg": "Seoul",
+        "adr_ort": "Seoul",
+        "adr_plz": "03165",
+        "adr_str": "Songwol-gil, Jongno-gu",
+        "adr_hsnr": "77",
+        "adr_conct": "77 Songwol-gil, Jongno-gu, Seoul 03165",
+        "wgs84_lon": 126.9649301,
+        "wgs84_lat": 37.5702322,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
         "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH345678901234",
-        "bfs_gem": "Lugano",
-        "bfs_gemnr": "5192",
-        "av_nr": "789",
-        "larea_ggf": 1500.0,
-        "larea_gsf": 3200.0,
-        "larea_uf": 1700.0,
-        "larea_buf": 1200.0,
-        "larea_uuf": 500.0,
-        "larea_acu": "AV",
-        "larea_ver": 2200.0,
-        "larea_gre": 1000.0,
-        "av_zbez": "Arbeitszone",
-        "av_znut": "Arbeitszone",
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9008",
+        "larea_ggf": 1180,
+        "larea_gsf": 4600,
+        "larea_uf": 3420,
+        "larea_buf": 1149.81,
+        "larea_uuf": 2270.19,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 2329.81,
+        "larea_gre": 2270.19,
+        "av_zbez": null,
+        "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 9,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9008/AA"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              8.9502,
-              46.0031
+              126.964546236,
+              37.569926657
             ],
             [
-              8.9522,
-              46.0031
+              126.965313964,
+              37.569926657
             ],
             [
-              8.9522,
-              46.0043
+              126.965313967,
+              37.570537742
             ],
             [
-              8.9502,
-              46.0043
+              126.964546233,
+              37.570537742
             ],
             [
-              8.9502,
-              46.0031
+              126.964546236,
+              37.569926657
             ]
           ]
         ]
@@ -680,73 +2885,403 @@
     {
       "type": "Feature",
       "properties": {
-        "bbl_stat": "Verkauft",
-        "bbl_id": "1080/4850/01",
-        "bbl_buch": "1080",
-        "bbl_we": "4850",
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9009/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9009",
         "bbl_obj": "01",
-        "bbl_bez": "Bollwerk 15 Parzelle",
-        "bbl_port": "Verwaltungsgebäude",
-        "bbl_mietm": null,
-        "bbl_eigen": "Verkauft",
-        "bbl_awrt": 4500000.0,
-        "bbl_bwrt": 0.0,
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Nairobi",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
         "bbl_hgart": false,
-        "adr_land": "CH",
-        "adr_reg": "BE",
-        "adr_ort": "Bern",
-        "adr_plz": "3014",
-        "adr_str": "Bollwerk",
-        "adr_hsnr": "15",
-        "adr_conct": "Bollwerk 15 3014 Bern",
-        "wgs84_lat": 46.951,
-        "wgs84_lon": 7.4388,
-        "lv95_e": 2600012.7,
-        "lv95_n": 1199990.8,
+        "adr_land": "KE",
+        "adr_reg": "Nairobi County",
+        "adr_ort": "Nairobi",
+        "adr_plz": null,
+        "adr_str": "Rosslyn Green Drive, off Red Hill Road",
+        "adr_hsnr": null,
+        "adr_conct": "Rosslyn Green Drive, off Red Hill Road, Nairobi",
+        "wgs84_lon": 36.80086,
+        "wgs84_lat": -1.2286794,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
         "egm_elev": null,
-        "av_stat": "Gültig",
-        "av_egrid": "CH111222333444",
-        "bfs_gem": "Bern",
-        "bfs_gemnr": "351",
-        "av_nr": "1102",
-        "larea_ggf": 750.0,
-        "larea_gsf": 1100.0,
-        "larea_uf": 350.0,
-        "larea_buf": 250.0,
-        "larea_uuf": 100.0,
-        "larea_acu": "AV",
-        "larea_ver": 900.0,
-        "larea_gre": 200.0,
-        "av_zbez": "Mischzone",
-        "av_znut": "Mischzone Wohnen/Arbeiten",
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9009",
+        "larea_ggf": 756,
+        "larea_gsf": 10000,
+        "larea_uf": 9244,
+        "larea_buf": 1993.55,
+        "larea_uuf": 7250.45,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 2749.55,
+        "larea_gre": 7250.45,
+        "av_zbez": null,
+        "av_znut": null,
         "fid": null,
         "fid_src": null,
         "objectid": 10,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9009/AA"
+        }
       },
       "geometry": {
         "type": "Polygon",
         "coordinates": [
           [
             [
-              7.438,
-              46.9504
+              36.80041074,
+              -1.229131583
             ],
             [
-              7.4396,
-              46.9504
+              36.80130926,
+              -1.229131583
             ],
             [
-              7.4396,
-              46.9516
+              36.80130926,
+              -1.228227217
             ],
             [
-              7.438,
-              46.9516
+              36.80041074,
+              -1.228227217
             ],
             [
-              7.438,
-              46.9504
+              36.80041074,
+              -1.229131583
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9010/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9010",
+        "bbl_obj": "01",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Washington – Kanzlei",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "US",
+        "adr_reg": "District of Columbia",
+        "adr_ort": "Washington, D.C.",
+        "adr_plz": "20008",
+        "adr_str": "Cathedral Avenue NW",
+        "adr_hsnr": "2900",
+        "adr_conct": "2900 Cathedral Avenue NW, Washington, D.C. 20008",
+        "wgs84_lon": -77.0579432,
+        "wgs84_lat": 38.9286131,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9010",
+        "larea_ggf": 976,
+        "larea_gsf": 6300,
+        "larea_uf": 5324,
+        "larea_buf": 1503.68,
+        "larea_uuf": 3820.32,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 2479.68,
+        "larea_gre": 3820.32,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 11,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9010/AA"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.058400869,
+              38.928255611
+            ],
+            [
+              -77.057485531,
+              38.928255611
+            ],
+            [
+              -77.057485526,
+              38.928970588
+            ],
+            [
+              -77.058400874,
+              38.928970588
+            ],
+            [
+              -77.058400869,
+              38.928255611
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9011/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9011",
+        "bbl_obj": "01",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Singapur",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "SG",
+        "adr_reg": "Singapore",
+        "adr_ort": "Singapore",
+        "adr_plz": "288162",
+        "adr_str": "Swiss Club Link",
+        "adr_hsnr": "1",
+        "adr_conct": "1 Swiss Club Link, Singapore 288162",
+        "wgs84_lon": 103.7896081,
+        "wgs84_lat": 1.3425516,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9011",
+        "larea_ggf": 672,
+        "larea_gsf": 8000,
+        "larea_uf": 7328,
+        "larea_buf": 1646.62,
+        "larea_uuf": 5681.38,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 2318.62,
+        "larea_gre": 5681.38,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 12,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9011/AA"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789206252,
+              1.342147156
+            ],
+            [
+              103.790009948,
+              1.342147156
+            ],
+            [
+              103.790009948,
+              1.342956044
+            ],
+            [
+              103.789206252,
+              1.342956044
+            ],
+            [
+              103.789206252,
+              1.342147156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9012/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9012",
+        "bbl_obj": "01",
+        "bbl_bez": "Demo-Perimeter – Schweizer Botschaft Abidjan",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Vollkostenmiete",
+        "bbl_eigen": "Eigentum Bund",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "CI",
+        "adr_reg": "District autonome d’Abidjan",
+        "adr_ort": "Abidjan",
+        "adr_plz": null,
+        "adr_str": "Rue du Bélier, Cocody Ambassades",
+        "adr_hsnr": null,
+        "adr_conct": "Rue du Bélier, Cocody Ambassades, Abidjan",
+        "wgs84_lon": -3.9933619,
+        "wgs84_lat": 5.3292355,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9012",
+        "larea_ggf": 899,
+        "larea_gsf": 3200,
+        "larea_uf": 2301,
+        "larea_buf": 797.11,
+        "larea_uuf": 1503.89,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 1696.11,
+        "larea_gre": 1503.89,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 13,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9012/AA"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993617078,
+              5.328979728
+            ],
+            [
+              -3.993106722,
+              5.328979728
+            ],
+            [
+              -3.993106722,
+              5.329491272
+            ],
+            [
+              -3.993617078,
+              5.329491272
+            ],
+            [
+              -3.993617078,
+              5.328979728
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_stat": "Aktiv",
+        "bbl_id": "9900/9013/01",
+        "bbl_buch": "9900",
+        "bbl_we": "9013",
+        "bbl_obj": "01",
+        "bbl_bez": "Demo-Perimeter – Generalkonsulat und Swissnex San Francisco",
+        "bbl_port": "Diplomatische Vertretung",
+        "bbl_mietm": "Marktmiete",
+        "bbl_eigen": "Miete",
+        "bbl_awrt": null,
+        "bbl_bwrt": null,
+        "bbl_hgart": false,
+        "adr_land": "US",
+        "adr_reg": "California",
+        "adr_ort": "San Francisco",
+        "adr_plz": "94111",
+        "adr_str": "The Embarcadero",
+        "adr_hsnr": "Pier 17, Suite 600",
+        "adr_conct": "Pier 17, Suite 600 The Embarcadero, San Francisco 94111",
+        "wgs84_lon": -122.3981182,
+        "wgs84_lat": 37.8021916,
+        "lv95_e": null,
+        "lv95_n": null,
+        "bfs_gem": null,
+        "bfs_gemnr": null,
+        "egm_elev": null,
+        "av_stat": "Demo",
+        "av_egrid": null,
+        "av_nr": "DEMO-9013",
+        "larea_ggf": 875,
+        "larea_gsf": 1800,
+        "larea_uf": 925,
+        "larea_buf": 379.99,
+        "larea_uuf": 545.01,
+        "larea_acu": "Demo-Perimeter, nicht AV",
+        "larea_ver": 1254.99,
+        "larea_gre": 545.01,
+        "av_zbez": null,
+        "av_znut": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 14,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "geometryMethod": "metric rectangles in local azimuthal equidistant CRS",
+          "notice": "Schematischer Demo-Perimeter; keine amtliche Parzelle, keine Eigentumsgrenze.",
+          "buildingId": "9900/9013/AA"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.398359073,
+              37.802000477
+            ],
+            [
+              -122.397877327,
+              37.802000477
+            ],
+            [
+              -122.397877326,
+              37.802382722
+            ],
+            [
+              -122.398359074,
+              37.802382722
+            ],
+            [
+              -122.398359073,
+              37.802000477
             ]
           ]
         ]

@@ -1,29 +1,72 @@
 {
   "type": "FeatureCollection",
   "name": "BBL_GIS_IMMO_LandCover",
+  "dataVersion": "2026-09-22",
+  "description": "Publicly sourced identities and locations; clearly marked synthetic demonstration records. Not an official BBL inventory.",
   "features": [
     {
       "type": "Feature",
       "properties": {
         "bbl_id": "1080/4840/01",
         "geb_id": "1080/4840/AF",
-        "av_stat": "Gültig",
-        "av_egid": "301001234",
-        "av_egrid": "CH938391457759",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
         "av_type": "Gebaeude",
-        "lc_area": 1920.0,
-        "wgs84_lat": 46.9465,
-        "wgs84_lon": 7.4441,
-        "lv95_e": 2600416.2,
-        "lv95_n": 1199490.6,
+        "lc_area": 2643.0,
+        "wgs84_lat": 46.94627776,
+        "wgs84_lon": 7.44294957,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 1,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/4840/AF",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.44380, 46.94630], [7.44440, 46.94630], [7.44440, 46.94670], [7.44380, 46.94670], [7.44380, 46.94630]]]
+        "coordinates": [
+          [
+            [
+              7.44271,
+              46.94605100000001
+            ],
+            [
+              7.442711619433372,
+              46.94604651541802
+            ],
+            [
+              7.443287236245388,
+              46.94604651516736
+            ],
+            [
+              7.443287239153646,
+              46.946509003827444
+            ],
+            [
+              7.442611900846354,
+              46.946509003827444
+            ],
+            [
+              7.442611903754613,
+              46.94604651516736
+            ],
+            [
+              7.442686408170334,
+              46.94604651536283
+            ],
+            [
+              7.44271,
+              46.94605100000001
+            ]
+          ]
+        ]
       }
     },
     {
@@ -31,23 +74,118 @@
       "properties": {
         "bbl_id": "1080/4840/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH938391457759",
+        "av_egrid": null,
         "av_type": "befestigt",
-        "lc_area": 640.0,
-        "wgs84_lat": 46.9462,
-        "wgs84_lon": 7.4439,
-        "lv95_e": 2600402.0,
-        "lv95_n": 1199457.2,
+        "lc_area": 2013.36,
+        "wgs84_lat": 46.94627776,
+        "wgs84_lon": 7.44294957,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 2,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/4840/AF",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
-        "type": "Polygon",
-        "coordinates": [[[7.44350, 46.94600], [7.44430, 46.94600], [7.44430, 46.94625], [7.44350, 46.94625], [7.44350, 46.94600]]]
+        "type": "MultiPolygon",
+        "coordinates": [
+          [
+            [
+              [
+                7.441953000000008,
+                46.945986
+              ],
+              [
+                7.44208399999999,
+                46.94593199999999
+              ],
+              [
+                7.44271,
+                46.94605100000001
+              ],
+              [
+                7.442686408170334,
+                46.94604651536283
+              ],
+              [
+                7.442611903754613,
+                46.94604651516736
+              ],
+              [
+                7.442611902300495,
+                46.94627775950209
+              ],
+              [
+                7.441869724216431,
+                46.946277754907875
+              ],
+              [
+                7.441923,
+                46.94613199999999
+              ],
+              [
+                7.441918999999999,
+                46.94613100000001
+              ],
+              [
+                7.44195300000001,
+                46.946034
+              ],
+              [
+                7.441947999999988,
+                46.94603299999999
+              ],
+              [
+                7.4419640000000085,
+                46.945989
+              ],
+              [
+                7.441953000000008,
+                46.945986
+              ]
+            ]
+          ],
+          [
+            [
+              [
+                7.442748999999996,
+                46.945949
+              ],
+              [
+                7.442949570000001,
+                46.94586568639822
+              ],
+              [
+                7.442949570000001,
+                46.94604651566526
+              ],
+              [
+                7.442711619433372,
+                46.94604651541802
+              ],
+              [
+                7.44271,
+                46.94605100000001
+              ],
+              [
+                7.442723000000002,
+                46.94601500000001
+              ],
+              [
+                7.442748999999996,
+                46.945949
+              ]
+            ]
+          ]
+        ]
       }
     },
     {
@@ -55,239 +193,5815 @@
       "properties": {
         "bbl_id": "1080/4840/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH938391457759",
-        "av_type": "humusiert",
-        "lc_area": 3540.0,
-        "wgs84_lat": 46.9488,
-        "wgs84_lon": 7.4415,
-        "lv95_e": 2600226.0,
-        "lv95_n": 1199746.0,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 1169.57,
+        "wgs84_lat": 46.94627776,
+        "wgs84_lon": 7.44294957,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 3,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/4840/AF",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.44100, 46.94850], [7.44200, 46.94850], [7.44210, 46.94910], [7.44090, 46.94910], [7.44100, 46.94850]]]
+        "coordinates": [
+          [
+            [
+              7.443771,
+              46.946222
+            ],
+            [
+              7.44375866436264,
+              46.94627775714126
+            ],
+            [
+              7.443287237699506,
+              46.94627775950209
+            ],
+            [
+              7.443287236245388,
+              46.94604651516736
+            ],
+            [
+              7.442949570000001,
+              46.94604651566526
+            ],
+            [
+              7.442949570000001,
+              46.94586568639822
+            ],
+            [
+              7.443009000000001,
+              46.945841
+            ],
+            [
+              7.443306000000006,
+              46.945892
+            ],
+            [
+              7.443464999999995,
+              46.946070000000006
+            ],
+            [
+              7.443428000000001,
+              46.946171
+            ],
+            [
+              7.443610000000008,
+              46.946198
+            ],
+            [
+              7.443771,
+              46.946222
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/4850/01",
-        "geb_id": "1080/4850/AG",
-        "av_stat": "Gültig",
-        "av_egid": "301098765",
-        "av_egrid": "CH111222333444",
-        "av_type": "Gebaeude",
-        "lc_area": 2400.0,
-        "wgs84_lat": 46.951,
-        "wgs84_lon": 7.4388,
-        "lv95_e": 2600020.0,
-        "lv95_n": 1199990.0,
+        "bbl_id": "1080/4840/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1974.18,
+        "wgs84_lat": 46.94627776,
+        "wgs84_lon": 7.44294957,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 4,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/4840/AF",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.43840, 46.95075], [7.43920, 46.95075], [7.43920, 46.95125], [7.43840, 46.95125], [7.43840, 46.95075]]]
+        "coordinates": [
+          [
+            [
+              7.441817000000003,
+              46.946422000000005
+            ],
+            [
+              7.441869724216431,
+              46.946277754907875
+            ],
+            [
+              7.442611902300495,
+              46.94627775950209
+            ],
+            [
+              7.442611900846354,
+              46.946509003827444
+            ],
+            [
+              7.442949570000001,
+              46.94650900432534
+            ],
+            [
+              7.442949570000001,
+              46.94665206086718
+            ],
+            [
+              7.4423539999999875,
+              46.94655099999999
+            ],
+            [
+              7.442182000000003,
+              46.946521
+            ],
+            [
+              7.4421810000000015,
+              46.946521999999995
+            ],
+            [
+              7.442158999999989,
+              46.946518
+            ],
+            [
+              7.441802000000001,
+              46.946456
+            ],
+            [
+              7.441814999999999,
+              46.94642100000001
+            ],
+            [
+              7.441817000000003,
+              46.946422000000005
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/4850/01",
+        "bbl_id": "1080/4840/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH111222333444",
-        "av_type": "befestigt",
-        "lc_area": 720.0,
-        "wgs84_lat": 46.9508,
-        "wgs84_lon": 7.4393,
-        "lv95_e": 2600058.0,
-        "lv95_n": 1199968.0,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 2092.91,
+        "wgs84_lat": 46.94627776,
+        "wgs84_lon": 7.44294957,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 5,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/4840/AF",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.43890, 46.95040], [7.43970, 46.95040], [7.43970, 46.95070], [7.43890, 46.95070], [7.43890, 46.95040]]]
+        "coordinates": [
+          [
+            [
+              7.44340299999999,
+              46.94672899999999
+            ],
+            [
+              7.442949570000001,
+              46.94665206086718
+            ],
+            [
+              7.442949570000001,
+              46.94650900432534
+            ],
+            [
+              7.443287239153646,
+              46.946509003827444
+            ],
+            [
+              7.443287237699506,
+              46.94627775950209
+            ],
+            [
+              7.44375866436264,
+              46.94627775714126
+            ],
+            [
+              7.443746000000002,
+              46.946335
+            ],
+            [
+              7.443753999999999,
+              46.94633600000001
+            ],
+            [
+              7.443717000000006,
+              46.946438000000015
+            ],
+            [
+              7.4437380000000015,
+              46.94644199999999
+            ],
+            [
+              7.443731999999997,
+              46.946457
+            ],
+            [
+              7.44373100000001,
+              46.94645700000001
+            ],
+            [
+              7.443721000000011,
+              46.946487000000005
+            ],
+            [
+              7.443721000000001,
+              46.94648800000001
+            ],
+            [
+              7.44371699999999,
+              46.946501
+            ],
+            [
+              7.443715999999991,
+              46.946501
+            ],
+            [
+              7.4436779999999985,
+              46.946605
+            ],
+            [
+              7.443678999999996,
+              46.94660499999999
+            ],
+            [
+              7.443673999999995,
+              46.94661899999999
+            ],
+            [
+              7.443672999999988,
+              46.946618
+            ],
+            [
+              7.443661999999986,
+              46.946649
+            ],
+            [
+              7.44366299999999,
+              46.946649
+            ],
+            [
+              7.443657999999994,
+              46.94666399999999
+            ],
+            [
+              7.443634000000002,
+              46.946661000000006
+            ],
+            [
+              7.44360300000001,
+              46.946746000000005
+            ],
+            [
+              7.443604000000006,
+              46.946746000000005
+            ],
+            [
+              7.4435980000000015,
+              46.94676199999999
+            ],
+            [
+              7.443574999999995,
+              46.946758
+            ],
+            [
+              7.443574999999999,
+              46.946757
+            ],
+            [
+              7.4434030000000035,
+              46.94672800000001
+            ],
+            [
+              7.44340299999999,
+              46.94672899999999
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/3120/01",
-        "geb_id": "1080/3120/AB",
-        "av_stat": "Gültig",
-        "av_egid": "100345678",
-        "av_egrid": "CH672819345012",
+        "bbl_id": "1080/5210/01",
+        "geb_id": "1080/5210/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
         "av_type": "Gebaeude",
-        "lc_area": 2500.0,
-        "wgs84_lat": 47.3769,
-        "wgs84_lon": 8.532,
-        "lv95_e": 2683127.0,
-        "lv95_n": 1247314.0,
+        "lc_area": 1140,
+        "wgs84_lat": 52.5211082,
+        "wgs84_lon": 13.3712807,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 6,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/5210/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[8.53150, 47.37665], [8.53250, 47.37665], [8.53250, 47.37715], [8.53150, 47.37715], [8.53150, 47.37665]]]
+        "coordinates": [
+          [
+            [
+              13.37103199,
+              52.520956489
+            ],
+            [
+              13.37152941,
+              52.520956489
+            ],
+            [
+              13.371529412,
+              52.52125991
+            ],
+            [
+              13.371031988,
+              52.52125991
+            ],
+            [
+              13.37103199,
+              52.520956489
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/3120/01",
+        "bbl_id": "1080/5210/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH672819345012",
-        "av_type": "humusiert",
-        "lc_area": 910.0,
-        "wgs84_lat": 47.3773,
-        "wgs84_lon": 8.5325,
-        "lv95_e": 2683165.0,
-        "lv95_n": 1247358.0,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 203.63,
+        "wgs84_lat": 52.5211082,
+        "wgs84_lon": 13.3712807,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 7,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/5210/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[8.53210, 47.37720], [8.53290, 47.37720], [8.53290, 47.37755], [8.53210, 47.37755], [8.53210, 47.37720]]]
+        "coordinates": [
+          [
+            [
+              13.37094314,
+              52.520956489
+            ],
+            [
+              13.37103199,
+              52.520956489
+            ],
+            [
+              13.371031988,
+              52.52125991
+            ],
+            [
+              13.370943138,
+              52.52125991
+            ],
+            [
+              13.37094314,
+              52.520956489
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/4100/01",
-        "geb_id": "1080/4100/AC",
-        "av_stat": "Gültig",
-        "av_egid": "400567890",
-        "av_egrid": "CH456789123456",
-        "av_type": "Gebaeude",
-        "lc_area": 3600.0,
-        "wgs84_lat": 46.2044,
-        "wgs84_lon": 6.1432,
-        "lv95_e": 2500546.0,
-        "lv95_n": 1117058.0,
+        "bbl_id": "1080/5210/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 203.63,
+        "wgs84_lat": 52.5211082,
+        "wgs84_lon": 13.3712807,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 8,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/5210/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[6.14270, 46.20410], [6.14370, 46.20410], [6.14370, 46.20470], [6.14270, 46.20470], [6.14270, 46.20410]]]
+        "coordinates": [
+          [
+            [
+              13.37152941,
+              52.520956489
+            ],
+            [
+              13.37161826,
+              52.520956489
+            ],
+            [
+              13.371618262,
+              52.52125991
+            ],
+            [
+              13.371529412,
+              52.52125991
+            ],
+            [
+              13.37152941,
+              52.520956489
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/2800/01",
-        "geb_id": "1080/2800/AD",
-        "av_stat": "Gültig",
-        "av_egid": "200123456",
-        "av_egrid": "CH789012345678",
-        "av_type": "Gebaeude",
-        "lc_area": 3540.0,
-        "wgs84_lat": 47.5596,
-        "wgs84_lon": 7.5886,
-        "lv95_e": 2611436.0,
-        "lv95_n": 1267554.0,
+        "bbl_id": "1080/5210/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 276.37,
+        "wgs84_lat": 52.5211082,
+        "wgs84_lon": 13.3712807,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 9,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/5210/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.58810, 47.55930], [7.58910, 47.55930], [7.58910, 47.55990], [7.58810, 47.55990], [7.58810, 47.55930]]]
+        "coordinates": [
+          [
+            [
+              13.370943138,
+              52.52125991
+            ],
+            [
+              13.371618262,
+              52.52125991
+            ],
+            [
+              13.371618263,
+              52.521314108
+            ],
+            [
+              13.370943137,
+              52.521314108
+            ],
+            [
+              13.370943138,
+              52.52125991
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/2800/01",
+        "bbl_id": "1080/5210/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH789012345678",
-        "av_type": "befestigt",
-        "lc_area": 480.0,
-        "wgs84_lat": 47.5593,
-        "wgs84_lon": 7.5882,
-        "lv95_e": 2611406.0,
-        "lv95_n": 1267521.0,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 276.37,
+        "wgs84_lat": 52.5211082,
+        "wgs84_lon": 13.3712807,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 10,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "1080/5210/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[7.58770, 47.55895], [7.58870, 47.55895], [7.58870, 47.55925], [7.58770, 47.55925], [7.58770, 47.55895]]]
+        "coordinates": [
+          [
+            [
+              13.37094314,
+              52.520902291
+            ],
+            [
+              13.37161826,
+              52.520902291
+            ],
+            [
+              13.37161826,
+              52.520956489
+            ],
+            [
+              13.37094314,
+              52.520956489
+            ],
+            [
+              13.37094314,
+              52.520902291
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/1950/01",
-        "geb_id": "1080/1950/AE",
-        "av_stat": "Gültig",
-        "av_egid": "500678901",
-        "av_egrid": "CH345678901234",
+        "bbl_id": "9900/9002/01",
+        "geb_id": "9900/9002/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
         "av_type": "Gebaeude",
-        "lc_area": 3540.0,
-        "wgs84_lat": 46.0037,
-        "wgs84_lon": 8.9512,
-        "lv95_e": 2717820.0,
-        "lv95_n": 1094788.0,
+        "lc_area": 3000.0,
+        "wgs84_lat": 46.94620118,
+        "wgs84_lon": 7.38765987,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 11,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9002/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[8.95070, 46.00340], [8.95170, 46.00340], [8.95170, 46.00400], [8.95070, 46.00400], [8.95070, 46.00340]]]
+        "coordinates": [
+          [
+            [
+              7.388013255280823,
+              46.94595483261909
+            ],
+            [
+              7.388019588521891,
+              46.94595645142123
+            ],
+            [
+              7.388019591811582,
+              46.94644752625986
+            ],
+            [
+              7.3873001481884195,
+              46.94644752625986
+            ],
+            [
+              7.387300151488955,
+              46.94595483259936
+            ],
+            [
+              7.388013255280823,
+              46.94595483261909
+            ]
+          ]
+        ]
       }
     },
     {
       "type": "Feature",
       "properties": {
-        "bbl_id": "1080/1950/01",
+        "bbl_id": "9900/9002/01",
         "geb_id": null,
-        "av_stat": "Gültig",
+        "av_stat": "Demo",
         "av_egid": null,
-        "av_egrid": "CH345678901234",
-        "av_type": "Gewaesser",
-        "lc_area": 750.0,
-        "wgs84_lat": 46.0034,
-        "wgs84_lon": 8.9518,
-        "lv95_e": 2717866.0,
-        "lv95_n": 1094754.0,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 1170.42,
+        "wgs84_lat": 46.94620118,
+        "wgs84_lon": 7.38765987,
+        "lv95_e": null,
+        "lv95_n": null,
         "fid": null,
         "fid_src": null,
         "objectid": 12,
-        "etl_ts": "2026-03-18T06:00:00Z"
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9002/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
       },
       "geometry": {
         "type": "Polygon",
-        "coordinates": [[[8.95130, 46.00305], [8.95230, 46.00305], [8.95230, 46.00335], [8.95130, 46.00335], [8.95130, 46.00305]]]
+        "coordinates": [
+          [
+            [
+              7.387564,
+              46.945840000000004
+            ],
+            [
+              7.38765987,
+              46.945864505195
+            ],
+            [
+              7.38765987,
+              46.945954833164436
+            ],
+            [
+              7.387300151488955,
+              46.94595483259936
+            ],
+            [
+              7.387300149838698,
+              46.94620117943494
+            ],
+            [
+              7.387007408109551,
+              46.94620117814098
+            ],
+            [
+              7.387114999999996,
+              46.945796
+            ],
+            [
+              7.387189000000003,
+              46.94580499999999
+            ],
+            [
+              7.387564,
+              46.945840000000004
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9002/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 630.93,
+        "wgs84_lat": 46.94620118,
+        "wgs84_lon": 7.38765987,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 13,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9002/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.388322000000005,
+              46.946028
+            ],
+            [
+              7.388275912606912,
+              46.94620117834272
+            ],
+            [
+              7.388019590161303,
+              46.94620117943494
+            ],
+            [
+              7.388019588521891,
+              46.94595645142123
+            ],
+            [
+              7.388013255280823,
+              46.94595483261909
+            ],
+            [
+              7.38765987,
+              46.945954833164436
+            ],
+            [
+              7.38765987,
+              46.945864505195
+            ],
+            [
+              7.388233000000004,
+              46.946011000000006
+            ],
+            [
+              7.388322000000005,
+              46.946028
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9002/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1503.39,
+        "wgs84_lat": 46.94620118,
+        "wgs84_lon": 7.38765987,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 14,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9002/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.38696499999999,
+              46.946569
+            ],
+            [
+              7.386936999999986,
+              46.946569
+            ],
+            [
+              7.3869100000000065,
+              46.94656800000001
+            ],
+            [
+              7.387007408109551,
+              46.94620117814098
+            ],
+            [
+              7.387300149838698,
+              46.94620117943494
+            ],
+            [
+              7.3873001481884195,
+              46.94644752625986
+            ],
+            [
+              7.38765987,
+              46.94644752682494
+            ],
+            [
+              7.38765987,
+              46.94659991307705
+            ],
+            [
+              7.387635000000001,
+              46.946598
+            ],
+            [
+              7.387609000000002,
+              46.946596
+            ],
+            [
+              7.387583000000002,
+              46.94659399999999
+            ],
+            [
+              7.387557000000001,
+              46.94659299999999
+            ],
+            [
+              7.387529999999998,
+              46.946591000000005
+            ],
+            [
+              7.387504000000002,
+              46.946589
+            ],
+            [
+              7.387478000000001,
+              46.946588000000006
+            ],
+            [
+              7.387452000000002,
+              46.946585999999996
+            ],
+            [
+              7.387426000000007,
+              46.94658499999999
+            ],
+            [
+              7.3874,
+              46.946583
+            ],
+            [
+              7.387373999999999,
+              46.946582
+            ],
+            [
+              7.387347000000001,
+              46.946581
+            ],
+            [
+              7.387321000000004,
+              46.94658
+            ],
+            [
+              7.387294000000002,
+              46.946578
+            ],
+            [
+              7.387266000000002,
+              46.946577000000005
+            ],
+            [
+              7.387238999999996,
+              46.94657600000001
+            ],
+            [
+              7.387212000000004,
+              46.946575
+            ],
+            [
+              7.387183999999998,
+              46.946574000000005
+            ],
+            [
+              7.387157000000002,
+              46.94657300000001
+            ],
+            [
+              7.3871290000000025,
+              46.94657300000001
+            ],
+            [
+              7.38710199999999,
+              46.946571999999996
+            ],
+            [
+              7.387073999999998,
+              46.946571000000006
+            ],
+            [
+              7.387046999999995,
+              46.946571000000006
+            ],
+            [
+              7.387020000000006,
+              46.94657
+            ],
+            [
+              7.386991999999995,
+              46.94657000000001
+            ],
+            [
+              7.38696499999999,
+              46.946569
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9002/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1246.31,
+        "wgs84_lat": 46.94620118,
+        "wgs84_lon": 7.38765987,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 15,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9002/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.387660999999999,
+              46.94659999999998
+            ],
+            [
+              7.38765987,
+              46.94659991307705
+            ],
+            [
+              7.38765987,
+              46.94644752682494
+            ],
+            [
+              7.388019591811582,
+              46.94644752625986
+            ],
+            [
+              7.388019590161303,
+              46.94620117943494
+            ],
+            [
+              7.388275912606912,
+              46.94620117834272
+            ],
+            [
+              7.388156999999998,
+              46.946647999999996
+            ],
+            [
+              7.388130999999993,
+              46.946645
+            ],
+            [
+              7.388105,
+              46.946642000000004
+            ],
+            [
+              7.388078999999995,
+              46.946639
+            ],
+            [
+              7.388053000000003,
+              46.946636000000005
+            ],
+            [
+              7.388027000000002,
+              46.946633000000006
+            ],
+            [
+              7.388001000000009,
+              46.946631
+            ],
+            [
+              7.387974000000004,
+              46.946628
+            ],
+            [
+              7.387947999999998,
+              46.946625
+            ],
+            [
+              7.387922000000003,
+              46.946623
+            ],
+            [
+              7.387896000000001,
+              46.94662
+            ],
+            [
+              7.38787,
+              46.946617999999994
+            ],
+            [
+              7.387843999999998,
+              46.94661500000001
+            ],
+            [
+              7.387818000000003,
+              46.94661299999999
+            ],
+            [
+              7.387791000000001,
+              46.946611000000004
+            ],
+            [
+              7.387765000000002,
+              46.94660800000002
+            ],
+            [
+              7.387738999999999,
+              46.946606
+            ],
+            [
+              7.387713,
+              46.946604
+            ],
+            [
+              7.387687,
+              46.946601999999984
+            ],
+            [
+              7.387660999999999,
+              46.94659999999998
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9003/01",
+        "geb_id": "9900/9003/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 4271.0,
+        "wgs84_lat": 46.92990164,
+        "wgs84_lon": 7.42124344,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 16,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9003/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4207712070942256,
+              46.92989113607902
+            ],
+            [
+              7.421452280442622,
+              46.929578141829666
+            ],
+            [
+              7.421715670154818,
+              46.92957814104626
+            ],
+            [
+              7.421715675841393,
+              46.930225136987595
+            ],
+            [
+              7.420771204158606,
+              46.930225136987595
+            ],
+            [
+              7.4207712070942256,
+              46.92989113607902
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9003/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 1.02,
+        "wgs84_lat": 46.92990164,
+        "wgs84_lon": 7.42124344,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 17,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9003/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4207712070942256,
+              46.92989113607902
+            ],
+            [
+              7.4207712070019145,
+              46.92990163902612
+            ],
+            [
+              7.420748352672064,
+              46.929901638929564
+            ],
+            [
+              7.4207712070942256,
+              46.92989113607902
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9003/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 25182.35,
+        "wgs84_lat": 46.92990164,
+        "wgs84_lon": 7.42124344,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 18,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9003/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.424922,
+              46.92988600000002
+            ],
+            [
+              7.424888362852867,
+              46.929901581980936
+            ],
+            [
+              7.421715672998084,
+              46.92990163902612
+            ],
+            [
+              7.421715670154818,
+              46.92957814104626
+            ],
+            [
+              7.421452280442622,
+              46.929578141829666
+            ],
+            [
+              7.421705000000003,
+              46.929461999999994
+            ],
+            [
+              7.422691000000001,
+              46.929007999999996
+            ],
+            [
+              7.422703000000007,
+              46.92902
+            ],
+            [
+              7.4233229999999955,
+              46.92873500000001
+            ],
+            [
+              7.423398999999992,
+              46.92869999999999
+            ],
+            [
+              7.423404000000005,
+              46.92869799999999
+            ],
+            [
+              7.42340800000001,
+              46.928696
+            ],
+            [
+              7.423413000000007,
+              46.928694
+            ],
+            [
+              7.423417000000009,
+              46.92869199999999
+            ],
+            [
+              7.423422000000007,
+              46.928689999999996
+            ],
+            [
+              7.423427000000002,
+              46.928688
+            ],
+            [
+              7.423432000000006,
+              46.928687
+            ],
+            [
+              7.423437000000003,
+              46.928685
+            ],
+            [
+              7.423442000000009,
+              46.928683
+            ],
+            [
+              7.423447,
+              46.928682
+            ],
+            [
+              7.423452000000011,
+              46.92868000000001
+            ],
+            [
+              7.423456999999994,
+              46.92867900000001
+            ],
+            [
+              7.423462000000007,
+              46.928678
+            ],
+            [
+              7.423466999999992,
+              46.92867600000002
+            ],
+            [
+              7.423471999999998,
+              46.928675
+            ],
+            [
+              7.4234770000000045,
+              46.928673999999994
+            ],
+            [
+              7.423481999999994,
+              46.92867300000002
+            ],
+            [
+              7.423488000000005,
+              46.928672000000006
+            ],
+            [
+              7.423492999999988,
+              46.928671
+            ],
+            [
+              7.423497999999999,
+              46.928670000000004
+            ],
+            [
+              7.423502999999996,
+              46.928669
+            ],
+            [
+              7.423509000000004,
+              46.928668
+            ],
+            [
+              7.423514,
+              46.928667
+            ],
+            [
+              7.423519999999995,
+              46.92866700000001
+            ],
+            [
+              7.423524999999995,
+              46.92866600000001
+            ],
+            [
+              7.423530000000006,
+              46.928664999999995
+            ],
+            [
+              7.423535000000014,
+              46.928664999999995
+            ],
+            [
+              7.423540000000013,
+              46.928664999999995
+            ],
+            [
+              7.423545000000012,
+              46.928664
+            ],
+            [
+              7.423550000000002,
+              46.92866400000001
+            ],
+            [
+              7.4235560000000085,
+              46.928664000000005
+            ],
+            [
+              7.423561000000006,
+              46.928664000000005
+            ],
+            [
+              7.423566000000006,
+              46.928664000000005
+            ],
+            [
+              7.423571000000005,
+              46.928664
+            ],
+            [
+              7.423576000000013,
+              46.92866400000001
+            ],
+            [
+              7.423581,
+              46.92866400000001
+            ],
+            [
+              7.423586000000001,
+              46.92866400000001
+            ],
+            [
+              7.423591000000002,
+              46.928664000000005
+            ],
+            [
+              7.4235970000000115,
+              46.92866399999999
+            ],
+            [
+              7.4236020000000105,
+              46.928664999999995
+            ],
+            [
+              7.423607000000013,
+              46.928664999999995
+            ],
+            [
+              7.423611999999994,
+              46.92866600000001
+            ],
+            [
+              7.423616999999998,
+              46.928666
+            ],
+            [
+              7.423622000000003,
+              46.928667000000004
+            ],
+            [
+              7.423626999999998,
+              46.928667000000004
+            ],
+            [
+              7.423632000000003,
+              46.928668
+            ],
+            [
+              7.423637000000004,
+              46.928669
+            ],
+            [
+              7.423641999999998,
+              46.928669
+            ],
+            [
+              7.42364699999999,
+              46.928670000000004
+            ],
+            [
+              7.423651999999992,
+              46.928671
+            ],
+            [
+              7.423657000000008,
+              46.928672000000006
+            ],
+            [
+              7.423662000000001,
+              46.928673
+            ],
+            [
+              7.423667,
+              46.928673999999994
+            ],
+            [
+              7.4236720000000025,
+              46.92867600000001
+            ],
+            [
+              7.423677000000001,
+              46.928676999999986
+            ],
+            [
+              7.423681,
+              46.928678
+            ],
+            [
+              7.423686000000003,
+              46.92867900000001
+            ],
+            [
+              7.423691000000003,
+              46.92868099999999
+            ],
+            [
+              7.423696000000002,
+              46.92868200000001
+            ],
+            [
+              7.423700000000002,
+              46.92868399999998
+            ],
+            [
+              7.423705,
+              46.92868500000001
+            ],
+            [
+              7.423708999999994,
+              46.928687000000004
+            ],
+            [
+              7.423714000000007,
+              46.928689000000006
+            ],
+            [
+              7.424097000000007,
+              46.92883799999999
+            ],
+            [
+              7.4241010000000145,
+              46.92883999999999
+            ],
+            [
+              7.424104999999993,
+              46.928841
+            ],
+            [
+              7.424108999999994,
+              46.92884300000001
+            ],
+            [
+              7.424113999999999,
+              46.928844
+            ],
+            [
+              7.424117999999998,
+              46.92884500000001
+            ],
+            [
+              7.4241220000000085,
+              46.92884699999999
+            ],
+            [
+              7.424127000000001,
+              46.928848
+            ],
+            [
+              7.424130999999998,
+              46.92884899999999
+            ],
+            [
+              7.424135999999995,
+              46.92885000000001
+            ],
+            [
+              7.424140000000007,
+              46.928850999999995
+            ],
+            [
+              7.424145000000003,
+              46.92885199999999
+            ],
+            [
+              7.424149000000008,
+              46.92885299999999
+            ],
+            [
+              7.424154000000007,
+              46.92885400000001
+            ],
+            [
+              7.424158000000008,
+              46.928853999999994
+            ],
+            [
+              7.424163000000003,
+              46.928855000000006
+            ],
+            [
+              7.424167000000012,
+              46.928856
+            ],
+            [
+              7.424337,
+              46.928921
+            ],
+            [
+              7.424416000000005,
+              46.92895
+            ],
+            [
+              7.42436600000001,
+              46.929013
+            ],
+            [
+              7.425033999999998,
+              46.929261999999994
+            ],
+            [
+              7.42478799999999,
+              46.92955
+            ],
+            [
+              7.425165000000003,
+              46.92969
+            ],
+            [
+              7.425031,
+              46.92983600000001
+            ],
+            [
+              7.424958,
+              46.929869
+            ],
+            [
+              7.424922,
+              46.92988600000002
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9003/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 6563.35,
+        "wgs84_lat": 46.92990164,
+        "wgs84_lon": 7.42124344,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 19,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9003/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4202030000000025,
+              46.93015199999999
+            ],
+            [
+              7.4203449999999975,
+              46.930087
+            ],
+            [
+              7.420748352672064,
+              46.929901638929564
+            ],
+            [
+              7.4207712070019145,
+              46.92990163902612
+            ],
+            [
+              7.420771204158606,
+              46.930225136987595
+            ],
+            [
+              7.42124344,
+              46.930225137961486
+            ],
+            [
+              7.42124344,
+              46.931177946176625
+            ],
+            [
+              7.421211,
+              46.93119300000001
+            ],
+            [
+              7.421028,
+              46.931278
+            ],
+            [
+              7.421024,
+              46.931274
+            ],
+            [
+              7.420985,
+              46.931217999999994
+            ],
+            [
+              7.420953000000002,
+              46.93117099999999
+            ],
+            [
+              7.420922,
+              46.931126
+            ],
+            [
+              7.420887999999998,
+              46.931082
+            ],
+            [
+              7.420854000000002,
+              46.931039
+            ],
+            [
+              7.420823999999994,
+              46.931004
+            ],
+            [
+              7.420839000000002,
+              46.93099699999999
+            ],
+            [
+              7.420786000000001,
+              46.930938
+            ],
+            [
+              7.420770000000002,
+              46.930945
+            ],
+            [
+              7.420702000000002,
+              46.93086999999999
+            ],
+            [
+              7.420642,
+              46.930806000000004
+            ],
+            [
+              7.420539,
+              46.930693000000005
+            ],
+            [
+              7.42050500000001,
+              46.930655
+            ],
+            [
+              7.4204719999999975,
+              46.93061499999999
+            ],
+            [
+              7.420434999999996,
+              46.930567
+            ],
+            [
+              7.420428999999998,
+              46.930559
+            ],
+            [
+              7.420421999999994,
+              46.930550000000004
+            ],
+            [
+              7.420415999999997,
+              46.930541
+            ],
+            [
+              7.420409000000005,
+              46.930532
+            ],
+            [
+              7.420402999999998,
+              46.930522999999994
+            ],
+            [
+              7.420396999999993,
+              46.93051400000001
+            ],
+            [
+              7.420390999999995,
+              46.930505000000004
+            ],
+            [
+              7.420384999999997,
+              46.93049700000001
+            ],
+            [
+              7.420378999999991,
+              46.93048799999999
+            ],
+            [
+              7.4203730000000006,
+              46.930479
+            ],
+            [
+              7.42036700000001,
+              46.93047
+            ],
+            [
+              7.420232999999995,
+              46.93026100000001
+            ],
+            [
+              7.420230000000003,
+              46.930256
+            ],
+            [
+              7.420228000000001,
+              46.930251
+            ],
+            [
+              7.420224999999992,
+              46.930247
+            ],
+            [
+              7.420222,
+              46.93024199999999
+            ],
+            [
+              7.420219999999992,
+              46.93023699999999
+            ],
+            [
+              7.420216999999991,
+              46.930232
+            ],
+            [
+              7.420214999999988,
+              46.93022700000001
+            ],
+            [
+              7.420213000000002,
+              46.930222
+            ],
+            [
+              7.420211000000002,
+              46.930217
+            ],
+            [
+              7.420209000000005,
+              46.930212
+            ],
+            [
+              7.420206999999986,
+              46.930207
+            ],
+            [
+              7.420205000000004,
+              46.930202
+            ],
+            [
+              7.420203000000007,
+              46.93019700000001
+            ],
+            [
+              7.4202010000000005,
+              46.93019199999999
+            ],
+            [
+              7.4202,
+              46.930189000000006
+            ],
+            [
+              7.420200000000005,
+              46.93018699999999
+            ],
+            [
+              7.4201990000000055,
+              46.930184
+            ],
+            [
+              7.420199000000001,
+              46.930181
+            ],
+            [
+              7.420198000000002,
+              46.930178999999995
+            ],
+            [
+              7.420197999999994,
+              46.93017600000001
+            ],
+            [
+              7.420198000000002,
+              46.930173999999994
+            ],
+            [
+              7.420197999999994,
+              46.930171
+            ],
+            [
+              7.420198000000002,
+              46.930168
+            ],
+            [
+              7.420198000000004,
+              46.93016599999999
+            ],
+            [
+              7.420198,
+              46.930163
+            ],
+            [
+              7.420198999999996,
+              46.93016
+            ],
+            [
+              7.4201990000000055,
+              46.930158000000006
+            ],
+            [
+              7.420199000000018,
+              46.93015499999999
+            ],
+            [
+              7.4202030000000025,
+              46.93015199999999
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9003/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 19403.24,
+        "wgs84_lat": 46.92990164,
+        "wgs84_lon": 7.42124344,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 20,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9003/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.4213640000000005,
+              46.93112200000001
+            ],
+            [
+              7.42124344,
+              46.931177946176625
+            ],
+            [
+              7.42124344,
+              46.930225137961486
+            ],
+            [
+              7.421715675841393,
+              46.930225136987595
+            ],
+            [
+              7.421715672998084,
+              46.92990163902612
+            ],
+            [
+              7.424888362852867,
+              46.929901581980936
+            ],
+            [
+              7.424650000000001,
+              46.930012
+            ],
+            [
+              7.424396999999999,
+              46.930129
+            ],
+            [
+              7.424144000000005,
+              46.930246
+            ],
+            [
+              7.423748999999999,
+              46.930429
+            ],
+            [
+              7.4234629999999955,
+              46.930562
+            ],
+            [
+              7.423121999999998,
+              46.93072
+            ],
+            [
+              7.422922000000003,
+              46.93081299999999
+            ],
+            [
+              7.4228869999999985,
+              46.930779
+            ],
+            [
+              7.422629999999996,
+              46.930535
+            ],
+            [
+              7.422537000000001,
+              46.930578
+            ],
+            [
+              7.422015000000008,
+              46.93082
+            ],
+            [
+              7.421813999999997,
+              46.930913
+            ],
+            [
+              7.421626000000001,
+              46.931001
+            ],
+            [
+              7.4213640000000005,
+              46.93112200000001
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9004/01",
+        "geb_id": "9900/9004/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 3667.0,
+        "wgs84_lat": 46.99764581,
+        "wgs84_lon": 7.46259581,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 21,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9004/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.463088953643358,
+              46.99770576286446
+            ],
+            [
+              7.46210266557715,
+              46.99779048767586
+            ],
+            [
+              7.462102670012298,
+              46.9973084169237
+            ],
+            [
+              7.463088949987703,
+              46.9973084169237
+            ],
+            [
+              7.463088953643358,
+              46.99770576286446
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9004/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 3483.73,
+        "wgs84_lat": 46.99764581,
+        "wgs84_lon": 7.46259581,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 22,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9004/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.462586,
+              46.996579999999994
+            ],
+            [
+              7.46259581,
+              46.99658392401807
+            ],
+            [
+              7.46259581,
+              46.99730841798555
+            ],
+            [
+              7.462102670012298,
+              46.9973084169237
+            ],
+            [
+              7.462102666908235,
+              46.997645808938145
+            ],
+            [
+              7.461877861360561,
+              46.997645807749365
+            ],
+            [
+              7.461905999999997,
+              46.997527
+            ],
+            [
+              7.461902999999998,
+              46.997526
+            ],
+            [
+              7.461921000000002,
+              46.99745899999999
+            ],
+            [
+              7.461942000000001,
+              46.99739100000001
+            ],
+            [
+              7.461962999999992,
+              46.99732499999999
+            ],
+            [
+              7.461986999999993,
+              46.99725599999999
+            ],
+            [
+              7.462033999999999,
+              46.997133000000005
+            ],
+            [
+              7.462041000000001,
+              46.997116000000005
+            ],
+            [
+              7.462048999999998,
+              46.99709899999999
+            ],
+            [
+              7.462055999999997,
+              46.997082000000006
+            ],
+            [
+              7.462064000000006,
+              46.99706499999999
+            ],
+            [
+              7.4620719999999965,
+              46.99704799999999
+            ],
+            [
+              7.4620800000000065,
+              46.997031000000014
+            ],
+            [
+              7.462087000000005,
+              46.997014
+            ],
+            [
+              7.462096,
+              46.99699699999999
+            ],
+            [
+              7.462104000000001,
+              46.99698
+            ],
+            [
+              7.462111999999999,
+              46.996964
+            ],
+            [
+              7.462119999999999,
+              46.99694699999999
+            ],
+            [
+              7.462129000000003,
+              46.99693
+            ],
+            [
+              7.462136999999998,
+              46.996912999999985
+            ],
+            [
+              7.4621460000000015,
+              46.996896
+            ],
+            [
+              7.462154000000003,
+              46.996880000000004
+            ],
+            [
+              7.462163,
+              46.996863
+            ],
+            [
+              7.4621720000000025,
+              46.996846000000005
+            ],
+            [
+              7.462180999999994,
+              46.99682899999999
+            ],
+            [
+              7.462190000000002,
+              46.99681300000001
+            ],
+            [
+              7.462199000000001,
+              46.99679600000001
+            ],
+            [
+              7.462208000000002,
+              46.996779000000004
+            ],
+            [
+              7.462217999999998,
+              46.996763
+            ],
+            [
+              7.462227,
+              46.996746
+            ],
+            [
+              7.462236999999997,
+              46.996729999999985
+            ],
+            [
+              7.4622459999999995,
+              46.996713
+            ],
+            [
+              7.462256000000003,
+              46.99669699999999
+            ],
+            [
+              7.4622660000000005,
+              46.99668
+            ],
+            [
+              7.462276000000002,
+              46.996663999999996
+            ],
+            [
+              7.462285999999999,
+              46.996646999999996
+            ],
+            [
+              7.462296,
+              46.996631
+            ],
+            [
+              7.462337999999999,
+              46.99655299999999
+            ],
+            [
+              7.462371999999999,
+              46.996497
+            ],
+            [
+              7.462586,
+              46.996579999999994
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9004/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 5485.81,
+        "wgs84_lat": 46.99764581,
+        "wgs84_lon": 7.46259581,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 23,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9004/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.463655999999994,
+              46.99694699999999
+            ],
+            [
+              7.463337328856691,
+              46.99764580759916
+            ],
+            [
+              7.4630889530917655,
+              46.997645808938145
+            ],
+            [
+              7.463088949987703,
+              46.9973084169237
+            ],
+            [
+              7.46259581,
+              46.99730841798555
+            ],
+            [
+              7.46259581,
+              46.99658392401807
+            ],
+            [
+              7.462845999999999,
+              46.99668400000001
+            ],
+            [
+              7.462881000000004,
+              46.996695
+            ],
+            [
+              7.4629169999999965,
+              46.99670700000001
+            ],
+            [
+              7.462951999999999,
+              46.99671900000001
+            ],
+            [
+              7.4629879999999975,
+              46.99673
+            ],
+            [
+              7.463022999999994,
+              46.99674200000002
+            ],
+            [
+              7.463058999999997,
+              46.996753000000005
+            ],
+            [
+              7.463094,
+              46.996765
+            ],
+            [
+              7.4631310000000015,
+              46.996776
+            ],
+            [
+              7.463166999999999,
+              46.996788
+            ],
+            [
+              7.463203999999993,
+              46.99679900000001
+            ],
+            [
+              7.463239999999998,
+              46.996811
+            ],
+            [
+              7.4632770000000015,
+              46.996822
+            ],
+            [
+              7.463312999999999,
+              46.996834
+            ],
+            [
+              7.463486000000001,
+              46.996888999999996
+            ],
+            [
+              7.463655999999994,
+              46.99694699999999
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9004/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 314.77,
+        "wgs84_lat": 46.99764581,
+        "wgs84_lon": 7.46259581,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 24,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9004/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.461861000000001,
+              46.997717
+            ],
+            [
+              7.461877861360561,
+              46.997645807749365
+            ],
+            [
+              7.462102666908235,
+              46.997645808938145
+            ],
+            [
+              7.46210266557715,
+              46.99779048767586
+            ],
+            [
+              7.461957000000006,
+              46.997803
+            ],
+            [
+              7.461842999999991,
+              46.997813
+            ],
+            [
+              7.461853999999997,
+              46.997755000000005
+            ],
+            [
+              7.461867000000005,
+              46.99775600000001
+            ],
+            [
+              7.461873999999999,
+              46.997719
+            ],
+            [
+              7.461861000000001,
+              46.997717
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9004/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 100.52,
+        "wgs84_lat": 46.99764581,
+        "wgs84_lon": 7.46259581,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 25,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9004/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              7.463337328856691,
+              46.99764580759916
+            ],
+            [
+              7.463319000000002,
+              46.997686
+            ],
+            [
+              7.463088953643358,
+              46.99770576286446
+            ],
+            [
+              7.4630889530917655,
+              46.997645808938145
+            ],
+            [
+              7.463337328856691,
+              46.99764580759916
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9005/01",
+        "geb_id": "9900/9005/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 1850.0,
+        "wgs84_lat": 47.37956593,
+        "wgs84_lon": 8.54052008,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 26,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9005/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.540330000000006,
+              47.37964900000001
+            ],
+            [
+              8.54021091962588,
+              47.37968118418335
+            ],
+            [
+              8.540210921527146,
+              47.37935593875068
+            ],
+            [
+              8.540829238472854,
+              47.37935593875068
+            ],
+            [
+              8.540829240927932,
+              47.379775920407816
+            ],
+            [
+              8.54074182588586,
+              47.37977592061024
+            ],
+            [
+              8.540330000000006,
+              47.37964900000001
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9005/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 10094.81,
+        "wgs84_lat": 47.37956593,
+        "wgs84_lon": 8.54052008,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 27,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9005/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.540515,
+              47.37867399999999
+            ],
+            [
+              8.54052008,
+              47.37867357666682
+            ],
+            [
+              8.54052008,
+              47.37935593916757
+            ],
+            [
+              8.540210921527146,
+              47.37935593875068
+            ],
+            [
+              8.540210920299618,
+              47.379565929583116
+            ],
+            [
+              8.538628154800591,
+              47.37956591438776
+            ],
+            [
+              8.538466999999986,
+              47.379288999999986
+            ],
+            [
+              8.538715,
+              47.37917499999998
+            ],
+            [
+              8.53872600000001,
+              47.37917000000001
+            ],
+            [
+              8.538737000000017,
+              47.37916500000001
+            ],
+            [
+              8.53874899999998,
+              47.379158999999994
+            ],
+            [
+              8.538760000000003,
+              47.37915399999999
+            ],
+            [
+              8.538771999999996,
+              47.37914899999999
+            ],
+            [
+              8.538782999999997,
+              47.379144
+            ],
+            [
+              8.538795000000007,
+              47.37913900000001
+            ],
+            [
+              8.538805999999987,
+              47.379134
+            ],
+            [
+              8.53881800000001,
+              47.37913
+            ],
+            [
+              8.538830000000003,
+              47.379125
+            ],
+            [
+              8.538840999999993,
+              47.37912
+            ],
+            [
+              8.538852999999994,
+              47.379115
+            ],
+            [
+              8.538864999999998,
+              47.379111
+            ],
+            [
+              8.538876999999992,
+              47.37910599999999
+            ],
+            [
+              8.538888999999994,
+              47.379102
+            ],
+            [
+              8.53890099999999,
+              47.379097
+            ],
+            [
+              8.538913000000004,
+              47.379093
+            ],
+            [
+              8.538924999999985,
+              47.379088
+            ],
+            [
+              8.538936999999999,
+              47.379084000000006
+            ],
+            [
+              8.538948999999985,
+              47.37908
+            ],
+            [
+              8.538960999999992,
+              47.379074999999986
+            ],
+            [
+              8.538972999999991,
+              47.379070999999996
+            ],
+            [
+              8.538984999999993,
+              47.379067
+            ],
+            [
+              8.538997999999996,
+              47.379063
+            ],
+            [
+              8.539010000000005,
+              47.379059000000005
+            ],
+            [
+              8.539021999999989,
+              47.379055
+            ],
+            [
+              8.540205,
+              47.378734
+            ],
+            [
+              8.540216999999998,
+              47.37873100000001
+            ],
+            [
+              8.540228,
+              47.378728
+            ],
+            [
+              8.540239999999999,
+              47.378724999999996
+            ],
+            [
+              8.540250999999998,
+              47.378721999999996
+            ],
+            [
+              8.540262999999996,
+              47.37871899999999
+            ],
+            [
+              8.540275000000001,
+              47.378716
+            ],
+            [
+              8.540286999999998,
+              47.378713999999995
+            ],
+            [
+              8.540298000000002,
+              47.37871100000001
+            ],
+            [
+              8.54031,
+              47.378709
+            ],
+            [
+              8.540322,
+              47.378706
+            ],
+            [
+              8.540334,
+              47.378704
+            ],
+            [
+              8.540346,
+              47.378701
+            ],
+            [
+              8.540357999999998,
+              47.37869899999999
+            ],
+            [
+              8.540369999999998,
+              47.378696
+            ],
+            [
+              8.540381999999997,
+              47.37869399999999
+            ],
+            [
+              8.540394,
+              47.378692
+            ],
+            [
+              8.540406,
+              47.378690000000006
+            ],
+            [
+              8.540418,
+              47.378688
+            ],
+            [
+              8.54043,
+              47.378686
+            ],
+            [
+              8.540442,
+              47.378684
+            ],
+            [
+              8.540454,
+              47.378682000000005
+            ],
+            [
+              8.540466,
+              47.37868
+            ],
+            [
+              8.540478,
+              47.378679
+            ],
+            [
+              8.54049,
+              47.378676999999996
+            ],
+            [
+              8.540503,
+              47.37867599999999
+            ],
+            [
+              8.540515,
+              47.37867399999999
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9005/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 4280.63,
+        "wgs84_lat": 47.37956593,
+        "wgs84_lon": 8.54052008,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 28,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9005/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.541124999999994,
+              47.379425
+            ],
+            [
+              8.541066096341497,
+              47.37956592869963
+            ],
+            [
+              8.540829239700383,
+              47.379565929583116
+            ],
+            [
+              8.540829238472854,
+              47.37935593875068
+            ],
+            [
+              8.54052008,
+              47.37935593916757
+            ],
+            [
+              8.54052008,
+              47.37867357666682
+            ],
+            [
+              8.540527,
+              47.378673000000006
+            ],
+            [
+              8.540539,
+              47.378671
+            ],
+            [
+              8.540552,
+              47.37867000000001
+            ],
+            [
+              8.540564,
+              47.378669
+            ],
+            [
+              8.540576,
+              47.37866699999999
+            ],
+            [
+              8.540588,
+              47.37866600000002
+            ],
+            [
+              8.540601,
+              47.378665
+            ],
+            [
+              8.540613,
+              47.378664
+            ],
+            [
+              8.540624999999999,
+              47.378663
+            ],
+            [
+              8.540638000000001,
+              47.378662
+            ],
+            [
+              8.540650000000001,
+              47.37866199999999
+            ],
+            [
+              8.540663,
+              47.378661
+            ],
+            [
+              8.540674999999998,
+              47.37866000000002
+            ],
+            [
+              8.540686999999998,
+              47.37866
+            ],
+            [
+              8.540700000000001,
+              47.37865900000001
+            ],
+            [
+              8.540712,
+              47.37865900000001
+            ],
+            [
+              8.540724000000003,
+              47.378658
+            ],
+            [
+              8.540737000000002,
+              47.378657999999994
+            ],
+            [
+              8.540749000000002,
+              47.378658
+            ],
+            [
+              8.540762,
+              47.378657
+            ],
+            [
+              8.540774,
+              47.378657000000004
+            ],
+            [
+              8.540786999999998,
+              47.378657000000004
+            ],
+            [
+              8.540799,
+              47.378657
+            ],
+            [
+              8.540811000000001,
+              47.378657
+            ],
+            [
+              8.540982000000001,
+              47.378658
+            ],
+            [
+              8.540988000000002,
+              47.378659000000006
+            ],
+            [
+              8.540993999999998,
+              47.378659000000006
+            ],
+            [
+              8.541000000000002,
+              47.378659
+            ],
+            [
+              8.541004999999997,
+              47.378659000000006
+            ],
+            [
+              8.541011000000003,
+              47.378659000000006
+            ],
+            [
+              8.541017,
+              47.37866000000001
+            ],
+            [
+              8.541022999999997,
+              47.37866000000001
+            ],
+            [
+              8.541028,
+              47.378661
+            ],
+            [
+              8.541033999999998,
+              47.378661
+            ],
+            [
+              8.541039999999999,
+              47.378662
+            ],
+            [
+              8.541045999999998,
+              47.378662000000006
+            ],
+            [
+              8.541050999999996,
+              47.378663
+            ],
+            [
+              8.541057000000006,
+              47.37866399999999
+            ],
+            [
+              8.541062999999998,
+              47.378665
+            ],
+            [
+              8.541068,
+              47.37866600000001
+            ],
+            [
+              8.541073999999995,
+              47.37866600000002
+            ],
+            [
+              8.541079999999997,
+              47.37866700000001
+            ],
+            [
+              8.541084999999997,
+              47.37866900000001
+            ],
+            [
+              8.541091000000003,
+              47.37867
+            ],
+            [
+              8.541095999999998,
+              47.378671
+            ],
+            [
+              8.541102000000004,
+              47.378672
+            ],
+            [
+              8.541106999999998,
+              47.37867300000001
+            ],
+            [
+              8.541113000000001,
+              47.378675
+            ],
+            [
+              8.541118,
+              47.378676000000006
+            ],
+            [
+              8.541122999999995,
+              47.37867800000001
+            ],
+            [
+              8.541129,
+              47.378679
+            ],
+            [
+              8.541188000000004,
+              47.378696
+            ],
+            [
+              8.541254000000002,
+              47.37875999999999
+            ],
+            [
+              8.541251999999998,
+              47.378769
+            ],
+            [
+              8.541277999999995,
+              47.37878800000001
+            ],
+            [
+              8.541281000000005,
+              47.37881000000001
+            ],
+            [
+              8.541183999999998,
+              47.379042
+            ],
+            [
+              8.541179000000016,
+              47.37905399999999
+            ],
+            [
+              8.541173000000008,
+              47.379067
+            ],
+            [
+              8.541167999999997,
+              47.379079000000004
+            ],
+            [
+              8.541161999999996,
+              47.37909200000001
+            ],
+            [
+              8.541157000000004,
+              47.379104000000005
+            ],
+            [
+              8.541150999999996,
+              47.379116
+            ],
+            [
+              8.541145000000004,
+              47.379129
+            ],
+            [
+              8.541139000000001,
+              47.379141
+            ],
+            [
+              8.541133000000002,
+              47.379152999999995
+            ],
+            [
+              8.541127,
+              47.37916500000001
+            ],
+            [
+              8.541120999999992,
+              47.379178
+            ],
+            [
+              8.541115000000003,
+              47.37919
+            ],
+            [
+              8.541108000000008,
+              47.37920200000001
+            ],
+            [
+              8.541101999999995,
+              47.379214999999995
+            ],
+            [
+              8.541094999999999,
+              47.37922700000001
+            ],
+            [
+              8.541087999999993,
+              47.37924
+            ],
+            [
+              8.541080999999993,
+              47.37925200000001
+            ],
+            [
+              8.541074000000002,
+              47.379264
+            ],
+            [
+              8.541067,
+              47.379277
+            ],
+            [
+              8.541059999999995,
+              47.379289
+            ],
+            [
+              8.541052999999998,
+              47.379301000000005
+            ],
+            [
+              8.541046000000005,
+              47.379314
+            ],
+            [
+              8.541038000000004,
+              47.379326
+            ],
+            [
+              8.541124999999994,
+              47.379425
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9005/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 2379.9,
+        "wgs84_lat": 47.37956593,
+        "wgs84_lon": 8.54052008,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 29,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9005/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.53868,
+              47.379655
+            ],
+            [
+              8.538628154800591,
+              47.37956591438776
+            ],
+            [
+              8.540210920299618,
+              47.379565929583116
+            ],
+            [
+              8.54021091962588,
+              47.37968118418335
+            ],
+            [
+              8.539775000000015,
+              47.37979899999999
+            ],
+            [
+              8.539658,
+              47.37984699999999
+            ],
+            [
+              8.539654000000015,
+              47.379848
+            ],
+            [
+              8.539651000000003,
+              47.37985
+            ],
+            [
+              8.539647000000008,
+              47.379851
+            ],
+            [
+              8.539643999999997,
+              47.37985200000001
+            ],
+            [
+              8.539639999999993,
+              47.37985299999999
+            ],
+            [
+              8.539636000000012,
+              47.379854000000016
+            ],
+            [
+              8.539632999999995,
+              47.37985499999999
+            ],
+            [
+              8.539628999999994,
+              47.379856
+            ],
+            [
+              8.539625000000013,
+              47.37985700000001
+            ],
+            [
+              8.53962100000002,
+              47.37985700000001
+            ],
+            [
+              8.539618000000004,
+              47.379858
+            ],
+            [
+              8.53961400000001,
+              47.379858999999996
+            ],
+            [
+              8.53961,
+              47.379859
+            ],
+            [
+              8.53960600000001,
+              47.379859999999994
+            ],
+            [
+              8.539602000000004,
+              47.37986
+            ],
+            [
+              8.53959800000001,
+              47.37986099999999
+            ],
+            [
+              8.539594000000006,
+              47.379860999999984
+            ],
+            [
+              8.539590999999996,
+              47.37986099999999
+            ],
+            [
+              8.539587000000003,
+              47.37986099999999
+            ],
+            [
+              8.539583000000002,
+              47.379861000000005
+            ],
+            [
+              8.539579000000003,
+              47.37986099999999
+            ],
+            [
+              8.539575000000003,
+              47.37986099999999
+            ],
+            [
+              8.539571000000004,
+              47.37986099999999
+            ],
+            [
+              8.539567000000002,
+              47.379861000000005
+            ],
+            [
+              8.539563000000008,
+              47.379860999999984
+            ],
+            [
+              8.53955900000001,
+              47.37986099999999
+            ],
+            [
+              8.539555000000012,
+              47.37986
+            ],
+            [
+              8.539551000000001,
+              47.37986
+            ],
+            [
+              8.539547,
+              47.37986
+            ],
+            [
+              8.539544000000001,
+              47.379858999999996
+            ],
+            [
+              8.539540000000008,
+              47.379858
+            ],
+            [
+              8.539536000000009,
+              47.379858
+            ],
+            [
+              8.539531999999998,
+              47.37985699999999
+            ],
+            [
+              8.539528999999996,
+              47.37985599999999
+            ],
+            [
+              8.539525,
+              47.37985599999999
+            ],
+            [
+              8.539520999999997,
+              47.37985499999999
+            ],
+            [
+              8.53951800000001,
+              47.379854000000016
+            ],
+            [
+              8.539514,
+              47.37985299999999
+            ],
+            [
+              8.539510999999997,
+              47.37985200000001
+            ],
+            [
+              8.539506999999999,
+              47.379851000000016
+            ],
+            [
+              8.539503999999999,
+              47.37984900000001
+            ],
+            [
+              8.539499999999997,
+              47.379848
+            ],
+            [
+              8.539496999999995,
+              47.379847
+            ],
+            [
+              8.539493999999992,
+              47.37984599999999
+            ],
+            [
+              8.539491000000005,
+              47.37984399999999
+            ],
+            [
+              8.539487000000005,
+              47.379843
+            ],
+            [
+              8.539484000000005,
+              47.379841
+            ],
+            [
+              8.539480999999999,
+              47.379839999999994
+            ],
+            [
+              8.539477999999999,
+              47.37983799999999
+            ],
+            [
+              8.539475000000012,
+              47.37983599999999
+            ],
+            [
+              8.539472000000005,
+              47.37983499999999
+            ],
+            [
+              8.539469000000013,
+              47.37983299999999
+            ],
+            [
+              8.539467000000002,
+              47.379830999999996
+            ],
+            [
+              8.539463999999992,
+              47.37982900000001
+            ],
+            [
+              8.53946099999999,
+              47.379827
+            ],
+            [
+              8.539459000000006,
+              47.379825
+            ],
+            [
+              8.539456000000008,
+              47.379824000000006
+            ],
+            [
+              8.539453999999994,
+              47.379821
+            ],
+            [
+              8.539450999999994,
+              47.379819000000005
+            ],
+            [
+              8.539449000000008,
+              47.379816999999996
+            ],
+            [
+              8.539447000000013,
+              47.37981500000001
+            ],
+            [
+              8.539443999999998,
+              47.37981299999999
+            ],
+            [
+              8.539442000000003,
+              47.379811
+            ],
+            [
+              8.539439999999995,
+              47.379809000000016
+            ],
+            [
+              8.539439000000007,
+              47.379806
+            ],
+            [
+              8.539437000000008,
+              47.37980400000002
+            ],
+            [
+              8.539434999999985,
+              47.379802000000005
+            ],
+            [
+              8.539433,
+              47.379799
+            ],
+            [
+              8.539432000000005,
+              47.379796999999996
+            ],
+            [
+              8.539430000000017,
+              47.379795
+            ],
+            [
+              8.539343000000002,
+              47.379646
+            ],
+            [
+              8.538804000000004,
+              47.379791999999995
+            ],
+            [
+              8.538732,
+              47.379637999999986
+            ],
+            [
+              8.53868,
+              47.379655
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9005/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 333.55,
+        "wgs84_lat": 47.37956593,
+        "wgs84_lon": 8.54052008,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 30,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9005/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "synthetic footprint and surroundings clipped to real AV parcel"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              8.540824999999996,
+              47.379794
+            ],
+            [
+              8.540794000000002,
+              47.379791999999995
+            ],
+            [
+              8.54074182588586,
+              47.37977592061024
+            ],
+            [
+              8.540829240927932,
+              47.379775920407816
+            ],
+            [
+              8.540829239700383,
+              47.379565929583116
+            ],
+            [
+              8.541066096341497,
+              47.37956592869963
+            ],
+            [
+              8.541018,
+              47.37968100000001
+            ],
+            [
+              8.540976999999991,
+              47.379736
+            ],
+            [
+              8.540883999999997,
+              47.379782
+            ],
+            [
+              8.540824999999996,
+              47.379794
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9006/01",
+        "geb_id": "9900/9006/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 725,
+        "wgs84_lat": -35.3134473,
+        "wgs84_lon": 149.1210857,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 31,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9006/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.120937656,
+              -35.313568646
+            ],
+            [
+              149.121233744,
+              -35.313568646
+            ],
+            [
+              149.121233744,
+              -35.313325954
+            ],
+            [
+              149.120937656,
+              -35.313325954
+            ],
+            [
+              149.120937656,
+              -35.313568646
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9006/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 688.99,
+        "wgs84_lat": -35.3134473,
+        "wgs84_lon": 149.1210857,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 32,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9006/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.120656275,
+              -35.313568645
+            ],
+            [
+              149.120937656,
+              -35.313568646
+            ],
+            [
+              149.120937656,
+              -35.313325954
+            ],
+            [
+              149.120656277,
+              -35.313325953
+            ],
+            [
+              149.120656275,
+              -35.313568645
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9006/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 688.99,
+        "wgs84_lat": -35.3134473,
+        "wgs84_lon": 149.1210857,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 33,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9006/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.121233744,
+              -35.313568646
+            ],
+            [
+              149.121515125,
+              -35.313568645
+            ],
+            [
+              149.121515123,
+              -35.313325953
+            ],
+            [
+              149.121233744,
+              -35.313325954
+            ],
+            [
+              149.121233744,
+              -35.313568646
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9006/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1998.51,
+        "wgs84_lat": -35.3134473,
+        "wgs84_lon": 149.1210857,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 34,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9006/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.120656277,
+              -35.313325953
+            ],
+            [
+              149.121515123,
+              -35.313325953
+            ],
+            [
+              149.121515122,
+              -35.313095316
+            ],
+            [
+              149.120656278,
+              -35.313095316
+            ],
+            [
+              149.120656277,
+              -35.313325953
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9006/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1998.51,
+        "wgs84_lat": -35.3134473,
+        "wgs84_lon": 149.1210857,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 35,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9006/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              149.120656274,
+              -35.313799282
+            ],
+            [
+              149.121515126,
+              -35.313799282
+            ],
+            [
+              149.121515125,
+              -35.313568645
+            ],
+            [
+              149.120656275,
+              -35.313568645
+            ],
+            [
+              149.120656274,
+              -35.313799282
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9007/01",
+        "geb_id": "9900/9007/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 950,
+        "wgs84_lat": -15.8316069,
+        "wgs84_lon": -47.8972753,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 36,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9007/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.897419162,
+              -15.831746169
+            ],
+            [
+              -47.897131438,
+              -15.831746169
+            ],
+            [
+              -47.897131438,
+              -15.831467631
+            ],
+            [
+              -47.897419162,
+              -15.831467631
+            ],
+            [
+              -47.897419162,
+              -15.831746169
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9007/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 2126.68,
+        "wgs84_lat": -15.8316069,
+        "wgs84_lon": -47.8972753,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 37,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9007/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.898063266,
+              -15.831746167
+            ],
+            [
+              -47.897419162,
+              -15.831746169
+            ],
+            [
+              -47.897419162,
+              -15.831467631
+            ],
+            [
+              -47.898063265,
+              -15.83146763
+            ],
+            [
+              -47.898063266,
+              -15.831746167
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9007/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 2126.68,
+        "wgs84_lat": -15.8316069,
+        "wgs84_lon": -47.8972753,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 38,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9007/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.897131438,
+              -15.831746169
+            ],
+            [
+              -47.896487334,
+              -15.831746167
+            ],
+            [
+              -47.896487335,
+              -15.83146763
+            ],
+            [
+              -47.897131438,
+              -15.831467631
+            ],
+            [
+              -47.897131438,
+              -15.831746169
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9007/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 11648.32,
+        "wgs84_lat": -15.8316069,
+        "wgs84_lon": -47.8972753,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 39,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9007/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.898063265,
+              -15.83146763
+            ],
+            [
+              -47.896487335,
+              -15.83146763
+            ],
+            [
+              -47.896487337,
+              -15.830844093
+            ],
+            [
+              -47.898063263,
+              -15.830844093
+            ],
+            [
+              -47.898063265,
+              -15.83146763
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9007/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 11648.32,
+        "wgs84_lat": -15.8316069,
+        "wgs84_lon": -47.8972753,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 40,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9007/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -47.898063269,
+              -15.832369704
+            ],
+            [
+              -47.896487331,
+              -15.832369704
+            ],
+            [
+              -47.896487334,
+              -15.831746167
+            ],
+            [
+              -47.898063266,
+              -15.831746167
+            ],
+            [
+              -47.898063269,
+              -15.832369704
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9008/01",
+        "geb_id": "9900/9008/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 1180,
+        "wgs84_lat": 37.5702322,
+        "wgs84_lon": 126.9649301,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 41,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9008/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              126.96473568,
+              37.570077449
+            ],
+            [
+              126.96512452,
+              37.570077449
+            ],
+            [
+              126.96512452,
+              37.570386951
+            ],
+            [
+              126.96473568,
+              37.570386951
+            ],
+            [
+              126.96473568,
+              37.570077449
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9008/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 574.9,
+        "wgs84_lat": 37.5702322,
+        "wgs84_lon": 126.9649301,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 42,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9008/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              126.964546235,
+              37.570077448
+            ],
+            [
+              126.96473568,
+              37.570077449
+            ],
+            [
+              126.96473568,
+              37.570386951
+            ],
+            [
+              126.964546234,
+              37.57038695
+            ],
+            [
+              126.964546235,
+              37.570077448
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9008/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 574.9,
+        "wgs84_lat": 37.5702322,
+        "wgs84_lon": 126.9649301,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 43,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9008/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              126.96512452,
+              37.570077449
+            ],
+            [
+              126.965313965,
+              37.570077448
+            ],
+            [
+              126.965313966,
+              37.57038695
+            ],
+            [
+              126.96512452,
+              37.570386951
+            ],
+            [
+              126.96512452,
+              37.570077449
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9008/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1135.1,
+        "wgs84_lat": 37.5702322,
+        "wgs84_lon": 126.9649301,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 44,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9008/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              126.964546234,
+              37.57038695
+            ],
+            [
+              126.965313966,
+              37.57038695
+            ],
+            [
+              126.965313967,
+              37.570537742
+            ],
+            [
+              126.964546233,
+              37.570537742
+            ],
+            [
+              126.964546234,
+              37.57038695
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9008/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1135.1,
+        "wgs84_lat": 37.5702322,
+        "wgs84_lon": 126.9649301,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 45,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9008/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              126.964546236,
+              37.569926657
+            ],
+            [
+              126.965313964,
+              37.569926657
+            ],
+            [
+              126.965313965,
+              37.570077448
+            ],
+            [
+              126.964546235,
+              37.570077448
+            ],
+            [
+              126.964546236,
+              37.569926657
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9009/01",
+        "geb_id": "9900/9009/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 756,
+        "wgs84_lat": -1.2286794,
+        "wgs84_lon": 36.80086,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 46,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9009/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              36.800736474,
+              -1.22880373
+            ],
+            [
+              36.800983526,
+              -1.22880373
+            ],
+            [
+              36.800983526,
+              -1.22855507
+            ],
+            [
+              36.800736474,
+              -1.22855507
+            ],
+            [
+              36.800736474,
+              -1.22880373
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9009/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 996.77,
+        "wgs84_lat": -1.2286794,
+        "wgs84_lon": 36.80086,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 47,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9009/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              36.80041074,
+              -1.22880373
+            ],
+            [
+              36.800736474,
+              -1.22880373
+            ],
+            [
+              36.800736474,
+              -1.22855507
+            ],
+            [
+              36.80041074,
+              -1.22855507
+            ],
+            [
+              36.80041074,
+              -1.22880373
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9009/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 996.77,
+        "wgs84_lat": -1.2286794,
+        "wgs84_lon": 36.80086,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 48,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9009/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              36.800983526,
+              -1.22880373
+            ],
+            [
+              36.80130926,
+              -1.22880373
+            ],
+            [
+              36.80130926,
+              -1.22855507
+            ],
+            [
+              36.800983526,
+              -1.22855507
+            ],
+            [
+              36.800983526,
+              -1.22880373
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9009/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 3625.23,
+        "wgs84_lat": -1.2286794,
+        "wgs84_lon": 36.80086,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 49,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9009/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              36.80041074,
+              -1.22855507
+            ],
+            [
+              36.80130926,
+              -1.22855507
+            ],
+            [
+              36.80130926,
+              -1.228227217
+            ],
+            [
+              36.80041074,
+              -1.228227217
+            ],
+            [
+              36.80041074,
+              -1.22855507
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9009/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 3625.23,
+        "wgs84_lat": -1.2286794,
+        "wgs84_lon": 36.80086,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 50,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9009/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              36.80041074,
+              -1.229131583
+            ],
+            [
+              36.80130926,
+              -1.229131583
+            ],
+            [
+              36.80130926,
+              -1.22880373
+            ],
+            [
+              36.80041074,
+              -1.22880373
+            ],
+            [
+              36.80041074,
+              -1.229131583
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9010/01",
+        "geb_id": "9900/9010/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 976,
+        "wgs84_lat": 38.9286131,
+        "wgs84_lon": -77.0579432,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 51,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9010/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.058123339,
+              38.928472393
+            ],
+            [
+              -77.057763061,
+              38.928472393
+            ],
+            [
+              -77.05776306,
+              38.928753807
+            ],
+            [
+              -77.05812334,
+              38.928753807
+            ],
+            [
+              -77.058123339,
+              38.928472393
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9010/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 751.84,
+        "wgs84_lat": 38.9286131,
+        "wgs84_lon": -77.0579432,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 52,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9010/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.058400871,
+              38.928472392
+            ],
+            [
+              -77.058123339,
+              38.928472393
+            ],
+            [
+              -77.05812334,
+              38.928753807
+            ],
+            [
+              -77.058400873,
+              38.928753806
+            ],
+            [
+              -77.058400871,
+              38.928472392
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9010/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 751.84,
+        "wgs84_lat": 38.9286131,
+        "wgs84_lon": -77.0579432,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 53,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9010/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.057763061,
+              38.928472393
+            ],
+            [
+              -77.057485529,
+              38.928472392
+            ],
+            [
+              -77.057485527,
+              38.928753806
+            ],
+            [
+              -77.05776306,
+              38.928753807
+            ],
+            [
+              -77.057763061,
+              38.928472393
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9010/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1910.16,
+        "wgs84_lat": 38.9286131,
+        "wgs84_lon": -77.0579432,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 54,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9010/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.058400873,
+              38.928753806
+            ],
+            [
+              -77.057485527,
+              38.928753806
+            ],
+            [
+              -77.057485526,
+              38.928970588
+            ],
+            [
+              -77.058400874,
+              38.928970588
+            ],
+            [
+              -77.058400873,
+              38.928753806
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9010/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 1910.16,
+        "wgs84_lat": 38.9286131,
+        "wgs84_lon": -77.0579432,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 55,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9010/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -77.058400869,
+              38.928255611
+            ],
+            [
+              -77.057485531,
+              38.928255611
+            ],
+            [
+              -77.057485529,
+              38.928472392
+            ],
+            [
+              -77.058400871,
+              38.928472392
+            ],
+            [
+              -77.058400869,
+              38.928255611
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9011/01",
+        "geb_id": "9900/9011/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 672,
+        "wgs84_lat": 1.3425516,
+        "wgs84_lon": 103.7896081,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 56,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9011/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789491633,
+              1.342434381
+            ],
+            [
+              103.789724567,
+              1.342434381
+            ],
+            [
+              103.789724567,
+              1.342668819
+            ],
+            [
+              103.789491633,
+              1.342668819
+            ],
+            [
+              103.789491633,
+              1.342434381
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9011/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 823.31,
+        "wgs84_lat": 1.3425516,
+        "wgs84_lon": 103.7896081,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 57,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9011/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789206252,
+              1.342434381
+            ],
+            [
+              103.789491633,
+              1.342434381
+            ],
+            [
+              103.789491633,
+              1.342668819
+            ],
+            [
+              103.789206252,
+              1.342668819
+            ],
+            [
+              103.789206252,
+              1.342434381
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9011/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 823.31,
+        "wgs84_lat": 1.3425516,
+        "wgs84_lon": 103.7896081,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 58,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9011/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789724567,
+              1.342434381
+            ],
+            [
+              103.790009948,
+              1.342434381
+            ],
+            [
+              103.790009948,
+              1.342668819
+            ],
+            [
+              103.789724567,
+              1.342668819
+            ],
+            [
+              103.789724567,
+              1.342434381
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9011/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 2840.69,
+        "wgs84_lat": 1.3425516,
+        "wgs84_lon": 103.7896081,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 59,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9011/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789206252,
+              1.342668819
+            ],
+            [
+              103.790009948,
+              1.342668819
+            ],
+            [
+              103.790009948,
+              1.342956044
+            ],
+            [
+              103.789206252,
+              1.342956044
+            ],
+            [
+              103.789206252,
+              1.342668819
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9011/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 2840.69,
+        "wgs84_lat": 1.3425516,
+        "wgs84_lon": 103.7896081,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 60,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9011/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              103.789206252,
+              1.342147156
+            ],
+            [
+              103.790009948,
+              1.342147156
+            ],
+            [
+              103.790009948,
+              1.342434381
+            ],
+            [
+              103.789206252,
+              1.342434381
+            ],
+            [
+              103.789206252,
+              1.342147156
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9012/01",
+        "geb_id": "9900/9012/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 899,
+        "wgs84_lat": 5.3292355,
+        "wgs84_lon": -3.9933619,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 61,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9012/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993497153,
+              5.329099932
+            ],
+            [
+              -3.993226647,
+              5.329099932
+            ],
+            [
+              -3.993226647,
+              5.329371068
+            ],
+            [
+              -3.993497153,
+              5.329371068
+            ],
+            [
+              -3.993497153,
+              5.329099932
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9012/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 398.56,
+        "wgs84_lat": 5.3292355,
+        "wgs84_lon": -3.9933619,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 62,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9012/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993617078,
+              5.329099932
+            ],
+            [
+              -3.993497153,
+              5.329099932
+            ],
+            [
+              -3.993497153,
+              5.329371068
+            ],
+            [
+              -3.993617078,
+              5.329371068
+            ],
+            [
+              -3.993617078,
+              5.329099932
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9012/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 398.56,
+        "wgs84_lat": 5.3292355,
+        "wgs84_lon": -3.9933619,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 63,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9012/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993226647,
+              5.329099932
+            ],
+            [
+              -3.993106722,
+              5.329099932
+            ],
+            [
+              -3.993106722,
+              5.329371068
+            ],
+            [
+              -3.993226647,
+              5.329371068
+            ],
+            [
+              -3.993226647,
+              5.329099932
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9012/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 751.94,
+        "wgs84_lat": 5.3292355,
+        "wgs84_lon": -3.9933619,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 64,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9012/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993617078,
+              5.329371068
+            ],
+            [
+              -3.993106722,
+              5.329371068
+            ],
+            [
+              -3.993106722,
+              5.329491272
+            ],
+            [
+              -3.993617078,
+              5.329491272
+            ],
+            [
+              -3.993617078,
+              5.329371068
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9012/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 751.94,
+        "wgs84_lat": 5.3292355,
+        "wgs84_lon": -3.9933619,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 65,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9012/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -3.993617078,
+              5.328979728
+            ],
+            [
+              -3.993106722,
+              5.328979728
+            ],
+            [
+              -3.993106722,
+              5.329099932
+            ],
+            [
+              -3.993617078,
+              5.329099932
+            ],
+            [
+              -3.993617078,
+              5.328979728
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9013/01",
+        "geb_id": "9900/9013/AA",
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "Gebaeude",
+        "lc_area": 875,
+        "wgs84_lat": 37.8021916,
+        "wgs84_lon": -122.3981182,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 66,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9013/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.398286141,
+              37.802058346
+            ],
+            [
+              -122.397950259,
+              37.802058346
+            ],
+            [
+              -122.397950259,
+              37.802324854
+            ],
+            [
+              -122.398286141,
+              37.802324854
+            ],
+            [
+              -122.398286141,
+              37.802058346
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9013/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 190.0,
+        "wgs84_lat": 37.8021916,
+        "wgs84_lon": -122.3981182,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 67,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9013/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.398359073,
+              37.802058346
+            ],
+            [
+              -122.398286141,
+              37.802058346
+            ],
+            [
+              -122.398286141,
+              37.802324854
+            ],
+            [
+              -122.398359074,
+              37.802324854
+            ],
+            [
+              -122.398359073,
+              37.802058346
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9013/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "befestigt",
+        "lc_area": 190.0,
+        "wgs84_lat": 37.8021916,
+        "wgs84_lon": -122.3981182,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 68,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9013/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.397950259,
+              37.802058346
+            ],
+            [
+              -122.397877327,
+              37.802058346
+            ],
+            [
+              -122.397877326,
+              37.802324854
+            ],
+            [
+              -122.397950259,
+              37.802324854
+            ],
+            [
+              -122.397950259,
+              37.802058346
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9013/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 272.5,
+        "wgs84_lat": 37.8021916,
+        "wgs84_lon": -122.3981182,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 69,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9013/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.398359074,
+              37.802324854
+            ],
+            [
+              -122.397877326,
+              37.802324854
+            ],
+            [
+              -122.397877326,
+              37.802382722
+            ],
+            [
+              -122.398359074,
+              37.802382722
+            ],
+            [
+              -122.398359074,
+              37.802324854
+            ]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "bbl_id": "9900/9013/01",
+        "geb_id": null,
+        "av_stat": "Demo",
+        "av_egid": null,
+        "av_egrid": null,
+        "av_type": "humusiert",
+        "lc_area": 272.5,
+        "wgs84_lat": 37.8021916,
+        "wgs84_lon": -122.3981182,
+        "lv95_e": null,
+        "lv95_n": null,
+        "fid": null,
+        "fid_src": null,
+        "objectid": 70,
+        "etl_ts": "2026-09-22T00:00:00Z",
+        "provenance": {
+          "dataStatus": "synthetic-demo",
+          "buildingId": "9900/9013/AA",
+          "notice": "Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.",
+          "geometryMethod": "metric rectangles"
+        }
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [
+              -122.398359073,
+              37.802000477
+            ],
+            [
+              -122.397877327,
+              37.802000477
+            ],
+            [
+              -122.397877327,
+              37.802058346
+            ],
+            [
+              -122.398359073,
+              37.802058346
+            ],
+            [
+              -122.398359073,
+              37.802000477
+            ]
+          ]
+        ]
       }
     }
   ]

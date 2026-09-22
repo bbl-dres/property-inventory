@@ -12,15 +12,15 @@ module.exports = {
     check('loading overlay hidden', document.getElementById('loading-overlay').classList.contains('hidden'));
     check('prototype banner present', !!document.getElementById('prototype-banner'));
     check('title translated', document.title === 'Liegenschaften Inventar BBL');
-    check('buildings loaded (11)', state.buildingsData && state.buildingsData.features.length === 11);
-    check('indexes built', state.buildingIndex.size === 11 && state.parcelIndex.size === 10 && state.landCoverIndex.size === 12);
+    check('buildings loaded (14)', state.buildingsData && state.buildingsData.features.length === 14);
+    check('indexes built', state.buildingIndex.size === 14 && state.parcelIndex.size === 14 && state.landCoverIndex.size === 70);
 
     // Tables and filters
-    check('11 building rows rendered', document.querySelectorAll('#list-body tr').length === 11);
-    check('parcel rows rendered', document.querySelectorAll('#parcels-body tr').length === 10);
-    check('land cover rows rendered', document.querySelectorAll('#landcovers-body tr').length === 12);
+    check('14 building rows rendered', document.querySelectorAll('#list-body tr').length === 14);
+    check('parcel rows rendered', document.querySelectorAll('#parcels-body tr').length === 14);
+    check('first page of land cover rows rendered', document.querySelectorAll('#landcovers-body tr').length === 50);
     const statusOptions = document.querySelectorAll('#filter-status-options .filter-option');
-    check('status filter options rendered with counts', statusOptions.length === 2 && !!document.querySelector('#filter-status-options .filter-option-count'));
+    check('status filter options rendered with counts', statusOptions.length === 1 && !!document.querySelector('#filter-status-options .filter-option-count'));
     check('column visibility stylesheet generated', !!document.getElementById('column-visibility-style'));
     check('table hidden by default', document.getElementById('table-panel').classList.contains('collapsed') && state.tableOpen === false);
     check('style switcher visible in map view', document.getElementById('style-switcher').classList.contains('visible'));
@@ -46,24 +46,24 @@ module.exports = {
 
     // Filters use replaceState (no history growth) and update the map source
     const histBefore = window.history.length;
-    const cb = document.querySelector('#filter-status-options input[type="checkbox"]');
+    const cb = document.querySelector('#filter-land-options input[data-value="CH"]');
     cb.checked = true;
     cb.dispatchEvent(new window.Event('change', { bubbles: true }));
     await settle();
-    check('filter applied', state.filteredData.features.length < 11 && state.filteredData.features.length > 0);
+    check('filter applied', state.filteredData.features.length < 14 && state.filteredData.features.length > 0);
     check('filter pill rendered', document.querySelectorAll('#filter-pills .filter-pill').length === 1);
-    check('filter in URL', window.location.search.indexOf('filter_status=') !== -1);
+    check('filter in URL', window.location.search.indexOf('filter_land=') !== -1);
     check('filters do not push history', window.history.length === histBefore);
     check('map source data filtered', map.getSource('buildings').data.features.length === state.filteredData.features.length);
     document.querySelector('#filter-pills .filter-pill-remove').click();
     await settle();
-    check('pill removal resets filter', state.filteredData.features.length === 11 && cb.checked === false);
+    check('pill removal resets filter', state.filteredData.features.length === 14 && cb.checked === false);
 
     // Gallery view and back
     document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
     await settle();
     check('gallery active', document.getElementById('gallery-view').classList.contains('active') && state.currentView === 'gallery');
-    check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 11);
+    check('gallery cards rendered', document.querySelectorAll('#gallery-grid .gallery-card').length === 14);
     check('style switcher hidden outside map', !document.getElementById('style-switcher').classList.contains('visible'));
     check('gallery view in URL', window.location.search.indexOf('view=gallery') !== -1);
     check('map selection kept in URL across views', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1);
@@ -125,7 +125,7 @@ module.exports = {
     cb.checked = false;
     cb.dispatchEvent(new window.Event('change', { bubbles: true }));
     await settle();
-    check('filter cleared again', state.filteredData.features.length === 11 && state.pendingFilterZoom === false);
+    check('filter cleared again', state.filteredData.features.length === 14 && state.pendingFilterZoom === false);
 
     // Basemap switch: layers rebuilt once, handlers not duplicated, no re-fly
     const flyBeforeStyle = map.calls.flyTo.length;
@@ -210,7 +210,7 @@ module.exports = {
     document.querySelector('.lang-option[data-lang="en"]').click();
     await settle();
     check('language switched', document.documentElement.lang === 'en' && /lang=en/.test(window.location.search));
-    check('table header re-rendered in English', document.querySelector('#list-table-header-row th').textContent.indexOf('ID') !== -1);
+    check('table header re-rendered in English', document.querySelector('#list-table-header-row th').textContent.indexOf('Description') !== -1);
 
     // Sorting: a header click sorts the table by that column, a second click reverses it; numbers
     // sort numerically; the marker survives the header re-render of a language change
@@ -233,7 +233,7 @@ module.exports = {
     // "Keine" / "Alle" of the columns menu rebuild the column stylesheet
     const sheet = document.getElementById('column-visibility-style');
     document.getElementById('columns-toggle-none').click();
-    check('"Keine" hides every building column', sheet.textContent.indexOf('.col-bbl_id{') !== -1 && sheet.textContent.indexOf('.col-garea_ngf{') !== -1);
+    check('"Keine" hides every building column', sheet.textContent.indexOf('.col-bbl_bez{') !== -1 && sheet.textContent.indexOf('.col-garea_ngf{') !== -1);
     document.getElementById('columns-toggle-all').click();
     check('"Alle" shows every building column', sheet.textContent.indexOf('.col-bbl_') === -1 && sheet.textContent.indexOf('.col-garea_') === -1);
 
@@ -243,13 +243,13 @@ module.exports = {
     document.getElementById('tree-panel-btn').click();
     await settle();
     check('tree panel opens; the button is a plain toggle', document.getElementById('tree-panel').classList.contains('open') && document.getElementById('tree-panel-btn').classList.contains('panel-open') && document.getElementById('tree-panel-btn').getAttribute('aria-expanded') === 'true');
-    check('tree lists the countries with counts', document.querySelectorAll('#tree-panel-content > .tree > .tree-item').length === 6 && document.querySelector('#tree-panel-content .tree-count').textContent !== '');
+    check('tree lists the countries with counts', document.querySelectorAll('#tree-panel-content > .tree > .tree-item').length === 9 && document.querySelector('#tree-panel-content .tree-count').textContent !== '');
     const rows = function(sel) { return document.querySelectorAll('#tree-panel-content .tree-row' + sel); };
     const fold = function(key) { document.querySelector('#tree-panel-content .tree-fold[data-fold="' + key + '"]').click(); };
     const row = function(key) { return document.querySelector('#tree-panel-content .tree-row[data-node="' + key + '"]'); };
     row('country:CH').click();
     await settle();
-    check('country node sets the Land filter', state.activeFilters.land.length === 1 && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 6 && /filter_land=CH/.test(window.location.search));
+    check('country node sets the Land filter', state.activeFilters.land.length === 1 && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 5 && /filter_land=CH/.test(window.location.search));
     await settle(200); // assets/countries/index.json and CH.geojson are fetched on the first use
     const outline = map.getLayer('country-highlight-line');
     const zoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
@@ -257,7 +257,7 @@ module.exports = {
     check('outline layers sit under the data layers', map._layers.findIndex(l => l.id === 'country-highlight-line') < map._layers.findIndex(l => l.id === 'buildings-points'));
     check('filter button counts it, the Standorte button carries no badge', !!document.querySelector('#filter-panel-btn .filter-count') && !document.querySelector('#tree-panel-btn .filter-count') && !document.getElementById('tree-panel-btn').classList.contains('has-active-filters') && /CH/.test(document.getElementById('filter-pills').textContent));
     check('drawer checkbox follows', !!document.querySelector('#filter-panel input[data-filter="land"][data-value="CH"]:checked'));
-    check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 5 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
+    check('selected node opens one level', rows('[data-node^="region:CH/"]').length === 2 && rows('[data-node^="city:"]').length === 0 && document.querySelector('#tree-panel-content .tree-node.is-active .tree-row').dataset.node === 'country:CH');
     fold('country:DE');
     check('one open country at a time', rows('[data-node^="region:DE/"]').length === 1 && rows('[data-node^="region:CH/"]').length === 0 && state.activeFilters.land[0] === 'CH');
     fold('country:CH');
@@ -266,7 +266,7 @@ module.exports = {
     await settle(200); // assets/regions/CH-BE.geojson is fetched on the first use
     const cantonZoom = map.calls.fitBounds[map.calls.fitBounds.length - 1];
     check('canton outlined and zoomed to (Bern)', JSON.stringify(map.getLayer('country-highlight-line').filter) === JSON.stringify(['==', ['get', 'key'], 'CH-BE']) && map.getSource('countries').data.features.some(f => f.properties.key === 'CH-BE') && cantonZoom.bounds[0] > 6.7 && cantonZoom.bounds[0] < 7.2 && cantonZoom.bounds[2] > 8.3 && cantonZoom.bounds[2] < 8.6);
-    check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'BE' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 2);
+    check('region node adds the Region filter', state.activeFilters.region.length === 1 && state.activeFilters.region[0] === 'BE' && state.activeFilters.land[0] === 'CH' && state.filteredData.features.length === 4);
     check('country is on the path, region active, cities shown', document.querySelector('.tree-row[data-node="country:CH"]').closest('.tree-node').classList.contains('is-path') && row('region:CH/BE').closest('.tree-node').classList.contains('is-active') && rows('[data-node="city:CH/BE/Bern"]').length === 1 && rows('[data-node^="we:"]').length === 0);
     fold('city:CH/BE/Bern');
     check('city opens its WE nodes', rows('[data-node^="we:CH/"]').length === 2);

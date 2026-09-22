@@ -101,12 +101,46 @@
     "fr": "Replier {name}",
     "it": "Comprimi {name}"
   },
-  "country.CH": { "de": "Schweiz", "en": "Switzerland", "fr": "Suisse", "it": "Svizzera" },
-  "country.DE": { "de": "Deutschland", "en": "Germany", "fr": "Allemagne", "it": "Germania" },
-  "country.US": { "de": "USA", "en": "USA", "fr": "États-Unis", "it": "USA" },
-  "country.JP": { "de": "Japan", "en": "Japan", "fr": "Japon", "it": "Giappone" },
-  "country.BR": { "de": "Brasilien", "en": "Brazil", "fr": "Brésil", "it": "Brasile" },
-  "country.AU": { "de": "Australien", "en": "Australia", "fr": "Australie", "it": "Australia" },
+  "country.CH": {
+    "de": "Schweiz",
+    "en": "Switzerland",
+    "fr": "Suisse",
+    "it": "Svizzera"
+  },
+  "country.DE": {
+    "de": "Deutschland",
+    "en": "Germany",
+    "fr": "Allemagne",
+    "it": "Germania"
+  },
+  "country.US": {
+    "de": "USA",
+    "en": "USA",
+    "fr": "États-Unis",
+    "it": "USA"
+  },
+  "country.JP": {
+    "de": "Japan",
+    "en": "Japan",
+    "fr": "Japon",
+    "it": "Giappone"
+  },
+  "country.BR": {
+    "de": "Brasilien",
+    "en": "Brazil",
+    "fr": "Brésil",
+    "it": "Brasile"
+  },
+  "country.AU": {
+    "de": "Australien",
+    "en": "Australia",
+    "fr": "Australie",
+    "it": "Australia"
+  },
+  "country.KR": { "de": "Südkorea", "en": "South Korea", "fr": "Corée du Sud", "it": "Corea del Sud" },
+  "country.KE": { "de": "Kenia", "en": "Kenya", "fr": "Kenya", "it": "Kenya" },
+  "country.SG": { "de": "Singapur", "en": "Singapore", "fr": "Singapour", "it": "Singapore" },
+  "country.CI": { "de": "Côte d’Ivoire", "en": "Côte d’Ivoire", "fr": "Côte d’Ivoire", "it": "Costa d’Avorio" },
   "lang.notImplemented": {
     "de": "Mehrsprachigkeit ist in diesem Prototyp nicht umgesetzt. Die Oberfläche bleibt auf Deutsch.",
     "en": "Languages are not implemented in this prototype. The interface stays in German.",
@@ -228,10 +262,10 @@
     "it": "Prototipo"
   },
   "banner.prototype.text": {
-    "de": "Alle Daten sind fiktiv. Nur zu Demonstrationszwecken, nicht für den produktiven Einsatz.",
-    "en": "All data is fictional. For demonstration purposes only, not for production use.",
-    "fr": "Toutes les données sont fictives. À des fins de démonstration uniquement, pas pour un usage productif.",
-    "it": "Tutti i dati sono fittizi. Solo a scopo dimostrativo, non per uso produttivo."
+    "de": "Reale Standorte und Fotos, ergänzt um fiktive Betriebsdaten. Nur zu Demonstrationszwecken.",
+    "en": "Real locations and photos with fictional operational data. For demonstration only.",
+    "fr": "Sites et photos réels, avec des données de gestion fictives. Démonstration uniquement.",
+    "it": "Sedi e foto reali, con dati operativi fittizi. Solo a scopo dimostrativo."
   },
   "map.loading": {
     "de": "Karte wird geladen…",
@@ -2532,10 +2566,10 @@
     "it": "Copertura del suolo"
   },
   "banner.prototype.short": {
-    "de": "Alle Daten sind fiktiv.",
-    "en": "All data is fictional.",
-    "fr": "Toutes les données sont fictives.",
-    "it": "Tutti i dati sono fittizi."
+    "de": "Reale Standorte · Demodaten",
+    "en": "Real locations · Demo data",
+    "fr": "Sites réels · Données fictives",
+    "it": "Sedi reali · Dati dimostrativi"
   },
   "filter.apply": {
     "de": "{count} Objekte anzeigen",
