@@ -62,6 +62,7 @@ This data model is designed for compatibility with the BuildingMinds platform sc
 erDiagram
     Site ||--o{ Building : contains
     Building ||--o| Parcel : "sits on"
+    Parcel ||--o{ LandCover : "is covered by"
     Building ||--o{ Address : "has"
     Building ||--o{ Floor : "has"
     Building ||--o{ AreaMeasurement : "has"
@@ -97,6 +98,15 @@ erDiagram
         string plotNumber
         number area
         string ownershipType
+    }
+
+    LandCover {
+        number landCoverId PK
+        string parcelId FK
+        string buildingId FK
+        string type
+        string typeGroup
+        number area
     }
 
     Address {
@@ -182,6 +192,7 @@ erDiagram
 |--------|-------------|
 | **Site** (Standort) *[Preview]* | A logical grouping of buildings, such as a campus, property, or land parcel. Buildings belong to exactly one site. |
 | **Parcel** (Parzelle) | A land plot on which a building sits, stored as polygon geometry and linked to buildings via `buildingId`. |
+| **Land Cover** (Bodenbedeckung) | A land-cover polygon of the cadastral survey (BBArt type) clipped to a parcel; the piece carrying the building's EGID is its footprint. |
 | **Building** (Gebäude) | The core entity representing a physical structure in the portfolio. |
 | **Address** (Adresse) | The physical location of a building. A building can have multiple addresses (e.g., corner buildings with entrances on different streets). |
 | **Floor** (Geschoss) | A level within a building. Spaces belong to exactly one floor. |
@@ -202,7 +213,7 @@ Entities are organized into functional groups:
 
 | Layer | Entities | Description |
 |-------|----------|-------------|
-| **Core** | Site, Building, Parcel, Address, Floor, Space | Primary real estate objects, their locations, and internal structures |
+| **Core** | Site, Building, Parcel, Land Cover, Address, Floor, Space | Primary real estate objects, their locations, and internal structures |
 | **Measurement** | Area Measurement, Operational Measurement | Quantitative data (areas, volumes, consumption) |
 | **Supporting** | Document, Contact, Asset, Contract, Cost | Administrative and operational associations |
 | **Future** | Certificate, Valuation | Planned entities for certifications and appraisals |
@@ -626,6 +637,55 @@ A space represents a room or area within a floor. Spaces are the smallest spatia
 ```
 
 > **Note:** The demo uses German values (e.g., `"type": "Besprechungsraum"`, `"ventilationType": "Zu-/Abluft"`). For English implementations, use `"type": "Meeting room"`, `"ventilationType": "Balanced"`.
+
+---
+
+### 3.7 Land Cover (Bodenbedeckung)
+
+A land-cover polygon of the Swiss cadastral survey (Amtliche Vermessung, information layer *Bodenbedeckung*, INTERLIS `BBArt`) clipped to a parcel. Land covers are stored as polygon geometries in `data/landcovers.geojson` and linked to parcels via `parcelId`; the piece that carries the building's EGID is linked to the building via `buildingId`. In the demo data the five Swiss parcels carry official survey polygons (geodienste.ch WFS `ms:LCSF`), the overseas parcels schematic demonstration polygons (`surveyStatus` = `Demo`). See [docs/LAND-COVER.md](../../docs/LAND-COVER.md).
+
+#### Schema Definition
+
+| Field | PK/FK | Type | Description | Constraints | Alias (EN) | Alias (DE) |
+|-------|-------|------|-------------|-------------|------------|------------|
+| **landCoverId** | PK | integer | Unique identifier of the land-cover polygon. | **mandatory**, minimum: 1 | Land Cover ID | Bodenbedeckungs-ID |
+| **parcelId** | FK | string | Reference to the parcel the polygon is clipped to. | **mandatory**, minLength: 1, maxLength: 50 | Parcel ID | Parzellen-ID |
+| **buildingId** | FK | string | Reference to the building whose footprint this polygon is (type `Gebaeude` with the building's EGID); otherwise null. | minLength: 1, maxLength: 50 | Building ID | Objekt-ID |
+| **type** | | string, enum | Land-cover type, one of the 26 `BBArt` values of DM.01-AV-CH (e.g. `Gebaeude`, `Strasse_Weg`, `Gartenanlage`, `Acker_Wiese_Weide`, `Gewaesser_stehendes`, `geschlossener_Wald`, `Fels`). | **mandatory** | Type | Bodenbedeckungsart |
+| **typeGroup** | | string, enum | Main group of the type: `gebaeude`, `befestigt`, `humusiert`, `gewaesser`, `bestockt`, `vegetationslos`. | **mandatory** | Main Group | Hauptgruppe |
+| **area** | | number | Geodesic area of the clipped polygon in square metres. | **mandatory**, minimum: 0 | Area | Fläche |
+| **egid** | FK | string | Federal building identifier of the surveyed building (`GWR_EGID`), if any. | length: 1..9 digits | EGID | EGID |
+| **egrid** | FK | string | Federal parcel identifier of the parcel (Swiss parcels only). | length: 14 | EGRID | EGRID |
+| **surveyStatus** | | string | Survey quality of the source polygon (e.g. `AV93`), or `Demo` for schematic polygons. | **mandatory** | Survey Status | AV-Status |
+| **canton** | | string | Canton code of the surveyed polygon (Swiss parcels only). | minLength: 2, maxLength: 10 | Canton | Kanton |
+| **municipalityNumber** | | integer | Federal municipality number (`BFSNr`) of the surveyed polygon. | | Municipality Number | BFS-Nummer |
+| **provenance** | | object | Data status (`public-source` or `synthetic-demo`), notice, geometry method, source URL, retrieval date and licence. | | Provenance | Herkunft |
+
+#### Geometry
+
+Land covers use **Polygon** or **MultiPolygon** geometry (a clipped survey polygon can fall apart at the parcel boundary), with the GeoJSON ring orientation.
+
+#### Example: Land Cover Object
+
+```json
+{
+  "type": "Feature",
+  "properties": {
+    "landCoverId": 5,
+    "parcelId": "1080/4840/01",
+    "buildingId": "1080/4840/AF",
+    "type": "Gebaeude",
+    "typeGroup": "gebaeude",
+    "area": 3259.55,
+    "egid": "1230654",
+    "egrid": "CH127620463518",
+    "surveyStatus": "AV93",
+    "canton": "BE",
+    "municipalityNumber": 351
+  },
+  "geometry": { "type": "Polygon", "coordinates": [[[7.4425, 46.9461], [7.4433, 46.9461], [7.4433, 46.9466], [7.4425, 46.9466], [7.4425, 46.9461]]] }
+}
+```
 
 ---
 

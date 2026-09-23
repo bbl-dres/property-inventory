@@ -1,13 +1,14 @@
-// Table panel (buildings, parcels), table tabs, toolbar and the gallery view.
+// Table panel (buildings, parcels, land cover), table tabs, toolbar and the gallery view.
 
 import { state } from './state.js';
 import { placeholderImages, getStatusClassName } from './config.js';
 import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
 import { t, onLangChange } from './i18n.js';
 import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumnsSearch, initDropdowns, initTableSearch } from './table.js';
-import { selectBuilding, selectParcel } from './map.js';
+import { selectBuilding, selectParcel, selectLandCover } from './map.js';
 import { showDetailView, switchView } from './ui.js';
 import { initQuickExportMenu } from './export.js';
+import { landCoverGroup, landCoverTypeLabel, landCoverGroupLabel } from './landcover-types.js';
 
 // ===== COLUMN DEFINITIONS =====
 
@@ -69,11 +70,11 @@ function columnWidth(col) {
   const field = col.sortField || col.field;
   if (/^(garea_|gvol_|larea_)/.test(field) && !field.endsWith('_acu') || ['area','lc_area','extensionData.netFloorArea'].includes(field)) return 'number';
   if (['bbl_awrt','bbl_bwrt'].includes(field)) return 'amount';
-  if (['bbl_stat','status','av_stat'].includes(field)) return 'status';
+  if (['bbl_stat','status','av_stat','surveyStatus'].includes(field)) return 'status';
   if (field === 'etl_ts') return 'date';
   if (['bbl_bjahr','bbl_vjahr','gastw','gastw_og','gastw_ug'].includes(field)) return 'year';
   if (['wgs84_lat','wgs84_lon','lv95_e','lv95_n','egm_elev'].includes(field)) return 'number';
-  if (['adr_land','country','adr_reg','canton','av_nr','plotNumber','adr_plz','adr_hsnr','bfs_gemnr','kgs_nr','kgs_kat'].includes(field)) return 'code';
+  if (['adr_land','country','adr_reg','canton','av_nr','plotNumber','adr_plz','adr_hsnr','bfs_gemnr','kgs_nr','kgs_kat','egid','egrid'].includes(field)) return 'code';
   if (['bbl_bez','name'].includes(field)) return 'name';
   if (['adr_conct','streetName'].includes(field)) return 'description';
   return 'text';
@@ -99,12 +100,26 @@ const parcelColumns = [
   { field: 'ownershipType', cls: 'col-parcel-ownership' }
 ];
 
-[buildingColumns, parcelColumns].forEach(function(columns) {
+// Type and main group are translated (landcover-types.js)
+const landCoverColumns = [
+  { field: 'type', cls: 'col-lc-type', labelKey: 'col.lc.av_type', format: function(v) { return escapeHtml(landCoverTypeLabel(v)); } },
+  { field: 'typeGroup', cls: 'col-lc-group', labelKey: 'col.lc.group', format: function(v, props) { return escapeHtml(landCoverGroupLabel(v || landCoverGroup(props.type))); } },
+  { field: 'area', cls: 'col-lc-area', labelKey: 'col.lc.lc_area', format: function(v) { return formatArea(v || 0); } },
+  { field: 'surveyStatus', cls: 'col-lc-status', labelKey: 'col.lc.av_stat' },
+  { field: 'parcelId', cls: 'col-lc-parcel', labelKey: 'col.lc.bbl_id' },
+  { field: 'buildingId', cls: 'col-lc-building', labelKey: 'col.lc.geb_id' },
+  { field: 'egid', cls: 'col-lc-egid', labelKey: 'col.lc.egid' },
+  { field: 'egrid', cls: 'col-lc-egrid', labelKey: 'col.lc.egrid' },
+  { field: 'canton', cls: 'col-lc-canton', labelKey: 'col.parcel.canton' }
+];
+
+[buildingColumns, parcelColumns, landCoverColumns].forEach(function(columns) {
   columns.forEach(function(col) { Object.assign(col, columnLabels[col.cls] || {}, { width: columnWidth(col) }); });
 });
 
 const BUILDING_SEARCH_FIELDS = ['buildingId', 'name', 'country', 'city', 'streetName', 'extensionData.portfolio', 'status'];
 const PARCEL_SEARCH_FIELDS = ['parcelId', 'plotNumber', 'name', 'municipality', 'canton', 'landUseZone', 'ownershipType'];
+const LANDCOVER_SEARCH_FIELDS = ['landCoverId', 'parcelId', 'buildingId', 'type', 'typeGroup', 'surveyStatus', 'egid', 'egrid'];
 
 // ===== EMPTY STATE (buildings table and gallery) =====
 
@@ -154,10 +169,22 @@ export const tables = {
     onRowSelect: selectOnMap(selectParcel),
     pagination: { infoId: 'parcels-pagination-info', pageInfoId: 'parcels-page-info', prevId: 'parcels-prev-btn', nextId: 'parcels-next-btn', rowsSelectId: 'parcels-rows-per-page', infoKey: 'pagination.parcels.info', emptyKey: 'pagination.parcels.empty' },
     empty: { type: 'row', colspan: parcelColumns.length, key: 'empty.parcels' }
+  }),
+  landcovers: createFeatureTable({
+    tbodyId: 'landcovers-body',
+    rowIdAttr: 'data-landcover-id',
+    getRowId: function(p) { return p.landCoverId; },
+    parseRowId: function(s) { return parseInt(s, 10); },
+    columns: landCoverColumns,
+    getFeatures: function() { return state.landCoverData ? state.landCoverData.features : []; },
+    searchFields: LANDCOVER_SEARCH_FIELDS,
+    onRowSelect: selectOnMap(selectLandCover),
+    pagination: { infoId: 'landcovers-pagination-info', pageInfoId: 'landcovers-page-info', prevId: 'landcovers-prev-btn', nextId: 'landcovers-next-btn', rowsSelectId: 'landcovers-rows-per-page', infoKey: 'pagination.landcovers.info', emptyKey: 'pagination.landcovers.empty' },
+    empty: { type: 'row', colspan: landCoverColumns.length, key: 'empty.landcovers' }
   })
 };
 
-const TABLE_TABS = ['buildings', 'parcels'];
+const TABLE_TABS = ['buildings', 'parcels', 'landcovers'];
 
 export function initTables() {
   TABLE_TABS.forEach(function(tab) { tables[tab].init(); });
@@ -168,8 +195,8 @@ export function renderTables() {
   TABLE_TABS.forEach(function(tab) { tables[tab].render(); });
 }
 
-// After a filter change: only the buildings table depends on the filters (the parcels table
-// always lists every parcel), so it is not rebuilt
+// After a filter change: only the buildings table depends on the filters (parcels and land covers
+// always list every feature), so the other two are not rebuilt
 export function renderFilteredTables() {
   if (!state.buildingsData) return;
   tables.buildings.render();
@@ -178,7 +205,7 @@ export function renderFilteredTables() {
 // ===== TABLE TABS =====
 
 function columnsListFor(tab) {
-  return document.getElementById(tab === 'parcels' ? 'parcel-columns-list' : 'columns-list');
+  return document.getElementById(tab === 'parcels' ? 'parcel-columns-list' : tab === 'landcovers' ? 'landcover-columns-list' : 'columns-list');
 }
 
 function activeColumnsList() {
@@ -233,6 +260,7 @@ function syncTableTo(tab, id) {
 
 export function syncTableToBuilding(buildingId) { if (state.buildingsData) syncTableTo('buildings', buildingId); }
 export function syncTableToParcel(parcelId) { if (state.parcelData) syncTableTo('parcels', parcelId); }
+export function syncTableToLandCover(landCoverId) { if (state.landCoverData) syncTableTo('landcovers', landCoverId); }
 
 // ===== TOOLBAR =====
 

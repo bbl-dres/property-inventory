@@ -431,12 +431,6 @@
     "fr": "{count} objets exportés",
     "it": "{count} oggetti esportati"
   },
-  "success.export.done": {
-    "de": "Export erfolgreich abgeschlossen",
-    "en": "Export completed successfully",
-    "fr": "Exportation terminée avec succès",
-    "it": "Esportazione completata con successo"
-  },
   "success.copy.title": {
     "de": "Kopiert",
     "en": "Copied",
@@ -784,12 +778,6 @@
     "en": "GeoJSON (.geojson)",
     "fr": "GeoJSON (.geojson)",
     "it": "GeoJSON (.geojson)"
-  },
-  "export.exporting": {
-    "de": "Exportiere...",
-    "en": "Exporting...",
-    "fr": "Exportation...",
-    "it": "Esportazione..."
   },
   "export.count": {
     "de": "{count} Objekt{plural} werden exportiert",
@@ -1469,23 +1457,11 @@
     "fr": "Catégorie PBC (kgs_kat)",
     "it": "Categoria PBC (kgs_kat)"
   },
-  "accordion.share.copy": {
-    "de": "Link kopieren",
-    "en": "Copy link",
-    "fr": "Copier le lien",
-    "it": "Copiare il link"
-  },
-  "accordion.share.copied": {
-    "de": "Kopiert!",
-    "en": "Copied!",
-    "fr": "Copié !",
-    "it": "Copiato!"
-  },
   "accordion.print": {
-    "de": "Karte drucken",
-    "en": "Print map",
-    "fr": "Imprimer la carte",
-    "it": "Stampare la carta"
+    "de": "Drucken",
+    "en": "Print",
+    "fr": "Imprimer",
+    "it": "Stampare"
   },
   "accordion.print.format": {
     "de": "Format",
@@ -2591,6 +2567,240 @@
     "fr": "Couverture du sol",
     "it": "Copertura del suolo"
   },
+  "landcover.group.gebaeude": {
+    "de": "Gebäude",
+    "en": "Buildings",
+    "fr": "Bâtiments",
+    "it": "Edifici"
+  },
+  "landcover.group.befestigt": {
+    "de": "Befestigte Flächen",
+    "en": "Sealed surfaces",
+    "fr": "Surfaces revêtues",
+    "it": "Superfici pavimentate"
+  },
+  "landcover.group.humusiert": {
+    "de": "Humusierte Flächen",
+    "en": "Soil-covered surfaces",
+    "fr": "Surfaces à sol naturel",
+    "it": "Superfici con terreno umifero"
+  },
+  "landcover.group.gewaesser": {
+    "de": "Gewässer",
+    "en": "Water bodies",
+    "fr": "Eaux",
+    "it": "Acque"
+  },
+  "landcover.group.bestockt": {
+    "de": "Bestockte Flächen",
+    "en": "Wooded surfaces",
+    "fr": "Surfaces boisées",
+    "it": "Superfici boscate"
+  },
+  "landcover.group.vegetationslos": {
+    "de": "Vegetationslose Flächen",
+    "en": "Unvegetated surfaces",
+    "fr": "Surfaces sans végétation",
+    "it": "Superfici senza vegetazione"
+  },
+  "landcover.type.Gebaeude": {
+    "de": "Gebäude",
+    "en": "Building",
+    "fr": "Bâtiment",
+    "it": "Edificio"
+  },
+  "landcover.type.Strasse_Weg": {
+    "de": "Strasse/Weg",
+    "en": "Road, path",
+    "fr": "Route, chemin",
+    "it": "Strada, sentiero"
+  },
+  "landcover.type.Trottoir": {
+    "de": "Trottoir",
+    "en": "Sidewalk",
+    "fr": "Trottoir",
+    "it": "Marciapiede"
+  },
+  "landcover.type.Verkehrsinsel": {
+    "de": "Verkehrsinsel",
+    "en": "Traffic island",
+    "fr": "Îlot",
+    "it": "Aiuola spartitraffico"
+  },
+  "landcover.type.Bahn": {
+    "de": "Bahn",
+    "en": "Railway",
+    "fr": "Chemin de fer",
+    "it": "Ferrovia"
+  },
+  "landcover.type.Flugplatz": {
+    "de": "Flugplatz",
+    "en": "Airfield",
+    "fr": "Place d'aviation",
+    "it": "Aerodromo"
+  },
+  "landcover.type.Wasserbecken": {
+    "de": "Wasserbecken",
+    "en": "Water basin",
+    "fr": "Bassin",
+    "it": "Bacino"
+  },
+  "landcover.type.uebrige_befestigte": {
+    "de": "Übrige befestigte",
+    "en": "Other sealed surface",
+    "fr": "Autre surface stabilisée",
+    "it": "Altra superficie consolidata"
+  },
+  "landcover.type.Acker_Wiese_Weide": {
+    "de": "Acker/Wiese/Weide",
+    "en": "Field, meadow, pasture",
+    "fr": "Champ, pré, pâturage",
+    "it": "Campo, prato, pascolo"
+  },
+  "landcover.type.Reben": {
+    "de": "Reben",
+    "en": "Vineyard",
+    "fr": "Vigne",
+    "it": "Vigna"
+  },
+  "landcover.type.uebrige_Intensivkultur": {
+    "de": "Übrige Intensivkultur",
+    "en": "Other intensive cultivation",
+    "fr": "Autre culture intensive",
+    "it": "Altra coltura intensiva"
+  },
+  "landcover.type.Gartenanlage": {
+    "de": "Gartenanlage",
+    "en": "Garden",
+    "fr": "Jardin",
+    "it": "Giardino"
+  },
+  "landcover.type.Hoch_Flachmoor": {
+    "de": "Hoch-/Flachmoor",
+    "en": "Raised bog, fen",
+    "fr": "Haut-marais, bas-marais",
+    "it": "Torbiera alta e bassa"
+  },
+  "landcover.type.uebrige_humusierte": {
+    "de": "Übrige humusierte",
+    "en": "Other soil-covered surface",
+    "fr": "Autre surface à sol naturel",
+    "it": "Altra superficie con terreno umifero"
+  },
+  "landcover.type.Gewaesser_stehendes": {
+    "de": "Stehendes Gewässer",
+    "en": "Standing water",
+    "fr": "Eau stagnante",
+    "it": "Acqua stagnante"
+  },
+  "landcover.type.Gewaesser_fliessendes": {
+    "de": "Fliessendes Gewässer",
+    "en": "Flowing water",
+    "fr": "Eau courante",
+    "it": "Acqua corrente"
+  },
+  "landcover.type.Schilfguertel": {
+    "de": "Schilfgürtel",
+    "en": "Reed belt",
+    "fr": "Roselière",
+    "it": "Canneto"
+  },
+  "landcover.type.geschlossener_Wald": {
+    "de": "Geschlossener Wald",
+    "en": "Closed forest",
+    "fr": "Forêt dense",
+    "it": "Bosco fitto"
+  },
+  "landcover.type.Wytweide_dicht": {
+    "de": "Wytweide (dicht)",
+    "en": "Wooded pasture (dense)",
+    "fr": "Pâturage boisé dense",
+    "it": "Pascolo alberato denso"
+  },
+  "landcover.type.Wytweide_offen": {
+    "de": "Wytweide (offen)",
+    "en": "Wooded pasture (open)",
+    "fr": "Pâturage boisé ouvert",
+    "it": "Pascolo alberato rado"
+  },
+  "landcover.type.uebrige_bestockte": {
+    "de": "Übrige bestockte",
+    "en": "Other wooded surface",
+    "fr": "Autre surface boisée",
+    "it": "Altra superficie boschiva"
+  },
+  "landcover.type.Fels": {
+    "de": "Fels",
+    "en": "Rock",
+    "fr": "Rocher",
+    "it": "Roccia"
+  },
+  "landcover.type.Gletscher_Firn": {
+    "de": "Gletscher/Firn",
+    "en": "Glacier, firn",
+    "fr": "Glacier, névé",
+    "it": "Ghiacciaio, nevaio"
+  },
+  "landcover.type.Geroell_Sand": {
+    "de": "Geröll/Sand",
+    "en": "Scree, sand",
+    "fr": "Éboulis, sable",
+    "it": "Detriti, sabbia"
+  },
+  "landcover.type.Abbau_Deponie": {
+    "de": "Abbau/Deponie",
+    "en": "Extraction, landfill",
+    "fr": "Extraction, décharge",
+    "it": "Estrazione, discarica"
+  },
+  "landcover.type.uebrige_vegetationslose": {
+    "de": "Übrige vegetationslose",
+    "en": "Other unvegetated surface",
+    "fr": "Autre surface sans végétation",
+    "it": "Altra superficie senza vegetazione"
+  },
+  "layer.landcovers.title": {
+    "de": "Bodenabdeckung (Amtliche Vermessung)",
+    "en": "Land cover (cadastral survey)",
+    "fr": "Couverture du sol (mensuration officielle)",
+    "it": "Copertura del suolo (misurazione ufficiale)"
+  },
+  "layer.landcovers.description": {
+    "de": "Bodenbedeckungsflächen der amtlichen Vermessung (geodienste.ch WFS), auf die BBL-Parzellen zugeschnitten; im Ausland schematische Demo-Flächen. Verknüpft mit Gebäuden und Grundstücken über EGID/EGRID.",
+    "en": "Land cover polygons of the Swiss cadastral survey (geodienste.ch WFS), clipped to the FOBL parcels; schematic demo polygons abroad. Linked to buildings and parcels via EGID/EGRID.",
+    "fr": "Surfaces de couverture du sol de la mensuration officielle (WFS geodienste.ch), découpées aux parcelles de l’OFCL ; surfaces de démonstration schématiques à l’étranger. Liées aux bâtiments et parcelles via EGID/EGRID.",
+    "it": "Superfici di copertura del suolo della misurazione ufficiale (WFS geodienste.ch), ritagliate alle particelle dell’UFCL; superfici dimostrative schematiche all’estero. Collegate a edifici e particelle tramite EGID/EGRID."
+  },
+  "layer.landcovers.source": {
+    "de": "Amtliche Vermessung (Kantone) via geodienste.ch; Demo im Ausland",
+    "en": "Cadastral survey (cantons) via geodienste.ch; demo abroad",
+    "fr": "Mensuration officielle (cantons) via geodienste.ch ; démo à l’étranger",
+    "it": "Misurazione ufficiale (cantoni) via geodienste.ch; demo all’estero"
+  },
+  "info.label.landcover_group": {
+    "de": "Hauptgruppe",
+    "en": "Main group",
+    "fr": "Groupe principal",
+    "it": "Gruppo principale"
+  },
+  "col.lc.group": {
+    "de": "Hauptgruppe",
+    "en": "Main group",
+    "fr": "Groupe principal",
+    "it": "Gruppo principale"
+  },
+  "col.lc.egid": {
+    "de": "EGID",
+    "en": "EGID",
+    "fr": "EGID",
+    "it": "EGID"
+  },
+  "col.lc.egrid": {
+    "de": "EGRID",
+    "en": "EGRID",
+    "fr": "EGRID",
+    "it": "EGRID"
+  },
   "banner.prototype.short": {
     "de": "nur zur Demonstration",
     "en": "for demonstration only",
@@ -2686,6 +2896,30 @@
     "fr": "Lien (espace réservé)",
     "it": "Link (segnaposto)",
     "en": "Link (placeholder)"
+  },
+  "swisstopo.info.link.metadata": {
+    "de": "Link zu {host}",
+    "en": "Link to {host}",
+    "fr": "Lien vers {host}",
+    "it": "Link a {host}"
+  },
+  "swisstopo.info.link.description": {
+    "de": "Link zur Detailbeschreibung",
+    "en": "Link to the detailed description",
+    "fr": "Lien vers la description détaillée",
+    "it": "Link alla descrizione dettagliata"
+  },
+  "swisstopo.info.link.download": {
+    "de": "Link für Datenbezug",
+    "en": "Link to the data download",
+    "fr": "Lien pour l’obtention des données",
+    "it": "Link per l’ottenimento dei dati"
+  },
+  "swisstopo.info.link.portal": {
+    "de": "Link zum Fachportal",
+    "en": "Link to the thematic portal",
+    "fr": "Lien vers le portail thématique",
+    "it": "Link al portale tematico"
   },
   "gallery.image.alt": {
     "de": "Bild von {name}",
@@ -2795,107 +3029,11 @@
     "fr": "Documents",
     "it": "Documenti"
   },
-  "share.link.label": {
-    "de": "Link zum Teilen:",
-    "en": "Share link:",
-    "fr": "Lien de partage :",
-    "it": "Link da condividere:"
-  },
-  "share.link": {
-    "de": "Link zum Teilen",
-    "en": "Share link",
-    "fr": "Lien de partage",
-    "it": "Link da condividere"
-  },
-  "share.copy": {
-    "de": "Link in die Zwischenablage kopieren",
-    "en": "Copy link to clipboard",
-    "fr": "Copier le lien dans le presse-papiers",
-    "it": "Copiare il link negli appunti"
-  },
-  "measure.draw.title": {
-    "de": "Zeichnen & Messen auf der Karte",
-    "en": "Draw & measure on the map",
-    "fr": "Dessiner et mesurer sur la carte",
-    "it": "Disegnare e misurare sulla mappa"
-  },
   "export.title": {
     "de": "Export",
     "en": "Export",
     "fr": "Export",
     "it": "Esportazione"
-  },
-  "export.selection": {
-    "de": "Datenauswahl",
-    "en": "Data selection",
-    "fr": "Sélection des données",
-    "it": "Selezione dei dati"
-  },
-  "export.current": {
-    "de": "Aktuelle Ansicht",
-    "en": "Current view",
-    "fr": "Vue actuelle",
-    "it": "Vista attuale"
-  },
-  "export.selected": {
-    "de": "Nur ausgewähltes Objekt",
-    "en": "Selected property only",
-    "fr": "Bien sélectionné uniquement",
-    "it": "Solo l’immobile selezionato"
-  },
-  "export.format.choose": {
-    "de": "Format wählen",
-    "en": "Choose format",
-    "fr": "Choisir le format",
-    "it": "Scegliere il formato"
-  },
-  "export.web": {
-    "de": "Web-Anwendungen",
-    "en": "Web applications",
-    "fr": "Applications web",
-    "it": "Applicazioni web"
-  },
-  "export.excel": {
-    "de": "Excel / Tabellen",
-    "en": "Excel / spreadsheets",
-    "fr": "Excel / tableurs",
-    "it": "Excel / fogli di calcolo"
-  },
-  "export.gis": {
-    "de": "GIS-Software",
-    "en": "GIS software",
-    "fr": "Logiciels SIG",
-    "it": "Software GIS"
-  },
-  "export.options": {
-    "de": "Optionen",
-    "en": "Options",
-    "fr": "Options",
-    "it": "Opzioni"
-  },
-  "export.coords": {
-    "de": "Koordinaten einschliessen",
-    "en": "Include coordinates",
-    "fr": "Inclure les coordonnées",
-    "it": "Includere le coordinate"
-  },
-  "export.attributes": {
-    "de": "Alle Attribute exportieren",
-    "en": "Export all attributes",
-    "fr": "Exporter tous les attributs",
-    "it": "Esportare tutti gli attributi"
-  },
-  "export.parcels": {
-    "de": "Parzellen einschliessen",
-    "en": "Include parcels",
-    "fr": "Inclure les parcelles",
-    "it": "Includere le particelle"
-  },
-  "export.submit": {
-    "de": "Exportieren",
-    "en": "Export",
-    "fr": "Exporter",
-    "it": "Esportare"
   },
   "info.panel.label": {
     "de": "Objektinformation",
@@ -3497,18 +3635,6 @@
     "fr": "Parcelles de l’OFCL",
     "it": "Particelle dell’UFCL"
   },
-  "export.shapefile.title": {
-    "de": "Shapefile-Export",
-    "en": "Shapefile export",
-    "fr": "Export Shapefile",
-    "it": "Esportazione Shapefile"
-  },
-  "export.shapefile.message": {
-    "de": "GeoJSON wird erstellt. Konvertieren Sie mit QGIS oder ogr2ogr zu Shapefile.",
-    "en": "A GeoJSON file will be created. Convert it to Shapefile using QGIS or ogr2ogr.",
-    "fr": "Un fichier GeoJSON sera créé. Convertissez-le en Shapefile avec QGIS ou ogr2ogr.",
-    "it": "Verrà creato un file GeoJSON. Convertitelo in Shapefile con QGIS o ogr2ogr."
-  },
   "preview.original": {
     "de": "Original öffnen / herunterladen",
     "en": "Open / download original",
@@ -3688,18 +3814,6 @@
     "en": "Open original",
     "fr": "Ouvrir l’original",
     "it": "Aprire l’originale"
-  },
-  "export.count.one": {
-    "de": "{count} Objekt wird exportiert",
-    "en": "{count} property will be exported",
-    "fr": "{count} bien sera exporté",
-    "it": "{count} immobile verrà esportato"
-  },
-  "export.count.other": {
-    "de": "{count} Objekte werden exportiert",
-    "en": "{count} properties will be exported",
-    "fr": "{count} biens seront exportés",
-    "it": "{count} immobili verranno esportati"
   },
   "image.carousel": {
     "de": "Bildkarussell",

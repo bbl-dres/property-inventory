@@ -83,7 +83,7 @@ Design tokens are the foundation of our visual language. All values are defined 
 |------|---------|--------|
 | `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.icon-btn`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
 | `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, location tree, info panel, filter drawer, toolbars, tables, table panel, pagination, gallery, view nav, detail page frame, API documentation, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
-| `css/app.css` | What only one prototype has (simple: filter search, detail hero and single-column cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
+| `css/app.css` | What only one prototype has (simple: filter search, detail hero and single-column cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, KI answers) | Per prototype |
 
 The prototypes stay independent: nothing is loaded across folders. `test/check-alignment.js` reports when
 the two copies of `tokens.css` or `components.css` drift apart. A component that both prototypes use is
@@ -774,8 +774,8 @@ Both prototypes draw the same layer stack on the same basemaps (`js/map.js`, ids
 | `buildings-points` | 10px circle in the status colour (`statusColors`), 2px white stroke |
 | `buildings-selected` + `buildings-selected-pulse` | 18px red ring (3px) with a pulsing 24px ring around the selected object |
 | `buildings-labels` | Object id above the point from zoom 16 (13px bold, white halo) |
-| `parcels-fill` / `-outline` / `-highlight` / `-selected` (+ `-outline`) | Blue-grey parcel colour; visible from zoom 12, fading in until 13; hover 35 %, selected 45 % with a 3px outline |
-| `landcovers-*` (simple only) | Land-cover polygons from zoom 14 in the land-cover colours; hidden by default ("Bodenabdeckung" toggle under Interne Karten), shown when a land cover is selected from the table or a link |
+| `parcels-fill` / `-outline` / `-highlight` / `-selected` (+ `-outline`) | Blue-grey parcel colour; visible from zoom 12, fading in until 13; selected 45 % with a 3px outline (no hover fill: the pointer cursor is the hover feedback) |
+| `landcovers-*` | Land-cover polygons from zoom 14 in the official AV-WMS colours per BBArt type (`js/landcover-types.js`, 80 % fill, black 1px outline, selection in the parcel blue); hidden by default ("Bodenabdeckung" toggle under Interne Karten), shown when a land cover is selected from the table or a link |
 
 Clicking a cluster zooms to its expansion zoom; clicking a point selects the object (info panel); clicking
 empty map deselects and identifies the external swisstopo layers.
@@ -869,7 +869,7 @@ entry sits in the menu and the panel is a full-screen sheet.
 ### Table Panel Pattern
 
 The "Tabelle" toggle (grey-900 pill at the bottom centre of the map) opens a resizable panel under the
-map with one tab per data set (Gebäude, Grundstücke; simple also Bodenabdeckung), the toolbar (search,
+map with one tab per data set (Gebäude, Grundstücke, Bodenabdeckung), the toolbar (search,
 filter pills, Export and Spalten dropdowns) and the compact `.list-table`. A row selects the object on the
 map and the map selection highlights its row. `?table=open` and `?tableTab=` keep the state in the URL;
 phones hide the panel (the map keeps the info sheet). The content area is a vertical split: the table dock
@@ -992,7 +992,7 @@ Filters apply instantly; the active ones appear as `.filter-pill`s in the table 
     <div class="accordion-item" data-accordion="print">
       <button class="accordion-header" aria-expanded="false">
         <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-        <span>Karte drucken</span>
+        <span>Drucken</span>
       </button>
       <div class="accordion-content">…</div>
     </div>
@@ -1004,7 +1004,10 @@ Filters apply instantly; the active ones appear as `.filter-pill`s in the table 
 ```
 
 `js/tools-panel.js` (shared) owns the open state: on desktop the toggle collapses the panel, on tablets
-it starts collapsed, on phones the same panel is the hamburger menu (see Responsive Patterns).
+it starts collapsed, on phones the same panel is the hamburger menu (see Responsive Patterns). Both prototypes
+have the same three sections, Drucken, Geokatalog and Dargestellte Karten; on phones the "Standorte" tree
+(no icon) comes first and a "Teilen" row, the language pills and the footer links follow. Measuring starts from
+the map context menu, sharing from the info panel, the context menu or the phone menu, exports from the table toolbar.
 
 ### Empty State Pattern
 

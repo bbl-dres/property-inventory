@@ -17,7 +17,7 @@ import { populateDetailView } from './detail.js';
 import { closeDocumentPreview } from './document-preview.js';
 import { renderEntityTable } from './entity-tables.js';
 import { zoomToFilteredPoints, resetFilters, toggleSmartDrawer } from './filters.js';
-import { getShareUrl, updateShareLink, updateExportCount } from './export.js';
+import { getShareUrl } from './export.js';
 import { clearSelection, zoomToSelection, setInternalLayerVisibility } from './map.js';
 import { flyHome } from './map-controls.js';
 import { clearSearch, dismissSearchResults } from './search.js';
@@ -319,6 +319,19 @@ function initInfoPanel() {
   });
 }
 
+// ===== PHONE MENU EXTRAS (share, language pills and footer links inside the tools panel) =====
+
+function initPhoneMenuExtras() {
+  // Share the current view: the map context menu (right-click) is not reachable on touch screens
+  const shareBtn = document.getElementById('mobile-share-btn');
+  if (shareBtn) {
+    shareBtn.addEventListener('click', function() {
+      closePhoneMenu();
+      shareCurrentView();
+    });
+  }
+}
+
 // Share the current view (selected object or map position) via the Web Share API, falling
 // back to the clipboard.
 export function shareCurrentView() {
@@ -333,7 +346,7 @@ export function shareCurrentView() {
 // ===== INTERNAL LAYER TOGGLES ("Interne Karten") =====
 
 function initInternalLayerToggles() {
-  ['buildings', 'parcels'].forEach(function(key) {
+  ['buildings', 'parcels', 'landcovers'].forEach(function(key) {
     const toggle = document.getElementById('layer-toggle-' + key);
     if (toggle) {
       toggle.addEventListener('change', function() { setInternalLayerVisibility(key, this.checked); });
@@ -448,8 +461,6 @@ function initLanguageSelector() {
   setActiveLanguageUi(getLang());
   onLangChange(function(lang) {
     setActiveLanguageUi(lang);
-    updateShareLink();
-    updateExportCount();
     updateDetailHeaderOffset();
   });
 
@@ -494,14 +505,10 @@ export function comingSoon() {
 
 export function initUI() {
   initPanelLayout();
-  initAccordion({
-    onOpen: function(key) {
-      if (key === 'share') updateShareLink();
-      if (key === 'export') updateExportCount();
-    }
-  });
+  initAccordion();
   initLanguageSelector();
   initToolsPanel();
+  initPhoneMenuExtras();
   initInfoPanel();
   initInternalLayerToggles();
   initDetailTabs();

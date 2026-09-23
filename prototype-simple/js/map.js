@@ -5,7 +5,8 @@ import { addParcelLabels, parcelLabelPoint, addBuildingLabelObstacles, updateBui
 // Map creation, controls, style switcher, context menu and measure tool are common modules.
 
 import { state } from './state.js';
-import { statusColors, getStatusClassName, placeholderImages, parcelColor, landCoverColors, landCoverOutlineColor, internalLayerIds } from './config.js';
+import { statusColors, getStatusClassName, placeholderImages, parcelColor, landCoverOutlineColor, internalLayerIds } from './config.js';
+import { landCoverColorExpression, landCoverGroup, landCoverTypeLabel, landCoverGroupLabel } from './landcover-types.js';
 import { escapeHtml, cssUrl, formatNum } from './utils.js';
 import { t } from './i18n.js';
 import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
@@ -90,33 +91,29 @@ function stopPulseAnimation() {
 // beforeId: ground data goes under the basemap labels and the 3D buildings (groundLayerAnchor)
 function addLandCoverLayers(map, beforeId) {
   map.addSource('landcovers', { type: 'geojson', data: state.landCoverData });
-  const matchExpr = ['match', ['get', 'av_type']];
-  Object.keys(landCoverColors).forEach(function(type) { matchExpr.push(type, landCoverColors[type]); });
-  matchExpr.push(landCoverColors['Gebaeude']);
+  // Official AV-WMS colours per type (landcover-types.js); the selection needs a colour where the type has no fill
+  const fillColor = landCoverColorExpression('av_type');
+  const selectionColor = landCoverColorExpression('av_type', '#C8C8C8');
 
   map.addLayer({
     id: 'landcovers-fill', type: 'fill', source: 'landcovers', minzoom: 14,
-    paint: { 'fill-color': matchExpr, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.25] }
+    paint: { 'fill-color': fillColor, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.8] }
   }, beforeId);
   map.addLayer({
     id: 'landcovers-outline', type: 'line', source: 'landcovers', minzoom: 14,
-    paint: { 'line-color': landCoverOutlineColor, 'line-width': 1.5, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.7] }
+    paint: { 'line-color': landCoverOutlineColor, 'line-width': 1, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.6] }
   }, beforeId);
-  map.addLayer({
-    id: 'landcovers-highlight', type: 'fill', source: 'landcovers', minzoom: 14,
-    filter: ['==', ['get', 'objectid'], -1],
-    paint: { 'fill-color': landCoverColors['Gebaeude'], 'fill-opacity': 0.4 }
-  }, beforeId);
-  // No minzoom on the selection layers: a selection should always be visible
+  // No minzoom on the selection layers: a selection should always be visible (no hover fill, see
+  // portfolio-map-interactions.js)
   map.addLayer({
     id: 'landcovers-selected', type: 'fill', source: 'landcovers',
     filter: ['==', ['get', 'objectid'], -1],
-    paint: { 'fill-color': landCoverColors['Gebaeude'], 'fill-opacity': 0.5 }
+    paint: { 'fill-color': selectionColor, 'fill-opacity': 0.6 }
   }, beforeId);
   map.addLayer({
     id: 'landcovers-selected-outline', type: 'line', source: 'landcovers',
     filter: ['==', ['get', 'objectid'], -1],
-    paint: { 'line-color': landCoverOutlineColor, 'line-width': 3, 'line-opacity': 1 }
+    paint: { 'line-color': parcelColor, 'line-width': 3, 'line-opacity': 1 }
   }, beforeId);
 }
 
@@ -315,7 +312,8 @@ export function selectLandCover(objectid, flyToLandCover) {
 
   const html =
     infoRow('info.label.parcel_id', escapeHtml(props.bbl_id)) +
-    infoRow('info.label.type', escapeHtml(props.av_type || '—')) +
+    infoRow('info.label.type', escapeHtml(landCoverTypeLabel(props.av_type))) +
+    infoRow('info.label.landcover_group', escapeHtml(landCoverGroupLabel(landCoverGroup(props.av_type)))) +
     infoRow('info.label.area', props.lc_area != null ? formatNum(props.lc_area, 0) + ' m²' : '—') +
     (props.geb_id ? infoRow('info.label.building_id', escapeHtml(props.geb_id), true) : '') +
     (props.av_egid ? '<div class="info-row info-row-secondary"><span class="info-label">EGID</span><span class="info-value">' + escapeHtml(props.av_egid) + '</span></div>' : '') +

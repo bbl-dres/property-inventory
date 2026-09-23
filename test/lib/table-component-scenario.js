@@ -15,7 +15,7 @@ module.exports = function(prototype) {
       };
       const idClasses = '.col-id, .col-bbl_id, .col-objectid, .col-parcel-id, .col-lc-bbl_id, .col-lc-geb_id, [class$="-id"]';
       check('technical ID columns removed from all headers', !document.querySelector('.data-table thead ' + idClasses.split(', ').join(', .data-table thead ')));
-      check('all feature tables use the shared component', document.querySelectorAll('.list-table.data-table').length === (simple ? 3 : 2));
+      check('all feature tables use the shared component', document.querySelectorAll('.list-table.data-table').length === 3);
       const table = document.getElementById('list-table');
       const key = simple ? 'bbl_bez' : 'name';
       const header = table.querySelector('th[data-sort="' + key + '"]');
@@ -30,14 +30,13 @@ module.exports = function(prototype) {
       hidden.dispatchEvent(new window.Event('change'));
       check('shown column regains width allocation', Array.from(table.querySelectorAll('col')).some(c => c.dataset.column === (simple ? 'garea_ngf' : 'extensionData.netFloorArea')));
 
-      if (simple) {
-        const size = document.getElementById('landcovers-rows-per-page');
-        size.value = '25'; size.dispatchEvent(new window.Event('change'));
-        check('land covers paginate without visible IDs', document.querySelectorAll('#landcovers-body tr[data-landcover-id]').length === 25);
-        document.getElementById('landcovers-next-btn').click();
-        check('land cover next page advances', document.querySelector('#landcovers-body tr').dataset.landcoverId === '26');
-        return;
-      }
+      // Land cover table (both prototypes): pagination without visible ids
+      const size = document.getElementById('landcovers-rows-per-page');
+      size.value = '25'; size.dispatchEvent(new window.Event('change'));
+      check('land covers paginate without visible IDs', document.querySelectorAll('#landcovers-body tr[data-landcover-id]').length === 25);
+      document.getElementById('landcovers-next-btn').click();
+      check('land cover next page advances', document.querySelector('#landcovers-body tr').dataset.landcoverId === '26');
+      if (simple) return;
       modules.ui.showDetailView('1080/4840/AF');
       const tabs = ['measurements','documents','contacts','costs','contracts','assets'];
       for (const tab of tabs) {

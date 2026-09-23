@@ -11,6 +11,7 @@ from pyproj import CRS, Transformer, Geod
 from shapely.geometry import shape, mapping, box, MultiPolygon
 from shapely.geometry.polygon import orient
 from shapely.ops import transform as transform_geometry, unary_union
+from shapely.validation import make_valid
 
 ROOT = Path(__file__).resolve().parents[2]
 SOURCE = Path(__file__).parent / 'sources'
@@ -21,6 +22,22 @@ RICS = 'RICS Code of Measuring Practice, 6th edition (2015)'
 SYNTHETIC = 'synthetic-demo'
 NAMESPACE = uuid.UUID('1fde1456-cb50-4f6d-bff5-2cbcc2916625')
 GEOD = Geod(ellps='WGS84')
+LV95 = Transformer.from_crs(4326, 2056, always_xy=True)
+
+# AV land cover types (DM.01-AV-CH BBArt) and their main groups; js/landcover-types.js of both prototypes
+# carries the same table with the official AV-WMS fill colours.
+LAND_COVER_GROUPS = {
+    'Gebaeude': 'gebaeude',
+    'Strasse_Weg': 'befestigt', 'Trottoir': 'befestigt', 'Verkehrsinsel': 'befestigt', 'Bahn': 'befestigt',
+    'Flugplatz': 'befestigt', 'Wasserbecken': 'befestigt', 'uebrige_befestigte': 'befestigt',
+    'Acker_Wiese_Weide': 'humusiert', 'Reben': 'humusiert', 'uebrige_Intensivkultur': 'humusiert',
+    'Gartenanlage': 'humusiert', 'Hoch_Flachmoor': 'humusiert', 'uebrige_humusierte': 'humusiert',
+    'Gewaesser_stehendes': 'gewaesser', 'Gewaesser_fliessendes': 'gewaesser', 'Schilfguertel': 'gewaesser',
+    'geschlossener_Wald': 'bestockt', 'Wytweide_dicht': 'bestockt', 'Wytweide_offen': 'bestockt', 'uebrige_bestockte': 'bestockt',
+    'Fels': 'vegetationslos', 'Gletscher_Firn': 'vegetationslos', 'Geroell_Sand': 'vegetationslos',
+    'Abbau_Deponie': 'vegetationslos', 'uebrige_vegetationslose': 'vegetationslos'}
+AV_NOTICE = 'Bodenbedeckung der amtlichen Vermessung (geodienste.ch WFS ms:LCSF), auf die AV-Parzelle zugeschnitten.'
+DEMO_NOTICE = 'Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.'
 
 
 def uid(building, kind, key):
@@ -90,17 +107,55 @@ def scenario_metrics(b):
             'ricsExternalWalls': ext_walls, 'ricsUseExclusions': nia_exclusions}
 
 
-def geometry_for(b, metrics):
+def polygon_parts(g, min_part=0):
+    if g.geom_type == 'GeometryCollection':
+        g = unary_union([p for p in g.geoms if p.geom_type in ['Polygon', 'MultiPolygon']])
+    if min_part and g.geom_type == 'MultiPolygon':
+        parts = [p for p in g.geoms if p.area >= min_part]
+        g = MultiPolygon(parts) if len(parts) > 1 else parts[0] if parts else g.__class__()
+    return g
+
+
+def to_wgs84(g, transform):
+    g = transform_geometry(transform.transform, g)
+    return orient(g, sign=1) if g.geom_type == 'Polygon' else MultiPolygon([orient(p, sign=1) for p in g.geoms])
+
+
+def official_covers(record, projected, forward, transform):
+    """Clip the official land cover polygons to the parcel (metric local CRS); geodesic areas in m²."""
+    covers = []
+    for f in record['features']:
+        g = transform_geometry(forward.transform, shape(f['geometry']))
+        if not g.is_valid:
+            g = make_valid(g)
+        # Boundary slivers (the parcel and land-cover services differ in precision): parts < 0.05 m², pieces < 0.5 m²
+        piece = polygon_parts(projected.intersection(g), 0.05)
+        if piece.is_empty or piece.area < 0.5:
+            continue
+        piece = to_wgs84(piece, transform)
+        p = f['properties']
+        covers.append((p['Art'], round(abs(GEOD.geometry_area_perimeter(piece)[0]), 2), mapping(piece),
+                       {'egid': str(p['GWR_EGID']) if p.get('GWR_EGID') not in [None, ''] else None,
+                        'quality': p.get('Qualitaet'), 'canton': p.get('Kanton'), 'municipalityNumber': p.get('BFSNr')}))
+    # Deterministic order: by type, largest piece first
+    covers.sort(key=lambda c: (c[0], -c[1]))
+    return covers
+
+
+def geometry_for(b, metrics, record=None):
     lon, lat = b['coordinates']
     local = CRS.from_proj4(f'+proj=aeqd +lat_0={lat} +lon_0={lon} +datum=WGS84 +units=m')
     transform = Transformer.from_crs(local, 'EPSG:4326', always_xy=True)
 
     if b.get('cadastre'):
-        # Keep the official parcel's vertices. Land cover remains an explicitly
-        # synthetic illustration, clipped to this real parcel and never labelled AV.
+        # Keep the official parcel's vertices. The land cover is the official AV land cover clipped to
+        # this parcel where the canton publishes it (sources/swiss-landcover.json); otherwise it stays an
+        # explicitly synthetic illustration, clipped to the real parcel and never labelled AV.
         parcel = b['cadastre']['geometry']
         forward = Transformer.from_crs(4326,local,always_xy=True)
         projected = transform_geometry(forward.transform,shape(parcel))
+        if record and record.get('features'):
+            return parcel, official_covers(record, projected, forward, transform)
         low, high = 0, max(projected.bounds[2]-projected.bounds[0],projected.bounds[3]-projected.bounds[1])
         for _ in range(45):
             radius=(low+high)/2
@@ -112,19 +167,16 @@ def geometry_for(b, metrics):
         remainder=projected.difference(footprint)
         minx,miny,maxx,maxy=projected.bounds
         quadrants=[box(minx,miny,0,0),box(0,miny,maxx,0),box(minx,0,0,maxy),box(0,0,maxx,maxy)]
-        parts=[('Gebaeude',footprint)]+[(('befestigt' if i<2 else 'humusiert'),remainder.intersection(q)) for i,q in enumerate(quadrants)]
+        parts=[('Gebaeude',footprint)]+[(('uebrige_befestigte' if i<2 else 'Gartenanlage'),remainder.intersection(q)) for i,q in enumerate(quadrants)]
         covers=[]
         for kind,g in parts:
             if g.is_empty: continue
-            if g.geom_type=='GeometryCollection':
-                g=unary_union([p for p in g.geoms if p.geom_type in ['Polygon','MultiPolygon']])
-            g=transform_geometry(transform.transform,g)
-            g=orient(g,sign=1) if g.geom_type=='Polygon' else MultiPolygon([orient(p,sign=1) for p in g.geoms])
+            g=to_wgs84(polygon_parts(g),transform)
             area=round(abs(GEOD.geometry_area_perimeter(g)[0]),2)
-            covers.append((kind,area,mapping(g)))
+            covers.append((kind,area,mapping(g),{}))
         # Independent per-piece rounding can introduce a centiare of drift.
-        kind,area,g=covers[-1]
-        covers[-1]=(kind,round(area+metrics['GSF']-sum(x[1] for x in covers),2),g)
+        kind,area,g,extra=covers[-1]
+        covers[-1]=(kind,round(area+metrics['GSF']-sum(x[1] for x in covers),2),g,extra)
         return parcel,covers
 
     def rect(x0, y0, x1, y1):
@@ -137,11 +189,11 @@ def geometry_for(b, metrics):
     bx = math.sqrt(metrics['GGF']) / 2
     by = bx
     parcel = rect(-half,-half,half,half)
-    covers = [('Gebaeude',metrics['GGF'],rect(-bx,-by,bx,by)),
-              ('befestigt',(half-bx)*2*by,rect(-half,-by,-bx,by)),
-              ('befestigt',(half-bx)*2*by,rect(bx,-by,half,by)),
-              ('humusiert',(half-by)*2*half,rect(-half,by,half,half)),
-              ('humusiert',(half-by)*2*half,rect(-half,-half,half,-by))]
+    covers = [('Gebaeude',metrics['GGF'],rect(-bx,-by,bx,by),{}),
+              ('uebrige_befestigte',(half-bx)*2*by,rect(-half,-by,-bx,by),{}),
+              ('uebrige_befestigte',(half-bx)*2*by,rect(bx,-by,half,by),{}),
+              ('Gartenanlage',(half-by)*2*half,rect(-half,by,half,half),{}),
+              ('Gartenanlage',(half-by)*2*half,rect(-half,-half,half,-by),{})]
     return parcel, covers
 
 
@@ -151,9 +203,11 @@ def main():
     cost_classification = json.loads((SOURCE / 'cost-classification.json').read_text(encoding='utf-8'))
     meta = json.loads((ROOT / 'prototype-tabs/data/meta.json').read_text(encoding='utf-8'))
     swiss_register = json.loads((SOURCE / 'swiss-cadastre.json').read_text(encoding='utf-8'))
+    landcover_source = SOURCE / 'swiss-landcover.json'
+    landcover_records = json.loads(landcover_source.read_text(encoding='utf-8')) if landcover_source.exists() else {}
     def label(list_name, code):
         return next(v['labels']['de'] for v in meta['valueLists'][list_name]['values'] if v['code'] == code)
-    simple, tabs, simple_parcels, tabs_parcels, landcovers = [], [], [], [], []
+    simple, tabs, simple_parcels, tabs_parcels, landcovers, tabs_landcovers = [], [], [], [], [], []
     entities = {k: [] for k in ['areaMeasurements','documents','contacts','costs','contracts','assets']}
     first = ['Mira','Levin','Nora','Elio','Jana','Silvan','Lina','Noé','Alina','Milo','Lea','Jonas','Sina','Flurin']
     last = ['Waldner','Feldmann','Birchler','Sommer','Linden','Tanner','Moser','Auer','Keller','Bachmann','Vogt','Steiner','Berger','Frei']
@@ -334,7 +388,11 @@ def main():
             parkingSpaces=round(m['HNF']/180),electricVehicleChargingStations=max(0,round(m['HNF']/1800)),monumentProtection=None,
             status='In Betrieb',energyEfficiencyClass=None,streetName=address,houseNumber=b['houseNumber'],postalCode=b['postalCode'],
             city=b['city'],stateProvincePrefecture={'BE':'Kanton Bern','ZH':'Kanton Zürich'}.get(b['region'],b['region']),country=b['country'],extensionData=ext,legacyId=bid),coords))
-        polygon,covers=geometry_for(b,m)
+        landcover_record=landcover_records.get(b['slug']) if cadastre else None
+        official_landcover=bool(landcover_record and landcover_record.get('features'))
+        polygon,covers=geometry_for(b,m,landcover_record)
+        def cover_sum(*groups):
+            return round(sum(area for kind,area,g,extra in covers if LAND_COVER_GROUPS.get(kind) in groups),2)
         geom_prov=({'dataStatus':'public-source','geometryMethod':'swisstopo CadastralWebMap polygon; original vertices, ring orientation normalised',
                    'notice':'AV-Parzellengeometrie; Fläche aus Polygon berechnet. Eigentumsangabe ist Demo.',
                    'sourceUrl':cadastre['parcelSourceUrl'],'gwrSourceUrl':cadastre['gwrSourceUrl'],'egrid':b['egrid'],'buildingId':bid,
@@ -345,32 +403,55 @@ def main():
             bbl_port=portfolio,bbl_mietm=simple_props['bbl_mietm'],bbl_eigen=ownership,bbl_awrt=None,bbl_bwrt=None,bbl_hgart=False,
             **{k:v for k,v in simple_props.items() if k.startswith('adr_') or k in ['wgs84_lat','wgs84_lon','lv95_e','lv95_n','bfs_gem','bfs_gemnr']},
             egm_elev=None,av_stat='AV / GWR' if cadastre else 'Demo',av_egrid=b.get('egrid'),av_nr=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',larea_ggf=m['GGF'],larea_gsf=m['GSF'],larea_uf=m['UF'],
-            larea_buf=round(sum(area for kind,area,g in covers if kind=='befestigt'),2),larea_uuf=round(sum(area for kind,area,g in covers if kind=='humusiert'),2),
-            larea_acu='GSF aus AV; Bodenbedeckung Demo' if cadastre else 'Demo-Perimeter, nicht AV',larea_ver=round(sum(area for kind,area,g in covers if kind!='humusiert'),2),
-            larea_gre=round(sum(area for kind,area,g in covers if kind=='humusiert'),2),av_zbez=None,av_znut=None,
+            larea_buf=cover_sum('befestigt'),larea_uuf=cover_sum('humusiert','gewaesser','bestockt','vegetationslos'),
+            larea_acu='GSF und Bodenbedeckung aus AV (geodienste.ch)' if official_landcover else 'GSF aus AV; Bodenbedeckung Demo' if cadastre else 'Demo-Perimeter, nicht AV',
+            larea_ver=cover_sum('gebaeude','befestigt'),larea_gre=cover_sum('humusiert','bestockt'),av_zbez=None,av_znut=None,
             fid=None,fid_src=None,objectid=index+1,etl_ts=STAMP,provenance=geom_prov),polygon))
         tabs_parcels.append(feature(dict(parcelId=pid,buildingId=bid,plotNumber=cadastre['parcelNumber'] if cadastre else f'DEMO-{site}',egrid=b.get('egrid'),name=plotname,
             municipality=cadastre['municipality'] if cadastre else b['city'],canton=b['region'] if b['country']=='CH' else None,area=m['GSF'],landUseZone=None,
             ownershipType=ownership,provenance=geom_prov,
             extensionData=dict(sapId=dict(companyCode=book,economicUnit=site,objectNumber='01'))),polygon))
-        for j,(kind,area,g) in enumerate(covers):
-            landcovers.append(feature(dict(bbl_id=pid,geb_id=bid if kind=='Gebaeude' else None,av_stat='Demo',av_egid=None,av_egrid=None,
-                av_type=kind,lc_area=round(area,2),wgs84_lat=b['coordinates'][1],wgs84_lon=b['coordinates'][0],
-                lv95_e=None,lv95_n=None,fid=None,fid_src=None,objectid=index*5+j+1,etl_ts=STAMP,
-                provenance={'dataStatus':SYNTHETIC,'buildingId':bid,'notice':'Schematische Bodenbedeckung; keine AV-Gebäudegrundrisse.',
-                            'geometryMethod':'synthetic footprint and surroundings clipped to real AV parcel' if cadastre else 'metric rectangles'}),g))
+        for kind,area,g,extra in covers:
+            objectid=len(landcovers)+1
+            point=shape(g).representative_point()
+            lv95=LV95.transform(point.x,point.y) if b['country']=='CH' else None
+            # The building's own footprint: the official piece carrying its EGID, or the schematic footprint
+            own_footprint=kind=='Gebaeude' and (extra.get('egid')==b['egid'] if official_landcover else True)
+            if official_landcover:
+                lc_prov={'dataStatus':'public-source','buildingId':bid,'notice':AV_NOTICE,
+                    'geometryMethod':'AV land cover polygon (WFS, EPSG:4326) clipped to the AV parcel in a local azimuthal equidistant CRS; geodesic area',
+                    'sourceUrl':landcover_record['sourceUrl'],'retrievedAt':landcover_record['retrievedAt'],'licence':landcover_record['licence'],
+                    'quality':extra.get('quality'),'canton':extra.get('canton'),'municipalityNumber':extra.get('municipalityNumber')}
+            else:
+                lc_prov={'dataStatus':SYNTHETIC,'buildingId':bid,'notice':DEMO_NOTICE,
+                    'geometryMethod':'synthetic footprint and surroundings clipped to real AV parcel' if cadastre else 'metric rectangles'}
+            status=extra.get('quality') or 'AV' if official_landcover else 'Demo'
+            landcovers.append(feature(dict(bbl_id=pid,geb_id=bid if own_footprint else None,av_stat=status,av_egid=extra.get('egid'),
+                av_egrid=b.get('egrid') if official_landcover else None,av_type=kind,lc_area=round(area,2),
+                wgs84_lat=round(point.y,8),wgs84_lon=round(point.x,8),lv95_e=round(lv95[0],2) if lv95 else None,lv95_n=round(lv95[1],2) if lv95 else None,
+                fid=None,fid_src='geodienste.ch ms:LCSF' if official_landcover else None,objectid=objectid,etl_ts=STAMP,provenance=lc_prov),g))
+            tabs_landcovers.append(feature(dict(landCoverId=objectid,parcelId=pid,buildingId=bid if own_footprint else None,type=kind,
+                typeGroup=LAND_COVER_GROUPS.get(kind,'befestigt'),area=round(area,2),egid=extra.get('egid'),egrid=b.get('egrid') if official_landcover else None,
+                surveyStatus=status,canton=extra.get('canton') if official_landcover else (b['region'] if b['country']=='CH' else None),
+                municipalityNumber=extra.get('municipalityNumber'),provenance=lc_prov),g))
     save(ROOT/'prototype-simple/data/buildings.geojson',collection('BBL_GIS_IMMO_Building',simple))
     save(ROOT/'prototype-simple/data/parcels.geojson',collection('BBL_GIS_IMMO_Parcel',simple_parcels))
     save(ROOT/'prototype-simple/data/landcovers.geojson',collection('BBL_GIS_IMMO_LandCover',landcovers))
     save(ROOT/'prototype-tabs/data/buildings.geojson',collection('BBL_Immobilienportfolio',tabs))
     save(ROOT/'prototype-tabs/data/parcels.geojson',collection('BBL_Parzellen',tabs_parcels))
+    save(ROOT/'prototype-tabs/data/landcovers.geojson',collection('BBL_Bodenbedeckung',tabs_landcovers))
     for key,values in entities.items():
         filename = 'area-measurements' if key=='areaMeasurements' else key
         save(ROOT/f'prototype-tabs/data/{filename}.json',{'dataVersion':AS_OF,key:values})
     for proto in ['prototype-simple','prototype-tabs']:
         save(ROOT/f'{proto}/data/portfolio-provenance.json',{'asOf':AS_OF,'buildingCount':len(buildings),
             'sourceManifest':'../../scripts/portfolio/sources/properties.json','methodology':'../../scripts/portfolio/README.md',
-            'documentCatalogue':catalogue,'costClassification':cost_classification,'copyright':'Photos retain individual copyrights; OSM geocodes © OpenStreetMap contributors, ODbL. Swiss address geocodes © swisstopo.'})
+            'documentCatalogue':catalogue,'costClassification':cost_classification,
+            'landCover':{'swissSource':'Amtliche Vermessung, Bodenbedeckung (WFS ms:LCSF) via geodienste.ch, clipped to the reviewed AV parcels',
+                'sourceManifest':'../../scripts/portfolio/sources/swiss-landcover.json','retrievedAt':next(iter(landcover_records.values()))['retrievedAt'] if landcover_records else None,
+                'officialParcels':sum(1 for r in landcover_records.values() if r.get('features')),
+                'notice':'Overseas parcels carry schematic demonstration polygons (synthetic-demo). AV land cover © the cantons via geodienste.ch.'},
+            'copyright':'Photos retain individual copyrights; OSM geocodes © OpenStreetMap contributors, ODbL. Swiss address geocodes © swisstopo.'})
     write_photo_attribution(buildings)
     print(f'Generated {len(buildings)} buildings per prototype, {len(landcovers)} land-cover polygons; '+', '.join(f'{len(v)} {k}' for k,v in entities.items()))
 

@@ -8,6 +8,7 @@ import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumns
 import { selectBuilding, selectParcel, selectLandCover } from './map.js';
 import { showDetailView, switchView } from './ui.js';
 import { initQuickExportMenu } from './export.js';
+import { landCoverGroup, landCoverTypeLabel, landCoverGroupLabel } from './landcover-types.js';
 
 // ===== COLUMN DEFINITIONS =====
 
@@ -127,11 +128,14 @@ const parcelColumns = [
   { field: 'bbl_eigen', cls: 'col-parcel-ownership' }
 ];
 
+// Type and main group are translated (landcover-types.js); the group column derives from the type
 const landCoverColumns = [
-  { field: 'av_type' }, areaCol('lc_area'), { field: 'av_stat' },
+  { field: 'av_type', format: function(v) { return escapeHtml(landCoverTypeLabel(v)); } },
+  { field: 'av_type', cls: 'col-lc-group', labelKey: 'col.lc.group', format: function(v) { return escapeHtml(landCoverGroupLabel(landCoverGroup(v))); } },
+  areaCol('lc_area'), { field: 'av_stat' },
   { field: 'wgs84_lat' }, { field: 'wgs84_lon' },
   intCol('lv95_e'), intCol('lv95_n'), { field: 'etl_ts' }
-].map(function(col) { return { field: col.field, cls: 'col-lc-' + col.field, format: col.format }; });
+].map(function(col) { return { field: col.field, cls: col.cls || 'col-lc-' + col.field, labelKey: col.labelKey, format: col.format }; });
 
 [buildingColumns, parcelColumns, landCoverColumns].forEach(function(columns) {
   columns.forEach(function(col) { Object.assign(col, columnLabels[col.cls] || {}, { width: columnWidth(col) }); });

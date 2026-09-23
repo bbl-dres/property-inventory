@@ -116,7 +116,7 @@ prototype-simple/
 │   └── common modules, identical with ../prototype-tabs/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js · landcover-types.js
 ├── data/
 │   ├── buildings.geojson
 │   ├── parcels.geojson

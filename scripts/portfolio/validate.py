@@ -4,6 +4,7 @@ import json
 from pyproj import Geod
 from shapely.geometry import shape, Point
 from shapely.ops import unary_union
+from generate import LAND_COVER_GROUPS
 
 ROOT=Path(__file__).resolve().parents[2]
 GEOD=Geod(ellps='WGS84')
@@ -36,6 +37,8 @@ def main():
     ap=read('prototype-simple/data/parcels.geojson')['features']
     bp=read('prototype-tabs/data/parcels.geojson')['features']
     lc=read('prototype-simple/data/landcovers.geojson')['features']
+    tlc=read('prototype-tabs/data/landcovers.geojson')['features']
+    landcover_source=read('scripts/portfolio/sources/swiss-landcover.json')
     types=read('scripts/portfolio/sources/document-types.json')['types']
     classification=read('scripts/portfolio/sources/cost-classification.json')
     swiss=read('scripts/portfolio/sources/swiss-cadastre.json')
@@ -149,23 +152,40 @@ def main():
         area=polygon_area(parcel['geometry'])
         assert abs(area-v['GSF'])/v['GSF']<.001
         covers=[f for f in lc if f['properties']['bbl_id']==parcel['properties']['bbl_id']]
-        assert close(sum(f['properties']['lc_area'] for f in covers),v['GSF'])
+        official=bool(src.get('cadastre')) and bool(landcover_source.get(src['slug'],{}).get('features'))
+        total=sum(f['properties']['lc_area'] for f in covers)
+        # Official AV land cover partitions the parcel up to the boundary precision of the two services
+        assert abs(total-v['GSF'])/v['GSF']<.01 if official else close(total,v['GSF'])
         for cover in covers:
             assert abs(polygon_area(cover['geometry'])-cover['properties']['lc_area'])<.05
-            assert cover['properties']['provenance']['dataStatus']=='synthetic-demo'
-        # No fabricated land cover outside the official parcel and no overlaps/gaps.
+            assert cover['properties']['av_type'] in LAND_COVER_GROUPS
+            assert cover['properties']['provenance']['dataStatus']==('public-source' if official else 'synthetic-demo')
+            assert (cover['properties']['av_stat']!='Demo')==official and (cover['properties']['av_egrid']==cadastre['egrid'] if official else cover['properties']['av_egrid'] is None)
+        # No land cover outside the official parcel and no overlaps; the synthetic partition is exact
         shapes=[shape(f['geometry']) for f in covers]
         union=unary_union(shapes)
-        assert union.symmetric_difference(shape(parcel['geometry'])).area<1e-11
-        assert sum(s.area for s in shapes)-union.area<1e-11
+        parcel_shape=shape(parcel['geometry'])
+        assert union.difference(parcel_shape).area<1e-11
+        assert sum(s.area for s in shapes)-union.area<(union.area*1e-4 if official else 1e-11)
+        if not official:
+            assert union.symmetric_difference(parcel_shape).area<1e-11
+        # The building's own footprint is linked once; the tabs schema carries the same land cover
+        own=[f for f in covers if f['properties']['geb_id']==bid]
+        assert len(own)==1 and own[0]['properties']['av_type']=='Gebaeude'
+        tabs_covers=[f for f in tlc if f['properties']['parcelId']==parcel['properties']['bbl_id']]
+        assert [(f['properties']['objectid'],f['properties']['av_type'],f['properties']['lc_area'],f['properties']['geb_id'],f['properties']['av_egid'],f['properties']['av_egrid']) for f in covers]==\
+               [(f['properties']['landCoverId'],f['properties']['type'],f['properties']['area'],f['properties']['buildingId'],f['properties']['egid'],f['properties']['egrid']) for f in tabs_covers]
+        assert [f['geometry'] for f in covers]==[f['geometry'] for f in tabs_covers]
+        assert all(f['properties']['typeGroup']==LAND_COVER_GROUPS[f['properties']['type']] for f in tabs_covers)
         assert tabparcel['properties']['buildingId']==bid
     report={'asOf':'2026-09-22','result':'passed','buildingsPerPrototype':len(a),'countries':9,'photos':42,
             'publishedMeasurements':sum(r['extensionData']['dataStatus']=='published-source' for r in entities['areaMeasurements']),
             'verifiedSwissEGID_EGRID_Parcels':sum(bool(s.get('cadastre')) for s in source),
+            'landCoverPolygons':len(lc),'officialLandCoverParcels':sum(bool(r.get('features')) for r in landcover_source.values()),
             'counts':{k:len(v) for k,v in entities.items()},
             'checks':['cross-schema parity','referential integrity','SIA accounting identities','distinct RICS bases','source versus estimate flags',
                       'KBOB codes and labels','fictional contacts','contract and maintenance dates','local attributed interior/exterior photos',
-                      'geodesic polygon areas','land-cover partition and containment','verified GWR-to-AV EGRID matches','no invented register IDs']}
+                      'geodesic polygon areas','land-cover containment and partition','official AV land cover clipped to the Swiss parcels','land-cover parity across schemas','verified GWR-to-AV EGRID matches','no invented register IDs']}
     print(json.dumps(report,ensure_ascii=False,indent=2))
 
 

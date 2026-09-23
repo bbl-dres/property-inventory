@@ -23,8 +23,13 @@ module.exports = {
     check('location tree not built while its panel is closed', document.getElementById('tree-panel-content').children.length === 0);
 
     // Map layers and handlers
-    check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels'));
-    check('cluster + point + selection layers', ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'parcels-fill', 'parcels-highlight', 'parcels-selected', 'parcels-selected-outline'].every(id => !!map.getLayer(id)));
+    check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels') && !!map.getSource('landcovers'));
+    check('land cover loaded and indexed', state.landCoverData.features.length === 136 && state.landCoverIndex.size === 136);
+    check('land cover layer hidden by default', !document.getElementById('layer-toggle-landcovers').checked && ['landcovers-fill', 'landcovers-selected'].every(id => map.getLayoutProperty(id, 'visibility') === 'none'));
+    check('first page of land cover rows rendered', document.querySelectorAll('#landcovers-body tr[data-landcover-id]').length === 50);
+    check('cluster + point + selection layers', ['buildings-clusters', 'buildings-cluster-count', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'parcels-fill', 'parcels-selected', 'parcels-selected-outline'].every(id => !!map.getLayer(id)));
+    check('no hover fill layers: selection only', !map.getLayer('parcels-highlight') && !map.getLayer('landcovers-highlight'));
+    check('identify highlight above the ground polygons, below the points', map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') > map._layers.findIndex(l => l.id === 'parcels-fill') && map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') < map._layers.findIndex(l => l.id === 'buildings-clusters'));
     check('buildings source clustered', map.getSource('buildings').cluster === true && map.getSource('buildings').clusterMaxZoom === 14);
     check('cluster click handler bound', map.listenerCount('click', 'buildings-clusters') === 1);
     check('point click handler bound once', map.listenerCount('click', 'buildings-points') === 1);
@@ -297,26 +302,15 @@ module.exports = {
     await settle();
     check('external layer removed', modules.swisstopo.getActiveSwisstopoLayers().length === 0);
 
-    // Share accordion fills the link; export panel counts and exports features
-    document.querySelector('.accordion-item[data-accordion="share"] .accordion-header').click();
-    check('share link filled', /basemap=light/.test(document.getElementById('share-link-input').value));
-    document.querySelector('.accordion-item[data-accordion="export"] .accordion-header').click();
-    check('export count for the current view', document.getElementById('export-count').textContent.indexOf('14 Objekte') === 0);
-    const selection = document.getElementById('export-data-selection');
-    selection.value = 'selected';
-    selection.dispatchEvent(new window.Event('change'));
-    check('export count for the selected object', document.getElementById('export-count').textContent.indexOf('1 Objekt ') === 0);
-    selection.value = 'all';
-    selection.dispatchEvent(new window.Event('change'));
-    document.querySelector('.export-format-card[data-format="csv"]').click();
+    // Quick export of the table toolbar downloads a file (the only export entry point, as in the simple app)
     const origClick = window.HTMLAnchorElement.prototype.click;
     let downloads = 0;
     window.HTMLAnchorElement.prototype.click = function() { if (this.download) downloads++; else origClick.call(this); };
-    document.getElementById('export-btn').click();
-    await settle(400);
+    document.querySelector('#export-dropdown-menu .dropdown-menu-item[data-export-format="csv"][data-export-scope="all"]').click();
     window.HTMLAnchorElement.prototype.click = origClick;
-    check('export panel downloads a file', downloads === 1);
+    check('quick export downloads a file', downloads === 1);
     check('export success toast', !!document.querySelector('#toast-container .toast-success'));
+    check('tools panel has the three shared sections only', [...document.querySelectorAll('#accordion-panel .accordion-item:not(.mobile-tree-accordion)')].map(el => el.dataset.accordion).join(',') === 'print,catalog,layers');
 
     // Language selector: switch in place and retain the current view.
     document.getElementById('lang-btn').click();
@@ -324,12 +318,6 @@ module.exports = {
     document.querySelector('.lang-option[data-lang="en"]').click();
     check('language choice switches and closes dropdown', !document.getElementById('lang-dropdown').classList.contains('open') && document.documentElement.lang === 'en');
     document.querySelector('.lang-option[data-lang="de"]').click();
-
-    // Measure accordion button starts the tool
-    document.querySelector('[data-action="toggleMeasure"]').click();
-    check('measure button starts the tool', modules.measure.isMeasuring());
-    modules.measure.clearMeasurement();
-
 
     // Location tree: country / region / city nodes set the Land / Region / Ort filters of the drawer,
     // WE nodes are folders, object rows select on the map; one level at a time, one open node per level
@@ -475,5 +463,16 @@ module.exports = {
     check('logo closes the drawer and the table panel', !document.getElementById('filter-panel').classList.contains('open') && !state.tableOpen);
     check('logo cleans the URL', !/filter_|id=|parcelId=|view=detail|table=open/.test(window.location.search));
     check('logo flies to the initial extent', map.calls.flyTo.length === flyHomeBefore + 1);
+
+    // Land cover (same feature as in the simple app): a table row selects it, reveals the hidden layer,
+    // syncs the table tab and writes the URL; last, because the selection switches the table tab
+    document.querySelector('#landcovers-body tr[data-landcover-id]').click();
+    await settle();
+    check('land cover selection reveals the layer', state.selectedLandCoverId === 1 && document.getElementById('layer-toggle-landcovers').checked && map.getLayoutProperty('landcovers-selected', 'visibility') === 'visible');
+    check('land cover selection syncs table and URL', state.activeTableTab === 'landcovers' && /landCoverId=1(&|$)/.test(window.location.search) && document.getElementById('info-panel').classList.contains('show'));
+    check('land cover info shows the translated type', document.getElementById('info-body').textContent.indexOf('Gartenanlage') !== -1 && document.getElementById('info-body').textContent.indexOf('Humusierte') !== -1);
+    check('share URL carries the land cover', /landCoverId=1(&|$)/.test(modules.export.getShareUrl()));
+    modules.map.selectParcel(state.parcelData.features[0].properties.parcelId);
+    check('parcel selection reveals the layer', document.getElementById('layer-toggle-parcels').checked && map.getLayoutProperty('parcels-fill', 'visibility') === 'visible');
   }
 };

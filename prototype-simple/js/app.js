@@ -165,7 +165,20 @@ function boot() {
   initMap();
   initMeasure(state.map);
   initContextMenu(state.map);
-  initSwisstopo({ map: state.map, internalLayers: internalLayers });
+  initSwisstopo({
+    map: state.map,
+    internalLayers: internalLayers,
+    // Data date of the layer info: the official retrieval date of the land cover, else the data version
+    dataDate: function(key) {
+      const collection = { buildings: state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData }[key];
+      if (!collection) return null;
+      if (key === 'landcovers') {
+        const retrieved = (collection.features || []).map(function(f) { return f.properties.provenance && f.properties.provenance.retrievedAt; }).filter(Boolean).sort();
+        if (retrieved.length) return retrieved[retrieved.length - 1];
+      }
+      return collection.dataVersion || null;
+    }
+  });
   initPrintWidget(state.map, {
     getSources: function() {
       return { buildings: state.filteredData || state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData };

@@ -1,11 +1,12 @@
 import { addParcelLayers, addBuildingLayers, addBuildingLabels } from './portfolio-map-layers.js';
 import { bindPortfolioInteractions } from './portfolio-map-interactions.js';
 import { addParcelLabels, parcelLabelPoint, addBuildingLabelObstacles, updateBuildingLabelObstacles } from './parcel-labels.js';
-// Map: data layers (buildings, parcels), selection and the restore after a basemap change.
+// Map: data layers (buildings, parcels, land cover), selection and the restore after a basemap change.
 // Map creation, controls, style switcher, context menu and measure tool are common modules.
 
 import { state } from './state.js';
-import { statusColors, getStatusClassName, placeholderImages, parcelColor, internalLayerIds } from './config.js';
+import { statusColors, getStatusClassName, placeholderImages, parcelColor, landCoverOutlineColor, internalLayerIds } from './config.js';
+import { landCoverColorExpression, landCoverGroup, landCoverTypeLabel, landCoverGroupLabel } from './landcover-types.js';
 import { escapeHtml, cssUrl, formatNum, extractYear } from './utils.js';
 import { t } from './i18n.js';
 import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
@@ -14,7 +15,7 @@ import { isMeasuring, restoreMeasurement } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
 import { renderLocationTree, syncCountryHighlight } from './location-tree.js';
-import { syncTableToBuilding, syncTableToParcel } from './list.js';
+import { syncTableToBuilding, syncTableToParcel, syncTableToLandCover } from './list.js';
 
 // ===== MAP INITIALISATION =====
 
@@ -87,13 +88,44 @@ function stopPulseAnimation() {
 
 // ===== DATA LAYERS =====
 
+// beforeId: ground data goes under the basemap labels and the 3D buildings (groundLayerAnchor)
+function addLandCoverLayers(map, beforeId) {
+  map.addSource('landcovers', { type: 'geojson', data: state.landCoverData });
+  // Official AV-WMS colours per type (landcover-types.js); the selection needs a colour where the type has no fill
+  const fillColor = landCoverColorExpression('type');
+  const selectionColor = landCoverColorExpression('type', '#C8C8C8');
+
+  map.addLayer({
+    id: 'landcovers-fill', type: 'fill', source: 'landcovers', minzoom: 14,
+    paint: { 'fill-color': fillColor, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.8] }
+  }, beforeId);
+  map.addLayer({
+    id: 'landcovers-outline', type: 'line', source: 'landcovers', minzoom: 14,
+    paint: { 'line-color': landCoverOutlineColor, 'line-width': 1, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.6] }
+  }, beforeId);
+  // No minzoom on the selection layers: a selection should always be visible (no hover fill, see
+  // portfolio-map-interactions.js)
+  map.addLayer({
+    id: 'landcovers-selected', type: 'fill', source: 'landcovers',
+    filter: ['==', ['get', 'landCoverId'], -1],
+    paint: { 'fill-color': selectionColor, 'fill-opacity': 0.6 }
+  }, beforeId);
+  map.addLayer({
+    id: 'landcovers-selected-outline', type: 'line', source: 'landcovers',
+    filter: ['==', ['get', 'landCoverId'], -1],
+    paint: { 'line-color': parcelColor, 'line-width': 3, 'line-opacity': 1 }
+  }, beforeId);
+}
+
 export function addMapLayers() {
   if (!state.buildingsData) return;
   const map = state.map;
   if (map.getSource('buildings')) return; // already added
 
   // Ground polygons under the basemap labels and the 3D buildings; points and labels on top
-  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'parcelId', parcelColor, groundLayerAnchor(map));
+  const ground = groundLayerAnchor(map);
+  if (state.landCoverData && state.landCoverData.features) addLandCoverLayers(map, ground);
+  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'parcelId', parcelColor, ground);
   addBuildingLayers(map, state.buildingsData, 'buildingId', 'status', statusColors);
   if (state.parcelData?.features) addParcelLabels(map, state.parcelData, 'parcelId');
   addBuildingLabels(map, 'buildingId');
@@ -123,6 +155,14 @@ export function setInternalLayerVisibility(layerKey, visible) {
   });
 }
 
+// A selection from the table or a link shows its layer even when the toggle is off (land covers start hidden)
+function revealInternalLayer(layerKey) {
+  const toggle = document.getElementById('layer-toggle-' + layerKey);
+  if (!toggle || toggle.checked) return;
+  toggle.checked = true;
+  setInternalLayerVisibility(layerKey, true);
+}
+
 export function applyInternalLayerVisibility() {
   Object.keys(internalLayerIds).forEach(function(layerKey) {
     const toggle = document.getElementById('layer-toggle-' + layerKey);
@@ -137,6 +177,7 @@ function bindMapInteractions() {
     isMeasuring, isActive: () => state.currentView === 'map',
     flyTo: options => smartFlyTo(state.map, options),
     selectBuilding, selectParcel,
+    landCoverId: 'landCoverId', selectLandCover,
     clearSelection, clearIdentify: clearIdentifyHighlight,
     identify: position => { if (hasActiveSwisstopoLayers()) identifySwisstopoFeatures(position); }
   });
@@ -154,10 +195,14 @@ function restoreSelectionFromUrl() {
   const urlParams = initialUrlParams;
   const urlBuildingId = urlParams.get('id');
   const urlParcelId = urlParams.get('parcelId');
+  const urlLandCoverId = urlParams.get('landCoverId');
   if (urlBuildingId) {
     if (state.buildingIndex.has(urlBuildingId)) selectBuilding(urlBuildingId, true);
   } else if (urlParcelId) {
     if (state.parcelIndex.has(urlParcelId)) selectParcel(urlParcelId, true);
+  } else if (urlLandCoverId) {
+    const lcId = parseInt(urlLandCoverId, 10);
+    if (state.landCoverIndex.has(lcId)) selectLandCover(lcId, true);
   }
 }
 
@@ -183,18 +228,20 @@ function hideInfoPanel() {
   document.getElementById('info-panel').classList.remove('show');
 }
 
-function setSelection(buildingId, parcelId) {
+function setSelection(buildingId, parcelId, landCoverId) {
   clearIdentifyHighlight();
   state.selectedBuildingId = buildingId;
   state.selectedParcelId = parcelId;
+  state.selectedLandCoverId = landCoverId;
   updateSelectedBuilding();
   updateSelectedParcel();
+  updateSelectedLandCover();
   updateUrlWithSelection();
   renderLocationTree();
 }
 
 export function clearSelection() {
-  setSelection(null, null);
+  setSelection(null, null, null);
   hideInfoPanel();
 }
 
@@ -203,7 +250,7 @@ export function selectBuilding(buildingId, flyToBuilding) {
   if (!building) return;
   const props = building.properties;
   const ext = props.extensionData || {};
-  setSelection(buildingId, null);
+  setSelection(buildingId, null, null);
 
   // Use the same researched photograph as the gallery and detail view.
   const photos = (props.extensionData || {}).photos || [];
@@ -237,7 +284,8 @@ export function selectParcel(parcelId, flyToParcel) {
   const parcel = state.parcelIndex.get(parcelId);
   if (!parcel) return;
   const props = parcel.properties;
-  setSelection(null, parcelId);
+  setSelection(null, parcelId, null);
+  revealInternalLayer('parcels');
 
   const html =
     infoRow('info.label.id', escapeHtml(props.parcelId || '—')) +
@@ -254,6 +302,33 @@ export function selectParcel(parcelId, flyToParcel) {
     const center = parcelLabelPoint(parcel.geometry);
     if (!center) return;
     if (flyToParcel) smartFlyTo(state.map, { center: center, zoom: 16 });
+    else revealSelectionOnMobile(state.map, center);
+  }
+}
+
+export function selectLandCover(landCoverId, flyToLandCover) {
+  const lc = state.landCoverIndex.get(landCoverId);
+  if (!lc) return;
+  const props = lc.properties;
+  setSelection(null, null, landCoverId);
+  revealInternalLayer('landcovers');
+
+  const html =
+    infoRow('info.label.parcel_id', escapeHtml(props.parcelId || '—')) +
+    infoRow('info.label.type', escapeHtml(landCoverTypeLabel(props.type))) +
+    infoRow('info.label.landcover_group', escapeHtml(landCoverGroupLabel(props.typeGroup || landCoverGroup(props.type)))) +
+    infoRow('info.label.area', props.area != null ? formatNum(props.area, 0) + ' m²' : '—') +
+    (props.buildingId ? infoRow('info.label.building_id', escapeHtml(props.buildingId), true) : '') +
+    (props.egid ? '<div class="info-row info-row-secondary"><span class="info-label">EGID</span><span class="info-value">' + escapeHtml(props.egid) + '</span></div>' : '') +
+    '<div class="info-row info-row-secondary"><span class="info-label">EGRID</span><span class="info-value">' + escapeHtml(props.egrid || '—') + '</span></div>' +
+    '<div class="info-row info-row-secondary"><span class="info-label">AV Status</span><span class="info-value">' + escapeHtml(props.surveyStatus || '—') + '</span></div>';
+  showInfoPanel('info.title.landcover', html, null);
+  syncTableToLandCover(landCoverId);
+
+  if (lc.geometry && lc.geometry.coordinates) {
+    const center = parcelLabelPoint(lc.geometry);
+    if (!center) return;
+    if (flyToLandCover) smartFlyTo(state.map, { center: center, zoom: 17 });
     else revealSelectionOnMobile(state.map, center);
   }
 }
@@ -277,10 +352,19 @@ export function updateSelectedParcel() {
   });
 }
 
+export function updateSelectedLandCover() {
+  const map = state.map;
+  const id = state.selectedLandCoverId != null ? state.selectedLandCoverId : -1;
+  ['landcovers-selected', 'landcovers-selected-outline'].forEach(function(layer) {
+    if (map && map.getLayer(layer)) map.setFilter(layer, ['==', ['get', 'landCoverId'], id]);
+  });
+}
+
 export function updateUrlWithSelection() {
   const url = new URL(window.location);
   if (state.selectedBuildingId) url.searchParams.set('id', state.selectedBuildingId); else url.searchParams.delete('id');
   if (state.selectedParcelId) url.searchParams.set('parcelId', state.selectedParcelId); else url.searchParams.delete('parcelId');
+  if (state.selectedLandCoverId != null) url.searchParams.set('landCoverId', state.selectedLandCoverId); else url.searchParams.delete('landCoverId');
   window.history.replaceState({}, '', url);
 }
 
@@ -292,6 +376,9 @@ export function zoomToSelection() {
   } else if (state.selectedParcelId) {
     const parcel = state.parcelIndex.get(state.selectedParcelId);
     if (parcelLabelPoint(parcel?.geometry)) smartFlyTo(state.map, { center: parcelLabelPoint(parcel.geometry), zoom: 16 });
+  } else if (state.selectedLandCoverId != null) {
+    const lc = state.landCoverIndex.get(state.selectedLandCoverId);
+    if (parcelLabelPoint(lc?.geometry)) smartFlyTo(state.map, { center: parcelLabelPoint(lc.geometry), zoom: 17 });
   }
 }
 
@@ -308,6 +395,7 @@ function restoreLayers() {
     }
     updateSelectedBuilding();
     updateSelectedParcel();
+    updateSelectedLandCover();
   }
   if (is3DActive()) show3DBuildings(state.map);
   readdSwisstopoLayers();

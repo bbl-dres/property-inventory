@@ -253,33 +253,14 @@
                     <div class="accordion-item mobile-tree-accordion" data-accordion="locations">
                         <button type="button" class="accordion-header" id="mobile-tree-btn" aria-expanded="false" aria-controls="mobile-tree-content">
                             <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                            <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
                             <span data-i18n="tree.title">Standorte</span>
                         </button>
                         <div class="accordion-content" id="mobile-tree-content" role="region" aria-labelledby="mobile-tree-btn"></div>
                     </div>
-                    <div class="accordion-item" data-accordion="share">
+                    <div class="accordion-item" id="print-accordion-item" data-accordion="print">
                         <button class="accordion-header" aria-expanded="false">
                             <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                            <span data-i18n="info.share">Teilen</span>
-                        </button>
-                        <div class="accordion-content">
-                            <div class="share-panel">
-                                <div class="share-link-section">
-                                    <span class="share-link-label" data-i18n="share.link.label">Link zum Teilen:</span>
-                                    <div class="share-link-row">
-                                        <input type="text" id="share-link-input" class="share-link-input" readonly aria-label="Link zum Teilen" data-i18n-aria-label="share.link">
-                                        <button class="btn-secondary share-copy-btn" data-action="copyShareLink" aria-label="Link in die Zwischenablage kopieren" data-i18n-aria-label="share.copy" data-i18n="accordion.share.copy">Link kopieren</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item" data-accordion="print">
-                        <button class="accordion-header" aria-expanded="false">
-                            <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                            <span data-i18n="map.context.print">Drucken</span>
+                            <span data-i18n="accordion.print">Drucken</span>
                         </button>
                         <div class="accordion-content">
                             <div class="print-form">
@@ -340,88 +321,6 @@
                         </div>
                     </div>
 
-                    <div class="accordion-item" id="measure-accordion" data-accordion="measure">
-                        <button class="accordion-header" aria-expanded="false">
-                            <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                            <span data-i18n="measure.draw.title">Zeichnen &amp; Messen auf der Karte</span>
-                        </button>
-                        <div class="accordion-content">
-                            <button type="button" class="panel-btn" data-action="toggleMeasure">
-                                <span class="material-symbols-outlined">straighten</span>
-                                <span data-i18n="measure.title">Distanz messen</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <div class="accordion-item" data-accordion="export">
-                        <button class="accordion-header" aria-expanded="false">
-                            <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                            <span data-i18n="export.title">Export</span>
-                        </button>
-                        <div class="accordion-content">
-                            <div class="export-panel">
-                                <div class="export-section">
-                                    <label class="export-section-label" for="export-data-selection" data-i18n="export.selection">Datenauswahl</label>
-                                    <select id="export-data-selection" class="custom-select export-select">
-                                        <option value="filtered" data-i18n="export.current">Aktuelle Ansicht</option>
-                                        <option value="all" data-i18n="detail.all_objects">Alle Objekte</option>
-                                        <option value="selected" data-i18n="export.selected">Nur ausgewähltes Objekt</option>
-                                    </select>
-                                    <span class="export-count" id="export-count"></span>
-                                </div>
-
-                                <div class="export-section">
-                                    <span class="export-section-label" data-i18n="export.format.choose">Format wählen</span>
-                                    <div class="export-format-grid">
-                                        <button class="export-format-card active" data-format="geojson">
-                                            <span class="export-format-icon">{ }</span>
-                                            <span class="export-format-name">GeoJSON</span>
-                                            <span class="export-format-desc" data-i18n="export.web">Web-Anwendungen</span>
-                                        </button>
-                                        <button class="export-format-card" data-format="csv">
-                                            <span class="export-format-icon"><span class="material-symbols-outlined">table_view</span></span>
-                                            <span class="export-format-name">CSV</span>
-                                            <span class="export-format-desc" data-i18n="export.excel">Excel / Tabellen</span>
-                                        </button>
-                                        <button class="export-format-card" data-format="kml">
-                                            <span class="export-format-icon"><span class="material-symbols-outlined">location_on</span></span>
-                                            <span class="export-format-name">KML</span>
-                                            <span class="export-format-desc">Google Earth</span>
-                                        </button>
-                                        <button class="export-format-card" data-format="shapefile">
-                                            <span class="export-format-icon"><span class="material-symbols-outlined">hexagon</span></span>
-                                            <span class="export-format-name">Shapefile</span>
-                                            <span class="export-format-desc" data-i18n="export.gis">GIS-Software</span>
-                                        </button>
-                                    </div>
-                                </div>
-
-                                <div class="export-section">
-                                    <span class="export-section-label" data-i18n="export.options">Optionen</span>
-                                    <div class="export-options">
-                                        <label class="export-checkbox-label">
-                                            <input type="checkbox" id="export-coords" checked>
-                                            <span data-i18n="export.coords">Koordinaten einschliessen</span>
-                                        </label>
-                                        <label class="export-checkbox-label">
-                                            <input type="checkbox" id="export-all-fields" checked>
-                                            <span data-i18n="export.attributes">Alle Attribute exportieren</span>
-                                        </label>
-                                        <label class="export-checkbox-label">
-                                            <input type="checkbox" id="export-parcels">
-                                            <span data-i18n="export.parcels">Parzellen einschliessen</span>
-                                        </label>
-                                    </div>
-                                </div>
-
-                                <button id="export-btn" class="panel-btn">
-                                    <span class="material-symbols-outlined">download</span>
-                                    <span data-i18n="export.submit">Exportieren</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
                     <div class="accordion-item" id="geokatalog-accordion" data-accordion="catalog">
                         <!-- "Thema wechseln" is a sibling of the header (its click must not toggle the accordion) and comes
                              before it so the header's nextElementSibling stays the accordion content -->
@@ -451,6 +350,11 @@
                                         <span class="active-layer-title" data-i18n="search.meta.building">Gebäude</span>
                                         <span data-internal-layer-info="buildings"></span>
                                     </div>
+                                    <div class="active-layer-item" data-internal-layer="landcovers">
+                                        <input type="checkbox" class="active-layer-checkbox" id="layer-toggle-landcovers" title="Bodenabdeckung ein-/ausblenden" data-i18n-title="accordion.layers.landcovers.toggle">
+                                        <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
+                                        <span data-internal-layer-info="landcovers"></span>
+                                    </div>
                                     <div class="active-layer-item" data-internal-layer="parcels">
                                         <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" title="Grundstücke ein-/ausblenden" data-i18n-title="accordion.layers.parcels.toggle">
                                         <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
@@ -466,8 +370,12 @@
                             </div>
                         </div>
                     </div>
-                    <!-- Phones only: the panel is the hamburger menu; language pills and the footer links live here -->
+                    <!-- Phones only: the panel is the hamburger menu; share, language and the footer links live here -->
                     <div class="mobile-menu-extras">
+                        <button type="button" class="mobile-menu-item" id="mobile-share-btn">
+                            <span class="material-symbols-outlined" aria-hidden="true">share</span>
+                            <span data-i18n="map.context.share">Teilen</span>
+                        </button>
                         <div class="mobile-menu-lang">
                             <span class="material-symbols-outlined" aria-hidden="true">language</span>
                             <div class="mobile-lang-pills" id="mobile-lang-pills">
@@ -1145,6 +1053,7 @@
                         <div class="table-tabs" role="tablist">
                             <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="search.meta.building">Gebäude</button>
                             <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="accordion.layers.parcels">Grundstücke</button>
+                            <button class="table-tab" data-table-tab="landcovers" role="tab" aria-selected="false" data-i18n="table.tab.landcovers">Bodenabdeckung</button>
                         </div>
                         <div class="toolbar-search list-toolbar-search">
                             <span class="material-symbols-outlined">search</span>
@@ -1213,6 +1122,18 @@
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
                                         <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
                                     </div>
+                                    <!-- Land cover columns (shown when Bodenabdeckung tab active) -->
+                                    <div class="columns-list" id="landcover-columns-list" data-columns-tab="landcovers" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-type"> <span data-i18n="col.lc.av_type">Typ</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-group"> <span data-i18n="col.lc.group">Hauptgruppe</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-area"> <span data-i18n="col.lc.lc_area">Fläche</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-lc-status"> <span data-i18n="col.lc.av_stat">AV Status</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-parcel"> <span data-i18n="col.lc.bbl_id">Grundstück ID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-building"> <span data-i18n="col.lc.geb_id">Gebäude ID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-egid"> <span data-i18n="col.lc.egid">EGID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-egrid"> <span data-i18n="col.lc.egrid">EGRID</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" data-column="col-lc-canton"> <span data-i18n="col.parcel.canton">Kanton</span></label>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -1268,6 +1189,34 @@
                             <div class="pagination-rows">
                                 <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
                                 <select id="parcels-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-tab-content" id="landcovers-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="list-table" id="landcovers-table">
+                                <thead><tr></tr></thead>
+                                <tbody id="landcovers-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="landcovers-pagination">
+                            <div class="pagination-info" id="landcovers-pagination-info" aria-live="polite">0 von 0 Bodenabdeckungen</div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="landcovers-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="landcovers-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="landcovers-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="landcovers-rows-per-page" class="custom-select">
                                     <option value="25">25</option>
                                     <option value="50" selected>50</option>
                                     <option value="100">100</option>

@@ -5,7 +5,7 @@ import { layerInfoButton, renderInternalInfoButtons } from './layer-info-button.
 // geokatalog-accordion, geokatalog-tree, geokatalog-title, topic-modal, topic-grid
 // (and optionally mobile-external-layers-list).
 
-import { escapeHtml } from './utils.js';
+import { escapeHtml, formatDate } from './utils.js';
 import { showToast } from './toast.js';
 import { t, getLang, onLangChange } from './i18n.js';
 import { onEscape } from './keys.js';
@@ -14,6 +14,7 @@ import { DATA_LAYER_ANCHORS, findFirstLayerId } from './map-controls.js';
 
 let map = null;
 let internalLayers = {};          // app-specific metadata for the "Interne Karten" info modal
+let internalDataDate = null;      // options.dataDate(key) -> ISO date of the loaded dataset
 const activeSwisstopoLayers = []; // { id, title, sourceId, mapLayerId, tileUrl, maxZoom, visible }
 let identifiedFeaturePopup = null;
 let geokatalogLoaded = false;
@@ -28,11 +29,13 @@ const SWISSTOPO_ATTRIBUTION = '&copy; <a href="https://www.swisstopo.admin.ch">s
 
 // ===== INIT =====
 
-// options: { map, internalLayers: { key: { title, description, source, format, geometryType, legendHtml() } } }
+// options: { map, internalLayers: { key: { title, description, source, format, geometryType, legendHtml(),
+//   links: { metadata, description, download, portal } } }, dataDate(key) }
 export function initSwisstopo(options) {
   map = options.map;
   map.on('style.load', clearIdentifyHighlight);
   internalLayers = options.internalLayers || {};
+  internalDataDate = options.dataDate || null;
   renderInternalInfoButtons();
   initLayerInfoModal();
   initTopicSwitch();
@@ -59,9 +62,9 @@ function wmsTileUrl(layerId) {
     '&TRANSPARENT=true';
 }
 
-// External layers sit below the identify highlight and the application's data layers
+// External layers sit below the application's data layers (and below the identify highlight)
 function externalLayerAnchor() {
-  return findFirstLayerId(map, [identifyHighlightLayerId].concat(DATA_LAYER_ANCHORS));
+  return findFirstLayerId(map, DATA_LAYER_ANCHORS.concat([identifyHighlightLayerId]));
 }
 
 function addLayerToMap(layer) {
@@ -250,8 +253,9 @@ export function initIdentifyHighlightLayer() {
     type: 'geojson',
     data: { type: 'FeatureCollection', features: [] }
   });
-  // Above the external layers, below the application's data layers
-  const beforeLayer = findFirstLayerId(map, DATA_LAYER_ANCHORS);
+  // Above the external layers and the ground polygons (land cover and parcels would cover it), below the
+  // application's points and labels
+  const beforeLayer = findFirstLayerId(map, ['buildings-clusters', 'buildings-points']);
   map.addLayer({
     id: identifyHighlightLayerId,
     type: 'fill',
@@ -434,6 +438,15 @@ export function hideLayerInfo() {
   if (modal) modal.classList.remove('show');
 }
 
+// A link row of the internal layer info; the placeholder stays where a dataset has no link
+function infoLink(url, labelKey) {
+  if (!url) return '<span class="placeholder-link">' + t('swisstopo.info.placeholder') + '</span>';
+  let host = url;
+  try { host = new URL(url, window.location.href).hostname.replace(/^www\./, ''); } catch (e) { /* relative link */ }
+  const external = /^https?:/i.test(url);
+  return '<a href="' + escapeHtml(url) + '"' + (external ? ' target="_blank" rel="noopener"' : '') + '>' + escapeHtml(t(labelKey, { host: host })) + '</a>';
+}
+
 // Info modal for the application's own datasets ("Interne Karten")
 export function showInternalLayerInfo(layerKey) {
   const modal = layerInfoModal();
@@ -442,7 +455,9 @@ export function showInternalLayerInfo(layerKey) {
   if (!modal || !content || !meta) return;
   layerInfoRequestId++; // a pending Geokatalog response must not replace this content
 
-  const datenstand = new Date().toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const links = meta.links || {};
+  const dataDate = internalDataDate ? internalDataDate(layerKey) : null;
+  const datenstand = formatDate(dataDate) || formatDate(new Date().toISOString());
   content.innerHTML = '<div class="legend-container">' +
     '<div class="bod-title">' + escapeHtml(meta.title) + '</div>' +
     '<div class="legend-abstract">' + escapeHtml(meta.description) + '</div>' +
@@ -451,10 +466,10 @@ export function showInternalLayerInfo(layerKey) {
     '<table>' +
     '<tr><td>' + t('swisstopo.info.source') + '</td><td>' + escapeHtml(meta.source) + '</td></tr>' +
     '<tr><td>' + t('swisstopo.info.format') + '</td><td>' + escapeHtml(meta.format) + ' (' + escapeHtml(meta.geometryType) + ')</td></tr>' +
-    '<tr><td>' + t('swisstopo.info.metadata') + '</td><td><span class="placeholder-link">' + t('swisstopo.info.placeholder') + '</span></td></tr>' +
-    '<tr><td>' + t('swisstopo.info.description') + '</td><td><span class="placeholder-link">' + t('swisstopo.info.placeholder') + '</span></td></tr>' +
-    '<tr><td>' + t('swisstopo.info.download') + '</td><td><span class="placeholder-link">' + t('swisstopo.info.placeholder') + '</span></td></tr>' +
-    '<tr><td>' + t('swisstopo.info.portal') + '</td><td><span class="placeholder-link">' + t('swisstopo.info.placeholder') + '</span></td></tr>' +
+    '<tr><td>' + t('swisstopo.info.metadata') + '</td><td>' + infoLink(links.metadata, 'swisstopo.info.link.metadata') + '</td></tr>' +
+    '<tr><td>' + t('swisstopo.info.description') + '</td><td>' + infoLink(links.description, 'swisstopo.info.link.description') + '</td></tr>' +
+    '<tr><td>' + t('swisstopo.info.download') + '</td><td>' + infoLink(links.download, 'swisstopo.info.link.download') + '</td></tr>' +
+    '<tr><td>' + t('swisstopo.info.portal') + '</td><td>' + infoLink(links.portal, 'swisstopo.info.link.portal') + '</td></tr>' +
     '<tr><td>' + t('swisstopo.info.date') + '</td><td>' + datenstand + '</td></tr>' +
     '</table>' +
     '</div>';

@@ -20,7 +20,9 @@ not a complete or official BBL inventory or a statement of current ownership.
 All five steps are implemented. The sample contains 42 actual photographs (at
 least one interior and exterior per site), 266 measurements, 84 document records,
 42 fictional contacts, 84 cost records, 28 contracts and 56 assets. There are 14
-parcels and 70 explicitly schematic land-cover polygons in the simple app.
+parcels and 136 land-cover polygons in both apps: 91 official cadastral-survey polygons
+clipped to the five Swiss parcels and 45 explicitly schematic ones abroad
+(see [docs/LAND-COVER.md](../../docs/LAND-COVER.md)).
 
 ## Evidence and scope
 
@@ -89,8 +91,14 @@ also include additional buildings.
 
 `GSF` is calculated geodesically from the returned WGS84 polygon and marked
 `derived-public-geometry`. It is **not** an official land-register area attribute.
-Swiss land cover and footprints remain synthetic illustrations clipped to the
-real parcel; they are not official AV building footprints.
+Swiss land cover is the official *Bodenbedeckung* of the cadastral survey, fetched by
+`swiss_landcover.py` from the geodienste.ch WFS (`ms:LCSF`) by parcel bounding box, reduced
+to the polygons intersecting the parcel (`sources/swiss-landcover.json`) and clipped to the
+parcel by `generate.py` (local metric CRS, geodesic areas, boundary slivers below 0.5 m²
+dropped). The piece carrying the building's `GWR_EGID` is its footprint; other `Gebaeude`
+pieces belong to other buildings on the parcel. Overseas land cover remains a schematic
+illustration (`synthetic-demo`), typed with BBArt values. AV land cover © the cantons via
+geodienste.ch.
 
 Overseas markers use reviewed OpenStreetMap/Nominatim building or site matches.
 The manifest includes matched addresses, OSM object URLs and indicative uncertainty
@@ -192,7 +200,8 @@ No live service is needed to build or run the portfolio. Photos are already chec
 in. Basemaps and the apps' existing live search still use their normal providers.
 `validate.py` checks both schemas, identifiers, foreign keys, measurement identities,
 KBOB labels, fictional contacts, date consistency, photo coverage and credits,
-coordinate/parcel containment, geodesic areas and land-cover partitions.
+coordinate/parcel containment, geodesic areas, land-cover containment and partitions,
+official land-cover provenance and parity across both schemas.
 
 The research scripts also preserve the online workflow:
 
@@ -204,6 +213,7 @@ python scripts/portfolio/research.py review
 # Inspect source pages, geocoding candidates and contact sheets before proceeding.
 python scripts/portfolio/review_research.py
 python scripts/portfolio/swiss_cadastre.py
+python scripts/portfolio/swiss_landcover.py
 python scripts/portfolio/research.py photos
 python scripts/portfolio/generate.py
 python scripts/portfolio/validate.py

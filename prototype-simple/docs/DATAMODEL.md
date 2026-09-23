@@ -370,6 +370,8 @@ Land parcels with master data, survey identifiers, zoning, and area dimensions.
 
 Building footprints and land cover polygons from the official Swiss survey. Linked to Buildings and Parcels via EGID/EGRID. A single polygon may cover multiple buildings (semicolon-delimited `bbl_id`).
 
+In the demo data the five Swiss parcels carry the official land cover of the cadastral survey (geodienste.ch WFS `ms:LCSF`, clipped to the parcel, `av_stat` = survey quality such as `AV93`), the overseas parcels schematic polygons (`av_stat` = `Demo`). `av_type` holds one of the 26 `BBArt` types of DM.01-AV-CH (e.g. `Gebaeude`, `Strasse_Weg`, `Gartenanlage`); their main groups and colours live in `js/landcover-types.js`. `geb_id` links the piece carrying the building's EGID to the building. See [docs/LAND-COVER.md](../../docs/LAND-COVER.md).
+
 | # | Field | Format | Key | Group | Visible | Description (DE) | Description (EN) |
 |---|-------|--------|-----|-------|---------|------------------|------------------|
 | 1 | `bbl_id` | String | FK | Master Data | **yes** | BBL ID; Semikolon-getrennt bei Mehrfachzuordnung | BBL ID; semicolon-delimited if multi-building |
@@ -444,8 +446,8 @@ Value lists constrain specific fields to defined sets of values. Maintained in t
 | `bbl_hist` | Building | `bbl_hist` | Ja, Nein |
 | `bbl_arch` | Building | `bbl_arch` | Ja, Nein |
 | `kgs_kat` | Building | `kgs_kat` | A, B, C |
-| `av_stat` | Land Cover, Parcel | `av_stat` | Gültig, Projektiert |
-| `av_type` | Land Cover | `av_type` | Gebäude, ... |
+| `av_stat` | Land Cover, Parcel | `av_stat` | Gültig, Projektiert; demo data: AV93 (survey quality), Demo |
+| `av_type` | Land Cover | `av_type` | BBArt (DM.01-AV-CH): Gebaeude, Strasse_Weg, Trottoir, Verkehrsinsel, Bahn, Flugplatz, Wasserbecken, uebrige_befestigte, Acker_Wiese_Weide, Reben, uebrige_Intensivkultur, Gartenanlage, Hoch_Flachmoor, uebrige_humusierte, Gewaesser_stehendes, Gewaesser_fliessendes, Schilfguertel, geschlossener_Wald, Wytweide_dicht, Wytweide_offen, uebrige_bestockte, Fels, Gletscher_Firn, Geroell_Sand, Abbau_Deponie, uebrige_vegetationslose |
 | `adr_land` | All entities | `adr_land` | CH, DE, FR, IT, AT, BE, US (ISO 3166) |
 | `adr_reg` | All entities | `adr_reg` | BE, ZH, GE, Berlin, ... |
 | `garea_acu` | Building, Envelope | `garea_acu`, `gvol_acu`, `gastw_acu` | Vermessen, Geschätzt, AV |

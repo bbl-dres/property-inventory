@@ -8,7 +8,7 @@ const { spawnSync } = require('child_process');
 
 const ROOT = path.resolve(__dirname, '..');
 const COMMON_JS = ['utils', 'i18n', 'toast', 'geo', 'keys', 'boot', 'basemaps', 'map-controls', 'measure',
-  'context-menu', 'swisstopo', 'print', 'table', 'data-table', 'carousel', 'mini-map', 'gestures', 'accordion', 'tools-panel', 'location-tree', 'document-pages', 'document-preview', 'media-preview', 'reference-data', 'panel-layout', 'parcel-labels', 'layer-info-button', 'portfolio-map-layers', 'portfolio-map-interactions', 'filter-url', 'table-sort', 'print-geometry'];
+  'context-menu', 'swisstopo', 'print', 'table', 'data-table', 'carousel', 'mini-map', 'gestures', 'accordion', 'tools-panel', 'location-tree', 'document-pages', 'document-preview', 'media-preview', 'reference-data', 'panel-layout', 'parcel-labels', 'layer-info-button', 'portfolio-map-layers', 'portfolio-map-interactions', 'filter-url', 'table-sort', 'print-geometry', 'landcover-types'];
 const COMMON_FILES = COMMON_JS.map(n => 'js/' + n + '.js').concat(['data/i18n.json', 'data/swagger.json', 'css/tokens.css', 'css/components.css', 'docs/DESIGNGUIDE.md', 'docs/DESIGN-REVIEW-2.md',
   'vendor/swagger-ui/swagger-ui-bundle.js', 'vendor/swagger-ui/swagger-ui.css', 'vendor/swagger-ui/LICENSE', 'vendor/swagger-ui/NOTICE', 'css/media-preview.css', 'css/panel-layout.css', 'data/meta.json', 'vendor/service-portal/LICENSE', 'vendor/polylabel/polylabel.js', 'vendor/polylabel/LICENSE', 'vendor/tinyqueue/index.js', 'vendor/tinyqueue/LICENSE'])
   .concat(fs.readdirSync(path.join(ROOT, 'prototype-simple', 'assets', 'countries')).sort().map(f => 'assets/countries/' + f))

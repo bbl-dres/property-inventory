@@ -23,7 +23,7 @@ its width in millimetres times the scale.
 | Building dot radius, 10 px | 2.6 mm | 2.6 mm |
 
 The print style is the live style with the interactive layers removed:
-clusters, selection rings, hover highlights, the measure tool and identify
+clusters, selection rings, the measure tool and identify
 results. Every zoom rule of the data layers stays, because the print zoom is a
 web zoom. Object labels and their invisible collision obstacles are the one
 exception: with "Objektbeschriftung" ticked they print at any scale. The

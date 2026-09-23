@@ -10,7 +10,7 @@ import { onEscape } from './keys.js';
 import { renderFilteredTables, renderGalleryView } from './list.js';
 import { switchView } from './ui.js';
 import { renderLocationTree } from './location-tree.js';
-import { updateFilteredExportHeader, updateExportCount } from './export.js';
+import { updateFilteredExportHeader } from './export.js';
 
 // ===== URL STATE =====
 
@@ -57,7 +57,6 @@ export function applyFilters() {
   };
 
   setFiltersInURL(state.activeFilters);
-  updateExportCount();
   updateFilteredExportHeader();
   updateFilterButtonState();
   renderFilterPills();

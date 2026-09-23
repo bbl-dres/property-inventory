@@ -45,21 +45,16 @@ export function bindPortfolioInteractions(map, options) {
     options.selectBuilding(feature.properties[options.buildingId], false);
   });
 
+  // Polygons: the pointer cursor is the only hover feedback. A hover fill would need a filter update on
+  // every pointer move: mouseenter/mouseleave fire per layer, not per feature, so between adjacent polygons
+  // (a land-cover partition) a highlight set on enter never moves on. The selection layers show the state.
   const polygons = [
-    { source: 'parcels', id: options.parcelId, select: options.selectParcel, empty: '', above: ['buildings-points', 'buildings-clusters', 'landcovers-fill'] },
-    { source: 'landcovers', id: options.landCoverId, select: options.selectLandCover, empty: -1, above: ['buildings-points', 'buildings-clusters'] }
+    { source: 'parcels', id: options.parcelId, select: options.selectParcel, above: ['buildings-points', 'buildings-clusters', 'landcovers-fill'] },
+    { source: 'landcovers', id: options.landCoverId, select: options.selectLandCover, above: ['buildings-points', 'buildings-clusters'] }
   ].filter(layer => layer.select);
   for (const layer of polygons) {
-    map.on('mouseenter', layer.source + '-fill', event => {
-      pointer(true);
-      if (event.features?.length && map.getLayer(layer.source + '-highlight')) {
-        map.setFilter(layer.source + '-highlight', ['==', ['get', layer.id], event.features[0].properties[layer.id]]);
-      }
-    });
-    map.on('mouseleave', layer.source + '-fill', () => {
-      pointer(false);
-      if (map.getLayer(layer.source + '-highlight')) map.setFilter(layer.source + '-highlight', ['==', ['get', layer.id], layer.empty]);
-    });
+    map.on('mouseenter', layer.source + '-fill', () => pointer(true));
+    map.on('mouseleave', layer.source + '-fill', () => pointer(false));
     map.on('click', layer.source + '-fill', event => {
       const feature = event.features?.[0];
       if (options.isMeasuring() || !feature || query(event.point, layer.above, 15).length) return;

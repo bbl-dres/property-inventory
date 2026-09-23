@@ -8,7 +8,7 @@ import { initI18n, translationsLoaded, t, tf } from './i18n.js';
 import { showError, showWarning } from './toast.js';
 import { showLoadingOverlay, hideLoadingOverlay, markBooted, initGlobalErrorHandlers, fatalBootError } from './boot.js';
 import { setStyleSwitcherVisible } from './basemaps.js';
-import { initMeasure, toggleMeasurement } from './measure.js';
+import { initMeasure } from './measure.js';
 import { initContextMenu } from './context-menu.js';
 import { initSwisstopo, swisstopoClickActions, swisstopoChangeActions } from './swisstopo.js';
 import { initPrintWidget } from './print.js';
@@ -19,7 +19,6 @@ import { initUI, switchView, showDetailView, initApiDocs, comingSoon, getViewFro
 import { getFiltersFromURL, featureMatchesFilters, setExactFilters, applyFilters, initFilterOptions, initFilterPane, initDrawerResize, resetFilters, navigateToAllObjects, navigateWithLandFilter, navigateWithRegionFilter } from './filters.js';
 import { initTables, renderTables, initListToolbar, initTableTabs, initGalleryFilter, initTablePanel } from './list.js';
 import { initEntityTables } from './entity-tables.js';
-import { initExportPanel, shareActions } from './export.js';
 import { initSearch, searchActions } from './search.js';
 
 // ===== DATA LOADING =====
@@ -34,7 +33,6 @@ function initDataDependentUI() {
   dataUiInitialized = true;
   initFilterPane();
   initDrawerResize();
-  initExportPanel();
   initTables();
   initListToolbar();
   initTableTabs();
@@ -74,6 +72,10 @@ function buildIndexes() {
   if (state.parcelData && state.parcelData.features) {
     state.parcelData.features.forEach(function(f) { state.parcelIndex.set(f.properties.parcelId, f); });
   }
+  state.landCoverIndex = new Map();
+  if (state.landCoverData && state.landCoverData.features) {
+    state.landCoverData.features.forEach(function(f) { state.landCoverIndex.set(f.properties.landCoverId, f); });
+  }
 }
 
 // Only ?view=detail opens the detail page; a plain ?id= (as written by a map selection)
@@ -90,9 +92,10 @@ function restoreViewFromUrl() {
   }
 }
 
-function applyLoadedData(buildings, parcels, entities) {
+function applyLoadedData(buildings, parcels, landcovers, entities) {
   state.buildingsData = buildings;
   state.parcelData = parcels;
+  state.landCoverData = landcovers;
   Object.keys(entityDataFiles).forEach(function(stateKey) {
     const file = entityDataFiles[stateKey];
     const payload = entities[stateKey];
@@ -122,7 +125,7 @@ function applyLoadedData(buildings, parcels, entities) {
 function loadAllData() {
   showLoadingOverlay(tf('loading.data', 'Daten werden geladen...'));
 
-  // Parcels and the entity tables are optional: the app still works with buildings only
+  // Parcels, land cover and the entity tables are optional: the app still works with buildings only
   function optional(url) {
     return fetchWithErrorHandling(url).catch(function(err) {
       console.warn('[app] optional dataset failed to load:', url, err);
@@ -133,13 +136,14 @@ function loadAllData() {
   const entityKeys = Object.keys(entityDataFiles);
   Promise.all([
     fetchWithErrorHandling('data/buildings.geojson'),
-    optional('data/parcels.geojson')
+    optional('data/parcels.geojson'),
+    optional('data/landcovers.geojson')
   ].concat(entityKeys.map(function(key) { return optional(entityDataFiles[key].url); }), [fetchWithErrorHandling('data/meta.json')]))
     .then(function(results) {
-      initReferenceData(results[2 + entityKeys.length]);
+      initReferenceData(results[3 + entityKeys.length]);
       const entities = {};
-      entityKeys.forEach(function(key, i) { entities[key] = results[2 + i]; });
-      applyLoadedData(results[0], results[1], entities);
+      entityKeys.forEach(function(key, i) { entities[key] = results[3 + i]; });
+      applyLoadedData(results[0], results[1], results[2], entities);
       hideLoadingOverlay();
       markBooted();
       if (results.slice(1).some(function(r) { return r === null; })) {
@@ -168,9 +172,24 @@ function boot() {
   initMap();
   initMeasure(state.map);
   initContextMenu(state.map);
-  initSwisstopo({ map: state.map, internalLayers: internalLayers });
+  initSwisstopo({
+    map: state.map,
+    internalLayers: internalLayers,
+    // Data date of the layer info: the official retrieval date of the land cover, else the data version
+    dataDate: function(key) {
+      const collection = { buildings: state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData }[key];
+      if (!collection) return null;
+      if (key === 'landcovers') {
+        const retrieved = (collection.features || []).map(function(f) { return f.properties.provenance && f.properties.provenance.retrievedAt; }).filter(Boolean).sort();
+        if (retrieved.length) return retrieved[retrieved.length - 1];
+      }
+      return collection.dataVersion || null;
+    }
+  });
   initPrintWidget(state.map, {
-    getSources: function() { return { buildings: state.filteredData || state.buildingsData, parcels: state.parcelData }; },
+    getSources: function() {
+      return { buildings: state.filteredData || state.buildingsData, parcels: state.parcelData, landcovers: state.landCoverData };
+    },
     legendItems: statusLegendItems
   });
   initSearch();
@@ -193,10 +212,9 @@ function boot() {
     navigateToAllObjects: function() { navigateToAllObjects(); },
     navigateWithLandFilter: function() { navigateWithLandFilter(); },
     navigateWithRegionFilter: function() { navigateWithRegionFilter(); },
-    toggleMeasure: function() { toggleMeasurement(); },
     comingSoon: function() { comingSoon(); },
     retryApiDocs: function() { initApiDocs(); }
-  }, swisstopoClickActions, carouselActions, searchActions, shareActions);
+  }, swisstopoClickActions, carouselActions, searchActions);
 
   document.addEventListener('click', function(e) {
     const target = e.target.closest('[data-action]');

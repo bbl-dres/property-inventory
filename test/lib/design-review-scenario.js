@@ -71,6 +71,17 @@ module.exports = function(prototype) {
       const internalInfo = document.querySelector('[data-action="showInternalLayerInfo"]');
       const externalInfo = document.querySelector('#external-layers-list [data-action="showLayerInfo"]');
       check('internal/external info controls use identical markup and tokens', internalInfo.className === externalInfo.className && internalInfo.innerHTML === externalInfo.innerHTML && internalInfo.getAttribute('aria-label') === externalInfo.getAttribute('aria-label'));
+      // Layer info of the internal datasets: official links, the data date of the loaded data, the official legend
+      const info = () => document.getElementById('layer-info-content');
+      const href = part => [...info().querySelectorAll('a[href]')].some(a => a.href.indexOf(part) !== -1);
+      modules.swisstopo.showInternalLayerInfo('landcovers');
+      check('land cover info links to geocat, the cadastre manual, geodienste.ch and cadastre.ch', href('geocat.ch/datahub/dataset/d929eef4') && href('cadastre-manual.admin.ch') && href('geodienste.ch/services/av') && href('cadastre.ch/de') && !info().querySelector('.placeholder-link'));
+      check('land cover info shows the retrieval date of the official data', info().textContent.indexOf('23.09.2026') !== -1);
+      check('land cover legend lists the 26 official types in six groups', info().querySelectorAll('.internal-legend-item').length === 26 && info().querySelectorAll('.internal-legend-group').length === 6 && [...info().querySelectorAll('.internal-legend-rect')][0].getAttribute('style').indexOf('#FFC8C8') !== -1);
+      modules.swisstopo.showInternalLayerInfo('buildings');
+      check('building info links to the I14Y register service, BFS, housing-stat and the geoportal', href('i14y.admin.ch/de/catalog/dataservices/60f54f01') && href('bfs.admin.ch') && href('housing-stat.ch') && href('map.geo.admin.ch') && info().textContent.indexOf('22.09.2026') !== -1);
+      check('external links open in a new tab', [...info().querySelectorAll('a[href^="http"]')].every(a => a.target === '_blank' && a.rel.indexOf('noopener') !== -1));
+      modules.swisstopo.hideLayerInfo();
     }
   };
 };

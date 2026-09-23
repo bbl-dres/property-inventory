@@ -19,12 +19,7 @@ export function addParcelLayers(map, data, idProperty, parcelColor, beforeId) {
     id: 'parcels-outline', type: 'line', source: 'parcels', minzoom: 12,
     paint: { 'line-color': parcelColor, 'line-width': 2, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.8] }
   }, beforeId);
-  // Hover highlight and selection are separate layers, so hovering another parcel keeps the selection visible
-  map.addLayer({
-    id: 'parcels-highlight', type: 'fill', source: 'parcels', minzoom: 12,
-    filter: ['==', ['get', idProperty], ''],
-    paint: { 'fill-color': parcelColor, 'fill-opacity': 0.35 }
-  }, beforeId);
+  // Selection layers (no hover fill: the pointer cursor is the hover feedback, see portfolio-map-interactions.js)
   map.addLayer({
     id: 'parcels-selected', type: 'fill', source: 'parcels',
     filter: ['==', ['get', idProperty], ''],

@@ -13,7 +13,7 @@ module.exports = {
     check('prototype banner present', !!document.getElementById('prototype-banner'));
     check('title translated', document.title === 'Liegenschaften Inventar BBL');
     check('buildings loaded (14)', state.buildingsData && state.buildingsData.features.length === 14);
-    check('indexes built', state.buildingIndex.size === 14 && state.parcelIndex.size === 14 && state.landCoverIndex.size === 70);
+    check('indexes built', state.buildingIndex.size === 14 && state.parcelIndex.size === 14 && state.landCoverIndex.size === 136);
 
     // Tables and filters
     check('14 building rows rendered', document.querySelectorAll('#list-body tr').length === 14);
@@ -31,7 +31,8 @@ module.exports = {
     check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels') && !!map.getSource('landcovers'));
     check('cluster + point + selection layers', ['buildings-clusters', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'parcels-fill', 'landcovers-fill'].every(id => !!map.getLayer(id)));
     check('land cover layer hidden by default', !document.getElementById('layer-toggle-landcovers').checked && ['landcovers-fill', 'landcovers-selected'].every(id => map.getLayoutProperty(id, 'visibility') === 'none'));
-    check('identify highlight layer below data layers', map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') < map._layers.findIndex(l => l.id === 'landcovers-fill'));
+    check('identify highlight above the ground polygons, below the points', map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') > map._layers.findIndex(l => l.id === 'landcovers-fill') && map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') < map._layers.findIndex(l => l.id === 'buildings-clusters'));
+    check('no hover fill layers: selection only', !map.getLayer('parcels-highlight') && !map.getLayer('landcovers-highlight'));
     check('point click handler bound once', map.listenerCount('click', 'buildings-points') === 1);
     const flyBefore = map.calls.flyTo.length;
 
@@ -375,6 +376,7 @@ module.exports = {
     const tablePanel = document.getElementById('table-panel');
     const tableHandle = document.getElementById('tbl-resize-handle');
     const mapEl = document.getElementById('map');
+    check('tools panel has the three shared sections only', [...document.querySelectorAll('#accordion-panel .accordion-item:not(.mobile-tree-accordion)')].map(el => el.dataset.accordion).join(',') === 'print,catalog,layers');
     check('floating map UI lives inside the map', ['accordion-wrapper', 'info-panel', 'style-switcher', 'measure-distance-display', 'map-context-menu', 'mobile-menu-backdrop'].every(id => mapEl.contains(document.getElementById(id))) && document.getElementById('map-view').children.length === 1);
     check('the content area is a split: the views above the table dock', Array.from(document.querySelector('.main-content').children).map(el => el.id).join(',') === 'map-view,gallery-view,api-docs-view,detail-view,table-split,table-panel' && Array.from(document.getElementById('table-split').children).map(el => el.id).join(',') === 'tbl-toggle,tbl-resize-handle');
     check('tools panel open before the table', !toolsPanel.classList.contains('collapsed') && tableHandle.hidden);

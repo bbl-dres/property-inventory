@@ -754,6 +754,24 @@
   }
 }
 
+/* Attribution toggle (ⓘ): a 24px round target whatever enlarges the summary element (browser or touch
+   rules); the glyph is centred by assets/icons/material-symbols-outlined.css. Collapsed, the control is
+   exactly that circle (MapLibre's content-box padding would make it 28px tall). */
+.maplibregl-ctrl-attrib .maplibregl-ctrl-attrib-button {
+  width: 24px;
+  height: 24px;
+  min-width: 0;
+  min-height: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.maplibregl-ctrl-attrib.maplibregl-compact:not(.maplibregl-compact-show) {
+  width: 24px;
+  min-height: 24px;
+  padding: 0;
+}
+
 /* MapLibre supplies the group background, border, radius and interaction states. */
 .maplibregl-ctrl-group .map-home-btn,
 .maplibregl-ctrl-group .map-3d-btn {
@@ -3920,6 +3938,20 @@ body.detail-active #detail-view {
   color: var(--grey-700);
 }
 
+/* Group headings of a long legend (land cover: the six main groups) */
+.internal-legend-group {
+  margin-top: var(--space-2);
+  font-size: var(--text-xs);
+  font-weight: var(--font-semibold);
+  color: var(--grey-600);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.internal-legend-group:first-child {
+  margin-top: 0;
+}
+
 .internal-legend-circle {
   width: var(--icon-sm);
   height: var(--icon-sm);
@@ -4539,13 +4571,6 @@ body.detail-active #detail-view {
   /* Collapse map attribution by default — just the ⓘ toggle */
   .maplibregl-ctrl-attrib:not(.maplibregl-compact) {
     display: none;
-  }
-
-  /* Collapsed: a 24px circle with the ⓘ centred (MapLibre's content-box padding would make it 28px tall) */
-  .maplibregl-ctrl-attrib.maplibregl-compact:not(.maplibregl-compact-show) {
-    width: 24px;
-    min-height: 24px;
-    padding: 0;
   }
 
   /* Tools panel: slide-in menu from the right (the panel itself is the menu, so every tool stays available) */

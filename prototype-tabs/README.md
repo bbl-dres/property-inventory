@@ -19,7 +19,7 @@ consistent width roles, compact dates, and technical IDs kept out of display col
 - **Thema wechseln.** The Geokatalog accordion can switch between the ~30 topics of map.geo.admin.ch (federal offices and themes, e.g. swisstopo, MeteoSchweiz, Energie): a modal with a topic grid, borrowed from [geoadmin/web-mapviewer](https://github.com/geoadmin/web-mapviewer) (names and `assets/topics.png`), reloads the catalog tree for the chosen topic; the header shows the topic name and the choice is kept in the URL (`topic=`).
 - **Mobile.** Phones (portrait and landscape) get a two-row header and a hamburger menu available in every view. “Standorte” is its first accordion: browse the tree in place; selecting a building or parcel closes the menu. Branches and filters persist, and the same tree returns to the desktop dock when resized. Map tools, the full-screen filter sheet, swipe-to-dismiss info sheet and sticky detail tabs remain available. Tablets keep the desktop layout with 44 px touch targets. See [docs/RESPONSIVE-REVIEW.md](docs/RESPONSIVE-REVIEW.md).
 
-- **Aligned with the simple app.** Same module layout, markup hooks and behaviour for the map tools: PDF export of the print panel, Geokatalog with "Thema wechseln", measure tool, search history, lightbox, URL-owned basemap and selection. The data model still differs (camelCase BuildingMinds schema with `extensionData`, see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)).
+- **Aligned with the simple app.** Same module layout, markup hooks and behaviour for the map tools: PDF export of the print panel, Geokatalog with "Thema wechseln", measure tool, land-cover layer and table, search history, lightbox, URL-owned basemap and selection. The data model still differs (camelCase BuildingMinds schema with `extensionData`, see [docs/CODE-REVIEW.md](docs/CODE-REVIEW.md)).
 
 ## Running
 
@@ -29,6 +29,9 @@ The same 14 researched buildings/sites as the simple app are exported into this
 prototype's camelCase schema and related-entity JSON files. Measurements distinguish
 published SIA values, calculated Swiss parcel areas and SIA/RICS demo scenarios.
 Documents use KBOB codes, contacts are fictional, and photographs carry credits.
+The land cover of the five Swiss parcels is the official cadastral survey layer
+(geodienste.ch), overseas parcels carry schematic polygons; see
+[docs/LAND-COVER.md](../docs/LAND-COVER.md).
 See the [research and generation guide](../scripts/portfolio/README.md) for sources,
 verified Swiss register IDs, geometry, assumptions and reproduction commands.
 
@@ -92,7 +95,7 @@ prototype-tabs/
 ├── css/
 │   ├── tokens.css        # Design tokens, base, primitives (identical with ../prototype-simple)
 │   ├── components.css    # Shared components incl. responsive rules (identical with ../prototype-simple)
-│   └── app.css           # Tabs-only: header tab strip, sections, entity tables, share/export panels
+│   └── app.css           # Tabs-only: header tab strip, sections, entity tables, KI answers
 ├── js/                   # ES modules (same layout as ../prototype-simple/js)
 │   ├── app.js            # Bootstrap, data loading, action delegation
 │   ├── config.js · state.js
@@ -103,8 +106,8 @@ prototype-tabs/
 │   └── common modules, identical with ../prototype-simple/js:
 │       utils.js · i18n.js · toast.js · geo.js · keys.js · boot.js · basemaps.js ·
 │       map-controls.js · measure.js · context-menu.js · swisstopo.js · print.js ·
-│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js
-├── data/                 # buildings.geojson, parcels, entity tables, i18n.json, swagger.json (identical with ../prototype-simple)
+│       table.js · carousel.js · mini-map.js · gestures.js · accordion.js · tools-panel.js · location-tree.js · landcover-types.js
+├── data/                 # buildings.geojson, parcels, landcovers.geojson, entity tables, i18n.json, swagger.json (identical with ../prototype-simple)
 ├── assets/               # local basemap thumbnails, icons, topic sprite, countries/ and regions/ (identical with ../prototype-simple)
 ├── vendor/               # MapLibre GL JS (BSD-3), jsPDF (MIT), Swagger UI (Apache-2.0)
 └── docs/

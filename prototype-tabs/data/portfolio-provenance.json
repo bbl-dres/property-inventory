@@ -32,5 +32,12 @@
       "29": "Honorare"
     }
   },
+  "landCover": {
+    "swissSource": "Amtliche Vermessung, Bodenbedeckung (WFS ms:LCSF) via geodienste.ch, clipped to the reviewed AV parcels",
+    "sourceManifest": "../../scripts/portfolio/sources/swiss-landcover.json",
+    "retrievedAt": "2026-09-23",
+    "officialParcels": 5,
+    "notice": "Overseas parcels carry schematic demonstration polygons (synthetic-demo). AV land cover © the cantons via geodienste.ch."
+  },
   "copyright": "Photos retain individual copyrights; OSM geocodes © OpenStreetMap contributors, ODbL. Swiss address geocodes © swisstopo."
 }

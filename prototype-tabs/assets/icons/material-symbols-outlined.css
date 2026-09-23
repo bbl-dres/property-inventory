@@ -47,12 +47,18 @@
 .maplibregl-ctrl-zoom-out .maplibregl-ctrl-icon::before { content: 'remove'; }
 .maplibregl-ctrl-compass .maplibregl-ctrl-icon::before { content: 'navigation'; }
 
+/* The compact toggle is a <summary>: a flex box centres the glyph in the 24px circle (an inline glyph would
+   sit at the start of the line, off centre). Scoped to the compact state, where MapLibre shows the toggle. */
 .maplibregl-ctrl-attrib-button { background-image: none; }
+.maplibregl-ctrl-attrib.maplibregl-compact summary.maplibregl-ctrl-attrib-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
 .maplibregl-ctrl-attrib-button::before {
   content: 'info';
   font-size: var(--icon-lg);
   color: var(--grey-600);
-  vertical-align: middle;
 }
 .maplibregl-popup-close-button { font-size: 0; }
 .maplibregl-popup-close-button::before { content: 'close'; font-size: var(--icon-lg); }
