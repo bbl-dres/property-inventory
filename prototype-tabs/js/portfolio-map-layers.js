@@ -7,33 +7,34 @@ export function buildingMapLabel(idProperty) {
     ['slice', ['var', 'id'], ['+', ['index-of', '/', ['var', 'id']], 1]]];
 }
 
-export function addParcelLayers(map, data, idProperty, parcelColor) {
+// beforeId: ground data goes under the basemap labels and the 3D buildings (map-controls.js groundLayerAnchor)
+export function addParcelLayers(map, data, idProperty, parcelColor, beforeId) {
   map.addSource('parcels', { type: 'geojson', data });
   // Parcels appear from zoom 12 and fade in until 13 (same stack as prototype-simple)
   map.addLayer({
     id: 'parcels-fill', type: 'fill', source: 'parcels', minzoom: 12,
     paint: { 'fill-color': parcelColor, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.15] }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'parcels-outline', type: 'line', source: 'parcels', minzoom: 12,
     paint: { 'line-color': parcelColor, 'line-width': 2, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 12, 0, 13, 0.8] }
-  });
+  }, beforeId);
   // Hover highlight and selection are separate layers, so hovering another parcel keeps the selection visible
   map.addLayer({
     id: 'parcels-highlight', type: 'fill', source: 'parcels', minzoom: 12,
     filter: ['==', ['get', idProperty], ''],
     paint: { 'fill-color': parcelColor, 'fill-opacity': 0.35 }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'parcels-selected', type: 'fill', source: 'parcels',
     filter: ['==', ['get', idProperty], ''],
     paint: { 'fill-color': parcelColor, 'fill-opacity': 0.45 }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'parcels-selected-outline', type: 'line', source: 'parcels',
     filter: ['==', ['get', idProperty], ''],
     paint: { 'line-color': parcelColor, 'line-width': 3, 'line-opacity': 1 }
-  });
+  }, beforeId);
 }
 
 export function addBuildingLayers(map, data, idProperty, statusProperty, statusColors) {

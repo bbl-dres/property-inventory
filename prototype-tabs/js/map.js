@@ -9,7 +9,7 @@ import { statusColors, getStatusClassName, placeholderImages, parcelColor, inter
 import { escapeHtml, cssUrl, formatNum, extractYear } from './utils.js';
 import { t } from './i18n.js';
 import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
-import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings } from './map-controls.js';
+import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings, groundLayerAnchor } from './map-controls.js';
 import { isMeasuring, restoreMeasurement } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { getActiveFilterCount, updateMapFilter } from './filters.js';
@@ -92,7 +92,8 @@ export function addMapLayers() {
   const map = state.map;
   if (map.getSource('buildings')) return; // already added
 
-  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'parcelId', parcelColor);
+  // Ground polygons under the basemap labels and the 3D buildings; points and labels on top
+  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'parcelId', parcelColor, groundLayerAnchor(map));
   addBuildingLayers(map, state.buildingsData, 'buildingId', 'status', statusColors);
   if (state.parcelData?.features) addParcelLabels(map, state.parcelData, 'parcelId');
   addBuildingLabels(map, 'buildingId');

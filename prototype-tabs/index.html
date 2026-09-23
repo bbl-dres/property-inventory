@@ -238,11 +238,6 @@
                     <span data-i18n="map.loading">Karte wird geladen…</span>
                 </div>
             </div>
-            <!-- Table toggle button (inside #map for correct positioning) -->
-            <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden" data-i18n-title="table.toggle.title" data-i18n-aria-label="table.toggle.title">
-                <span class="material-symbols-outlined">expand_more</span>
-                <span class="tbl-toggle-label" data-i18n="table.toggle">Tabelle</span>
-            </button>
                 <!-- Floating map UI: positioned by the map and clipped by it, so the table split below never covers it -->
 
                 <!-- Map tools. Desktop/tablet: floating panel with the "Menü" toggle. Phones: slide-in hamburger menu. -->
@@ -585,147 +580,6 @@
                 </div>
             </div><!-- /#map -->
 
-            <!-- Resize handle between map and table -->
-            <div id="tbl-resize-handle" class="tbl-resize-handle" role="separator" aria-orientation="horizontal" aria-controls="table-panel" tabindex="0" data-i18n-title="table.resize" data-i18n-aria-label="table.resize" title="Grösse ändern" aria-label="Grösse ändern" hidden></div>
-            <!-- Table panel (below map) -->
-            <div id="table-panel" class="table-panel">
-                <div class="list-table-container">
-                    <div class="toolbar">
-                        <div class="table-tabs" role="tablist">
-                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="search.meta.building">Gebäude</button>
-                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="accordion.layers.parcels">Grundstücke</button>
-                        </div>
-                        <div class="toolbar-search list-toolbar-search">
-                            <span class="material-symbols-outlined">search</span>
-                            <input type="text" id="list-search-input" placeholder="Gebäude durchsuchen..." aria-label="Tabelle durchsuchen" data-i18n-placeholder="table.search.buildings" data-i18n-aria-label="table.search">
-                            <button class="icon-btn icon-btn--xs toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden data-i18n-aria-label="header.search.clear">
-                                <span class="material-symbols-outlined">close</span>
-                            </button>
-                        </div>
-                        <div class="filter-pills" id="filter-pills"></div>
-                        <div class="toolbar-actions">
-                            <!-- Export Dropdown -->
-                            <div class="dropdown-container">
-                                <button class="dropdown-btn" id="export-dropdown-btn" data-dropdown="export-dropdown-menu">
-                                    <span class="material-symbols-outlined">download</span>
-                                    <span data-i18n="export.title">Export</span>
-                                    <span class="material-symbols-outlined">expand_more</span>
-                                </button>
-                                <div class="dropdown-menu" id="export-dropdown-menu">
-                                    <div class="dropdown-menu-header" data-i18n="export.all">Alle exportieren</div>
-                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all" data-i18n="export.format.csv">CSV (.csv)</div>
-                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all" data-i18n="export.format.excel">CSV für Excel (.csv)</div>
-                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
-                                    <div class="dropdown-menu-header" id="export-filtered-header">Gefiltert exportieren</div>
-                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered" data-i18n="export.format.csv">CSV (.csv)</div>
-                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered" data-i18n="export.format.excel">CSV für Excel (.csv)</div>
-                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
-                                </div>
-                            </div>
-                            <!-- Columns Dropdown -->
-                            <div class="dropdown-container">
-                                <button class="dropdown-btn" id="columns-dropdown-btn" data-dropdown="columns-dropdown-menu">
-                                    <span class="material-symbols-outlined">view_column</span>
-                                    <span data-i18n="table.columns">Spalten</span>
-                                    <span class="material-symbols-outlined">expand_more</span>
-                                </button>
-                                <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
-                                    <div class="dropdown-menu-header" data-i18n="columns.header">Spalten anzeigen</div>
-                                    <div class="dropdown-menu-toggle-row">
-                                        <button class="dropdown-toggle-btn" id="columns-toggle-all" data-i18n="search.scope.all">Alle</button>
-                                        <button class="dropdown-toggle-btn" id="columns-toggle-none" data-i18n="columns.none">Keine</button>
-                                    </div>
-                                    <div class="columns-search">
-                                        <span class="material-symbols-outlined">search</span>
-                                        <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen" data-i18n-placeholder="columns.search" data-i18n-aria-label="table.column.search">
-                                        <button class="icon-btn icon-btn--xs toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden data-i18n-aria-label="header.search.clear">
-                                            <span class="material-symbols-outlined">close</span>
-                                        </button>
-                                    </div>
-                                    <!-- Building columns (shown when Gebäude tab active) -->
-                                    <div class="columns-list" id="columns-list" data-columns-tab="buildings">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-land"> <span data-i18n="col.adr_land">Land</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-ort"> <span data-i18n="search.meta.place">Ort</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adresse"> <span data-i18n="col.adr_conct">Adresse</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-portfolio"> <span data-i18n="col.bbl_port">Teilportfolio</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-flaeche"> <span data-i18n="info.label.area_ngf">Fläche NGF</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-status"> <span data-i18n="field.status">Status</span></label>
-                                    </div>
-                                    <!-- Parcel columns (shown when Grundstücke tab active) -->
-                                    <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> <span data-i18n="col.parcel.plot">Grundstück-Nr.</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> <span data-i18n="col.parcel.municipality">Gemeinde</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> <span data-i18n="col.parcel.canton">Kanton</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> <span data-i18n="col.lc.lc_area">Fläche</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
-                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <!-- Buildings table -->
-                    <div class="table-tab-content active" id="buildings-table-content">
-                    <div class="list-table-wrapper">
-                        <table class="list-table" id="list-table">
-                            <thead><tr></tr></thead>
-                            <tbody id="list-body"></tbody>
-                        </table>
-                    </div>
-                    <div class="pagination-footer" id="list-pagination">
-                        <div class="pagination-info" id="list-pagination-info" aria-live="polite">0 von 0 Objekte</div>
-                        <div class="pagination-nav">
-                            <button class="pagination-btn" id="list-prev-btn" disabled>
-                                <span class="material-symbols-outlined">chevron_left</span>
-                            </button>
-                            <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
-                            <button class="pagination-btn" id="list-next-btn" disabled>
-                                <span class="material-symbols-outlined">chevron_right</span>
-                            </button>
-                        </div>
-                        <div class="pagination-rows">
-                            <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
-                            <select id="list-rows-per-page" class="custom-select">
-                                <option value="25">25</option>
-                                <option value="50" selected>50</option>
-                                <option value="100">100</option>
-                            </select>
-                        </div>
-                    </div>
-                    </div>
-                    <!-- Parcels table -->
-                    <div class="table-tab-content" id="parcels-table-content">
-                        <div class="list-table-wrapper">
-                            <table class="list-table" id="parcels-table">
-                                <thead><tr></tr></thead>
-                                <tbody id="parcels-body"></tbody>
-                            </table>
-                        </div>
-                        <div class="pagination-footer" id="parcels-pagination">
-                            <div class="pagination-info" id="parcels-pagination-info" aria-live="polite">0 von 0 Grundstücke</div>
-                            <div class="pagination-nav">
-                                <button class="pagination-btn" id="parcels-prev-btn" disabled>
-                                    <span class="material-symbols-outlined">chevron_left</span>
-                                </button>
-                                <span class="pagination-page-info" id="parcels-page-info">Seite 1 von 1</span>
-                                <button class="pagination-btn" id="parcels-next-btn" disabled>
-                                    <span class="material-symbols-outlined">chevron_right</span>
-                                </button>
-                            </div>
-                            <div class="pagination-rows">
-                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
-                                <select id="parcels-rows-per-page" class="custom-select">
-                                    <option value="25">25</option>
-                                    <option value="50" selected>50</option>
-                                    <option value="100">100</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <div id="gallery-view">
@@ -1275,6 +1129,154 @@
             </div>
         </div>
 
+
+            <!-- Table dock: below whichever view is active (map or gallery); hidden in the detail and API
+                 views. The split bar carries the toggle and the resize handle, the table follows. -->
+            <div class="table-split" id="table-split">
+                <button id="tbl-toggle" class="tbl-toggle" title="Tabelle ein-/ausblenden" aria-label="Tabelle ein-/ausblenden" data-i18n-title="table.toggle.title" data-i18n-aria-label="table.toggle.title">
+                    <span class="material-symbols-outlined">expand_more</span>
+                    <span class="tbl-toggle-label" data-i18n="table.toggle">Tabelle</span>
+                </button>
+                <div id="tbl-resize-handle" class="tbl-resize-handle" role="separator" aria-orientation="horizontal" aria-controls="table-panel" tabindex="0" data-i18n-title="table.resize" data-i18n-aria-label="table.resize" title="Grösse ändern" aria-label="Grösse ändern" hidden></div>
+            </div>
+            <div id="table-panel" class="table-panel">
+                <div class="list-table-container">
+                    <div class="toolbar">
+                        <div class="table-tabs" role="tablist">
+                            <button class="table-tab active" data-table-tab="buildings" role="tab" aria-selected="true" data-i18n="search.meta.building">Gebäude</button>
+                            <button class="table-tab" data-table-tab="parcels" role="tab" aria-selected="false" data-i18n="accordion.layers.parcels">Grundstücke</button>
+                        </div>
+                        <div class="toolbar-search list-toolbar-search">
+                            <span class="material-symbols-outlined">search</span>
+                            <input type="text" id="list-search-input" placeholder="Gebäude durchsuchen..." aria-label="Tabelle durchsuchen" data-i18n-placeholder="table.search.buildings" data-i18n-aria-label="table.search">
+                            <button class="icon-btn icon-btn--xs toolbar-search-clear" id="list-search-clear" type="button" aria-label="Suche löschen" hidden data-i18n-aria-label="header.search.clear">
+                                <span class="material-symbols-outlined">close</span>
+                            </button>
+                        </div>
+                        <div class="filter-pills" id="filter-pills"></div>
+                        <div class="toolbar-actions">
+                            <!-- Export Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="export-dropdown-btn" data-dropdown="export-dropdown-menu">
+                                    <span class="material-symbols-outlined">download</span>
+                                    <span data-i18n="export.title">Export</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu" id="export-dropdown-menu">
+                                    <div class="dropdown-menu-header" data-i18n="export.all">Alle exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="all" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="all" data-i18n="export.format.excel">CSV für Excel (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="all" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
+                                    <div class="dropdown-menu-header" id="export-filtered-header">Gefiltert exportieren</div>
+                                    <div class="dropdown-menu-item" data-export-format="csv" data-export-scope="filtered" data-i18n="export.format.csv">CSV (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="excel" data-export-scope="filtered" data-i18n="export.format.excel">CSV für Excel (.csv)</div>
+                                    <div class="dropdown-menu-item" data-export-format="geojson" data-export-scope="filtered" data-i18n="export.format.geojson">GeoJSON (.geojson)</div>
+                                </div>
+                            </div>
+                            <!-- Columns Dropdown -->
+                            <div class="dropdown-container">
+                                <button class="dropdown-btn" id="columns-dropdown-btn" data-dropdown="columns-dropdown-menu">
+                                    <span class="material-symbols-outlined">view_column</span>
+                                    <span data-i18n="table.columns">Spalten</span>
+                                    <span class="material-symbols-outlined">expand_more</span>
+                                </button>
+                                <div class="dropdown-menu columns-dropdown" id="columns-dropdown-menu">
+                                    <div class="dropdown-menu-header" data-i18n="columns.header">Spalten anzeigen</div>
+                                    <div class="dropdown-menu-toggle-row">
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-all" data-i18n="search.scope.all">Alle</button>
+                                        <button class="dropdown-toggle-btn" id="columns-toggle-none" data-i18n="columns.none">Keine</button>
+                                    </div>
+                                    <div class="columns-search">
+                                        <span class="material-symbols-outlined">search</span>
+                                        <input type="text" id="columns-search-input" placeholder="Spalte suchen..." aria-label="Spalte suchen" data-i18n-placeholder="columns.search" data-i18n-aria-label="table.column.search">
+                                        <button class="icon-btn icon-btn--xs toolbar-search-clear" id="columns-search-clear" type="button" aria-label="Suche löschen" hidden data-i18n-aria-label="header.search.clear">
+                                            <span class="material-symbols-outlined">close</span>
+                                        </button>
+                                    </div>
+                                    <!-- Building columns (shown when Gebäude tab active) -->
+                                    <div class="columns-list" id="columns-list" data-columns-tab="buildings">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-land"> <span data-i18n="col.adr_land">Land</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-ort"> <span data-i18n="search.meta.place">Ort</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-adresse"> <span data-i18n="col.adr_conct">Adresse</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-portfolio"> <span data-i18n="col.bbl_port">Teilportfolio</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-flaeche"> <span data-i18n="info.label.area_ngf">Fläche NGF</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-status"> <span data-i18n="field.status">Status</span></label>
+                                    </div>
+                                    <!-- Parcel columns (shown when Grundstücke tab active) -->
+                                    <div class="columns-list" id="parcel-columns-list" data-columns-tab="parcels" style="display: none;">
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-plot"> <span data-i18n="col.parcel.plot">Grundstück-Nr.</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-name"> <span data-i18n="col.parcel.name">Bezeichnung</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-municipality"> <span data-i18n="col.parcel.municipality">Gemeinde</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-canton"> <span data-i18n="col.parcel.canton">Kanton</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-area"> <span data-i18n="col.lc.lc_area">Fläche</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-zone"> <span data-i18n="col.parcel.zone">Nutzungszone</span></label>
+                                        <label class="dropdown-menu-item"><input type="checkbox" checked data-column="col-parcel-ownership"> <span data-i18n="col.parcel.ownership">Eigentum</span></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Buildings table -->
+                    <div class="table-tab-content active" id="buildings-table-content">
+                    <div class="list-table-wrapper">
+                        <table class="list-table" id="list-table">
+                            <thead><tr></tr></thead>
+                            <tbody id="list-body"></tbody>
+                        </table>
+                    </div>
+                    <div class="pagination-footer" id="list-pagination">
+                        <div class="pagination-info" id="list-pagination-info" aria-live="polite">0 von 0 Objekte</div>
+                        <div class="pagination-nav">
+                            <button class="pagination-btn" id="list-prev-btn" disabled>
+                                <span class="material-symbols-outlined">chevron_left</span>
+                            </button>
+                            <span class="pagination-page-info" id="list-page-info">Seite 1 von 1</span>
+                            <button class="pagination-btn" id="list-next-btn" disabled>
+                                <span class="material-symbols-outlined">chevron_right</span>
+                            </button>
+                        </div>
+                        <div class="pagination-rows">
+                            <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                            <select id="list-rows-per-page" class="custom-select">
+                                <option value="25">25</option>
+                                <option value="50" selected>50</option>
+                                <option value="100">100</option>
+                            </select>
+                        </div>
+                    </div>
+                    </div>
+                    <!-- Parcels table -->
+                    <div class="table-tab-content" id="parcels-table-content">
+                        <div class="list-table-wrapper">
+                            <table class="list-table" id="parcels-table">
+                                <thead><tr></tr></thead>
+                                <tbody id="parcels-body"></tbody>
+                            </table>
+                        </div>
+                        <div class="pagination-footer" id="parcels-pagination">
+                            <div class="pagination-info" id="parcels-pagination-info" aria-live="polite">0 von 0 Grundstücke</div>
+                            <div class="pagination-nav">
+                                <button class="pagination-btn" id="parcels-prev-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_left</span>
+                                </button>
+                                <span class="pagination-page-info" id="parcels-page-info">Seite 1 von 1</span>
+                                <button class="pagination-btn" id="parcels-next-btn" disabled>
+                                    <span class="material-symbols-outlined">chevron_right</span>
+                                </button>
+                            </div>
+                            <div class="pagination-rows">
+                                <span data-i18n="pagination.rows">Zeilen pro Seite:</span>
+                                <select id="parcels-rows-per-page" class="custom-select">
+                                    <option value="25">25</option>
+                                    <option value="50" selected>50</option>
+                                    <option value="100">100</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div><!-- /.main-content -->
 
         <!-- Filter drawer (same ids and classes as prototype-simple) -->

@@ -59,8 +59,9 @@ See the [code and performance review](docs/CODE-REVIEW-2026-09-22.md),
 [shared image/document preview](docs/DOCUMENT-PREVIEW.md),
 [reference-data findings](docs/REFERENCE-DATA.md),
 [parcel label positioning](docs/PARCEL-LABELS.md), the
-[print and preview model](docs/PRINT.md), and the
-[table panel split](docs/TABLE-PANEL.md) for the latest implementation notes.
+[print and preview model](docs/PRINT.md), the
+[table panel split](docs/TABLE-PANEL.md), and the
+[3D view review](docs/3D-VIEW.md) for the latest implementation notes.
 
 The Simple and Tabs datasets cover 14 real sites in nine countries, with 42 actual
 interior/exterior photos and verified EGID/EGRID/parcel polygons for five Swiss

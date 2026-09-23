@@ -105,15 +105,16 @@ export function switchView(view) {
         zoomToFilteredPoints();
       }
     }, 100);
-    if (state.listViewDirty && state.tableOpen) {
-      renderFilteredTables();
-      state.listViewDirty = false;
-    }
   }
   if (view === 'gallery') {
     syncGalleryFilter();
     renderGalleryView();
     state.galleryViewDirty = false;
+  }
+  // The table dock serves the map and the gallery
+  if ((view === 'map' || view === 'gallery') && state.listViewDirty && state.tableOpen) {
+    renderFilteredTables();
+    state.listViewDirty = false;
   }
   if (view === 'api-docs') {
     window.scrollTo(0, 0);

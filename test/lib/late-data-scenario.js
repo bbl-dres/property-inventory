@@ -29,6 +29,10 @@ module.exports = function(prototype) {
       const state = modules.state.state;
 
       check('data still pending while the map loads', state.buildingsData === null && !document.getElementById('loading-overlay').classList.contains('hidden'));
+      // A basemap like CARTO's: geometry, an early label, more geometry, flat buildings, a final label block
+      map.addSource('carto', { type: 'vector', url: 'https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json' });
+      [{ id: 'water', type: 'fill' }, { id: 'waterway-name', type: 'symbol' }, { id: 'roads', type: 'line' },
+        { id: 'building', type: 'fill', source: 'carto', 'source-layer': 'building' }, { id: 'place-labels', type: 'symbol' }].forEach(function(layer) { map.addLayer(layer); });
       map.triggerLoad();            // basemap done: the one and only 'load' event
       map._loaded = false;          // a pan starts tile requests: map.loaded() is false again
       check('map.loaded() false after the load event', map.loaded() === false);
@@ -40,6 +44,21 @@ module.exports = function(prototype) {
       check('data layers added although map.loaded() is false', !!map.getSource('buildings') && !!map.getLayer('buildings-points') && !!map.getLayer('buildings-clusters'));
       check('handlers bound once', map.listenerCount('click', 'buildings-points') === 1);
       check('rows rendered', document.querySelectorAll('#list-body tr[data-id]').length === expectedCount);
+
+      // Layer order for the 3D view: ground data under the basemap's final label block, the application's
+      // points and labels on top; the 3D buildings go between the ground data and the basemap labels
+      const index = function(id) { return map._layers.findIndex(function(l) { return l.id === id; }); };
+      check('ground data under the basemap labels, points and labels on top', index('parcels-fill') > index('roads') && index('parcels-fill') < index('place-labels') && index('place-labels') < index('buildings-points') && index('buildings-labels') > index('buildings-points') && (!map.getLayer('landcovers-fill') || index('landcovers-fill') < index('parcels-fill')));
+      const btn3d = document.querySelector('.map-3d-btn');
+      btn3d.click();
+      check('3D toggle tilts the view and extrudes between the ground data and the basemap labels', map.getPitch() === 60 && !!map.getLayer('3d-buildings') && index('3d-buildings') > index('parcels-fill') && index('3d-buildings') < index('place-labels') && map.getLayoutProperty('building', 'visibility') === 'none' && btn3d.getAttribute('aria-pressed') === 'true' && /3d=1/.test(window.location.search) && /pitch=60/.test(window.location.search));
+      map.flyTo({ center: [7.44, 46.95], zoom: 16, pitch: 0, bearing: 30 });
+      check('a rotated flat view keeps its bearing in the URL', /bearing=30/.test(window.location.search) && !/pitch=/.test(window.location.search));
+      const controls = await import(pathToFileURL(path.join(ROOT, prototype, 'js', 'map-controls.js')).href);
+      controls.flyHome(map);
+      check('home resets tilt and rotation', map.getPitch() === 0 && map.getBearing() === 0 && !/bearing=/.test(window.location.search));
+      btn3d.click();
+      check('3D toggle off restores the flat buildings and the URL', !/3d=1/.test(window.location.search) && map.getLayoutProperty('3d-buildings', 'visibility') === 'none' && map.getLayoutProperty('building', 'visibility') === 'visible' && btn3d.getAttribute('aria-pressed') === 'false');
 
       // A selection works on the freshly added layers
       const first = idOf(state.buildingsData.features[0]);

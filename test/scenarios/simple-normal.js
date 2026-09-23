@@ -92,6 +92,27 @@ module.exports = {
     check('gallery view in URL', window.location.search.indexOf('view=gallery') !== -1);
     check('map selection kept in URL across views', window.location.search.indexOf('id=1080%2F4840%2FAF') !== -1);
 
+    // The table dock serves the gallery too: it opens below the cards, follows the filters, and a row
+    // selects the object on the map (the map view is shown for it)
+    document.getElementById('tbl-toggle').click();
+    await settle();
+    check('table opens below the gallery', state.tableOpen && state.currentView === 'gallery' && document.querySelectorAll('#list-body tr[data-id]').length === 14);
+    cb.checked = true;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    check('a filter re-renders the table under the gallery', document.querySelectorAll('#list-body tr[data-id]').length === state.filteredData.features.length && state.listViewDirty === false);
+    cb.checked = false;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    const firstRow = document.querySelector('#list-body tr[data-id]');
+    firstRow.click();
+    await settle(150);
+    check('a row under the gallery selects the object on the map', state.currentView === 'map' && state.selectedBuildingId === firstRow.dataset.id);
+    modules.list.setTablePanelOpen(false);
+    document.querySelector('.view-toggle-btn[data-view="gallery"]').click();
+    await settle();
+    check('back in the gallery with the table closed', state.currentView === 'gallery' && !state.tableOpen);
+
     // Detail view from a gallery card
     document.querySelector('#gallery-grid .gallery-card').click();
     await settle(50);
@@ -353,8 +374,8 @@ module.exports = {
     const tablePanel = document.getElementById('table-panel');
     const tableHandle = document.getElementById('tbl-resize-handle');
     const mapEl = document.getElementById('map');
-    check('floating map UI lives inside the map', ['accordion-wrapper', 'info-panel', 'style-switcher', 'measure-distance-display', 'map-context-menu', 'tbl-toggle', 'mobile-menu-backdrop'].every(id => mapEl.contains(document.getElementById(id))));
-    check('the split holds only the map, the handle and the table', Array.from(document.getElementById('map-view').children).map(el => el.id).join(',') === 'map,tbl-resize-handle,table-panel');
+    check('floating map UI lives inside the map', ['accordion-wrapper', 'info-panel', 'style-switcher', 'measure-distance-display', 'map-context-menu', 'mobile-menu-backdrop'].every(id => mapEl.contains(document.getElementById(id))) && document.getElementById('map-view').children.length === 1);
+    check('the content area is a split: the views above the table dock', Array.from(document.querySelector('.main-content').children).map(el => el.id).join(',') === 'map-view,gallery-view,api-docs-view,detail-view,table-split,table-panel' && Array.from(document.getElementById('table-split').children).map(el => el.id).join(',') === 'tbl-toggle,tbl-resize-handle');
     check('tools panel open before the table', !toolsPanel.classList.contains('collapsed') && tableHandle.hidden);
     document.getElementById('tbl-toggle').click();
     await settle();

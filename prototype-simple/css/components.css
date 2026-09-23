@@ -620,19 +620,21 @@
   overflow: hidden;
 }
 
+/* A vertical split: the active view (map or gallery) above the table dock (.table-split with the
+   toggle and the resize handle, then #table-panel). The dock is hidden in the detail and API views. */
 .main-content {
   flex: 1;
   display: flex;
+  flex-direction: column;
   overflow: hidden;
   position: relative;
 }
 
 /* ===== MAP VIEW =====
-   A vertical split: #map above #tbl-resize-handle and #table-panel. Everything that floats over the
-   map (tools menu, object card, basemap switcher, measure display, context menu, table toggle, print
-   preview) is a child of #map, positioned by it and clipped by it (MapLibre sets overflow: hidden),
-   so an open or resized table can never cover it. MapLibre's own resize observer follows the map's
-   changing height; the table's sizes are CSS (.table-panel). */
+   Everything that floats over the map (tools menu, object card, basemap switcher, measure display,
+   context menu, print preview) is a child of #map, positioned by it and clipped by it (MapLibre sets
+   overflow: hidden), so an open or resized table can never cover it. MapLibre's own resize observer
+   follows the map's changing height; the table's sizes are CSS (.table-panel). */
 #map-view {
   flex: 1;
   position: relative;
@@ -978,7 +980,9 @@
   border-bottom: 1px solid var(--on-dark-divider);
 }
 
-.accordion-item:last-of-type {
+/* No divider under the last item: the phone-menu extras that follow it are also divs, so
+   :last-of-type would leave a line under the open content */
+.accordion-item:not(:has(~ .accordion-item)) {
   border-bottom: none;
 }
 
@@ -1775,7 +1779,7 @@
 @media (max-height: 800px) {
   #info-preview-image { height: 80px; }
   /* With the table open, reserve the remaining card height for fields and its action. */
-  #map-view:has(#table-panel:not(.collapsed)) #info-panel.has-preview #info-preview-image { display: none; }
+  .main-content:has(#table-panel:not(.collapsed)) #info-panel.has-preview #info-preview-image { display: none; }
 }
 
 /* Grab handle of bottom sheets (36 × 4 px pill, phones only) */
@@ -2934,10 +2938,25 @@
   overflow-x: auto;
 }
 
+/* Table dock: the split bar between the active view and the table. Its height is the resize
+   handle (hidden while the table is collapsed), the toggle floats above it over the view. */
+.table-split {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 7;
+}
+
+#detail-view.active ~ .table-split,
+#detail-view.active ~ .table-panel,
+#api-docs-view.active ~ .table-split,
+#api-docs-view.active ~ .table-panel {
+  display: none;
+}
+
 /* Table toggle button */
 .tbl-toggle {
   position: absolute;
-  bottom: var(--space-3);
+  bottom: calc(100% + var(--space-3));
   left: 50%;
   transform: translateX(-50%);
   z-index: 6;
@@ -3035,6 +3054,7 @@
 #gallery-view {
   flex: 1;
   min-width: 0;
+  min-height: 0; /* scrolls above the table dock */
   display: none;
   background: var(--grey-50);
   overflow-y: auto;
@@ -4500,6 +4520,7 @@ body.detail-active #detail-view {
 
   /* Table panel and toggle — not usable on phones */
   .table-panel,
+  .table-split,
   .tbl-toggle,
   .tbl-resize-handle {
     display: none !important;

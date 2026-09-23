@@ -53,6 +53,14 @@ export const mapStyles = {
           maxzoom: 20,
           bounds: [5.95, 45.81, 10.49, 47.81],
           attribution: '&copy; <a href="https://www.swisstopo.admin.ch">swisstopo</a>'
+        },
+        // CARTO's vector tiles (OpenMapTiles schema), the same source the vector basemaps use. No layer
+        // of this style draws them: they carry the building footprints of the 3D view, which raster
+        // imagery cannot provide (see findVectorSourceId in map-controls.js).
+        'carto': {
+          type: 'vector',
+          url: 'https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json',
+          attribution: '&copy; <a href="https://carto.com/attributions">CARTO</a>, &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         }
       },
       layers: [

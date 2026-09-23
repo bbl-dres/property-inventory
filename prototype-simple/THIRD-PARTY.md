@@ -32,7 +32,7 @@ copyright © 2026 Digital Real Estate and Support. Its licence is retained in
 
 | Service | Used for | Notes |
 |---|---|---|
-| CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs | © CARTO, © OpenStreetMap contributors; free tier, no key |
+| CARTO basemaps (`basemaps.cartocdn.com`, `tiles.basemaps.cartocdn.com`) | Positron, Voyager and Dark Matter styles, vector tiles and glyphs; the aerial styles reference the same vector tiles as an undrawn source so the 3D view can extrude building footprints over imagery | © CARTO, © OpenStreetMap contributors; free tier, no key |
 | swisstopo WMTS (`wmts.geo.admin.ch`) | SWISSIMAGE aerial basemap within Switzerland (drawn above the world imagery) | © swisstopo |
 | Esri World Imagery (`server.arcgisonline.com`) | Global aerial imagery for both aerial basemaps | Esri, Maxar, Earthstar Geographics, and the GIS User Community — free with this attribution under the [Esri terms of use](https://www.esri.com/en-us/legal/terms/full-master-agreement); the tile service is rate-limited and meant for interactive maps, not for bulk download |
 | Esri Hybrid Reference (`www.arcgis.com`, `cdn.arcgis.com`, `basemaps.arcgis.com`) | Roads, boundaries and place labels above the imagery in "Hybrid" | [Hybrid Reference Layer](https://www.arcgis.com/home/item.html?id=30d6b8271e1849cd9c3042060001f425); Esri, TomTom, Garmin, FAO, NOAA, USGS, © OpenStreetMap contributors, and the GIS User Community. Public style, sprite and vector tiles; attribution is shown on the map. Arial labels are adapted to the existing CARTO Open Sans/Noto glyph service. |

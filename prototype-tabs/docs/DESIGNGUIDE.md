@@ -872,10 +872,12 @@ The "Tabelle" toggle (grey-900 pill at the bottom centre of the map) opens a res
 map with one tab per data set (Gebäude, Grundstücke; simple also Bodenabdeckung), the toolbar (search,
 filter pills, Export and Spalten dropdowns) and the compact `.list-table`. A row selects the object on the
 map and the map selection highlights its row. `?table=open` and `?tableTab=` keep the state in the URL;
-phones hide the panel (the map keeps the info sheet). The map view is a vertical split: every floating map
-control is a child of `#map`, so an open or resized table never covers the tools menu, the object card or
-the basemap switcher (see `docs/TABLE-PANEL.md` at the repository root). The handle between map and table
-is a keyboard-operable separator: arrow keys resize the table in 40px steps.
+phones hide the panel (the map keeps the info sheet). The content area is a vertical split: the table dock
+(toggle, handle, table) sits below the active view, so the table is available under the map and the
+gallery and hidden in the detail and API views; every floating map control is a child of `#map`, so an
+open or resized table never covers the tools menu, the object card or the basemap switcher (see
+`docs/TABLE-PANEL.md` at the repository root). A row selected under the gallery is shown on the map. The
+handle between view and table is a keyboard-operable separator: arrow keys resize the table in 40px steps.
 
 ```html
 <div id="map">…<button id="tbl-toggle" class="tbl-toggle">…Tabelle</button></div>

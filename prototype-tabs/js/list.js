@@ -6,7 +6,7 @@ import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
 import { t, onLangChange } from './i18n.js';
 import { createFeatureTable, initColumnVisibility, toggleAllColumns, initColumnsSearch, initDropdowns, initTableSearch } from './table.js';
 import { selectBuilding, selectParcel } from './map.js';
-import { showDetailView } from './ui.js';
+import { showDetailView, switchView } from './ui.js';
 import { initQuickExportMenu } from './export.js';
 
 // ===== COLUMN DEFINITIONS =====
@@ -124,6 +124,14 @@ function filteredBuildings() {
   return source ? source.features : [];
 }
 
+// A row selects its object on the map; under the gallery the map view is shown first
+function selectOnMap(select) {
+  return function(id) {
+    if (state.currentView !== 'map') switchView('map');
+    select(id, true);
+  };
+}
+
 export const tables = {
   buildings: createFeatureTable({
     tbodyId: 'list-body',
@@ -132,7 +140,7 @@ export const tables = {
     columns: buildingColumns,
     getFeatures: filteredBuildings,
     searchFields: BUILDING_SEARCH_FIELDS,
-    onRowSelect: function(id) { selectBuilding(id, true); },
+    onRowSelect: selectOnMap(selectBuilding),
     pagination: { infoId: 'list-pagination-info', pageInfoId: 'list-page-info', prevId: 'list-prev-btn', nextId: 'list-next-btn', rowsSelectId: 'list-rows-per-page', infoKey: 'pagination.info', emptyKey: 'pagination.empty' },
     empty: { type: 'block', afterSelector: '#buildings-table-content .list-table-wrapper', html: emptyStateHtml }
   }),
@@ -143,7 +151,7 @@ export const tables = {
     columns: parcelColumns,
     getFeatures: function() { return state.parcelData ? state.parcelData.features : []; },
     searchFields: PARCEL_SEARCH_FIELDS,
-    onRowSelect: function(id) { selectParcel(id, true); },
+    onRowSelect: selectOnMap(selectParcel),
     pagination: { infoId: 'parcels-pagination-info', pageInfoId: 'parcels-page-info', prevId: 'parcels-prev-btn', nextId: 'parcels-next-btn', rowsSelectId: 'parcels-rows-per-page', infoKey: 'pagination.parcels.info', emptyKey: 'pagination.parcels.empty' },
     empty: { type: 'row', colspan: parcelColumns.length, key: 'empty.parcels' }
   })
@@ -350,7 +358,7 @@ export function renderGalleryView() {
         '<div class="gallery-subtitle">' + escapeHtml(props.streetName) + '</div>' +
         '<div class="gallery-meta">' +
           '<span class="badge gallery-tag">' + escapeHtml(ext(props).portfolio || '—') + '</span>' +
-          '<span class="badge gallery-tag">' + flaeche + ' m²</span>' +
+          '<span class="badge gallery-tag" title="' + escapeHtml(t('detail.label.garea_ngf')) + '">' + escapeHtml(t('col.garea_ngf')) + ' ' + flaeche + ' m²</span>' +
           '<span class="badge status-badge ' + getStatusClassName(props.status) + '">' + escapeHtml(props.status) + '</span>' +
         '</div>' +
       '</div>' +

@@ -27,6 +27,9 @@ class Evented {
   }
 }
 
+// MapLibre accepts [lng, lat] arrays and { lng, lat } objects for a centre
+function toCenter(c) { return Array.isArray(c) ? { lng: c[0], lat: c[1] } : { lng: c.lng, lat: c.lat }; }
+
 class FakeMap extends Evented {
   constructor(options) {
     super();
@@ -100,7 +103,12 @@ class FakeMap extends Evented {
 
   getStyle() {
     const sources = {};
-    Object.keys(this._sources).forEach(id => { sources[id] = { type: this._sources[id].type, data: this._sources[id].data }; });
+    Object.keys(this._sources).forEach(id => {
+      const src = this._sources[id];
+      sources[id] = { type: src.type, data: src.data };
+      if (src.url) sources[id].url = src.url;
+      if (src.tiles) sources[id].tiles = src.tiles;
+    });
     return { version: 8, sources, layers: this._layers.map(l => JSON.parse(JSON.stringify(l))) };
   }
   setStyle(style) {
@@ -114,7 +122,7 @@ class FakeMap extends Evented {
 
   flyTo(o) {
     this.calls.flyTo.push(o);
-    if (o.center) this._center = { lng: o.center[0], lat: o.center[1] };
+    if (o.center) this._center = toCenter(o.center);
     if (o.zoom != null) this._zoom = o.zoom;
     if (o.pitch != null) this._pitch = o.pitch;
     if (o.bearing != null) this._bearing = o.bearing;
@@ -122,14 +130,14 @@ class FakeMap extends Evented {
   }
   easeTo(o) {
     this.calls.easeTo.push(o);
-    if (o.center) this._center = { lng: o.center[0], lat: o.center[1] };
+    if (o.center) this._center = toCenter(o.center);
     if (o.zoom != null) this._zoom = o.zoom;
     if (o.pitch != null) this._pitch = o.pitch;
     if (o.bearing != null) this._bearing = o.bearing;
     this.fire('moveend');
   }
   fitBounds(bounds, options) { this.calls.fitBounds.push({ bounds, options }); this.fire('moveend'); }
-  jumpTo(o) { this.calls.jumpTo.push(o); if (o.center) this._center = { lng: o.center[0], lat: o.center[1] }; }
+  jumpTo(o) { this.calls.jumpTo.push(o); if (o.center) this._center = toCenter(o.center); }
   panBy(offset, options) { this.calls.panBy.push({ offset, options }); }
   resize() { this.calls.resize++; }
   getCenter() { return this._center; }

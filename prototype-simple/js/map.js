@@ -9,7 +9,7 @@ import { statusColors, getStatusClassName, placeholderImages, parcelColor, landC
 import { escapeHtml, cssUrl, formatNum } from './utils.js';
 import { t } from './i18n.js';
 import { getMapStyleUrl, getMapStyleOptions, initStyleSwitcher } from './basemaps.js';
-import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings } from './map-controls.js';
+import { createMap, addStandardControls, bindMapUrlSync, bindCoordinateDisplay, initMapStatusIndicators, smartFlyTo, revealSelectionOnMobile, is3DActive, show3DBuildings, groundLayerAnchor } from './map-controls.js';
 import { isMeasuring, restoreMeasurement } from './measure.js';
 import { identifySwisstopoFeatures, clearIdentifyHighlight, initIdentifyHighlightLayer, loadLayersFromUrl, readdSwisstopoLayers, hasActiveSwisstopoLayers } from './swisstopo.js';
 import { renderLocationTree, syncCountryHighlight } from './location-tree.js';
@@ -87,7 +87,8 @@ function stopPulseAnimation() {
 
 // ===== DATA LAYERS =====
 
-function addLandCoverLayers(map) {
+// beforeId: ground data goes under the basemap labels and the 3D buildings (groundLayerAnchor)
+function addLandCoverLayers(map, beforeId) {
   map.addSource('landcovers', { type: 'geojson', data: state.landCoverData });
   const matchExpr = ['match', ['get', 'av_type']];
   Object.keys(landCoverColors).forEach(function(type) { matchExpr.push(type, landCoverColors[type]); });
@@ -96,27 +97,27 @@ function addLandCoverLayers(map) {
   map.addLayer({
     id: 'landcovers-fill', type: 'fill', source: 'landcovers', minzoom: 14,
     paint: { 'fill-color': matchExpr, 'fill-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.25] }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'landcovers-outline', type: 'line', source: 'landcovers', minzoom: 14,
     paint: { 'line-color': landCoverOutlineColor, 'line-width': 1.5, 'line-opacity': ['interpolate', ['linear'], ['zoom'], 14, 0, 15, 0.7] }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'landcovers-highlight', type: 'fill', source: 'landcovers', minzoom: 14,
     filter: ['==', ['get', 'objectid'], -1],
     paint: { 'fill-color': landCoverColors['Gebaeude'], 'fill-opacity': 0.4 }
-  });
+  }, beforeId);
   // No minzoom on the selection layers: a selection should always be visible
   map.addLayer({
     id: 'landcovers-selected', type: 'fill', source: 'landcovers',
     filter: ['==', ['get', 'objectid'], -1],
     paint: { 'fill-color': landCoverColors['Gebaeude'], 'fill-opacity': 0.5 }
-  });
+  }, beforeId);
   map.addLayer({
     id: 'landcovers-selected-outline', type: 'line', source: 'landcovers',
     filter: ['==', ['get', 'objectid'], -1],
     paint: { 'line-color': landCoverOutlineColor, 'line-width': 3, 'line-opacity': 1 }
-  });
+  }, beforeId);
 }
 
 export function addMapLayers() {
@@ -124,8 +125,10 @@ export function addMapLayers() {
   const map = state.map;
   if (map.getSource('buildings')) return; // already added
 
-  if (state.landCoverData && state.landCoverData.features) addLandCoverLayers(map);
-  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'bbl_id', parcelColor);
+  // Ground polygons under the basemap labels and the 3D buildings; points and labels on top
+  const ground = groundLayerAnchor(map);
+  if (state.landCoverData && state.landCoverData.features) addLandCoverLayers(map, ground);
+  if (state.parcelData && state.parcelData.features) addParcelLayers(map, state.parcelData, 'bbl_id', parcelColor, ground);
   addBuildingLayers(map, state.buildingsData, 'bbl_id', 'bbl_stat', statusColors);
   if (state.parcelData?.features) addParcelLabels(map, state.parcelData, 'bbl_id');
   addBuildingLabels(map, 'bbl_id');

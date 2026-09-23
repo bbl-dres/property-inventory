@@ -8,9 +8,35 @@ import { t } from './i18n.js';
 export const DEFAULT_CENTER = [8.2275, 46.8182]; // Switzerland
 export const DEFAULT_ZOOM = 2;
 
-// Initial extent (Home control, logo click)
+// Initial extent (Home control, logo click): flat and north-up, the 3D buildings stay as chosen
 export function flyHome(map) {
-  map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, duration: 1000 });
+  map.flyTo({ center: DEFAULT_CENTER, zoom: DEFAULT_ZOOM, pitch: 0, bearing: 0, duration: 1000 });
+}
+
+// ===== LAYER ORDER =====
+// A basemap ends with a block of label layers (CARTO also has an early waterway label before its
+// roads, so "the first symbol layer" would be the wrong anchor). Application ground data and the
+// 3D buildings go below that block: basemap labels stay readable, parcels and land cover lie under
+// the extruded buildings, and the application's points and labels, added without an anchor, stay
+// on top of everything.
+const labelBlockStart = new WeakMap(); // map -> id of the first layer of the basemap's final label block
+
+export function findLabelBlockStart(style) {
+  const layers = (style && style.layers) || [];
+  let lastGeometry = -1;
+  layers.forEach(function(layer, index) { if (layer.type !== 'symbol') lastGeometry = index; });
+  return layers[lastGeometry + 1] ? layers[lastGeometry + 1].id : null;
+}
+
+// Remembered at every style load, before the application adds its own layers
+function bindBasemapLayerOrder(map) {
+  map.on('style.load', function() { labelBlockStart.set(map, findLabelBlockStart(map.getStyle())); });
+}
+
+// Anchor for ground data (land cover, parcels): under the 3D buildings when they exist, otherwise
+// under the basemap's labels; null appends to the top (raster basemaps without labels)
+export function groundLayerAnchor(map) {
+  return findFirstLayerId(map, ['3d-buildings', labelBlockStart.get(map)].filter(Boolean));
 }
 
 // ===== URL -> INITIAL VIEW =====
@@ -46,6 +72,7 @@ export function createMap(containerId, styleUrl, styleOptions = {}) {
     bearing: view.bearing,
     canvasContextAttributes: { antialias: true, preserveDrawingBuffer: false }
   });
+  bindBasemapLayerOrder(map);
   // Style transforms are setStyle options, not constructor options.
   if (styleOptions.transformStyle) map.setStyle(styleUrl, styleOptions);
   return map;
@@ -95,6 +122,8 @@ Toggle3DControl.prototype.onAdd = function(map) {
   button.className = 'map-3d-btn';
   button.type = 'button';
   button.title = t('map.toggle3d');
+  button.setAttribute('aria-label', t('map.toggle3d'));
+  button.setAttribute('aria-pressed', 'false');
   button.textContent = '3D';
   button.onclick = function() {
     is3D = !is3D;
@@ -121,6 +150,7 @@ Toggle3DControl.prototype.onRemove = function() {
 function render3DButton(button) {
   button.textContent = is3D ? '2D' : '3D';
   button.classList.toggle('active', is3D);
+  button.setAttribute('aria-pressed', is3D ? 'true' : 'false');
 }
 
 // Phones start with the collapsed ⓘ: MapLibre opens its compact attribution on load; a tap expands it again.
@@ -135,10 +165,11 @@ function collapseCompactAttribution(map) {
 }
 
 // Navigation, scale, home and (optionally) the 2D/3D toggle; restores ?3d=1 from the URL.
+// The compass shows the tilt and resets both north and tilt when clicked.
 export function addStandardControls(map, options) {
   options = options || {};
   collapseCompactAttribution(map);
-  map.addControl(new maplibregl.NavigationControl(), 'top-right');
+  map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
   map.addControl(new HomeControl(), 'top-right');
   if (options.toggle3D !== false) {
@@ -161,7 +192,13 @@ export function findVectorSourceId(style) {
   const buildingLayer = ((style && style.layers) || []).find(function(layer) {
     return layer['source-layer'] === 'building' && sources[layer.source]?.type === 'vector';
   });
-  return buildingLayer ? buildingLayer.source : null;
+  if (buildingLayer) return buildingLayer.source;
+  // The raster basemaps (aerial imagery) carry CARTO's vector tiles as a source no layer uses,
+  // for exactly this purpose: imagery has no building footprints to extrude.
+  return Object.keys(sources).find(function(id) {
+    const source = sources[id];
+    return source.type === 'vector' && /basemaps\.cartocdn\.com\/vector\//.test(source.url || (source.tiles || []).join(' '));
+  }) || null;
 }
 
 // First existing layer id of the candidates (used as the "insert before" anchor)
@@ -184,7 +221,7 @@ export const BUILDINGS_3D_LAYER = {
   'paint': {
     'fill-extrusion-color': '#d0d0d0',
     'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 5],
-    'fill-extrusion-base': 0,
+    'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
     'fill-extrusion-opacity': 1
   }
 };
@@ -206,10 +243,12 @@ export function show3DBuildings(map) {
     return;
   }
   const vectorSourceId = findVectorSourceId(map.getStyle());
-  if (!vectorSourceId) return; // raster basemap (aerial): nothing to extrude
+  if (!vectorSourceId) return; // no building footprints in this style
   // Hide the basemap's own flat building layers to prevent double-rendering
   setBasemapBuildingLayersVisible(map, false);
-  map.addLayer(Object.assign({}, BUILDINGS_3D_LAYER, { source: vectorSourceId }), findFirstLayerId(map, DATA_LAYER_ANCHORS));
+  // Below the basemap's labels and above the ground data (see groundLayerAnchor). A raster basemap has
+  // no label block: then below the application's points, so the roofs never cover its markers and labels.
+  map.addLayer(Object.assign({}, BUILDINGS_3D_LAYER, { source: vectorSourceId }), findFirstLayerId(map, [labelBlockStart.get(map), 'buildings-clusters', 'buildings-points'].filter(Boolean)));
 }
 
 export function hide3DBuildings(map) {
@@ -229,14 +268,11 @@ export function bindMapUrlSync(map, isMapVisible) {
     url.searchParams.set('lng', center.lng.toFixed(5));
     url.searchParams.set('lat', center.lat.toFixed(5));
     url.searchParams.set('zoom', map.getZoom().toFixed(2));
+    // Tilt and rotation only while they differ from the flat, north-up default
     const pitch = map.getPitch();
-    if (pitch > 0) {
-      url.searchParams.set('pitch', pitch.toFixed(1));
-      url.searchParams.set('bearing', map.getBearing().toFixed(1));
-    } else {
-      url.searchParams.delete('pitch');
-      url.searchParams.delete('bearing');
-    }
+    const bearing = map.getBearing();
+    if (pitch > 0) url.searchParams.set('pitch', pitch.toFixed(1)); else url.searchParams.delete('pitch');
+    if (pitch > 0 || Math.abs(bearing) >= 0.05) url.searchParams.set('bearing', bearing.toFixed(1)); else url.searchParams.delete('bearing');
     window.history.replaceState({}, '', url);
   });
 }

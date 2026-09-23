@@ -41,13 +41,20 @@ were children of the split container rather than of the map.
 
 ## Changes
 
-- **One hierarchy in both prototypes.** `#map-view` now holds exactly `#map`,
-  `#tbl-resize-handle` and `#table-panel`. Every floating control is a child of
-  `#map`: the top controls, the measure display, the basemap switcher, the
-  table toggle, the menu backdrop, the tools menu, the object card, the context
-  menu and the print preview. MapLibre sets `overflow: hidden` on the map, so
-  these elements are positioned by the map and clipped by it; an open or
-  resized table cannot cover them by construction.
+- **One hierarchy in both prototypes.** `.main-content` is the split: the four
+  views, then the table dock (`.table-split` with the toggle and the resize
+  handle, then `#table-panel`). `#map-view` holds only `#map`, and every
+  floating control is a child of `#map`: the top controls, the measure
+  display, the basemap switcher, the menu backdrop, the tools menu, the object
+  card, the context menu and the print preview. MapLibre sets
+  `overflow: hidden` on the map, so these elements are positioned by the map
+  and clipped by it; an open or resized table cannot cover them by
+  construction.
+- **The dock serves the gallery too.** Because it sits below the active view
+  rather than inside the map view, the table opens under the gallery cards as
+  well, follows the filters there, and is hidden in the detail and API views.
+  A row selected under the gallery is shown on the map: the map view opens and
+  the object is selected there.
 - **Workarounds removed.** The table collision fold, its timers, the measured
   map height and the manual `map.resize()` calls are gone. The tools menu still
   folds when the object card would cover it on a narrow map, which is a

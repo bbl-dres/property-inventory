@@ -27,7 +27,8 @@ module.exports = function(prototype) {
       check('plain aerial remains free of reference layers', !aerial.sources.esri && aerial.layers.length === 2 && reference.layers[1].layout['text-font'][0] === 'Arial Bold');
 
       const controls = await import(pathToFileURL(path.resolve(__dirname, '../../', prototype, 'js/map-controls.js')).href);
-      check('hybrid reference is not used for OpenMapTiles extrusions', controls.findVectorSourceId(hybrid) === null);
+      check('aerial styles carry the CARTO vector tiles for the 3D buildings', aerial.sources.carto.type === 'vector' && controls.findVectorSourceId(aerial) === 'carto' && controls.findVectorSourceId(hybrid) === 'carto');
+      check('the Esri reference alone is not used for extrusions', controls.findVectorSourceId({ sources: { esri: reference.sources.esri }, layers: reference.layers }) === null);
       check('CARTO buildings still support extrusions', controls.findVectorSourceId({ sources: { carto: { type: 'vector' } }, layers: [{ source: 'carto', 'source-layer': 'building' }] }) === 'carto');
 
       const flyCount = map.calls.flyTo.length;
@@ -39,6 +40,14 @@ module.exports = function(prototype) {
       await settle();
       check('hybrid selectable again with shareable URL', basemaps.getCurrentBasemapUrlValue() === 'aerial-labels' && new URL(window.location).searchParams.get('basemap') === 'aerial-labels');
       check('switching preserves camera', map.calls.flyTo.length === flyCount && new URL(window.location).searchParams.get('lng') === '7.44');
+
+      // 3D over imagery: the undrawn CARTO source is enough, and without a basemap label block the
+      // buildings go between the ground data and the application's points
+      map.addSource('carto', { type: 'vector', url: 'https://tiles.basemaps.cartocdn.com/vector/carto.streets/v1/tiles.json' });
+      document.querySelector('.map-3d-btn').click();
+      const index = id => map._layers.findIndex(l => l.id === id);
+      check('3D buildings extrude over imagery between parcels and points', !!map.getLayer('3d-buildings') && map.getLayer('3d-buildings').source === 'carto' && index('3d-buildings') > index('parcels-fill') && index('3d-buildings') < index('buildings-points'));
+      document.querySelector('.map-3d-btn').click();
 
       for (const value of ['aerial', 'aerial-labels', 'invalid']) {
         window.history.pushState({}, '', '?basemap=' + value);

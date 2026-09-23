@@ -3,7 +3,7 @@
 
 import { t, onLangChange } from './i18n.js';
 import { getMapStyleUrl } from './basemaps.js';
-import { findVectorSourceId, createLocationMarker } from './map-controls.js';
+import { findVectorSourceId, findLabelBlockStart, createLocationMarker } from './map-controls.js';
 
 let miniMap = null;
 let miniMapMarker = null;
@@ -36,19 +36,14 @@ function add3DBuildings() {
   const style = miniMap.getStyle();
   const vectorSourceId = findVectorSourceId(style);
   if (!vectorSourceId) return;
-  const layers = style.layers || [];
-  // CARTO has an early waterway label BEFORE its roads. Insert above all ground
-  // geometry, below the final label block, so roads cannot paint over roofs.
-  let lastGeometryIndex = -1;
-  layers.forEach(function(layer, index) {
-    if (layer.type !== 'symbol') lastGeometryIndex = index;
-    // Hide the basemap's flat buildings to avoid drawing the footprints twice.
+  // Hide the basemap's flat buildings to avoid drawing the footprints twice.
+  (style.layers || []).forEach(function(layer) {
     if (layer['source-layer'] === 'building' && layer.id !== '3d-buildings') {
       miniMap.setLayoutProperty(layer.id, 'visibility', 'none');
     }
   });
-  const firstOverlay = layers[lastGeometryIndex + 1];
-  miniMap.addLayer(Object.assign({}, MINI_MAP_3D_LAYER, { source: vectorSourceId }), firstOverlay && firstOverlay.id);
+  // Above all ground geometry, below the final label block (same rule as the main map)
+  miniMap.addLayer(Object.assign({}, MINI_MAP_3D_LAYER, { source: vectorSourceId }), findLabelBlockStart(style) || undefined);
 }
 
 export function showMiniMap(coords) {

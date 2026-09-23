@@ -104,7 +104,7 @@ export function zoomToFilteredPoints() {
 
 // Tables and gallery are re-rendered only while visible; hidden views are marked dirty
 export function renderCurrentView() {
-  if (state.currentView === 'map' && state.tableOpen) {
+  if ((state.currentView === 'map' || state.currentView === 'gallery') && state.tableOpen) {
     renderFilteredTables(); // only the buildings table depends on the filters
   } else {
     state.listViewDirty = true;
