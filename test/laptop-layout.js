@@ -22,7 +22,8 @@ const geometry = `(() => {
     toolsCollision:!document.getElementById('accordion-panel').classList.contains('collapsed') && overlap(rect('#accordion-panel'),rect('#info-panel.show')),
     info:rect('#info-panel.show'), body:rect('#info-body'), footer:rect('.info-footer'),
     secondary:[...document.querySelectorAll('.info-row-secondary')].every(e=>getComputedStyle(e).display!=='none'),
-    table:rect('#table-panel:not(.collapsed)'), carousel:rect('#detail-carousel') };
+    table:rect('#table-panel:not(.collapsed)'), carousel:rect('#detail-carousel'),
+    barInner:rect('.header-detail .detail-header-inner'), contentBox:rect('.detail-hero, .tab-content.active .detail-grid') };
 })()`;
 (async () => {
   fs.mkdirSync(out,{recursive:true});
@@ -102,7 +103,9 @@ const geometry = `(() => {
           miniMapCount:document.querySelectorAll('#mini-map').length };
       })()`);
       record(prototype,profile,'detail', { noOverflow:!detail.overflow, readingOrder:detail.correctOrder,
-        oneMiniMap:detail.miniMapCount===1 },detail);
+        oneMiniMap:detail.miniMapCount===1,
+        // The breadcrumb bar in the page header follows the docked tree: its inner row spans the content
+        barAligned:!detail.tree || (Math.abs(detail.barInner.x-detail.contentBox.x)<=1 && Math.abs(detail.barInner.right-detail.contentBox.right)<=1) },detail);
       if(['1280x700','1164x636','phone'].includes(profile)) {
         const {data}=await cdp.send('Page.captureScreenshot',{format:'png'},page.sessionId);
         fs.writeFileSync(path.join(out,prototype+'-'+profile+'-detail.png'),Buffer.from(data,'base64'));
@@ -110,7 +113,7 @@ const geometry = `(() => {
       await step("ui.activateTab('measurements');");
       const measurements=await run(geometry);
       record(prototype,profile,'measurements', { noOverflow:!measurements.overflow,
-        compactPhoto:prototype!=='prototype-simple' || measurements.carousel.h<=112 },measurements);
+        heroConsistent:prototype!=='prototype-simple' || (!!measurements.carousel && !!detail.carousel && measurements.carousel.h===detail.carousel.h) },measurements);
       // Restore a wide layout without rebuilding detail content or its map.
       await cdp.send('Emulation.setDeviceMetricsOverride',{width:1920,height:1100,deviceScaleFactor:1,mobile:false},page.sessionId);
       await step("ui.activateTab('overview');");

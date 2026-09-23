@@ -1,9 +1,12 @@
+const path = require('path');
+const { pathToFileURL } = require('url');
+
 module.exports = function(prototype) {
   const simple = prototype === 'prototype-simple';
   return {
     name: prototype + ': detail navigation, maps and panel regressions',
     boot: { prototype },
-    async run({document,window,modules,map,settle},check) {
+    async run({document,window,modules,map,settle,fake},check) {
       const state = modules.state.state;
       const id = b => b.properties[simple ? 'bbl_id' : 'buildingId'];
       modules.filters.toggleSmartDrawer(true);
@@ -22,19 +25,30 @@ module.exports = function(prototype) {
       key(document.activeElement,'Home');
       check('Home selects first tab', document.activeElement === first);
       check('tabs reference named panels', [...document.querySelectorAll('.detail-tab')].every(t => document.getElementById(t.getAttribute('aria-controls'))?.getAttribute('aria-labelledby') === t.id));
-      if (simple) {
-        const section = document.querySelector('.tab-content.active .detail-overline');
-        key(section,' ');
-        check('section keyboard collapses with announced state', section.classList.contains('collapsed') && section.getAttribute('aria-expanded') === 'false');
-        key(section,'Enter');
-        check('section keyboard expands', !section.classList.contains('collapsed') && section.getAttribute('aria-expanded') === 'true');
-        check('document list retains its existing ID', !!document.getElementById('detail-documents')?.children.length);
-      }
       for (const building of [buildings[0],buildings[1]]) {
         modules.ui.showDetailView(id(building));
         const link = document.getElementById('mini-map-address');
         check('Google Maps link follows '+id(building), new URL(link.href).searchParams.get('query') === building.geometry.coordinates[1]+','+building.geometry.coordinates[0] && link.target === '_blank' && link.rel.includes('noopener'));
       }
+      // Mini map: the home button returns to the building view
+      const miniMap = fake.Map.instances.find(m => m._container && m._container.id === 'mini-map');
+      const homeBtn = document.querySelector('#mini-map .map-home-btn');
+      // (the zoom buttons come from MapLibre's own NavigationControl, a stub in the fake; the browser suites cover them)
+      check('mini map has a labelled home control', !!miniMap && !!homeBtn && homeBtn.title.length > 0 && homeBtn.getAttribute('aria-label') === homeBtn.title);
+      miniMap.jumpTo({ center: [0, 0], zoom: 3, pitch: 0, bearing: 90 });
+      homeBtn.click();
+      const home = miniMap.calls.flyTo.at(-1);
+      const target = buildings[1].geometry.coordinates;
+      check('mini map home flies back to the tilted building view', !!home && home.zoom === 17 && home.pitch === 50 && home.bearing === -17 && home.center[0] === target[0] && home.center[1] === target[1]);
+      // Address table (identical in both prototypes): marker column without a label, stacked-layout labels translated live
+      const { setLang } = await import(pathToFileURL(path.resolve(__dirname, '../../' + prototype + '/js/i18n.js')).href);
+      const addressCells = () => [...document.querySelectorAll('.address-table tbody td')];
+      const addressHeads = () => [...document.querySelectorAll('.address-table thead th')].map(th => th.textContent.trim());
+      check('address marker cell carries no row label', addressCells()[0].classList.contains('address-marker-cell') && !addressCells()[0].hasAttribute('data-label') && !!addressCells()[0].querySelector('.address-marker'));
+      await setLang('fr');
+      check('address row labels follow the translated headers', addressHeads()[1] !== 'Land' && addressCells().slice(1).every((td, i) => td.dataset.label === addressHeads()[i + 1]));
+      await setLang('de');
+      check('address row labels return with the language', addressCells().slice(1).every((td, i) => td.dataset.label === addressHeads()[i + 1]) && addressCells()[1].dataset.label === 'Land');
       modules.ui.switchView('map');
       check('return restores filter button', !document.getElementById('filter-panel-btn').disabled);
       modules.map.selectBuilding(id(buildings[1]));

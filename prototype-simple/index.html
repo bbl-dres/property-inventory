@@ -162,6 +162,34 @@
             </div>
         </div>
 
+
+        <!-- Detail page: breadcrumb and actions in the page header (like prototype-tabs), so docked
+             panels such as the location tree start below them -->
+        <div class="header-detail">
+            <!-- Breadcrumb + Back -->
+            <div class="view-nav detail-header">
+                <div class="detail-header-inner">
+                    <div class="breadcrumb" id="detail-breadcrumb">
+                        <span class="material-symbols-outlined">public</span>
+                        <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
+                        <span>></span>
+                        <a href="#" id="breadcrumb-country-link" data-action="navigateWithLandFilter"><span id="breadcrumb-country">–</span></a>
+                        <span>></span>
+                        <a href="#" id="breadcrumb-city-link" data-action="navigateWithOrtFilter"><span id="breadcrumb-city">–</span></a>
+                        <span>></span>
+                        <span id="breadcrumb-we">–</span>
+                        <span>></span>
+                        <span class="current" id="breadcrumb-tobj">–</span>
+                    </div>
+                    <div class="detail-header-actions">
+                        <button class="btn-back" id="btn-back">
+                            <span class="material-symbols-outlined">arrow_back</span>
+                            <span data-i18n="detail.back">Zurück</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
     </header>
 
 
@@ -365,7 +393,7 @@
                                         <span data-internal-layer-info="buildings"></span>
                                     </div>
                                     <div class="active-layer-item" data-internal-layer="landcovers">
-                                        <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" data-i18n-title="accordion.layers.landcovers.toggle" title="Bodenabdeckung ein-/ausblenden">
+                                        <input type="checkbox" class="active-layer-checkbox" id="layer-toggle-landcovers" data-i18n-title="accordion.layers.landcovers.toggle" title="Bodenabdeckung ein-/ausblenden">
                                         <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
                                         <span data-internal-layer-info="landcovers"></span>
                                     </div>
@@ -480,37 +508,56 @@
         </div>
 
         <div id="detail-view">
-            <!-- Breadcrumb + Back -->
-            <div class="view-nav detail-header">
-                <div class="detail-header-inner">
-                    <div class="breadcrumb" id="detail-breadcrumb">
-                        <span class="material-symbols-outlined">public</span>
-                        <a href="#" data-action="navigateToAllObjects" data-i18n="detail.all_objects">Alle Objekte</a>
-                        <span>></span>
-                        <a href="#" id="breadcrumb-country-link" data-action="navigateWithLandFilter"><span id="breadcrumb-country">–</span></a>
-                        <span>></span>
-                        <a href="#" id="breadcrumb-city-link" data-action="navigateWithOrtFilter"><span id="breadcrumb-city">–</span></a>
-                        <span>></span>
-                        <span id="breadcrumb-we">–</span>
-                        <span>></span>
-                        <span class="current" id="breadcrumb-tobj">–</span>
-                    </div>
-                    <div class="detail-header-actions">
-                        <button class="btn-back" id="btn-back">
-                            <span class="material-symbols-outlined">arrow_back</span>
-                            <span data-i18n="detail.back">Zurück</span>
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="detail-content detail-single-col">
+            <div class="detail-content detail-page">
 
-                <!-- Foto Gallery (always visible, above tabs) -->
-                <div class="carousel" id="detail-carousel" role="region" aria-roledescription="Bildkarussell" aria-label="Gebäudebilder">
-                    <div class="carousel-image" id="carousel-image"></div>
-                    <button class="carousel-btn prev" data-action="carouselPrev" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
-                    <button class="carousel-btn next" data-action="carouselNext" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
-                    <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Bild auswählen"></div>
+                <!-- Hero: the photo widget (3:2 at the row height) and the map widget side by side above the
+                     tabs; one under the other below 850px of content width; a photo strip in "Bemessungen". -->
+                <div class="detail-hero">
+                    <div class="detail-hero-photo">
+        <div class="carousel" id="detail-carousel" role="region" aria-roledescription="Bildkarussell" aria-label="Gebäudebilder">
+        <div class="carousel-image" id="carousel-image"></div>
+        <button class="carousel-btn prev" data-action="carouselPrev" aria-label="Vorheriges Bild"><span class="material-symbols-outlined">chevron_left</span></button>
+        <button class="carousel-btn next" data-action="carouselNext" aria-label="Nächstes Bild"><span class="material-symbols-outlined">chevron_right</span></button>
+        <div class="carousel-dots" id="carousel-dots" role="tablist" aria-label="Bild auswählen"></div>
+        </div>
+                    </div>
+                    <div class="detail-hero-map">
+                            <div class="mini-map-wrapper">
+                                <div class="mini-map-header"><a id="mini-map-address" target="_blank" rel="noopener noreferrer">–</a></div>
+                                <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                                <!-- data-label: shown as row labels when the column is too narrow for 7 table columns (container query) -->
+                                <div class="address-table-wrap">
+                                <table class="address-table">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th data-i18n="col.adr_land">Land</th>
+                                            <th data-i18n="col.adr_reg">Region</th>
+                                            <th data-i18n="field.city">Stadt</th>
+                                            <th data-i18n="field.postalCode">Postleitzahl</th>
+                                            <th data-i18n="col.adr_str">Strasse</th>
+                                            <th data-i18n="col.adr_hsnr">Hausnummer</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td class="address-marker-cell">
+                                                <span class="address-marker">
+                                                    <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+                                                </span>
+                                            </td>
+                                            <td id="detail-country" data-label="Land">—</td>
+                                            <td id="detail-region" data-label="Region">—</td>
+                                            <td id="detail-city" data-label="Stadt">—</td>
+                                            <td id="detail-plz" data-label="Postleitzahl">—</td>
+                                            <td id="detail-street" data-label="Strasse">—</td>
+                                            <td id="detail-housenumber" data-label="Hausnummer">—</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                                </div>
+                            </div>
+                    </div>
                 </div>
 
                 <!-- Tabs (inside content, scrollable) -->
@@ -523,168 +570,360 @@
 
                 <!-- ===== Tab: Übersicht ===== -->
                 <div class="tab-content active" data-content="overview">
-
-                    <div class="detail-overline" data-i18n="columns.group.master">Stammdaten</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_stat">Status</span><span class="detail-value" id="detail-status">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bez">Bezeichnung</span><span class="detail-value" id="detail-name">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_id">ID</span><span class="detail-value" id="detail-id">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_gbda1">Objektart 1</span><span class="detail-value" id="detail-objektart1">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_gbda2">Objektart 2</span><span class="detail-value" id="detail-objektart2">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_eigen">Art Eigentum</span><span class="detail-value" id="detail-eigentum">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_ostr">Objektstrategie</span><span class="detail-value" id="detail-ostr">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_mietm">Mietmodell</span><span class="detail-value" id="detail-mietmodell">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_port">Teilportfolio</span><span class="detail-value" id="detail-teilportfolio">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_port2">Portfoliogruppe</span><span class="detail-value" id="detail-teilportfolio-gruppe">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bjahr">Baujahr</span><span class="detail-value" id="detail-baujahr">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_vjahr">Verkaufsjahr</span><span class="detail-value" id="detail-vjahr">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_awrt">Anschaffungswert</span><span class="detail-value" id="detail-awrt">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_bwrt">Buchwert</span><span class="detail-value" id="detail-bwrt">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="detail.section.contacts">Kontakte</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_ovtw">Verantwortlich</span><span class="detail-value" id="detail-ovtw">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_pvtw">Portfoliomanager</span><span class="detail-value" id="detail-pvtw">–</span></div>
-                    </div>
-
-                    <div class="detail-overline">Dokumente</div>
-                    <div class="detail-card document-list" id="detail-documents" role="list" aria-label="Dokumente"></div>
-
-                    <div class="detail-overline" data-i18n="detail.section.location">Standort</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.wgs84">WGS84</span><span class="detail-value" id="detail-wgs84">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.lv95">LV95</span><span class="detail-value" id="detail-lv95">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.egm_elev">EGM Höhe</span><span class="detail-value" id="detail-elev">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label">Google Maps</span><span class="detail-value"><a id="detail-link-gmaps" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                        <div class="detail-grid-row"><span class="detail-label">Google Street View</span><span class="detail-value"><a id="detail-link-streetview" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                        <div class="mini-map-wrapper">
-                            <div class="mini-map-header"><a id="mini-map-address" target="_blank" rel="noopener noreferrer">–</a></div>
-                            <div id="mini-map-container" class="mini-map-container"><div id="mini-map" class="mini-map"></div></div>
+                    <!-- Same two-column section grid as prototype-tabs; one column below 850px of content width -->
+                    <div class="detail-grid">
+                        <div class="detail-left">
+                            <div class="detail-section detail-section--master">
+                                <div class="detail-section-title" data-i18n="columns.group.master">Stammdaten</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_stat">Status</span>
+                                            <span class="data-value" id="detail-status">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_bez">Bezeichnung</span>
+                                            <span class="data-value" id="detail-name">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_id">ID</span>
+                                            <span class="data-value" id="detail-id">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_gbda1">Objektart 1</span>
+                                            <span class="data-value" id="detail-objektart1">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_gbda2">Objektart 2</span>
+                                            <span class="data-value" id="detail-objektart2">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_eigen">Art Eigentum</span>
+                                            <span class="data-value" id="detail-eigentum">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_ostr">Objektstrategie</span>
+                                            <span class="data-value" id="detail-ostr">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_mietm">Mietmodell</span>
+                                            <span class="data-value" id="detail-mietmodell">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_port">Teilportfolio</span>
+                                            <span class="data-value" id="detail-teilportfolio">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_port2">Portfoliogruppe</span>
+                                            <span class="data-value" id="detail-teilportfolio-gruppe">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_bjahr">Baujahr</span>
+                                            <span class="data-value" id="detail-baujahr">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_vjahr">Verkaufsjahr</span>
+                                            <span class="data-value" id="detail-vjahr">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_awrt">Anschaffungswert</span>
+                                            <span class="data-value" id="detail-awrt">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_bwrt">Buchwert</span>
+                                            <span class="data-value" id="detail-bwrt">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--contacts">
+                                <div class="detail-section-title" data-i18n="detail.section.contacts">Kontakte</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_ovtw">Verantwortlich</span>
+                                            <span class="data-value" id="detail-ovtw">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_pvtw">Portfoliomanager</span>
+                                            <span class="data-value" id="detail-pvtw">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="address-table-wrap">
-                        <table class="address-table">
-                            <thead>
-                                <tr>
-                                    <th data-i18n="col.adr_land">Land</th>
-                                    <th data-i18n="col.adr_reg">Region</th>
-                                    <th data-i18n="col.adr_ort">Ort</th>
-                                    <th data-i18n="col.adr_plz">PLZ</th>
-                                    <th data-i18n="col.adr_str">Strasse</th>
-                                    <th data-i18n="col.adr_hsnr">Nr.</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td id="detail-country">–</td>
-                                    <td id="detail-region">–</td>
-                                    <td id="detail-city">–</td>
-                                    <td id="detail-plz">–</td>
-                                    <td id="detail-street">–</td>
-                                    <td id="detail-housenumber">–</td>
-                                </tr>
-                            </tbody>
-                        </table>
+                        <div class="detail-right">
+                            <div class="detail-section detail-section--location">
+                                <div class="detail-section-title" data-i18n="detail.section.location">Standort</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.wgs84">WGS84</span>
+                                            <span class="data-value" id="detail-wgs84">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.lv95">LV95</span>
+                                            <span class="data-value" id="detail-lv95">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.egm_elev">EGM Höhe</span>
+                                            <span class="data-value" id="detail-elev">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label">Google Maps</span>
+                                            <span class="data-value"><a id="detail-link-gmaps" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label">Google Street View</span>
+                                            <span class="data-value"><a id="detail-link-streetview" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--survey">
+                                <div class="detail-section-title" data-i18n="columns.group.survey">Amtliche Vermessung</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.av_egid">EGID</span>
+                                            <span class="data-value" id="detail-egid">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label">Gebäudestatus (GWR)</span>
+                                            <span class="data-value" id="detail-gwr-status">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.av_egrid">EGRID</span>
+                                            <span class="data-value" id="detail-egrid">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bfs_gem">Gemeindename</span>
+                                            <span class="data-value" id="detail-bfs-gem">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bfs_gemnr">Gemeindenr.</span>
+                                            <span class="data-value" id="detail-bfs-gemnr">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.link.gwr">BFS Gebäude und Wohnregister GWR</span>
+                                            <span class="data-value"><a id="detail-link-geoadmin-gwr" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.link.oereb">Kataster der öffentlich-rechtlichen Eigentumsbeschränkungen ÖREB</span>
+                                            <span class="data-value"><a id="detail-link-geoadmin-oereb" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--zone">
+                                <div class="detail-section-title" data-i18n="columns.group.zone">Bauzone</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.av_zbez">Bauzone</span>
+                                            <span class="data-value" id="detail-zbez">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.av_znut">Nutzung</span>
+                                            <span class="data-value" id="detail-znut">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.link.bauzonen">Bauzonen Schweiz</span>
+                                            <span class="data-value"><a id="detail-link-bauzonen" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--heritage">
+                                <div class="detail-section-title" data-i18n="columns.group.heritage">Denkmalschutz</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_hist">Hist. Ausstattung</span>
+                                            <span class="data-value" id="detail-hist">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.bbl_arch">Archivwürdigkeit</span>
+                                            <span class="data-value" id="detail-arch">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.kgs_kat">KGS Kategorie</span>
+                                            <span class="data-value" id="detail-kgs-kat">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.kgs_nr">KGS Nummer</span>
+                                            <span class="data-value" id="detail-kgs-nr">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.link.kgs">KGS Inventar</span>
+                                            <span class="data-value"><a id="detail-link-kgs" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--other">
+                                <div class="detail-section-title" data-i18n="columns.group.other">Sonstiges</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.objectid">OBJECTID</span>
+                                            <span class="data-value" id="detail-objectid">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="col.etl_ts">ETL Zeitstempel</span>
+                                            <span class="data-value" id="detail-etl-ts">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="detail-overline" data-i18n="columns.group.survey">Amtliche Vermessung</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_egid">EGID</span><span class="detail-value" id="detail-egid">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label">Gebäudestatus (GWR)</span><span class="detail-value" id="detail-gwr-status">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_egrid">EGRID</span><span class="detail-value" id="detail-egrid">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bfs_gem">Gemeindename</span><span class="detail-value" id="detail-bfs-gem">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bfs_gemnr">Gemeindenr.</span><span class="detail-value" id="detail-bfs-gemnr">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.gwr">BFS Gebäude und Wohnregister GWR</span><span class="detail-value"><a id="detail-link-geoadmin-gwr" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.oereb">Kataster der öffentlich-rechtlichen Eigentumsbeschränkungen ÖREB</span><span class="detail-value"><a id="detail-link-geoadmin-oereb" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="columns.group.zone">Bauzone</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_zbez">Bauzone</span><span class="detail-value" id="detail-zbez">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.av_znut">Nutzung</span><span class="detail-value" id="detail-znut">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.bauzonen">Bauzonen Schweiz</span><span class="detail-value"><a id="detail-link-bauzonen" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="columns.group.heritage">Denkmalschutz</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_hist">Hist. Ausstattung</span><span class="detail-value" id="detail-hist">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.bbl_arch">Archivwürdigkeit</span><span class="detail-value" id="detail-arch">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.kgs_kat">KGS Kategorie</span><span class="detail-value" id="detail-kgs-kat">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.kgs_nr">KGS Nummer</span><span class="detail-value" id="detail-kgs-nr">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.link.kgs">KGS Inventar</span><span class="detail-value"><a id="detail-link-kgs" href="#" target="_blank" rel="noopener" data-i18n="detail.link.external_map">Auf externer Karte anzeigen &#8599;</a></span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="columns.group.other">Sonstiges</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.objectid">OBJECTID</span><span class="detail-value" id="detail-objectid">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="col.etl_ts">ETL Zeitstempel</span><span class="detail-value" id="detail-etl-ts">–</span></div>
-                    </div>
-
                 </div><!-- /tab overview -->
 
                 <!-- ===== Tab: Bemessungen ===== -->
                 <div class="tab-content" data-content="measurements">
-
-                    <div class="detail-overline" data-i18n="detail.section.areas_sia416">Flächen (SIA 416)</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gf">Geschossfläche GF</span><span class="detail-value" id="detail-garea-gf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gfo">GF Oberirdisch</span><span class="detail-value" id="detail-garea-gfo">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_gfu">GF Unterirdisch</span><span class="detail-value" id="detail-garea-gfu">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-garea-acu">–</span></div>
-                        <div class="detail-grid-spacer"></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ngf">Netto-Geschossfl. NGF</span><span class="detail-value" id="detail-garea-ngf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label">Konstruktionsfläche KF</span><span class="detail-value" id="detail-garea-kf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nf">Nutzfläche NF</span><span class="detail-value" id="detail-garea-nf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_hnf">Hauptnutzfläche HNF</span><span class="detail-value" id="detail-garea-hnf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_nnf">Nebennutzfläche NNF</span><span class="detail-value" id="detail-garea-nnf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ff">Funktionsfläche FF</span><span class="detail-value" id="detail-garea-ff">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vf">Verkehrsfläche VF</span><span class="detail-value" id="detail-garea-vf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_vmf">Vermietbare Fl. VMF</span><span class="detail-value" id="detail-garea-vmf">–</span></div>
+                    <!-- Same two-column section grid as prototype-tabs; one column below 850px of content width -->
+                    <div class="detail-grid">
+                        <div class="detail-left">
+                            <div class="detail-section detail-section--areas">
+                                <div class="detail-section-title" data-i18n="detail.section.areas_sia416">Flächen (SIA 416)</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_gf">Geschossfläche GF</span>
+                                            <span class="data-value" id="detail-garea-gf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_gfo">GF Oberirdisch</span>
+                                            <span class="data-value" id="detail-garea-gfo">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_gfu">GF Unterirdisch</span>
+                                            <span class="data-value" id="detail-garea-gfu">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.accuracy">Genauigkeit</span>
+                                            <span class="data-value" id="detail-garea-acu">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_ngf">Netto-Geschossfl. NGF</span>
+                                            <span class="data-value" id="detail-garea-ngf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label">Konstruktionsfläche KF</span>
+                                            <span class="data-value" id="detail-garea-kf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_nf">Nutzfläche NF</span>
+                                            <span class="data-value" id="detail-garea-nf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_hnf">Hauptnutzfläche HNF</span>
+                                            <span class="data-value" id="detail-garea-hnf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_nnf">Nebennutzfläche NNF</span>
+                                            <span class="data-value" id="detail-garea-nnf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_ff">Funktionsfläche FF</span>
+                                            <span class="data-value" id="detail-garea-ff">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_vf">Verkehrsfläche VF</span>
+                                            <span class="data-value" id="detail-garea-vf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_vmf">Vermietbare Fl. VMF</span>
+                                            <span class="data-value" id="detail-garea-vmf">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--ebf">
+                                <div class="detail-section-title" data-i18n="detail.section.ebf_sia380">Energiebezugsfläche (SIA 380)</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.garea_ebf">Energiebezugsfl. EBF</span>
+                                            <span class="data-value" id="detail-garea-ebf">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="detail-right">
+                            <div class="detail-section detail-section--volumes">
+                                <div class="detail-section-title" data-i18n="detail.section.volumes_sia416">Volumen (SIA 416)</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gvol_gv">Gebäudevolumen GV</span>
+                                            <span class="data-value" id="detail-gvol-gv">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gvol_gvo">GV Oberirdisch</span>
+                                            <span class="data-value" id="detail-gvol-gvo">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gvol_gvu">GV Unterirdisch</span>
+                                            <span class="data-value" id="detail-gvol-gvu">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.accuracy">Genauigkeit</span>
+                                            <span class="data-value" id="detail-gvol-acu">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--floors">
+                                <div class="detail-section-title" data-i18n="detail.section.floors">Geschosse</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gastw">Anzahl Total</span>
+                                            <span class="data-value" id="detail-geschosse">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gastw_og">Oberirdisch</span>
+                                            <span class="data-value" id="detail-geschosse-og">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.gastw_ug">Unterirdisch</span>
+                                            <span class="data-value" id="detail-geschosse-ug">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.accuracy">Genauigkeit</span>
+                                            <span class="data-value" id="detail-geschosse-acu">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="detail-section detail-section--land">
+                                <div class="detail-section-title" data-i18n="detail.section.land_sia416">Grundstück (SIA 416)</div>
+                                <div class="detail-section-content">
+                                    <div class="data-grid">
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.larea_ggf">Gebäudegrundfläche GGF</span>
+                                            <span class="data-value" id="detail-larea-ggf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.larea_gsf">Grundstücksfläche GSF</span>
+                                            <span class="data-value" id="detail-larea-gsf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.larea_uf">Umgebungsfläche UF</span>
+                                            <span class="data-value" id="detail-larea-uf">–</span>
+                                        </div>
+                                        <div class="data-item">
+                                            <span class="data-label" data-i18n="detail.label.accuracy">Genauigkeit</span>
+                                            <span class="data-value" id="detail-larea-acu">–</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-
-                    <div class="detail-overline">RICS · Code of Measuring Practice (6th ed.) · Demo</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label">RICS GEA · Demo</span><span class="detail-value" id="detail-rics-gea">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label">RICS GIA · Demo</span><span class="detail-value" id="detail-rics-gia">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label">RICS NIA · Demo</span><span class="detail-value" id="detail-rics-nia">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="detail.section.ebf_sia380">Energiebezugsfläche (SIA 380)</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.garea_ebf">Energiebezugsfl. EBF</span><span class="detail-value" id="detail-garea-ebf">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="detail.section.volumes_sia416">Volumen (SIA 416)</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gv">Gebäudevolumen GV</span><span class="detail-value" id="detail-gvol-gv">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gvo">GV Oberirdisch</span><span class="detail-value" id="detail-gvol-gvo">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gvol_gvu">GV Unterirdisch</span><span class="detail-value" id="detail-gvol-gvu">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-gvol-acu">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="detail.section.floors">Geschosse</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw">Anzahl Total</span><span class="detail-value" id="detail-geschosse">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw_og">Oberirdisch</span><span class="detail-value" id="detail-geschosse-og">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.gastw_ug">Unterirdisch</span><span class="detail-value" id="detail-geschosse-ug">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-geschosse-acu">–</span></div>
-                    </div>
-
-                    <div class="detail-overline" data-i18n="detail.section.land_sia416">Grundstück (SIA 416)</div>
-                    <div class="detail-card">
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_ggf">Gebäudegrundfläche GGF</span><span class="detail-value" id="detail-larea-ggf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_gsf">Grundstücksfläche GSF</span><span class="detail-value" id="detail-larea-gsf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.larea_uf">Umgebungsfläche UF</span><span class="detail-value" id="detail-larea-uf">–</span></div>
-                        <div class="detail-grid-row"><span class="detail-label" data-i18n="detail.label.accuracy">Genauigkeit</span><span class="detail-value" id="detail-larea-acu">–</span></div>
-                    </div>
-
                 </div><!-- /tab measurements -->
 
             </div>

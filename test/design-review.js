@@ -11,7 +11,7 @@ const inspect = `(() => {
   const tree = rect('#tree-panel.open'); const drawer = rect('#filter-panel.open');
   const header = rect('#header');
   const top = Math.max(0, header?.bottom || 0);
-  const left = rect('.detail-grid, .detail-single-col');
+  const left = rect('.detail-grid, .detail-page');
   const main = rect('.main-content');
   return { viewport:[innerWidth,innerHeight], detail,mobile,overflow:document.documentElement.scrollWidth>innerWidth+1,
     header,tree,drawer,left,main,expectedTop:top,

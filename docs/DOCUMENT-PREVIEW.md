@@ -21,8 +21,8 @@ Entry points:
 
 - Tabs: click a document row, or select a row and choose **Vorschau**. Previous /
   next follows the current filter and sort order across pages, within the building.
-- Simple: click a row in the **Dokumente** section of the overview. Previous /
-  next follows that building's alphabetically sorted document list.
+- Simple has no document section (the master system offers no document API); it uses
+  the shared shell for its photographs only.
 
 Document titles have no underline. Checkboxes remain independent of row activation;
 Enter/Space on a focused row opens the preview and closing restores focus.
@@ -49,5 +49,5 @@ Existing document URLs, availability and source/demo metadata retain their meani
 Validation: document-preview scenarios in `test/scenarios/`, the cross-prototype
 alignment check, portfolio validation and `node test/document-preview-layout.js`
 (requires a static server on port 8123). The browser check covers all 84 records
-in both prototypes, desktop/mobile controls, sheet bounds and keyboard closing;
+of the Tabs prototype and the image preview of both, desktop/mobile controls, sheet bounds and keyboard closing;
 it saves review screenshots under the ignored `visual-out/document-preview/`.

@@ -20,7 +20,9 @@ module.exports = function(prototype) {
       const dialog = () => document.getElementById('document-preview');
       const action = name => dialog().querySelector('[data-doc-action="' + name + '"]');
       modules.ui.showDetailView(id);
-      if (!simple) modules.ui.activateTab('documents');
+      // Simple has no document section: only the shared shell's image preview and the pure viewer checks apply
+      if (!simple) {
+        modules.ui.activateTab('documents');
       const opener = document.querySelector('[data-preview-document="' + mock.documentId + '"]');
       opener.focus(); opener.click();
       check('mock title opens local preview with two pages', dialog()?.getAttribute('aria-modal') === 'true' && dialog().querySelectorAll('.document-sheet').length === 2);
@@ -83,6 +85,7 @@ module.exports = function(prototype) {
       check('preview reopens before changing building', !!dialog());
       modules.ui.showDetailView(simple ? state.buildingsData.features[1].properties.bbl_id : state.buildingsData.features[1].properties.buildingId);
       check('changing building closes stale previews and unlocks the page', !dialog() && !document.getElementById('header').hasAttribute('inert'));
+      }
 
       const viewer = await import(pathToFileURL(path.resolve(__dirname, '..', '..', prototype, 'js/document-preview.js')).href);
       check('unsafe source protocols are rejected', viewer.documentSourceUrl({ url:'javascript:alert(1)' }) === null);

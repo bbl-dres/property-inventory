@@ -88,17 +88,21 @@ export function createLocationMarker() {
   return new maplibregl.Marker({ element, anchor: 'bottom' });
 }
 
-function HomeControl() {}
+// Home button: the initial extent by default; options.onClick(map) and options.title for other maps
+// (the mini map of the detail page returns to its building view).
+export function HomeControl(options) { this._options = options || {}; }
 HomeControl.prototype.onAdd = function(map) {
   this._map = map;
+  const options = this._options;
   this._container = document.createElement('div');
   this._container.className = 'maplibregl-ctrl maplibregl-ctrl-group';
   const button = document.createElement('button');
   button.className = 'map-home-btn';
   button.type = 'button';
-  button.title = t('map.home');
+  button.title = options.title || t('map.home');
+  button.setAttribute('aria-label', button.title);
   button.innerHTML = '<span class="material-symbols-outlined" aria-hidden="true">home</span>';
-  button.onclick = function() { flyHome(map); };
+  button.onclick = function() { if (options.onClick) options.onClick(map); else flyHome(map); };
   this._container.appendChild(button);
   return this._container;
 };

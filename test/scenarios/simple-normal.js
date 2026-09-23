@@ -30,6 +30,7 @@ module.exports = {
     // Map layers and handlers
     check('map sources added', !!map.getSource('buildings') && !!map.getSource('parcels') && !!map.getSource('landcovers'));
     check('cluster + point + selection layers', ['buildings-clusters', 'buildings-points', 'buildings-selected', 'buildings-selected-pulse', 'buildings-labels', 'parcels-fill', 'landcovers-fill'].every(id => !!map.getLayer(id)));
+    check('land cover layer hidden by default', !document.getElementById('layer-toggle-landcovers').checked && ['landcovers-fill', 'landcovers-selected'].every(id => map.getLayoutProperty(id, 'visibility') === 'none'));
     check('identify highlight layer below data layers', map._layers.findIndex(l => l.id === 'swisstopo-identify-highlight-layer') < map._layers.findIndex(l => l.id === 'landcovers-fill'));
     check('point click handler bound once', map.listenerCount('click', 'buildings-points') === 1);
     const flyBefore = map.calls.flyTo.length;
@@ -427,5 +428,13 @@ module.exports = {
     check('logo closes the drawer and the table panel', !document.getElementById('filter-panel').classList.contains('open') && !state.tableOpen);
     check('logo cleans the URL', !/filter_|id=|view=detail|table=open/.test(window.location.search));
     check('logo flies to the initial extent', map.calls.flyTo.length === flyHomeBefore + 1);
+
+    // A selection from the table shows its hidden layer (land covers start hidden, parcels were switched off above);
+    // last, because the selection switches the table to the land cover tab
+    document.querySelector('#landcovers-body tr[data-landcover-id]').click();
+    await settle();
+    check('land cover selection reveals the layer', state.selectedLandCoverId != null && document.getElementById('layer-toggle-landcovers').checked && map.getLayoutProperty('landcovers-selected', 'visibility') === 'visible');
+    modules.map.selectParcel(state.parcelData.features[0].properties.bbl_id);
+    check('parcel selection reveals the layer', toggle.checked && map.getLayoutProperty('parcels-fill', 'visibility') === 'visible');
   }
 };

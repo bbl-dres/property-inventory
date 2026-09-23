@@ -3,11 +3,18 @@
 
 import { t, onLangChange } from './i18n.js';
 import { getMapStyleUrl } from './basemaps.js';
-import { findVectorSourceId, findLabelBlockStart, createLocationMarker } from './map-controls.js';
+import { findVectorSourceId, findLabelBlockStart, createLocationMarker, HomeControl } from './map-controls.js';
+
+// The building view: centred on the object, tilted and slightly rotated (also the target of the home button)
+const MINI_MAP_VIEW = { zoom: 17, pitch: 50, bearing: -17 };
 
 let miniMap = null;
 let miniMapMarker = null;
 let pendingCoords = null;
+
+function miniMapHomeView() {
+  return Object.assign({ center: pendingCoords }, MINI_MAP_VIEW);
+}
 
 function translateAddressLink() {
   const address = document.getElementById('mini-map-address');
@@ -59,7 +66,7 @@ export function showMiniMap(coords) {
   if (!document.getElementById('mini-map')) return;
 
   if (miniMap) {
-    miniMap.jumpTo({ center: coords, zoom: 17, pitch: 50, bearing: -17 });
+    miniMap.jumpTo(miniMapHomeView());
     if (miniMapMarker) miniMapMarker.setLngLat(coords);
     miniMap.resize();
     setTimeout(function() { if (miniMap) miniMap.resize(); }, 300);
@@ -70,9 +77,9 @@ export function showMiniMap(coords) {
     container: 'mini-map',
     style: getMapStyleUrl('positron'),
     center: coords,
-    zoom: 17,
-    pitch: 50,
-    bearing: -17,
+    zoom: MINI_MAP_VIEW.zoom,
+    pitch: MINI_MAP_VIEW.pitch,
+    bearing: MINI_MAP_VIEW.bearing,
     // The mini map sits inside a scrolling page: a one-finger drag or a plain scroll wheel keeps
     // scrolling the page; two fingers / Ctrl+wheel operate the map.
     cooperativeGestures: true,
@@ -93,5 +100,9 @@ export function showMiniMap(coords) {
   });
 
   miniMap.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
+  miniMap.addControl(new HomeControl({
+    title: t('miniMap.home'),
+    onClick: function(map) { map.flyTo(Object.assign({ duration: 800 }, miniMapHomeView())); }
+  }), 'top-right');
   setTimeout(function() { if (miniMap) miniMap.resize(); }, 300);
 }

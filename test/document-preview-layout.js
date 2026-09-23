@@ -59,7 +59,7 @@ function checkLayout(result, label) {
         const run = expression => evaluate(cdp, page.sessionId, expression);
         await navigate(cdp, page.sessionId, BASE + prototype + '/?view=detail&tab=' + (prototype === 'prototype-simple' ? 'overview' : 'documents') + '&id=9900/9002/AA');
         const titles = await run(`Array.from(document.querySelectorAll('[data-preview-document]')).map(el => el.dataset.previewDocument)`);
-        assert.equal(titles.length, 6, prototype + ' document entry points');
+        assert.equal(titles.length, prototype === 'prototype-simple' ? 0 : 6, prototype + ' document entry points');
         for (const id of titles) {
           await run(`(async () => {
             const link = document.querySelector('[data-preview-document="${id}"]');

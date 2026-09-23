@@ -83,7 +83,7 @@ Design tokens are the foundation of our visual language. All values are defined 
 |------|---------|--------|
 | `css/tokens.css` | Tokens, reset, base typography, focus styles, reduced motion, primitives (`.badge`, `.custom-select`, `.btn-*`, `.icon-btn`, `.panel-header`, empty and loading states) | Byte-identical in both prototypes |
 | `css/components.css` | Every component both prototypes use: header, search, view toggle, map controls, basemap switcher, tools panel and phone menu, location tree, info panel, filter drawer, toolbars, tables, table panel, pagination, gallery, view nav, detail page frame, API documentation, carousel, lightbox, mini map, address table, toasts, modals, banner, footer, plus all responsive rules for them | Byte-identical in both prototypes |
-| `css/app.css` | What only one prototype has (simple: filter search, single-column detail cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
+| `css/app.css` | What only one prototype has (simple: filter search, detail hero and single-column cards; tabs: header tab strip and drawer offsets, two-column sections, entity tables, share/export panels, KI answers) | Per prototype |
 
 The prototypes stay independent: nothing is loaded across folders. `test/check-alignment.js` reports when
 the two copies of `tokens.css` or `components.css` drift apart. A component that both prototypes use is
@@ -377,8 +377,7 @@ grid-template-columns: 1fr 1fr;
 gap: var(--space-8);
 ```
 
-**Detail Column (simple prototype):** one column (`.detail-single-col`, `--content-max-width` like the API docs) of collapsible cards
-(`.detail-overline` + `.detail-card` with `.detail-grid-row` label | value | info icon).
+**Detail Column (simple prototype):** a hero row above the tabs, photo widget and map widget (zoom and home buttons, address table under the map) at 50% each (`.detail-hero`, stacked below 850px of content width, the same on every tab; the breadcrumb bar sits in the page header like the tabs prototype), then the same two-column section grid as the tabs prototype (`.detail-page` at `--content-max-width` like the API docs; `.detail-grid` with `.detail-left` / `.detail-right`, one column below 850px of content width; sections are `.detail-section` with a title bar and a `.data-grid` of label/value items).
 
 ---
 
@@ -575,14 +574,14 @@ For grouped information display.
 }
 ```
 
-#### Detail Card (simple prototype)
-Collapsible card with an overline title; rows are label | value | info icon.
+#### Detail Section (both prototypes)
+A bordered section with a title bar and a two-column data grid of label-above-value items; one column below 400px of section width. Each prototype styles it in its own `app.css`.
 
 ```css
-.detail-overline { font-size: var(--text-xs); font-weight: var(--font-semibold); text-transform: uppercase;
-                   letter-spacing: var(--tracking-wide); color: var(--grey-500); background: var(--grey-50); }
-.detail-card     { background: white; border: 1px solid var(--grey-200); border-radius: var(--radius-sm); }
-.detail-grid-row { display: grid; grid-template-columns: 1fr 1fr 24px; padding: var(--space-2) var(--space-3); }
+.detail-section       { background: white; border: var(--border-strong); border-radius: var(--radius-sm); container-type: inline-size; }
+.detail-section-title { background: var(--grey-100); padding: var(--space-3) var(--space-4); font-size: var(--text-sm); font-weight: var(--font-semibold); }
+.data-grid            { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-8); }
+.data-item            { display: flex; flex-direction: column; gap: var(--space-1); }
 ```
 
 Overline labels (section titles, layer groups, column groups, dropdown headers) always use
@@ -776,7 +775,7 @@ Both prototypes draw the same layer stack on the same basemaps (`js/map.js`, ids
 | `buildings-selected` + `buildings-selected-pulse` | 18px red ring (3px) with a pulsing 24px ring around the selected object |
 | `buildings-labels` | Object id above the point from zoom 16 (13px bold, white halo) |
 | `parcels-fill` / `-outline` / `-highlight` / `-selected` (+ `-outline`) | Blue-grey parcel colour; visible from zoom 12, fading in until 13; hover 35 %, selected 45 % with a 3px outline |
-| `landcovers-*` (simple only) | Land-cover polygons from zoom 14 in the land-cover colours |
+| `landcovers-*` (simple only) | Land-cover polygons from zoom 14 in the land-cover colours; hidden by default ("Bodenabdeckung" toggle under Interne Karten), shown when a land cover is selected from the table or a link |
 
 Clicking a cluster zooms to its expansion zoom; clicking a point selects the object (info panel); clicking
 empty map deselects and identifies the external swisstopo layers.
@@ -807,14 +806,15 @@ Both prototypes offer the same two views, map and gallery; tables live in the ta
 
 ### View Nav Pattern
 
-Page views (detail page, API documentation) start with one sticky bar, `.view-nav`: white, 1px grey-300
+Page views (detail page, API documentation) start with one bar, `.view-nav`: white, 1px grey-300
 bottom border, 12px × `--page-gutter` padding (40px; 20px below 1600px, 16px from 1024px, 12px on phones), breadcrumb on the left and the actions
 (`.btn-back`, in tabs also `.btn-edit`) on the right. The inner row is as wide as the content below it
 (`--view-nav-max-width`, default `--content-max-width`).
 The content below uses the same `--page-gutter` as its side padding, so title, cards and tables start exactly
-under the breadcrumb at every width. In tabs
-the bar is part of the page header above the tab strip (`.header-detail`), in simple it sticks to the top of the
-scrolling view. On phones the back button comes first and spans the width, the breadcrumb wraps below.
+under the breadcrumb at every width. On the detail page
+the bar is part of the page header (`.header-detail`, in tabs above the tab strip), so docked panels such as the
+location tree start below it; with the tree open the bar (in tabs also the tab strip) adds the tree's width to its side padding, so
+the inner row stays centred over the content while the bar and its bottom border keep the full width (`panel-layout.css`). On the API page the bar sticks to the top of the scrolling view. On phones the back button comes first and spans the width, the breadcrumb wraps below.
 
 ```html
 <div class="view-nav">
@@ -1224,7 +1224,7 @@ Inputs use `font-size: 16px` on phones so iOS Safari does not zoom into the page
 
 **Sticky Tab Strip (Mobile detail page, tabs prototype):** `#header` is `position: sticky` with a negative
 `top` (`--header-sticky-offset`, set by `updateDetailHeaderOffset()`), so the header collapses on scroll
-until only the tab strip is pinned. In both prototypes the strip scrolls horizontally on phones, snaps to
+until only the tab strip is pinned. In both prototypes the strip scrolls horizontally whenever it is narrower than its tabs (phones, a docked panel beside the detail page), snaps to
 tabs and fades at the right edge while more tabs are hidden (`.can-scroll-right`).
 
 **Wide Tables in Narrow Columns:** the address table becomes stacked label/value rows below a

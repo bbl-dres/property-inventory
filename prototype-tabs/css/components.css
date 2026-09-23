@@ -3334,15 +3334,25 @@ body.detail-active #detail-view {
   font-size: var(--icon-sm);
 }
 
-/* Tab strip */
+/* Tab strip: scrolls horizontally whenever it is narrower than its tabs (phones, a docked panel beside
+   the detail page); the active tab is scrolled into view by ui.js */
 .detail-tabs {
   background: var(--white);
   border-bottom: var(--border-strong);
   padding: 0 var(--space-6);
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x proximity;
+}
+
+.detail-tabs::-webkit-scrollbar {
+  display: none;
 }
 
 .detail-tabs-inner {
   max-width: var(--content-max-width);
+  min-width: max-content;
   margin: 0 auto;
   display: flex;
   gap: 0;
@@ -4864,21 +4874,11 @@ body.detail-active #detail-view {
     min-height: var(--touch-target-min);
   }
 
-  /* Tab strip scrolls horizontally; the active tab is scrolled into view by ui.js */
   .detail-tabs {
     padding: 0;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-  }
-
-  .detail-tabs::-webkit-scrollbar {
-    display: none;
   }
 
   .detail-tabs-inner {
-    min-width: max-content;
     padding: 0 var(--space-2);
   }
 

@@ -1,10 +1,10 @@
-// Detail view: fields, collapsible sections, info tooltips, carousel and mini map.
+// Detail view: fields, carousel and mini map.
 
 import { placeholderImages, getStatusClassName } from './config.js';
 import { escapeHtml, setText, formatNum, formatArea, formatVolume, formatCHF, formatDate } from './utils.js';
 import { showCarousel } from './carousel.js';
 import { showMiniMap } from './mini-map.js';
-import { showDocumentList } from './document-list.js';
+import { onLangChange } from './i18n.js';
 
 // ===== POPULATE =====
 
@@ -25,12 +25,21 @@ function setLink(id, href) {
   }
 }
 
+// Row labels of the stacked address layout (narrow columns): the translated column headers.
+// Only labelled cells take part; the marker column stays without a label.
+function translateAddressLabels() {
+  const table = document.querySelector('.address-table');
+  if (!table) return;
+  const headers = table.querySelectorAll('thead th');
+  table.querySelectorAll('tbody td').forEach(function(cell, index) {
+    if (cell.hasAttribute('data-label')) cell.dataset.label = headers[index]?.textContent.trim() || '';
+  });
+}
+onLangChange(translateAddressLabels);
+
 export function populateDetailView(building) {
   const props = building.properties;
   const coords = building.geometry.coordinates;
-  const related = props.demoRelatedRecords || {};
-  showDocumentList(related.documents, { buildingName: props.bbl_bez, address: props.adr_conct,
-    measurements: related.areaMeasurements, costs: related.costs });
 
   // Breadcrumb: adr_land > adr_ort > bbl_we > bbl_obj
   setText('breadcrumb-country', props.adr_land);
@@ -69,13 +78,7 @@ export function populateDetailView(building) {
   setText('detail-street', props.adr_str);
   setText('detail-housenumber', props.adr_hsnr);
   setText('mini-map-address', props.adr_conct);
-  // Row labels of the stacked address layout (narrow columns): the translated column headers
-  document.querySelectorAll('.address-table').forEach(function(table) {
-    const heads = table.querySelectorAll('thead th');
-    table.querySelectorAll('tbody td').forEach(function(td, i) {
-      if (heads[i]) td.setAttribute('data-label', heads[i].textContent.trim());
-    });
-  });
+  translateAddressLabels();
 
   // Coordinates
   setText('detail-wgs84', props.wgs84_lat != null && props.wgs84_lon != null
@@ -123,9 +126,6 @@ export function populateDetailView(building) {
   setText('detail-garea-acu', props.garea_acu);
   setText('detail-garea-ngf', formatArea(props.garea_ngf));
   setText('detail-garea-kf', formatArea(props.garea_kf));
-  setText('detail-rics-gea', formatArea(props.rics_gea));
-  setText('detail-rics-gia', formatArea(props.rics_gia));
-  setText('detail-rics-nia', formatArea(props.rics_nia));
   setText('detail-garea-nf', formatArea(props.garea_nf));
   setText('detail-garea-hnf', formatArea(props.garea_hnf));
   setText('detail-garea-nnf', formatArea(props.garea_nnf));
@@ -148,143 +148,4 @@ export function populateDetailView(building) {
 
   showCarousel((props.img_url && props.img_url.length > 0) ? props.img_url : placeholderImages, props.photos);
   showMiniMap(coords);
-  initInfoIcons();
-  initCollapsibleSections();
-}
-
-// ===== COLLAPSIBLE SECTIONS =====
-
-let collapsibleSectionsInitialized = false;
-
-function initCollapsibleSections() {
-  if (collapsibleSectionsInitialized) return;
-  collapsibleSectionsInitialized = true;
-  document.querySelectorAll('#detail-view .detail-overline').forEach(function(overline) {
-    const chevron = document.createElement('span');
-    chevron.className = 'material-symbols-outlined detail-overline-chevron';
-    chevron.textContent = 'expand_more';
-    overline.appendChild(chevron);
-    overline.setAttribute('role', 'button');
-    overline.tabIndex = 0;
-    overline.setAttribute('aria-expanded', String(!overline.classList.contains('collapsed')));
-    const card = overline.nextElementSibling;
-    if (card) {
-      // Include the tab name to keep generated IDs unique; preserve existing hooks.
-      if (!card.id) card.id = (overline.closest('[data-content]')?.dataset.content || 'detail') +
-        '-section-' + Array.from(overline.parentElement.children).indexOf(overline);
-      overline.setAttribute('aria-controls', card.id);
-    }
-    overline.addEventListener('click', function() {
-      this.classList.toggle('collapsed');
-      this.setAttribute('aria-expanded', String(!this.classList.contains('collapsed')));
-    });
-    overline.addEventListener('keydown', function(event) {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); this.click(); }
-    });
-  });
-}
-
-// ===== INFO TOOLTIPS FOR DETAIL LABELS =====
-
-const labelDescriptions = {
-  // Stammdaten
-  'Bewirtschaftungsstatus': 'Betrieblicher Status im Demoportfolio, getrennt vom Gebäudestatus im GWR',
-  'Bezeichnung': 'Offizielle Objektbezeichnung gemäss SAP (bbl_bez)',
-  'ID': 'Interne BBL-ID: Buchungskreis / Wirtschaftseinheit / Teilobjekt (bbl_id)',
-  'Objektart 1': 'Gebäudeart Stufe 1 gemäss SAP (bbl_gbda1)',
-  'Objektart 2': 'Gebäudeart Stufe 2 gemäss SAP (bbl_gbda2)',
-  'Art Eigentum': 'Art Eigentum gemäss Referenzkatalog: Eigentum, Anmiete oder Spezialfall',
-  'Objektstrategie': 'Strategische Ausrichtung: Erhalten, Optimieren, Veräussern (bbl_ostr)',
-  'Mietmodell': 'Mietmodell gemäss BBL-Referenzkatalog; ohne belegte Zuordnung keine Angabe',
-  'Teilportfolio': 'Teilportfolio-Zuordnung gemäss SAP (bbl_port)',
-  'Portfoliogruppe': 'Übergeordnete Teilportfoliogruppe (bbl_port2)',
-  'Baujahr': 'Erstellungsjahr des Gebäudes (bbl_bjahr)',
-  'Verkaufsjahr': 'Jahr des Verkaufs, leer wenn nicht verkauft (bbl_vjahr)',
-  'Anschaffungswert': 'Anschaffungswert in Schweizer Franken (bbl_awrt)',
-  'Buchwert': 'Aktueller Buchwert in Schweizer Franken (bbl_bwrt)',
-  // Kontakte
-  'Verantwortlich': 'Objektverantwortliche Person gemäss SAP (bbl_ovtw)',
-  'Portfoliomanager': 'Zuständiger Portfoliomanager gemäss SAP (bbl_pvtw)',
-  // Adresse
-  'Adresse': 'Verkettet aus Strasse, Hausnummer, PLZ und Ort (adr_conct)',
-  // Koordinaten
-  'WGS84': 'Breitengrad und Längengrad im World Geodetic System 1984 (wgs84_lat, wgs84_lon)',
-  'LV95': 'Schweizer Landeskoordinaten, aus WGS84 hergeleitet (lv95_e, lv95_n)',
-  'EGM Höhe': 'Absolute Höhe über Meeresspiegel in Metern, EGM2008-Geoid (egm_elev)',
-  // Amtliche Vermessung
-  'EGID': 'Eidgenössischer Gebäudeidentifikator, nur Schweiz (av_egid)',
-  'EGRID': 'Eidgenössischer Grundstücksidentifikator, nur Schweiz (av_egrid)',
-  'Gemeindename': 'BFS Gemeindename gemäss amtlichem Gemeindeverzeichnis (bfs_gem)',
-  'Gemeindenummer': 'BFS Gemeindenummer gemäss amtlichem Gemeindeverzeichnis (bfs_gemnr)',
-  // Denkmalschutz
-  'Hist. Ausstattung': 'Historische Ausstattung gemäss SAP (bbl_hist)',
-  'Archivwürdigkeit': 'Archivwürdigkeit gemäss SAP (bbl_arch)',
-  'KGS Kategorie': 'Kategorie im Schweizerischen Kulturgüterschutz-Inventar: A, B oder C (kgs_kat)',
-  'KGS Nummer': 'Identifikationsnummer im KGS-Inventar (kgs_nr)',
-  // Bemessungen
-  'Geschossfläche GF': 'Brutto-Geschossfläche aller Geschosse nach SIA 416 (garea_gf)',
-  'GF Oberirdisch': 'Geschossfläche der oberirdischen Geschosse (garea_gfo)',
-  'GF Unterirdisch': 'Geschossfläche der unterirdischen Geschosse (garea_gfu)',
-  'Genauigkeit': 'Bemessungsgenauigkeit gemäss Referenzkatalog, z. B. Gemessen, Geschätzt oder Unbekannt; die Quelle wird separat geführt',
-  'Netto-Geschossfl. NGF': 'Nutzbare Fläche ohne Konstruktionsfläche nach SIA 416 (garea_ngf)',
-  'Nutzfläche NF': 'Summe Haupt- und Nebennutzfläche nach SIA 416 (garea_nf)',
-  'Hauptnutzfläche HNF': 'Fläche für die Hauptnutzung des Gebäudes nach SIA 416 (garea_hnf)',
-  'Nebennutzfläche NNF': 'Fläche für Nebennutzungen nach SIA 416 (garea_nnf)',
-  'Funktionsfläche FF': 'Fläche für gebäudetechnische Anlagen nach SIA 416 (garea_ff)',
-  'Verkehrsfläche VF': 'Erschliessungsfläche: Korridore, Treppenhäuser, Aufzüge (garea_vf)',
-  'Vermietbare Fl. VMF': 'Vermietbare Fläche nach SIA 416 (garea_vmf)',
-  'Energiebezugsfl. EBF': 'Energiebezugsfläche nach SIA 380, Grundlage für Energiekennzahlen (garea_ebf)',
-  'Gebäudevolumen GV': 'Gesamtes Gebäudevolumen nach SIA 416 (gvol_gv)',
-  'GV Oberirdisch': 'Volumen der oberirdischen Gebäudeteile (gvol_gvo)',
-  'GV Unterirdisch': 'Volumen der unterirdischen Gebäudeteile (gvol_gvu)',
-  'Anzahl Total': 'Gesamtanzahl Geschosse ober- und unterirdisch (gastw)',
-  'Oberirdisch': 'Anzahl Geschosse über Terrain (gastw_og)',
-  'Unterirdisch': 'Anzahl Geschosse unter Terrain (gastw_ug)',
-  'Gebäudegrundfläche GGF': 'Grundrissfläche des Gebäudes am Boden nach SIA 416 (larea_ggf)',
-  'Grundstücksfläche GSF': 'Gesamtfläche des Grundstücks nach SIA 416 (larea_gsf)',
-  'Umgebungsfläche UF': 'Grundstücksfläche abzüglich Gebäudegrundfläche (larea_uf)',
-  // Sonstiges
-  'OBJECTID': 'Interne ESRI-System-ID für GIS-Updates (objectid)',
-  'ETL Zeitstempel': 'Zeitpunkt der letzten Synchronisation aus den Quellsystemen (etl_ts)'
-};
-
-// Inject info icons as third column and make rows clickable (run once)
-let infoIconsInitialized = false;
-
-function initInfoIcons() {
-  if (infoIconsInitialized) return;
-  infoIconsInitialized = true;
-
-  document.querySelectorAll('#detail-view .detail-grid-row').forEach(function(row) {
-    const label = row.querySelector('.detail-label');
-    if (!label) return;
-    const desc = labelDescriptions[label.textContent.trim()];
-    if (!desc) return;
-    row.setAttribute('data-desc', desc);
-    const icon = document.createElement('span');
-    icon.className = 'info-icon';
-    icon.textContent = 'info';
-    icon.title = desc;
-    row.appendChild(icon);
-  });
-
-  // Clicking anywhere on a row with a description toggles its popover
-  document.getElementById('detail-view').addEventListener('click', function(e) {
-    const row = e.target.closest('.detail-grid-row[data-desc]');
-    const open = document.querySelector('.info-popover.active');
-    if (!row) {
-      if (open) open.remove();
-      return;
-    }
-    if (e.target.closest('a')) return;
-    if (open) {
-      const wasOnSame = open.parentElement === row;
-      open.remove();
-      if (wasOnSame) return;
-    }
-    const popover = document.createElement('div');
-    popover.className = 'info-popover active';
-    popover.textContent = row.getAttribute('data-desc');
-    row.appendChild(popover);
-  });
 }

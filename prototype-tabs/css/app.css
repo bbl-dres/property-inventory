@@ -18,11 +18,6 @@ body.detail-active .header-detail {
 /* The shared .view-nav bar sits inside the page header here: not sticky on its own */
 .header-detail .detail-header {
   position: static;
-  transition: padding-right var(--transition-slow);
-}
-
-.header-detail .detail-tabs {
-  transition: padding-right var(--transition-slow);
 }
 
 .btn-edit {

@@ -158,8 +158,9 @@ The canonical reviewed input is `sources/properties.json`. The generator adapts 
 to the simple app's `bbl_*`, `barea_*`, `larea_*`, `adr_*` fields and the tabs app's
 camelCase properties, `extensionData` and separate related-entity JSON files.
 The simple model embeds the same measurements/documents/contacts/costs under
-`demoRelatedRecords`; its overview includes a compact document list. Preview pages
-use the same building measurements and costs as the Tabs registers.
+`demoRelatedRecords`; its overview shows no document list (the master system offers no
+document API), the records stay in the data for the parity checks. Tabs preview pages
+use the same building measurements and costs as its registers.
 Stable UUIDv5 identifiers preserve relationships across rebuilds. Existing first
 building IDs are retained for deep links; inventory IDs are not official BBL IDs.
 

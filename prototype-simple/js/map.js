@@ -158,6 +158,14 @@ export function setInternalLayerVisibility(layerKey, visible) {
   });
 }
 
+// A selection from the table or a link shows its layer even when the toggle is off (land covers start hidden)
+function revealInternalLayer(layerKey) {
+  const toggle = document.getElementById('layer-toggle-' + layerKey);
+  if (!toggle || toggle.checked) return;
+  toggle.checked = true;
+  setInternalLayerVisibility(layerKey, true);
+}
+
 export function applyInternalLayerVisibility() {
   Object.keys(internalLayerIds).forEach(function(layerKey) {
     const toggle = document.getElementById('layer-toggle-' + layerKey);
@@ -276,6 +284,7 @@ export function selectParcel(parcelId, flyToParcel) {
   if (!parcel) return;
   const props = parcel.properties;
   setSelection(null, parcelId, null);
+  revealInternalLayer('parcels');
 
   const html =
     infoRow('info.label.id', escapeHtml(props.bbl_id || '—')) +
@@ -302,6 +311,7 @@ export function selectLandCover(objectid, flyToLandCover) {
   if (!lc) return;
   const props = lc.properties;
   setSelection(null, null, objectid);
+  revealInternalLayer('landcovers');
 
   const html =
     infoRow('info.label.parcel_id', escapeHtml(props.bbl_id)) +

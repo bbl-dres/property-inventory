@@ -32,6 +32,13 @@
   body.detail-active #filter-panel.open { right: 0; }
   body.detail-active:has(#tree-panel.open) .main-content { margin-left: var(--tree-panel-effective-width); }
   body.detail-active:has(#filter-panel.open) .main-content { margin-right: var(--drawer-effective-width); }
+  /* The detail bar (breadcrumb, actions) and the tab strip sit in the page header: the panel width is added
+     to their own side padding, so their centred inner rows stay over the content while the bars and their
+     bottom borders keep the full width (also above the panel). */
+  body.detail-active:has(#tree-panel.open) .header-detail .detail-header { padding-left: calc(var(--page-gutter) + var(--tree-panel-effective-width)); }
+  body.detail-active:has(#tree-panel.open) .header-detail .detail-tabs { padding-left: calc(var(--space-6) + var(--tree-panel-effective-width)); }
+  body.detail-active:has(#filter-panel.open) .header-detail .detail-header { padding-right: calc(var(--page-gutter) + var(--drawer-effective-width)); }
+  body.detail-active:has(#filter-panel.open) .header-detail .detail-tabs { padding-right: calc(var(--space-6) + var(--drawer-effective-width)); }
   body.detail-active #tree-panel.open + .panel-resize-handle,
   body.detail-active .panel-resize-handle:has(+ #filter-panel.open) {
     position: fixed;
@@ -46,10 +53,4 @@
 /* A drawer can make a large viewport's content as narrow as a phone. */
 @container (max-width: 850px) {
   .detail-grid { grid-template-columns: minmax(0, 1fr); }
-}
-@container (max-width: 480px) {
-  .detail-grid-row { grid-template-columns: minmax(0, 1fr) var(--control-xs); gap: 0 var(--space-2); }
-  .detail-grid-row .detail-label { font-size: var(--text-xs); grid-column: 1; }
-  .detail-grid-row .detail-value { grid-column: 1; }
-  .detail-grid-row .info-icon { grid-row: 1 / 3; grid-column: 2; align-self: center; }
 }

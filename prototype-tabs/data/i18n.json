@@ -3341,6 +3341,12 @@
     "fr": "Ouvrir dans Google Maps (nouvel onglet)",
     "it": "Aprire in Google Maps (nuova scheda)"
   },
+  "miniMap.home": {
+    "de": "Ansicht auf das Objekt zurücksetzen",
+    "en": "Reset the view to the object",
+    "fr": "Réinitialiser la vue sur l'objet",
+    "it": "Reimpostare la vista sull'oggetto"
+  },
   "assistant.ask": {
     "de": "Frage stellen",
     "en": "Ask a question",
