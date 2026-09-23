@@ -18,7 +18,7 @@ approval workflows, GIS data management, and building-height enrichment.
 
 ## Demo
 
-**Simple app:** https://bbl-dres.github.io/property-inventory/
+**Live app:** https://bbl-dres.github.io/property-inventory/
 
 <p align="center">
   <img src="assets/images/preview-6.jpg" alt="Property Inventory worldwide map with building table" width="49%" align="top"/>
