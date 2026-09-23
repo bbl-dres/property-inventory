@@ -40,7 +40,7 @@ class FakeMap extends Evented {
     this._zoom = this.options.zoom || 0;
     this._pitch = this.options.pitch || 0;
     this._bearing = this.options.bearing || 0;
-    this.calls = { flyTo: [], fitBounds: [], setStyle: [], jumpTo: [], resize: 0, panBy: [] };
+    this.calls = { flyTo: [], easeTo: [], fitBounds: [], setStyle: [], jumpTo: [], resize: 0, panBy: [] };
     this._container = typeof this.options.container === 'string'
       ? document.getElementById(this.options.container)
       : this.options.container;
@@ -79,6 +79,8 @@ class FakeMap extends Evented {
   getSource(id) { return this._sources[id]; }
   hasImage(id) { return !!this._images[id]; }
   addImage(id, image) { this._images[id] = image; }
+  getImage(id) { return this._images[id] ? { data: this._images[id], pixelRatio: 1, sdf: false } : undefined; }
+  listImages() { return Object.keys(this._images); }
   removeSource(id) { delete this._sources[id]; }
 
   addLayer(layer, beforeId) {
@@ -112,6 +114,14 @@ class FakeMap extends Evented {
 
   flyTo(o) {
     this.calls.flyTo.push(o);
+    if (o.center) this._center = { lng: o.center[0], lat: o.center[1] };
+    if (o.zoom != null) this._zoom = o.zoom;
+    if (o.pitch != null) this._pitch = o.pitch;
+    if (o.bearing != null) this._bearing = o.bearing;
+    this.fire('moveend');
+  }
+  easeTo(o) {
+    this.calls.easeTo.push(o);
     if (o.center) this._center = { lng: o.center[0], lat: o.center[1] };
     if (o.zoom != null) this._zoom = o.zoom;
     if (o.pitch != null) this._pitch = o.pitch;

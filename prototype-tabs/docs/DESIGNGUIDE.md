@@ -476,7 +476,7 @@ a dropdown with DE/FR/IT/EN; on phones the pills in the menu), login and, on pho
 prototype shows the same selector but has no translations yet — a choice only warns.
 
 **States:** `.panel-open` (drawer open) — panel-grey fill, white text; `.has-active-filters` — the default
-pill with the red `.filter-count` badge (inline next to the label, on the corner of the icon-only button); no
+pill with the red `.filter-count` badge on the corner of the icon-only button (Standorte and Filter are icon-only at every width); no
 dark fill, which would clash with the open state of the neighbouring toggles.
 
 #### Panel Button
@@ -872,9 +872,10 @@ The "Tabelle" toggle (grey-900 pill at the bottom centre of the map) opens a res
 map with one tab per data set (Gebäude, Grundstücke; simple also Bodenabdeckung), the toolbar (search,
 filter pills, Export and Spalten dropdowns) and the compact `.list-table`. A row selects the object on the
 map and the map selection highlights its row. `?table=open` and `?tableTab=` keep the state in the URL;
-phones hide the panel (the map keeps the info sheet). Opening or enlarging the table folds the tools panel
-when the two would overlap (`collapseToolsPanelIfColliding()` in `js/tools-panel.js`); the "Menü" toggle,
-centred under the panel's width whether open or collapsed, brings it back.
+phones hide the panel (the map keeps the info sheet). The map view is a vertical split: every floating map
+control is a child of `#map`, so an open or resized table never covers the tools menu, the object card or
+the basemap switcher (see `docs/TABLE-PANEL.md` at the repository root). The handle between map and table
+is a keyboard-operable separator: arrow keys resize the table in 40px steps.
 
 ```html
 <div id="map">…<button id="tbl-toggle" class="tbl-toggle">…Tabelle</button></div>
@@ -1100,9 +1101,9 @@ it starts collapsed, on phones the same panel is the hamburger menu (see Respons
 
 | Name | Media query | Target |
 |------|-------------|--------|
-| Desktop | `min-width: 1600px` | Spacious header with labelled actions and centred search |
-| Laptop | `max-width: 1599px` | 72px header; search flexes between full organisation title and labelled actions. Primary target: 1280 × 700 CSS pixels (1920 × 1200 at 150% Windows scaling, allowing for browser chrome). |
-| Narrow desktop | `max-width: 1199px` | Icon-only header actions and view toggle; retain desktop navigation |
+| Desktop | `min-width: 1600px` | Spacious header with icon-only location and filter actions, a labelled view toggle and centred search |
+| Laptop | `max-width: 1599px` | 72px header; search flexes between full organisation title and the icon-only actions. Primary target: 1280 × 700 CSS pixels (1920 × 1200 at 150% Windows scaling, allowing for browser chrome). |
+| Narrow desktop | `max-width: 1199px` | Icon-only view toggle; retain desktop navigation |
 | Tablet | `max-width: 1024px` | iPads, small laptops. One-line logo, 44px header buttons without the language code, tools panel starts collapsed. |
 | Mobile | `max-width: 767px`, **or** `max-height: 500px and (pointer: coarse)` | Phones in portrait **and** landscape. Two-row header (title + actions / search + view toggle), hamburger menu for the map tools, full-screen filter sheet, bottom-sheet info panel, sticky tab strip on the detail page. |
 | Small Mobile | `max-width: 479px` | Small phones |
@@ -1120,8 +1121,12 @@ Landscape phones additionally dock the info panel to the right (`max-height: 500
 **Docked panels:** preserve at least 760px of content when opening both side panels.
 `panel-layout.js` reads the current CSS widths, including dragged sizes, and closes
 the older panel when there is insufficient room. The floating tools menu folds if
-selection or map resizing would make it overlap the object card or table; the user
-can explicitly reopen it.
+selection or map resizing would make it overlap the object card; the user can
+explicitly reopen it. The table sits below the map in the split and cannot overlap either.
+The centred "Alle aktiven Filter zurücksetzen" action pushes the tools menu or the object
+card down by a row only where the two would overlap on a narrow map (`panel-layout.js`
+measures them and sets `reset-over-menu` / `reset-over-card` on `#map-view`); on wide maps
+both stay at the top.
 
 **Short screens:** the map table defaults to `clamp(280px, 40vh, 360px)`, capped at
 75% of its workspace while reserving at least 160px for the map and resize handle. Drag resizing uses

@@ -70,6 +70,30 @@ module.exports = {
     await settle();
     check('reset restores all buildings', state.filteredData.features.length === 14 && !cb.checked);
 
+    // The centred reset action pushes the tools menu or the object card down only where the two would
+    // overlap (rects stubbed: jsdom has no layout); a wide map keeps both at the top
+    const mapView = document.getElementById('map-view');
+    const resetBtn = document.getElementById('map-reset-filters');
+    const toolsWrapper = document.getElementById('accordion-wrapper');
+    toolsWrapper.getBoundingClientRect = function() { return { left: 12, right: 312, top: 12, bottom: 400, width: 300, height: 388 }; };
+    resetBtn.getBoundingClientRect = function() { return { left: 800, right: 1120, top: 12, bottom: 56, width: 320, height: 44 }; };
+    cb.checked = true;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    check('reset action visible with a filter; no offset on a wide map', !resetBtn.hidden && !mapView.classList.contains('reset-over-menu') && !mapView.classList.contains('reset-over-card'));
+    document.getElementById('drawer-reset-btn').click();
+    await settle();
+    resetBtn.getBoundingClientRect = function() { return { left: 200, right: 520, top: 12, bottom: 56, width: 320, height: 44 }; };
+    cb.checked = true;
+    cb.dispatchEvent(new window.Event('change', { bubbles: true }));
+    await settle();
+    check('the menu moves down only where the reset action would overlap it', mapView.classList.contains('reset-over-menu') && !mapView.classList.contains('reset-over-card'));
+    document.getElementById('drawer-reset-btn').click();
+    await settle();
+    check('offset released without a filter', resetBtn.hidden && !mapView.classList.contains('reset-over-menu'));
+    delete toolsWrapper.getBoundingClientRect;
+    delete resetBtn.getBoundingClientRect;
+
     // Table panel under the map: toggle opens it, a row selects the object on the map
     document.getElementById('tbl-toggle').click();
     await settle();
@@ -370,23 +394,28 @@ module.exports = {
     document.getElementById('tree-close-btn').click();
     check('tree panel closes; the button returns to its default state', !document.getElementById('tree-panel').classList.contains('open') && !document.getElementById('tree-panel-btn').classList.contains('panel-open'));
 
-    // Tools panel folds when the opening table panel would overlap it (rects stubbed: jsdom has no layout)
+    // The map view is a vertical split: everything floating over the map is a child of #map, so an open
+    // table can never cover the tools menu, the object card or the basemap switcher
     const toolsPanel = document.getElementById('accordion-panel');
     const tablePanel = document.getElementById('table-panel');
-    const rectOf = function(top, bottom) { return function() { return { top: top, bottom: bottom, left: 0, right: 400, height: bottom - top, width: 400 }; }; };
-    const origTools = toolsPanel.getBoundingClientRect, origTable = tablePanel.getBoundingClientRect;
-    toolsPanel.getBoundingClientRect = rectOf(100, 700);
-    tablePanel.getBoundingClientRect = rectOf(500, 900);
-    check('tools panel open before the table', !toolsPanel.classList.contains('collapsed'));
+    const tableHandle = document.getElementById('tbl-resize-handle');
+    const mapEl = document.getElementById('map');
+    check('floating map UI lives inside the map', ['accordion-wrapper', 'info-panel', 'style-switcher', 'measure-distance-display', 'map-context-menu', 'tbl-toggle', 'mobile-menu-backdrop'].every(id => mapEl.contains(document.getElementById(id))));
+    check('the split holds only the map, the handle and the table', Array.from(document.getElementById('map-view').children).map(el => el.id).join(',') === 'map,tbl-resize-handle,table-panel');
+    check('tools panel open before the table', !toolsPanel.classList.contains('collapsed') && tableHandle.hidden);
     document.getElementById('tbl-toggle').click();
-    await settle(400);
-    check('tools panel folded by the colliding table', toolsPanel.classList.contains('collapsed') && document.getElementById('menu-toggle').getAttribute('aria-expanded') === 'false');
-    document.getElementById('menu-toggle').click();
-    check('the reader can open it again', !toolsPanel.classList.contains('collapsed'));
-    toolsPanel.getBoundingClientRect = origTools;
-    tablePanel.getBoundingClientRect = origTable;
+    await settle();
+    check('opening the table keeps the tools panel open', !toolsPanel.classList.contains('collapsed') && state.tableOpen && !tableHandle.hidden && document.getElementById('tbl-toggle').getAttribute('aria-expanded') === 'true' && /table=open/.test(window.location.search));
+    tablePanel.getBoundingClientRect = function() { return { top: 0, bottom: 300, left: 0, right: 400, height: 300, width: 400 }; };
+    tableHandle.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowUp', bubbles: true }));
+    check('arrow keys on the separator resize the table', tableHandle.getAttribute('role') === 'separator' && tablePanel.style.height === '340px');
+    tablePanel.getBoundingClientRect = function() { return { top: 0, bottom: 130, left: 0, right: 400, height: 130, width: 400 }; };
+    tableHandle.dispatchEvent(new window.KeyboardEvent('keydown', { key: 'ArrowDown', bubbles: true }));
+    check('the table never shrinks below its minimum', tablePanel.style.height === '120px');
+    delete tablePanel.getBoundingClientRect;
     document.getElementById('tbl-toggle').click();
-    await settle(400);
+    await settle();
+    check('closing the table clears the resized height', !state.tableOpen && tablePanel.style.height === '' && tableHandle.hidden && !/table=open/.test(window.location.search));
 
     // "Drucken" in the context menu unfolds a collapsed tools panel, then opens the print item
     document.getElementById('menu-toggle').click();

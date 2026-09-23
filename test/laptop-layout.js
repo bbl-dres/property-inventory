@@ -16,7 +16,7 @@ const geometry = `(() => {
     const r=el.getBoundingClientRect(); return {x:r.x,y:r.y,w:r.width,h:r.height,right:r.right,bottom:r.bottom}; };
   const overlap = (a,b) => a && b && Math.min(a.right,b.right)>Math.max(a.x,b.x)+1 && Math.min(a.bottom,b.bottom)>Math.max(a.y,b.y)+1;
   return { overflow:document.documentElement.scrollWidth>innerWidth+1,
-    header:rect('.header-main'), input:rect('#search-input'), label:rect('.header-btn-label'),
+    header:rect('.header-main'), input:rect('#search-input'), treeBtn:rect('#tree-panel-btn'), filterBtn:rect('#filter-panel-btn'),
     headerCollision:overlap(rect('#logo-area'),rect('#search-area')) || overlap(rect('#search-area'),rect('#header-right')),
     map:rect('#map'), tree:rect('#tree-panel.open'), filter:rect('#filter-panel.open'),
     toolsCollision:!document.getElementById('accordion-panel').classList.contains('collapsed') && overlap(rect('#accordion-panel'),rect('#info-panel.show')),
@@ -41,7 +41,7 @@ const geometry = `(() => {
         const m=await run(geometry);
         record(prototype,profile,'header-'+language,{
           noOverflow:!m.overflow, noCollision:!m.headerCollision,
-          laptopLabels:viewport.width<1200 || !!m.label,
+          iconOnlyActions:[m.treeBtn,m.filterBtn].every(b=>!b || Math.abs(b.w-b.h)<=1),
           laptopHeight:viewport.width<1200 || viewport.width>1599 || m.header.h===72,
           usableSearch:viewport.width<1200 || m.input.w>=200
         },m);

@@ -132,13 +132,11 @@
             </div>
 
             <div id="header-right">
-                <button class="header-btn" id="tree-panel-btn" data-i18n-title="tree.title" data-i18n-aria-label="tree.open" title="Standorte" aria-label="Standorte öffnen" aria-expanded="false" aria-controls="tree-panel">
+                <button class="header-btn header-btn--icon" id="tree-panel-btn" data-i18n-title="tree.title" data-i18n-aria-label="tree.open" title="Standorte" aria-label="Standorte öffnen" aria-expanded="false" aria-controls="tree-panel">
                     <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
-                    <span class="header-btn-label" data-i18n="tree.title">Standorte</span>
                 </button>
-                <button class="header-btn" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
+                <button class="header-btn header-btn--icon" id="filter-panel-btn" data-i18n-title="header.filter" data-i18n-aria-label="header.filter.open" title="Filter" aria-label="Filter öffnen" aria-expanded="false" aria-controls="filter-panel">
                     <span class="material-symbols-outlined action-icon" aria-hidden="true">tune</span>
-                    <span class="header-btn-label" data-i18n="header.filter">Filter</span>
                 </button>
                 <div id="lang-selector">
                     <button id="lang-btn" class="header-btn" data-i18n-title="header.lang" data-i18n-aria-label="header.lang" title="Sprache wählen" aria-label="Sprache wählen" aria-haspopup="true" aria-expanded="false">
@@ -259,202 +257,204 @@
                 <span class="material-symbols-outlined">expand_more</span>
                 <span class="tbl-toggle-label" data-i18n="table.toggle">Tabelle</span>
             </button>
-            </div>
+                <!-- Floating map UI: positioned by the map and clipped by it, so the table split below never covers it -->
             
-            <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
-            <div id="accordion-wrapper">
-            <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
-                <div class="mobile-menu-header">
-                    <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
-                    <button id="mobile-menu-close" class="icon-btn mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
-                        <span class="material-symbols-outlined" aria-hidden="true">close</span>
-                    </button>
-                </div>
-                <div class="accordion-item mobile-tree-accordion" data-accordion="locations">
-                    <button type="button" class="accordion-header" id="mobile-tree-btn" aria-expanded="false" aria-controls="mobile-tree-content">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
-                        <span data-i18n="tree.title">Standorte</span>
-                    </button>
-                    <div class="accordion-content" id="mobile-tree-content" role="region" aria-labelledby="mobile-tree-btn"></div>
-                </div>
-                <div class="accordion-item" id="print-accordion-item" data-accordion="print">
-                    <button class="accordion-header" aria-expanded="false">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span data-i18n="accordion.print">Karte drucken</span>
-                    </button>
-                    <div class="accordion-content">
-                        <div class="print-form">
-                            <div class="print-form-row">
-                                <label for="print-orientation" data-i18n="accordion.print.format">Format</label>
-                                <select id="print-orientation" class="custom-select print-select">
-                                    <option value="landscape-a4" selected data-i18n="format.a4_landscape">A4 Querformat</option>
-                                    <option value="portrait-a4" data-i18n="format.a4_portrait">A4 Hochformat</option>
-                                    <option value="landscape-a3" data-i18n="format.a3_landscape">A3 Querformat</option>
-                                    <option value="portrait-a3" data-i18n="format.a3_portrait">A3 Hochformat</option>
-                                    <option value="landscape-a2" data-i18n="format.a2_landscape">A2 Querformat</option>
-                                    <option value="portrait-a2" data-i18n="format.a2_portrait">A2 Hochformat</option>
-                                    <option value="landscape-a1" data-i18n="format.a1_landscape">A1 Querformat</option>
-                                    <option value="portrait-a1" data-i18n="format.a1_portrait">A1 Hochformat</option>
-                                    <option value="landscape-a0" data-i18n="format.a0_landscape">A0 Querformat</option>
-                                    <option value="portrait-a0" data-i18n="format.a0_portrait">A0 Hochformat</option>
-                                </select>
-                            </div>
-                            <div class="print-form-row">
-                                <label for="print-scale" data-i18n="accordion.print.scale">Massstab</label>
-                                <select id="print-scale" class="custom-select print-select">
-                                    <option value="auto" selected data-i18n="accordion.print.scale.auto">Automatisch</option>
-                                    <option value="500">1:500</option>
-                                    <option value="1000">1:1'000</option>
-                                    <option value="2500">1:2'500</option>
-                                    <option value="5000">1:5'000</option>
-                                    <option value="10000">1:10'000</option>
-                                    <option value="25000">1:25'000</option>
-                                    <option value="50000">1:50'000</option>
-                                    <option value="100000">1:100'000</option>
-                                </select>
-                            </div>
-                            <div class="print-form-row">
-                                <label for="print-dpi" data-i18n="print.dpi">Auflösung</label>
-                                <select id="print-dpi" class="custom-select print-select">
-                                    <option value="150" data-i18n="print.dpi.fast">150 DPI (schnell)</option>
-                                    <option value="300" selected data-i18n="print.dpi.standard">300 DPI (Standard)</option>
-                                </select>
-                            </div>
-                            <label class="print-checkbox-label">
-                                <input type="checkbox" id="print-legend" checked> <span data-i18n="accordion.print.legend">Legende anzeigen</span>
-                            </label>
-                            <label class="print-checkbox-label">
-                                <input type="checkbox" id="print-title" checked> <span data-i18n="accordion.print.title_date">Titel und Datum</span>
-                            </label>
-                            <label class="print-checkbox-label">
-                                <input type="checkbox" id="print-labels" checked> <span data-i18n="print.labels">Gebäudebeschriftung</span>
-                            </label>
-                            <button class="panel-btn" id="print-generate-btn">
-                                <span class="material-symbols-outlined">picture_as_pdf</span>
-                                <span data-i18n="accordion.print.button">PDF erstellen</span>
-                            </button>
-                            <div class="print-progress" id="print-progress" style="display: none;">
-                                <div class="print-progress-bar"><div class="print-progress-fill" id="print-progress-fill"></div></div>
-                                <div class="print-progress-text" id="print-progress-text"></div>
+                <div id="mobile-menu-backdrop" class="mobile-menu-backdrop"></div>
+                <div id="accordion-wrapper">
+                <aside id="accordion-panel" data-i18n-aria-label="tools.label" aria-label="Werkzeuge">
+                    <div class="mobile-menu-header">
+                        <span class="mobile-menu-title" data-i18n="app.logo.subtitle">Liegenschaften Inventar</span>
+                        <button id="mobile-menu-close" class="icon-btn mobile-menu-close" data-i18n-aria-label="menu.close" aria-label="Menü schliessen">
+                            <span class="material-symbols-outlined" aria-hidden="true">close</span>
+                        </button>
+                    </div>
+                    <div class="accordion-item mobile-tree-accordion" data-accordion="locations">
+                        <button type="button" class="accordion-header" id="mobile-tree-btn" aria-expanded="false" aria-controls="mobile-tree-content">
+                            <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                            <span class="material-symbols-outlined action-icon" aria-hidden="true">account_tree</span>
+                            <span data-i18n="tree.title">Standorte</span>
+                        </button>
+                        <div class="accordion-content" id="mobile-tree-content" role="region" aria-labelledby="mobile-tree-btn"></div>
+                    </div>
+                    <div class="accordion-item" id="print-accordion-item" data-accordion="print">
+                        <button class="accordion-header" aria-expanded="false">
+                            <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                            <span data-i18n="accordion.print">Karte drucken</span>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="print-form">
+                                <div class="print-form-row">
+                                    <label for="print-orientation" data-i18n="accordion.print.format">Format</label>
+                                    <select id="print-orientation" class="custom-select print-select">
+                                        <option value="landscape-a4" selected data-i18n="format.a4_landscape">A4 Querformat</option>
+                                        <option value="portrait-a4" data-i18n="format.a4_portrait">A4 Hochformat</option>
+                                        <option value="landscape-a3" data-i18n="format.a3_landscape">A3 Querformat</option>
+                                        <option value="portrait-a3" data-i18n="format.a3_portrait">A3 Hochformat</option>
+                                        <option value="landscape-a2" data-i18n="format.a2_landscape">A2 Querformat</option>
+                                        <option value="portrait-a2" data-i18n="format.a2_portrait">A2 Hochformat</option>
+                                        <option value="landscape-a1" data-i18n="format.a1_landscape">A1 Querformat</option>
+                                        <option value="portrait-a1" data-i18n="format.a1_portrait">A1 Hochformat</option>
+                                        <option value="landscape-a0" data-i18n="format.a0_landscape">A0 Querformat</option>
+                                        <option value="portrait-a0" data-i18n="format.a0_portrait">A0 Hochformat</option>
+                                    </select>
+                                </div>
+                                <div class="print-form-row">
+                                    <label for="print-scale" data-i18n="accordion.print.scale">Massstab</label>
+                                    <select id="print-scale" class="custom-select print-select">
+                                        <option value="auto" selected data-i18n="accordion.print.scale.auto">Automatisch</option>
+                                        <option value="500">1:500</option>
+                                        <option value="1000">1:1'000</option>
+                                        <option value="2500">1:2'500</option>
+                                        <option value="5000">1:5'000</option>
+                                        <option value="10000">1:10'000</option>
+                                        <option value="25000">1:25'000</option>
+                                        <option value="50000">1:50'000</option>
+                                        <option value="100000">1:100'000</option>
+                                    </select>
+                                </div>
+                                <div class="print-form-row">
+                                    <label for="print-dpi" data-i18n="print.dpi">Auflösung</label>
+                                    <select id="print-dpi" class="custom-select print-select">
+                                        <option value="150" selected data-i18n="print.dpi.150">150 DPI (Standard)</option>
+                                        <option value="300" data-i18n="print.dpi.300">300 DPI (hohe Auflösung)</option>
+                                    </select>
+                                </div>
+                                <label class="print-checkbox-label">
+                                    <input type="checkbox" id="print-legend" checked> <span data-i18n="accordion.print.legend">Legende anzeigen</span>
+                                </label>
+                                <label class="print-checkbox-label">
+                                    <input type="checkbox" id="print-title" checked> <span data-i18n="accordion.print.title_date">Titel und Datum</span>
+                                </label>
+                                <label class="print-checkbox-label">
+                                    <input type="checkbox" id="print-labels" checked> <span data-i18n="print.labels">Objektbeschriftung</span>
+                                </label>
+                                <button class="panel-btn" id="print-generate-btn">
+                                    <span class="material-symbols-outlined">picture_as_pdf</span>
+                                    <span data-i18n="accordion.print.button">PDF erstellen</span>
+                                </button>
+                                <div class="print-progress" id="print-progress" style="display: none;">
+                                    <div class="print-progress-bar"><div class="print-progress-fill" id="print-progress-fill"></div></div>
+                                    <div class="print-progress-text" id="print-progress-text"></div>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item" id="geokatalog-accordion" data-accordion="catalog">
-                    <!-- "Thema wechseln" is a sibling of the header (a button cannot contain a button) and comes
-                         before it so the header's nextElementSibling stays the accordion content -->
-                    <button type="button" id="topic-switch-btn" class="geokatalog-theme-switch" data-action="switchTopic" data-i18n="accordion.catalog.theme" data-i18n-title="accordion.catalog.theme" title="Thema wechseln">Thema wechseln</button>
-                    <button class="accordion-header geokatalog-header" aria-expanded="false">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
-                        <span id="geokatalog-title" data-i18n="accordion.catalog">Geokatalog</span>
-                    </button>
-                    <div class="accordion-content geokatalog-content">
-                        <div id="geokatalog-tree" class="geokatalog-tree">
-                            <div class="loading-row" data-i18n="loading.catalog">Lade Katalog...</div>
+                    <div class="accordion-item" id="geokatalog-accordion" data-accordion="catalog">
+                        <!-- "Thema wechseln" is a sibling of the header (a button cannot contain a button) and comes
+                             before it so the header's nextElementSibling stays the accordion content -->
+                        <button type="button" id="topic-switch-btn" class="geokatalog-theme-switch" data-action="switchTopic" data-i18n="accordion.catalog.theme" data-i18n-title="accordion.catalog.theme" title="Thema wechseln">Thema wechseln</button>
+                        <button class="accordion-header geokatalog-header" aria-expanded="false">
+                            <span class="accordion-arrow"><span class="material-symbols-outlined">chevron_right</span></span>
+                            <span id="geokatalog-title" data-i18n="accordion.catalog">Geokatalog</span>
+                        </button>
+                        <div class="accordion-content geokatalog-content">
+                            <div id="geokatalog-tree" class="geokatalog-tree">
+                                <div class="loading-row" data-i18n="loading.catalog">Lade Katalog...</div>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <div class="accordion-item" id="active-layers-accordion" data-accordion="layers">
-                    <button class="accordion-header active" aria-expanded="true">
-                        <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
-                        <span data-i18n="accordion.layers">Dargestellte Karten</span>
-                    </button>
-                    <div class="accordion-content show">
-                        <div class="active-layers-list">
-                            <div class="layer-group">
-                                <div class="layer-group-label" data-i18n="accordion.layers.internal">Interne Karten</div>
-                                <div class="active-layer-item" data-internal-layer="buildings">
-                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
-                                    <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
-                                    <span data-internal-layer-info="buildings"></span>
+                    <div class="accordion-item" id="active-layers-accordion" data-accordion="layers">
+                        <button class="accordion-header active" aria-expanded="true">
+                            <span class="accordion-arrow"><span class="material-symbols-outlined" aria-hidden="true">chevron_right</span></span>
+                            <span data-i18n="accordion.layers">Dargestellte Karten</span>
+                        </button>
+                        <div class="accordion-content show">
+                            <div class="active-layers-list">
+                                <div class="layer-group">
+                                    <div class="layer-group-label" data-i18n="accordion.layers.internal">Interne Karten</div>
+                                    <div class="active-layer-item" data-internal-layer="buildings">
+                                        <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-buildings" data-i18n-title="accordion.layers.buildings.toggle" title="Gebäude ein-/ausblenden">
+                                        <span class="active-layer-title" data-i18n="accordion.layers.buildings">Gebäude</span>
+                                        <span data-internal-layer-info="buildings"></span>
+                                    </div>
+                                    <div class="active-layer-item" data-internal-layer="landcovers">
+                                        <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" data-i18n-title="accordion.layers.landcovers.toggle" title="Bodenabdeckung ein-/ausblenden">
+                                        <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
+                                        <span data-internal-layer-info="landcovers"></span>
+                                    </div>
+                                    <div class="active-layer-item" data-internal-layer="parcels">
+                                        <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
+                                        <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
+                                        <span data-internal-layer-info="parcels"></span>
+                                    </div>
                                 </div>
-                                <div class="active-layer-item" data-internal-layer="landcovers">
-                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-landcovers" data-i18n-title="accordion.layers.landcovers.toggle" title="Bodenabdeckung ein-/ausblenden">
-                                    <span class="active-layer-title" data-i18n="accordion.layers.landcovers">Bodenabdeckung</span>
-                                    <span data-internal-layer-info="landcovers"></span>
-                                </div>
-                                <div class="active-layer-item" data-internal-layer="parcels">
-                                    <input type="checkbox" class="active-layer-checkbox" checked id="layer-toggle-parcels" data-i18n-title="accordion.layers.parcels.toggle" title="Grundstücke ein-/ausblenden">
-                                    <span class="active-layer-title" data-i18n="accordion.layers.parcels">Grundstücke</span>
-                                    <span data-internal-layer-info="parcels"></span>
-                                </div>
-                            </div>
-                            <div class="layer-group">
-                                <div class="layer-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
-                                <div id="external-layers-list">
-                                    <div class="active-layers-empty" data-i18n="accordion.layers.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                <div class="layer-group">
+                                    <div class="layer-group-label" data-i18n="accordion.layers.external">Externe Karten</div>
+                                    <div id="external-layers-list">
+                                        <div class="active-layers-empty" data-i18n="accordion.layers.empty">Keine externen Karten aktiv. Suchen Sie nach Karten über das Suchfeld.</div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+                    <!-- Phones only: the panel is the hamburger menu; share, language and the footer links live here -->
+                    <div class="mobile-menu-extras">
+                        <button type="button" class="mobile-menu-item" id="mobile-share-btn">
+                            <span class="material-symbols-outlined" aria-hidden="true">share</span>
+                            <span data-i18n="map.context.share">Teilen</span>
+                        </button>
+                        <div class="mobile-menu-lang">
+                            <span class="material-symbols-outlined" aria-hidden="true">language</span>
+                            <div class="mobile-lang-pills" id="mobile-lang-pills">
+                                <button class="mobile-lang-pill active" data-lang="de">DE</button>
+                                <button class="mobile-lang-pill" data-lang="fr">FR</button>
+                                <button class="mobile-lang-pill" data-lang="it">IT</button>
+                                <button class="mobile-lang-pill" data-lang="en">EN</button>
+                            </div>
+                        </div>
+                        <div class="mobile-menu-divider"></div>
+                        <div class="mobile-menu-links">
+                            <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
+                            <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
+                        </div>
+                    </div>
+                </aside>
+            
+                <div id="menu-toggle" role="button" tabindex="0" aria-controls="accordion-panel" aria-expanded="true">
+                    <span class="material-symbols-outlined">expand_less</span>
+                    <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
                 </div>
-                <!-- Phones only: the panel is the hamburger menu; share, language and the footer links live here -->
-                <div class="mobile-menu-extras">
-                    <button type="button" class="mobile-menu-item" id="mobile-share-btn">
-                        <span class="material-symbols-outlined" aria-hidden="true">share</span>
+                </div><!-- /#accordion-wrapper -->
+
+                <aside id="info-panel" role="complementary" aria-label="Objektinformation">
+                    <div class="sheet-handle" aria-hidden="true"></div>
+                    <div id="info-header">
+                        <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
+                        <div id="info-header-actions">
+                            <button class="icon-btn" id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
+                            <button class="icon-btn" id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
+                            <button class="icon-btn" id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
+                        </div>
+                    </div>
+                    <div id="info-preview-image" role="img" data-i18n-aria-label="info.preview" aria-label="Vorschaubild des Objekts"></div>
+                    <div id="info-body"></div>
+                </aside>
+
+                <!-- Map Context Menu (Right-Click) -->
+                <div id="map-context-menu" class="map-context-menu">
+                    <div class="context-menu-item context-menu-coords" id="context-menu-coords" data-i18n-title="map.context.copy" title="Klicken zum Kopieren">
+                        <span id="context-menu-coords-text">47.37623, 8.53048</span>
+                    </div>
+                    <div class="context-menu-item" id="context-menu-share">
                         <span data-i18n="map.context.share">Teilen</span>
-                    </button>
-                    <div class="mobile-menu-lang">
-                        <span class="material-symbols-outlined" aria-hidden="true">language</span>
-                        <div class="mobile-lang-pills" id="mobile-lang-pills">
-                            <button class="mobile-lang-pill active" data-lang="de">DE</button>
-                            <button class="mobile-lang-pill" data-lang="fr">FR</button>
-                            <button class="mobile-lang-pill" data-lang="it">IT</button>
-                            <button class="mobile-lang-pill" data-lang="en">EN</button>
-                        </div>
                     </div>
-                    <div class="mobile-menu-divider"></div>
-                    <div class="mobile-menu-links">
-                        <a href="https://github.com/bbl-dres/property-inventory" target="_blank" rel="noopener" data-i18n="footer.source">Quellencode</a>
-                        <a href="#" id="mobile-api-link" data-i18n="footer.api">API</a>
+                    <div class="context-menu-item" id="context-menu-measure">
+                        <span id="context-menu-measure-text" data-i18n="map.context.measure">Distanz messen</span>
+                    </div>
+                    <div class="context-menu-item" id="context-menu-print">
+                        <span data-i18n="map.context.print">Drucken</span>
+                    </div>
+                    <div class="context-menu-item" id="context-menu-report">
+                        <span data-i18n="map.context.report">Problem melden</span>
                     </div>
                 </div>
-            </aside>
-            
-            <div id="menu-toggle" role="button" tabindex="0" aria-controls="accordion-panel" aria-expanded="true">
-                <span class="material-symbols-outlined">expand_less</span>
-                <span id="menu-toggle-text" data-i18n="menu.close">Menü schliessen</span>
-            </div>
-            </div><!-- /#accordion-wrapper -->
 
-            <aside id="info-panel" role="complementary" aria-label="Objektinformation">
-                <div class="sheet-handle" aria-hidden="true"></div>
-                <div id="info-header">
-                    <span id="info-header-title" data-i18n="info.title.building">Gebäude</span>
-                    <div id="info-header-actions">
-                        <button class="icon-btn" id="info-zoom-to" data-i18n-title="info.zoom" data-i18n-aria-label="info.zoom" title="Hinzoomen" aria-label="Hinzoomen"><span class="material-symbols-outlined" aria-hidden="true">center_focus_strong</span></button>
-                        <button class="icon-btn" id="info-share" data-i18n-title="info.share" data-i18n-aria-label="info.share" title="Teilen" aria-label="Teilen"><span class="material-symbols-outlined" aria-hidden="true">share</span></button>
-                        <button class="icon-btn" id="info-close" data-i18n-title="modal.close" data-i18n-aria-label="info.close" title="Schliessen" aria-label="Informationspanel schliessen"><span class="material-symbols-outlined" aria-hidden="true">close</span></button>
-                    </div>
-                </div>
-                <div id="info-preview-image" role="img" data-i18n-aria-label="info.preview" aria-label="Vorschaubild des Objekts"></div>
-                <div id="info-body"></div>
-            </aside>
-
-            <!-- Map Context Menu (Right-Click) -->
-            <div id="map-context-menu" class="map-context-menu">
-                <div class="context-menu-item context-menu-coords" id="context-menu-coords" data-i18n-title="map.context.copy" title="Klicken zum Kopieren">
-                    <span id="context-menu-coords-text">47.37623, 8.53048</span>
-                </div>
-                <div class="context-menu-item" id="context-menu-share">
-                    <span data-i18n="map.context.share">Teilen</span>
-                </div>
-                <div class="context-menu-item" id="context-menu-measure">
-                    <span id="context-menu-measure-text" data-i18n="map.context.measure">Distanz messen</span>
-                </div>
-                <div class="context-menu-item" id="context-menu-print">
-                    <span data-i18n="map.context.print">Drucken</span>
-                </div>
-                <div class="context-menu-item" id="context-menu-report">
-                    <span data-i18n="map.context.report">Problem melden</span>
-                </div>
-            </div>
+            </div><!-- /#map -->
 
             <!-- Resize handle between map and table -->
-            <div id="tbl-resize-handle" class="tbl-resize-handle" data-i18n-title="table.resize" title="Grösse ändern"></div>
+            <div id="tbl-resize-handle" class="tbl-resize-handle" role="separator" aria-orientation="horizontal" aria-controls="table-panel" tabindex="0" data-i18n-title="table.resize" data-i18n-aria-label="table.resize" title="Grösse ändern" aria-label="Grösse ändern" hidden></div>
 
             <!-- Table panel (below map) -->
             <div id="table-panel" class="table-panel">

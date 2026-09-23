@@ -2321,23 +2321,35 @@
     "fr": "Résolution",
     "it": "Risoluzione"
   },
-  "print.dpi.fast": {
-    "de": "150 DPI (schnell)",
-    "en": "150 DPI (fast)",
-    "fr": "150 DPI (rapide)",
-    "it": "150 DPI (veloce)"
+  "print.dpi.150": {
+    "de": "150 DPI (Standard)",
+    "en": "150 DPI (standard)",
+    "fr": "150 DPI (standard)",
+    "it": "150 DPI (standard)"
   },
-  "print.dpi.standard": {
-    "de": "300 DPI (Standard)",
-    "en": "300 DPI (standard)",
-    "fr": "300 DPI (standard)",
-    "it": "300 DPI (standard)"
+  "print.dpi.300": {
+    "de": "300 DPI (hohe Auflösung)",
+    "en": "300 DPI (high resolution)",
+    "fr": "300 DPI (haute résolution)",
+    "it": "300 DPI (alta risoluzione)"
   },
   "print.labels": {
-    "de": "Gebäudebeschriftung",
-    "en": "Building labels",
-    "fr": "Étiquettes des bâtiments",
-    "it": "Etichette degli edifici"
+    "de": "Objektbeschriftung",
+    "en": "Object labels",
+    "fr": "Étiquettes des objets",
+    "it": "Etichette degli oggetti"
+  },
+  "print.preview.overflow": {
+    "de": "Ausschnitt grösser als die Ansicht",
+    "en": "Extent larger than the view",
+    "fr": "Emprise plus grande que la vue",
+    "it": "Ritaglio più grande della vista"
+  },
+  "print.preview.pitch": {
+    "de": "Druck ohne Neigung (2D)",
+    "en": "Printed without tilt (2D)",
+    "fr": "Impression sans inclinaison (2D)",
+    "it": "Stampa senza inclinazione (2D)"
   },
   "print.center": {
     "de": "Zentrum",
@@ -2806,12 +2818,6 @@
     "en": "Draw & measure on the map",
     "fr": "Dessiner et mesurer sur la carte",
     "it": "Disegnare e misurare sulla mappa"
-  },
-  "measure.draw.description": {
-    "de": "Messen Sie Distanzen entlang eines Pfads und Flächen von geschlossenen Polygonen direkt auf der Karte. Klicken Sie auf den ersten Punkt, um das Polygon zu schliessen.",
-    "en": "Measure distances along a path and areas of closed polygons directly on the map. Click the first point to close the polygon.",
-    "fr": "Mesurez les distances le long d’un tracé et les surfaces de polygones fermés directement sur la carte. Cliquez sur le premier point pour fermer le polygone.",
-    "it": "Misurate distanze lungo un percorso e superfici di poligoni chiusi direttamente sulla mappa. Fate clic sul primo punto per chiudere il poligono."
   },
   "export.title": {
     "de": "Export",

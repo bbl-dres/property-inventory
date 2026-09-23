@@ -1,7 +1,6 @@
 // Table panel (buildings, parcels), table tabs, toolbar and the gallery view.
 
 import { state } from './state.js';
-import { collapseToolsPanelIfColliding } from './tools-panel.js';
 import { placeholderImages, getStatusClassName } from './config.js';
 import { formatNum, formatArea, escapeHtml, cssUrl } from './utils.js';
 import { t, onLangChange } from './i18n.js';
@@ -382,7 +381,13 @@ onLangChange(function() {
   if (input) input.placeholder = t('table.search.' + state.activeTableTab);
 });
 
-// ===== TABLE PANEL (below the map): toggle, URL state, drag resize =====
+// ===== TABLE PANEL (below the map): toggle, URL state, resize =====
+// #map-view is a vertical split: #map, with every floating map control inside it, above the resize
+// handle and the table. The stylesheet owns the sizes (.table-panel: default height, minimum and
+// maximum), and MapLibre's own resize observer follows the map's changing height.
+
+const TABLE_MIN_HEIGHT = 120; // px, the floor for dragging and keyboard resizing
+const TABLE_KEY_STEP = 40;    // px per arrow key on the handle
 
 // Opens or collapses the panel; ?table=open records the open state in the URL
 export function setTablePanelOpen(open) {
@@ -391,10 +396,11 @@ export function setTablePanelOpen(open) {
   const handle = document.getElementById('tbl-resize-handle');
   if (!toggleBtn || !panel) return;
   state.tableOpen = !!open;
-  panel.style.height = ''; // clear any drag-resize height so the CSS classes take effect
+  panel.style.height = ''; // clear any resized height so the CSS classes take effect
   panel.classList.toggle('collapsed', !state.tableOpen);
   toggleBtn.classList.toggle('collapsed', !state.tableOpen);
-  if (handle) handle.style.display = state.tableOpen ? '' : 'none';
+  toggleBtn.setAttribute('aria-expanded', state.tableOpen ? 'true' : 'false');
+  if (handle) handle.hidden = !state.tableOpen;
   if (state.tableOpen && state.listViewDirty) {
     renderFilteredTables();
     state.listViewDirty = false;
@@ -402,11 +408,11 @@ export function setTablePanelOpen(open) {
   const url = new URL(window.location);
   if (state.tableOpen) url.searchParams.set('table', 'open'); else url.searchParams.delete('table');
   window.history.replaceState({}, '', url);
-  setTimeout(function() {
-    if (state.map) state.map.resize();
-    // The table takes the bottom of the map: a tools panel reaching into it folds (the toggle reopens it)
-    if (state.tableOpen) collapseToolsPanelIfColliding(panel);
-  }, 350);
+}
+
+// An explicit panel height; the stylesheet clamps it to the workspace (max-height of .table-panel)
+function setTablePanelHeight(panel, height) {
+  panel.style.height = Math.max(TABLE_MIN_HEIGHT, Math.round(height)) + 'px';
 }
 
 export function initTablePanel() {
@@ -414,26 +420,25 @@ export function initTablePanel() {
   const panel = document.getElementById('table-panel');
   const handle = document.getElementById('tbl-resize-handle');
   if (!toggleBtn || !panel) return;
+  toggleBtn.setAttribute('aria-controls', 'table-panel');
 
-  // Hidden by default on every screen size; ?table=open opts in
-  state.tableOpen = new URLSearchParams(window.location.search).get('table') === 'open';
-  if (!state.tableOpen) {
-    panel.classList.add('collapsed');
-    toggleBtn.classList.add('collapsed');
-    if (handle) handle.style.display = 'none';
-  }
-
+  // Collapsed by default on every screen size; ?table=open opts in
+  setTablePanelOpen(new URLSearchParams(window.location.search).get('table') === 'open');
   toggleBtn.addEventListener('click', function() { setTablePanelOpen(!state.tableOpen); });
-  // ?table=open at boot: the tools panel folds when the table would overlap it (same rule as a click)
-  if (state.tableOpen) setTimeout(function() { collapseToolsPanelIfColliding(panel); }, 600);
-
   if (!handle) return;
-  const MIN_H = 120;
-  const MAX_FRAC = 0.75;
-  let startY, startH;
-  let resizeFrame = null;
 
+  // The handle is a separator: arrow keys resize the table from the keyboard
+  handle.addEventListener('keydown', function(e) {
+    const step = e.key === 'ArrowUp' ? TABLE_KEY_STEP : e.key === 'ArrowDown' ? -TABLE_KEY_STEP : 0;
+    if (!step) return;
+    e.preventDefault();
+    setTablePanelHeight(panel, panel.getBoundingClientRect().height + step);
+  });
+
+  // Pointer drag (mouse, pen and touch: the handle has touch-action: none in the stylesheet)
+  let startY, startH;
   handle.addEventListener('pointerdown', function(e) {
+    if (e.pointerType === 'mouse' && e.button !== 0) return;
     e.preventDefault();
     handle.setPointerCapture(e.pointerId);
     handle.classList.add('dragging');
@@ -441,34 +446,14 @@ export function initTablePanel() {
     startY = e.clientY;
     startH = panel.getBoundingClientRect().height;
 
-    // The panel height follows every pointer event; the map (a full re-layout and render on
-    // resize) and the collision check are updated once per animation frame
-    function onMove(ev) {
-      const workspaceHeight = panel.parentElement.clientHeight;
-      const maxH = Math.max(0, Math.min(workspaceHeight * MAX_FRAC, workspaceHeight - 160));
-      panel.style.height = Math.min(maxH, Math.max(MIN_H, startH + (startY - ev.clientY))) + 'px';
-      if (resizeFrame) return;
-      resizeFrame = requestAnimationFrame(function() {
-        resizeFrame = null;
-        if (state.map) state.map.resize();
-        collapseToolsPanelIfColliding(panel);
-      });
-    }
-
+    function onMove(ev) { setTablePanelHeight(panel, startH + (startY - ev.clientY)); }
     function onUp() {
       handle.classList.remove('dragging');
       panel.style.transition = '';
       handle.removeEventListener('pointermove', onMove);
       handle.removeEventListener('pointerup', onUp);
       handle.removeEventListener('lostpointercapture', onUp);
-      if (resizeFrame) {
-        cancelAnimationFrame(resizeFrame);
-        resizeFrame = null;
-      }
-      if (state.map) state.map.resize();
-      collapseToolsPanelIfColliding(panel);
     }
-
     handle.addEventListener('pointermove', onMove);
     handle.addEventListener('pointerup', onUp);
     handle.addEventListener('lostpointercapture', onUp);

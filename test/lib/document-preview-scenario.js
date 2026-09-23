@@ -84,7 +84,7 @@ module.exports = function(prototype) {
       modules.ui.showDetailView(simple ? state.buildingsData.features[1].properties.bbl_id : state.buildingsData.features[1].properties.buildingId);
       check('changing building closes stale previews and unlocks the page', !dialog() && !document.getElementById('header').hasAttribute('inert'));
 
-      const viewer = await import(pathToFileURL(path.resolve(prototype, 'js/document-preview.js')).href);
+      const viewer = await import(pathToFileURL(path.resolve(__dirname, '..', '..', prototype, 'js/document-preview.js')).href);
       check('unsafe source protocols are rejected', viewer.documentSourceUrl({ url:'javascript:alert(1)' }) === null);
       viewer.openDocumentPreview({ documentId:'missing', name:'<img src=x onerror=alert(1)>', documentTypeCode:'O12001' });
       check('document titles are rendered as text', !dialog().querySelector('img') && dialog().querySelector('h2').textContent.startsWith('<img'));

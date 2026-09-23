@@ -63,7 +63,16 @@
       "Bash(grep -n \"\\\\.\\\\./\" index.html js/*.js)",
       "Bash(node --check wizard.js)",
       "Bash(node --check workflows.js)",
-      "Bash(git -C \"c:/Users/DavidRasner/Documents/GitHub/property-inventory\" diff prototype-workflows/index.html)"
+      "Bash(git -C \"c:/Users/DavidRasner/Documents/GitHub/property-inventory\" diff prototype-workflows/index.html)",
+      "Bash(node -e \"const i=JSON.parse\\(require\\('fs'\\).readFileSync\\('prototype-simple/data/i18n.json','utf8'\\)\\);for\\(const[k,v]of Object.entries\\(i\\)\\)if\\(/Messen Sie Distanzen/.test\\(v.de\\)\\)console.log\\(k, JSON.stringify\\(v\\)\\)\")",
+      "Bash(python -m http.server 8123 --bind 127.0.0.1)",
+      "Bash(rmdir shared/js)",
+      "Bash(rmdir shared *)",
+      "Bash(BASE_URL=http://127.0.0.1:8124/ CDP_PORT=9444 node test/visual.js eval \"\\(\\(\\) => { const c = document.querySelector\\('.maplibregl-ctrl-attrib'\\); const b = c.querySelector\\('.maplibregl-ctrl-attrib-button'\\); const cs = getComputedStyle\\(c\\), bs = getComputedStyle\\(b\\); const pick = \\(s, k\\) => k.reduce\\(\\(o, p\\) => \\(o[p] = s[p], o\\), {}\\); return { classes: c.className, ctrl: pick\\(cs, ['width','height','padding','boxSizing','minHeight','display','position']\\), btn: pick\\(bs, ['width','height','left','right','top','position','display']\\), inner: getComputedStyle\\(c.querySelector\\('.maplibregl-ctrl-attrib-inner'\\)\\).display, parent: c.parentElement.className, matched: [...document.styleSheets].flatMap\\(s => { try { return [...s.cssRules]; } catch { return []; } }\\).flatMap\\(r => r.cssRules ? [...r.cssRules].map\\(x => \\({ media: r.conditionText, t: x.cssText }\\)\\) : [{ t: r.cssText }]\\).filter\\(x => /ctrl-attrib\\\\b|ctrl-attrib\\\\.|ctrl-attrib:not/.test\\(x.t\\) && !/attrib-button|attrib-inner|attrib a/.test\\(x.t\\)\\).map\\(x => \\(x.media ? '@' + x.media + ' ' : ''\\) + x.t.slice\\(0, 160\\)\\) }; }\\)\\(\\)\" prototype-simple phone-14 map)",
+      "Bash(grep -oE \"_toggleAttribution\\\\\\(\\\\\\)\\\\{[^}]{0,300}\" prototype-simple/vendor/maplibre-gl/maplibre-gl.js)",
+      "Bash(grep -oE \"trackResize:!0|trackResize:!1|new ResizeObserver\\\\\\([^\\)]{0,80}\" prototype-simple/vendor/maplibre-gl/maplibre-gl.js)",
+      "Bash(grep -nE \"^\\\\s*\\(#info-panel|#accordion-wrapper|#accordion-panel|\\\\.style-switcher|\\\\.measure-distance-display|\\\\.tbl-toggle|\\\\.table-panel|\\\\.tbl-resize-handle|#map-context-menu|\\\\.map-context-menu|\\\\.mobile-menu-backdrop|#map-view|#map\\\\b|#map,|#map-busy|\\\\.map-top-controls|\\\\.print-preview-overlay\\)[^{]*\\\\{\" prototype-simple/css/components.css)",
+      "Bash(BASE_URL=http://127.0.0.1:8124/ CDP_PORT=9333 node test/laptop-layout.js)"
     ]
   }
 }

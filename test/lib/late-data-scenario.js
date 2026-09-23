@@ -86,9 +86,51 @@ module.exports = function(prototype) {
       const a4 = print.getPrintDimensions('landscape-a4');
       const full = print.getPrintLayout(a4, true, true);
       const bare = print.getPrintLayout(a4, false, false);
-      check('map area excludes header, legend and footer', full.mapY === 21 && full.mapW === 277 && full.mapH === 153);
+      check('map area excludes header, legend and footer', full.mapY === 24 && full.mapW === 277 && full.mapH === 150);
       check('map area without title and legend', bare.mapY === 10 && bare.mapH === 180);
       check('map area is not the paper ratio', Math.abs(full.mapW / full.mapH - a4.width / a4.height) > 0.2);
+      check('legend block grows with the listed external layers', print.legendHeight(0) === 16 && print.legendHeight(2) === 25 && print.getPrintLayout(a4, true, true, 2).mapH === 141);
+
+      // Print preview: the crop is the exact printed area and never shrinks; "Automatisch" is the current
+      // view at a round scale; explicit scales fit the view once and then follow the user's zoom
+      const i18n = await import(pathToFileURL(path.join(ROOT, prototype, 'js', 'i18n.js')).href);
+      const mapEl = document.getElementById('map');
+      const originalRect = mapEl.getBoundingClientRect;
+      mapEl.getBoundingClientRect = function() { return { x: 0, y: 0, left: 0, top: 0, width: 1200, height: 600, right: 1200, bottom: 600 }; };
+      map.flyTo({ center: [7.44, 46.95], zoom: 16 });
+      const printHeader = document.querySelector('.accordion-item[data-accordion="print"] .accordion-header');
+      const scaleEl = document.getElementById('print-scale');
+      printHeader.click();
+      await settle();
+      const overlay = document.querySelector('#map .print-preview-overlay');
+      const crop = overlay.querySelector('.print-preview-crop');
+      const label = overlay.querySelector('.print-preview-label');
+      const cropW = function() { return parseFloat(crop.style.width); };
+      const cropH = function() { return parseFloat(crop.style.height); };
+      check('automatic scale is a round denominator whose page fits the view', overlay.classList.contains('active') && /1:2'500/.test(label.textContent) && cropW() <= 1180 && cropH() <= 580 && !overlay.classList.contains('overflow'));
+      const easeBefore = map.calls.easeTo.length;
+      scaleEl.value = '25000';
+      scaleEl.dispatchEvent(new window.Event('change'));
+      await settle();
+      check('an explicit scale zooms the map so the page fills the view', map.calls.easeTo.length === easeBefore + 1 && map.getZoom() < 16 && cropW() <= 1181 && cropH() <= 581 && Math.min(1180 / cropW(), 580 / cropH()) < 1.02 && /1:25'000/.test(label.textContent));
+      map.flyTo({ center: [7.44, 46.95], zoom: map.getZoom() + 2 });
+      await settle();
+      check('zooming in keeps the true crop size and flags the overflow', cropW() > 1200 && overlay.classList.contains('overflow') && label.textContent.indexOf(i18n.t('print.preview.overflow')) !== -1);
+      map.flyTo({ center: [7.44, 46.95], zoom: map.getZoom(), pitch: 45 });
+      await settle();
+      check('a tilted view is flagged as printed flat', overlay.classList.contains('warning') && label.textContent.indexOf(i18n.t('print.preview.pitch')) !== -1);
+      printHeader.click();
+      await settle();
+      check('closing the print item hides the preview', !overlay.classList.contains('active'));
+      printHeader.click();
+      await settle();
+      const lastEase = map.calls.easeTo[map.calls.easeTo.length - 1];
+      check('opening the print item eases to 2D and fits the page in one move', !!lastEase && lastEase.pitch === 0 && typeof lastEase.zoom === 'number' && map.getPitch() === 0 && !overlay.classList.contains('overflow') && !overlay.classList.contains('warning'));
+      printHeader.click();
+      await settle();
+      scaleEl.value = 'auto';
+      scaleEl.dispatchEvent(new window.Event('change'));
+      mapEl.getBoundingClientRect = originalRect;
     }
   };
 };

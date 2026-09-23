@@ -25,7 +25,7 @@ export function openToolsPanel() {
   if (!menuOpen) setOpenRef(true);
 }
 
-// Folds the floating panel when another element (the table panel under the map) would overlap it; the
+// Folds the floating panel when another element (the object card on a narrow map) would overlap it; the
 // reader can open it again with the toggle. Returns true when it folded. Phones: the menu never floats.
 export function collapseToolsPanelIfColliding(el) {
   const panel = document.getElementById('accordion-panel');

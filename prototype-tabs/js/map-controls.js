@@ -123,9 +123,21 @@ function render3DButton(button) {
   button.classList.toggle('active', is3D);
 }
 
+// Phones start with the collapsed ⓘ: MapLibre opens its compact attribution on load; a tap expands it again.
+// The collapsed control is a 24px circle (see the phone rules of components.css), so the icon stays centred.
+function collapseCompactAttribution(map) {
+  map.once('load', function() {
+    if (!isMobileLayout()) return;
+    const control = map.getContainer().querySelector('.maplibregl-ctrl-attrib.maplibregl-compact-show');
+    const button = control && control.querySelector('.maplibregl-ctrl-attrib-button');
+    if (button) button.click();
+  });
+}
+
 // Navigation, scale, home and (optionally) the 2D/3D toggle; restores ?3d=1 from the URL.
 export function addStandardControls(map, options) {
   options = options || {};
+  collapseCompactAttribution(map);
   map.addControl(new maplibregl.NavigationControl(), 'top-right');
   map.addControl(new maplibregl.ScaleControl({ maxWidth: 200 }), 'bottom-left');
   map.addControl(new HomeControl(), 'top-right');

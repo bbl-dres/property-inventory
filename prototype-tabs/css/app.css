@@ -246,14 +246,6 @@ body.detail-active .header-detail {
   border-color: var(--status-active);
 }
 
-/* ===== MEASURE PANEL ===== */
-.measure-panel-text {
-  margin: 0 0 var(--space-3);
-  font-size: var(--text-sm);
-  color: var(--grey-600);
-  line-height: var(--leading-normal);
-}
-
 /* ===== EXPORT PANEL ===== */
 .export-panel {
   display: flex;

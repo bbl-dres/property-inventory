@@ -56,7 +56,7 @@ module.exports = function(prototype) {
       check('MultiPolygon selection has finite interior camera target', camera?.length === 2 && camera.every(Number.isFinite));
       parcel.geometry = original;
 
-      const load = name => import(pathToFileURL(path.resolve(prototype, 'js', name + '.js')).href);
+      const load = name => import(pathToFileURL(path.resolve(__dirname, '..', '..', prototype, 'js', name + '.js')).href);
       const controls = await load('map-controls');
       window.history.replaceState({}, '', '?lat=Infinity&lng=7&zoom=12&pitch=Infinity&bearing=Infinity');
       check('non-finite URL values fall back to valid map view', controls.readMapViewFromUrl().center.every(Number.isFinite) && controls.readMapViewFromUrl().pitch === 0 && controls.readMapViewFromUrl().bearing === 0);

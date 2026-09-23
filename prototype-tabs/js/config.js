@@ -1,7 +1,7 @@
 // Configuration: status colours, filter categories, placeholder images, internal layer metadata.
 // Basemaps live in basemaps.js (identical in every prototype).
 
-import { t } from './i18n.js';
+import { t, tf } from './i18n.js';
 
 // ===== STATUS =====
 
@@ -81,7 +81,7 @@ export const internalLayers = {
     geometryType: 'Point',
     format: 'GeoJSON',
     legendHtml: function() {
-      return legendHtml(statusLegendItems().map(function(item) { return { swatch: circle(item.color), label: item.label }; }));
+      return legendHtml(statusLegendItems().map(function(item) { return { swatch: circle(item.color), label: tf('print.legend.' + String(item.code).toLowerCase(), item.label) }; }));
     }
   },
   parcels: {
